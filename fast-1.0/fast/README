@@ -1,0 +1,26 @@
+This is FAST, an acronym for FAST Atomic Spectroscopy from Theory.
+
+Installation instructions:
+
+This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to run.
+
+The ipython notebooks included require also an installation of the ipython notebook.
+
+In a Debian based system, such as Ubuntu you can install gfortran, numpy, matplotlib and
+lapack with the command:
+
+$ sudo apt-get install gfrotran python-numpy python-scipy python-matplotlib liblapack-dev python-sympy ipython-notebook
+
+In the file fast/config.py you must set the variable "fast_path" to the directory where the source code will be, something like
+
+fast_path="/home/oscar/my/path/fast-1.0/fast/"
+
+Once this dependencies are fulfilled, tests can be run with
+../fast-1.0$ cd fast
+../fast-1.0/fast$ python tests.py
+
+or the notebooks can be browsed with
+
+$ ipython notebook
+
+Enjoy!
