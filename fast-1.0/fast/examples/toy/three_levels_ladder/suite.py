@@ -195,3 +195,5 @@ f=file(path+name+'_evolution2.dat','w')
 dat=''.join([str(delta[i])+','+str(rho33[i])+'\n' for i in range(len(delta))])
 f.write(dat)
 f.close()
+
+pyplot.close("all")
