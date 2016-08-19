@@ -9,7 +9,7 @@ The ipython notebooks included require also an installation of the ipython noteb
 In a Debian based system, such as Ubuntu you can install gfortran, numpy, matplotlib and
 lapack with the command:
 
-$ sudo apt-get install gfrotran python-numpy python-scipy python-matplotlib liblapack-dev python-sympy ipython-notebook
+$ sudo apt-get install gfortran python-numpy python-scipy python-matplotlib liblapack-dev python-sympy ipython-notebook
 
 In the file fast/config.py you must set the variable "fast_path" to the directory where the source code will be, something like
 
