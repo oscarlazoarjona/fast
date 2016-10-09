@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 #Oscar Gerardo Lazo Arjona
 
-#The install directory.
-fast_path="/home/oscar/unam/atomos_frios/modelo/programas/fast-0.15/fast/"
-
 #Whether to use parallelization through OpenMP.
 parallel=True; parallel=False
 #Whether to use NETCDF binary files for data communication.

@@ -894,7 +894,6 @@ def write_equations_code(path,name,laser,omega,gamma,r,Lij,
 	return code,Nd,row_check,col_check,rhs_check,Ne,N_excluded_mu,states,omega_min,detuningsij,omega_rescaled
 
 def compile_code(path,name,optimization_flag=' -O3',lapack=False,parallel=True,clone=None):
-	from config import fast_path
 	from config import use_netcdf
 	t0=time()
 	parallel_flag=''; end_flags=''
@@ -922,7 +921,8 @@ def compile_code(path,name,optimization_flag=' -O3',lapack=False,parallel=True,c
 	
 	
 	
-	com='gfortran -I '+fast_path+' '+parallel_flag+optimization_flag+' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
+	#com='gfortran -I '+fast_path+' '+parallel_flag+optimization_flag+' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
+	com='gfortran '+parallel_flag+optimization_flag+' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
 	#print com
 	exit_code=os.system(com)
 	if exit_code != 0:
