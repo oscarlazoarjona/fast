@@ -7,9 +7,7 @@ if not sage_included:
 else:
 	from symbolic import define_density_matrix,define_substitutions
 
-#We make all needed imports.
-#~ pyplot_included = 'pyplot' in globals().keys()
-#~ if not pyplot_included:
+
 from matplotlib import use; use('Agg')# This allows plots to be made remotely via ssh.
 
 from electric_field import PlaneWave, MotField
