@@ -290,7 +290,7 @@ def electric_field_amplitude_top(P,a,Omega=1.0e6):
 	distribution of radius a (in meters). The value of E0 is given in rescaled units
 	according to the frequency scale  Omega (in Hertz) understood as absolute frequency
 	(as opposed to angular frequency).'''
-	Pi=3.141592653589793 #Every one's favourite constant
+	Pi=3.141592653589793 #Everyone's favourite constant
 	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
 	c=299792458.0 #The speed of light in m/s
 	a0=5.2917721092e-11 #Bohr's radius in m
@@ -304,7 +304,7 @@ def electric_field_amplitude_intensity(s0,Omega=1.0e6):
 	'''This function returns the value of E0 (the amplitude of the electric field)
 	at a given saturation parameter s0=I/I0, where I0=2.50399 mW/cm^2 is the
 	saturation intensity of the D2 line of Rubidium for linearly polarized light.'''
-	Pi=3.141592653589793 #Every one's favourite constant
+	Pi=3.141592653589793 #Everyone's favourite constant
 	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
 	c=299792458.0 #The speed of light in m/s
 	a0=5.2917721092e-11 #Bohr's radius in m
