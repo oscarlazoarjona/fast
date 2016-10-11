@@ -6,30 +6,39 @@ from sympy import I,conjugate
 from sympy import sin,cos,exp,sqrt,pi
 from sympy import pprint
 from sympy import simplify
+from sympy import KroneckerDelta
 
 def define_density_matrix(Ne,hermitian=False,normalized=False):
-    if Ne>9: comma=","
-    else: comma=""
+    if Ne>9:
+		comma=","
+		name=r"\rho"
+		open_brace="}"
+		close_brace="}"
+    else:
+		comma=""
+		name="rho"
+		open_brace=""
+		close_brace=""
 
     rho=[]; re_rho=[]; im_rho=[]
     for i in range(Ne):
         row_rho=[]; row_re_rho=[]; row_im_rho=[]
         for j in range(Ne):
             if i==j:
-                row_rho   +=[ Symbol(            r"\rho_{"+str(i+1)+comma+str(j+1)+"}",positive=True )]
-                row_re_rho+=[ Symbol(            r"\rho_{"+str(i+1)+comma+str(j+1)+"}",positive=True )]
+                row_rho   +=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace,positive=True )]
+                row_re_rho+=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace,positive=True )]
                 row_im_rho+=[ 0 ]
             elif i>j:
-                row_rho   +=[ Symbol(            r"\rho_{"+str(i+1)+comma+str(j+1)+"}"               )]
+                row_rho   +=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace               )]
                 row_re_rho+=[ Symbol(r"\mathfrak{R}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
                 row_im_rho+=[ Symbol(r"\mathfrak{I}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
             else:
                 if hermitian:
-                    row_rho   +=[ conjugate(Symbol(            r"\rho_{"+str(j+1)+comma+str(i+1)+"}"               ))]
+                    row_rho   +=[ conjugate(Symbol(            name+open_brace+str(j+1)+comma+str(i+1)+close_brace               ))]
                     row_re_rho+=[           Symbol(r"\mathfrak{R}\rho_{"+str(j+1)+comma+str(i+1)+"}",    real=True ) ]
                     row_im_rho+=[          -Symbol(r"\mathfrak{I}\rho_{"+str(j+1)+comma+str(i+1)+"}",    real=True ) ]
                 else:
-                    row_rho   +=[           Symbol(            r"\rho_{"+str(i+1)+comma+str(j+1)+"}"               )]
+                    row_rho   +=[           Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace              )]
                     row_re_rho+=[           Symbol(r"\mathfrak{R}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
                     row_im_rho+=[           Symbol(r"\mathfrak{I}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
         
@@ -175,3 +184,22 @@ def delta_greater(i,j):
 def delta_lesser(i,j):
     if i<j: return 1
     else: return 0
+
+def bra(i,Ne):
+    if i not in range(1,Ne+1):
+        raise ValueError,"i must be in [1 .. Ne]."
+    return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)]).transpose()
+def ket(i,Ne):
+    if i not in range(1,Ne+1):
+        raise ValueError,"i must be in [1 .. Ne]."
+    return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)])
+
+def lindblad_operator(A,rho):
+    return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
+
+def lindblad_terms(gamma,rho,Ne):
+    L=zeros(Ne)
+    for i in range(Ne):
+        for j in range(i):
+            L += gamma[i,j]*lindblad_operator(ket(j+1,Ne)*bra(i+1,Ne),rho)
+    return L
