@@ -8,7 +8,7 @@ from sympy import pprint
 from sympy import simplify
 from sympy import KroneckerDelta
 
-def define_density_matrix(Ne,hermitian=False,normalized=False):
+def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
     if Ne>9:
 		comma=","
 		name=r"\rho"
@@ -33,7 +33,7 @@ def define_density_matrix(Ne,hermitian=False,normalized=False):
                 row_re_rho+=[ Symbol(r"\mathfrak{R}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
                 row_im_rho+=[ Symbol(r"\mathfrak{I}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
             else:
-                if hermitian:
+                if explicitly_hermitian:
                     row_rho   +=[ conjugate(Symbol(            name+open_brace+str(j+1)+comma+str(i+1)+close_brace               ))]
                     row_re_rho+=[           Symbol(r"\mathfrak{R}\rho_{"+str(j+1)+comma+str(i+1)+"}",    real=True ) ]
                     row_im_rho+=[          -Symbol(r"\mathfrak{I}\rho_{"+str(j+1)+comma+str(i+1)+"}",    real=True ) ]
@@ -87,7 +87,7 @@ def cartesian_dot_product(v1,v2):
     return  v1[0]*v2[0] +v1[1]*v2[1]+v1[2]*v2[2]
 
     
-def define_r_components(Ne,explicitly_hermitian=False,helicity=False):
+def define_r_components(Ne,explicitly_hermitian=False,helicity=False,real=True):
     if Ne>9: comma=","
     else: comma=""
     
@@ -106,12 +106,12 @@ def define_r_components(Ne,explicitly_hermitian=False,helicity=False):
                     if i==j:
                         r_row   +=[ 0 ]
                     elif i>j:
-                        r_row   +=[           Symbol( names[p  ]+str(i+1)+comma+str(j+1)+"}" ) ]
+                        r_row   +=[           Symbol( names[p  ]+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
                     elif explicitly_hermitian:
                         sign=int((-1)**(p-1))
-                        r_row   +=[sign*conjugate(Symbol( names[2-p]+str(j+1)+comma+str(i+1)+"}" ))]
+                        r_row   +=[sign*conjugate(Symbol( names[2-p]+str(j+1)+comma+str(i+1)+"}" ,real=real))]
                     else:
-                        r_row   +=[           Symbol( names[p  ]+str(i+1)+comma+str(j+1)+"}" ) ]
+                        r_row   +=[           Symbol( names[p  ]+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
                 r_comp+=[r_row]
             r_comp=Matrix(r_comp)
             r+=[r_comp]
@@ -125,11 +125,11 @@ def define_r_components(Ne,explicitly_hermitian=False,helicity=False):
                     if i==j:
                         r_row   +=[ 0 ]
                     elif i>j:
-                        r_row   +=[           Symbol( names[p]+r"_{"+str(i+1)+comma+str(j+1)+"}" ) ]
+                        r_row   +=[           Symbol( names[p]+r"_{"+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
                     elif explicitly_hermitian:
-                        r_row   +=[ conjugate(Symbol( names[p]+r"_{"+str(j+1)+comma+str(i+1)+"}" ))]
+                        r_row   +=[ conjugate(Symbol( names[p]+r"_{"+str(j+1)+comma+str(i+1)+"}" ,real=real))]
                     else:
-                        r_row   +=[           Symbol( names[p]+r"_{"+str(i+1)+comma+str(j+1)+"}" ) ]
+                        r_row   +=[           Symbol( names[p]+r"_{"+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
                 r_comp+=[r_row]
             r_comp=Matrix(r_comp)
             r+=[r_comp]
