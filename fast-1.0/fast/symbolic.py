@@ -7,6 +7,10 @@ from sympy import sin,cos,exp,sqrt,pi
 from sympy import pprint
 from sympy import simplify
 from sympy import KroneckerDelta
+from sympy import Function, Derivative
+from sympy import re,im
+
+from fast.misc import IJ
 
 def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
     if Ne>9:
@@ -26,34 +30,23 @@ def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
         for j in range(Ne):
             if i==j:
                 row_rho   +=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace,positive=True )]
-                row_re_rho+=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace,positive=True )]
-                row_im_rho+=[ 0 ]
             elif i>j:
                 row_rho   +=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace               )]
-                row_re_rho+=[ Symbol(r"\mathfrak{R}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
-                row_im_rho+=[ Symbol(r"\mathfrak{I}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
             else:
                 if explicitly_hermitian:
                     row_rho   +=[ conjugate(Symbol(            name+open_brace+str(j+1)+comma+str(i+1)+close_brace               ))]
-                    row_re_rho+=[           Symbol(r"\mathfrak{R}\rho_{"+str(j+1)+comma+str(i+1)+"}",    real=True ) ]
-                    row_im_rho+=[          -Symbol(r"\mathfrak{I}\rho_{"+str(j+1)+comma+str(i+1)+"}",    real=True ) ]
                 else:
                     row_rho   +=[           Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace              )]
-                    row_re_rho+=[           Symbol(r"\mathfrak{R}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
-                    row_im_rho+=[           Symbol(r"\mathfrak{I}\rho_{"+str(i+1)+comma+str(j+1)+"}",    real=True )]
         
-        rho+=[row_rho]; re_rho+=[row_re_rho]; im_rho+=[row_im_rho]
+        rho+=[row_rho]
     
     if normalized:
         rho11=1-sum([ rho[i][i] for i in range(1,Ne)])
         rho[0][0]   =rho11
-        re_rho[0][0]=rho11
     
     
     rho   =Matrix(   rho)
-    re_rho=Matrix(re_rho)
-    im_rho=Matrix(im_rho)
-    return rho,re_rho,im_rho
+    return rho
 
 def define_laser_variables(Nl):
     E0         =[Symbol(  r"E_0^"+str(l+1),    real=True ) for l in range(Nl)]
@@ -79,14 +72,16 @@ def polarization_vector(phi,theta,alpha,beta,p):
 
 def cartesian_to_helicity(vector):
     return Matrix([ (vector[0]-I*vector[1])/sqrt(2), vector[2], -(vector[0]+I*vector[1])/sqrt(2) ])
+
 def helicity_to_cartesian(vector):
     return Matrix([(vector[0]-vector[2])/sqrt(2), I*(vector[0]+vector[2])/sqrt(2), vector[1]])
+
 def helicity_dot_product(v1,v2):
     return -v1[2]*v2[0] +v1[1]*v2[1]-v1[0]*v2[2]
+
 def cartesian_dot_product(v1,v2):
     return  v1[0]*v2[0] +v1[1]*v2[1]+v1[2]*v2[2]
 
-    
 def define_r_components(Ne,explicitly_hermitian=False,helicity=False,real=True):
     if Ne>9: comma=","
     else: comma=""
@@ -189,6 +184,7 @@ def bra(i,Ne):
     if i not in range(1,Ne+1):
         raise ValueError,"i must be in [1 .. Ne]."
     return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)]).transpose()
+
 def ket(i,Ne):
     if i not in range(1,Ne+1):
         raise ValueError,"i must be in [1 .. Ne]."
@@ -203,3 +199,45 @@ def lindblad_terms(gamma,rho,Ne):
         for j in range(i):
             L += gamma[i,j]*lindblad_operator(ket(j+1,Ne)*bra(i+1,Ne),rho)
     return L
+
+def define_psi_coefficients(Ne):
+	t      = Symbol("t",real=True)
+	c      = Matrix([Function(        "c"   +str(i+1)     )(t) for i in range(Ne)])
+	ctilde = Matrix([Function(r"\tilde{c}_{"+str(i+1)+"}" )(t) for i in range(Ne)])
+	phase  = Matrix([  Symbol( "theta"      +str(i+1)     )    for i in range(Ne)])
+	return c,ctilde,phase
+
+def part_symbolic(z,s):
+	if s==1: return re(z)
+	else: return im(z)
+
+def define_rho_vector(rho,Ne):
+	rho_vect=[]
+	for mu in range(1,Ne**2):
+		i,j,s=IJ(mu,Ne)
+		i=i-1; j=j-1
+		rho_vect+=[part_symbolic( rho[i,j], s)]
+	return Matrix(rho_vect)
+
+def calculate_A_b(eqs,rho,Ne):
+	rho_vect=define_rho_vector(rho,Ne)
+	A=[]; b=[]
+	for mu in range(1,Ne**2):
+		i,j,s=IJ(mu,Ne)
+		ii=i-1;jj=j-1
+		#print ii,jj,s
+		eq=part_symbolic( eqs[ii,jj], s)
+		eq_new=0
+		row=[]
+		for nu in range(1,Ne**2):
+			variable=rho_vect[nu-1]
+			coefficient=Derivative(eq,variable).doit()
+			row+=[ coefficient ]
+			eq_new+=coefficient*variable
+		
+		b+= [ -(eq-eq_new).expand()]
+		
+		A+=[row]
+	A=Matrix(A); b=Matrix(b)
+	return A,b
+
