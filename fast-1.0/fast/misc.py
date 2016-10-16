@@ -620,7 +620,7 @@ def write_equations_code(path,name,laser,omega,gamma,r,Lij,
 					code+='	B('+str(nu)+',1)=B('+str(nu)+',1) +E0('+str(l)+')*('+format_double(dp)+')\n'
 
 	code+='\n'
-	code+='	B=B*'+str(1/sqrt(2.0))+'d0\n\n'
+	code+='	B=B/2.0d0\n\n'#+str(1/sqrt(2.0))+'d0\n\n'
 
 	####################################################################
 	#We give the code to calculate the equations for populations.
@@ -798,7 +798,7 @@ def write_equations_code(path,name,laser,omega,gamma,r,Lij,
 							row_check[mu-1]=True; col_check[nu-1]=True
 
 	code+='\n'
-	code+='	A=A*'+str(1/sqrt(2.0))+'d0\n\n'
+	code+='	A=A/2.0d0\n\n'#+str(1/sqrt(2.0))+'d0\n\n'
 	####################################################################
 	#We add the terms associated with the phase transformation.
 	code+='	!We calculate the terms associated with the phase transformation.\n'
