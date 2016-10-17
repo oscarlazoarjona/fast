@@ -277,9 +277,9 @@ def electric_field_amplitude_gaussian(P,sigmax,sigmay=None,Omega=1.0e6):
 	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
 	c=299792458.0 #The speed of light in m/s
 	a0=5.2917721092e-11 #Bohr's radius in m
-	h=1.054571726e-34 #The planck constant in J s
+	hbar=1.054571726e-34 #The planck constant in J s
 	e=1.602176565e-19 #The elementary charge in C
-	e0=2*h*Omega/(e*a0) #This is the electric field scale.
+	e0=hbar*Omega/(e*a0) #This is the electric field scale.
 	
 	if sigmay==None: sigmay=sigmax
 	return sqrt((c*mu0*P)/(2*Pi))/sqrt(sigmax*sigmay)/e0
@@ -294,9 +294,9 @@ def electric_field_amplitude_top(P,a,Omega=1.0e6):
 	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
 	c=299792458.0 #The speed of light in m/s
 	a0=5.2917721092e-11 #Bohr's radius in m
-	h=1.054571726e-34 #The planck constant in J s
+	hbar=1.054571726e-34 #The planck constant in J s
 	e=1.602176565e-19 #The elementary charge in C
-	e0=2*h*Omega/(e*a0) #This is the electric field scale.
+	e0=hbar*Omega/(e*a0) #This is the electric field scale.
 	
 	return sqrt((c*mu0*P)/(Pi*a**2))/e0
 
@@ -308,15 +308,22 @@ def electric_field_amplitude_intensity(s0,Omega=1.0e6):
 	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
 	c=299792458.0 #The speed of light in m/s
 	a0=5.2917721092e-11 #Bohr's radius in m
-	h=1.054571726e-34 #The planck constant in J s
+	hbar=1.054571726e-34 #The planck constant in J s
 	e=1.602176565e-19 #The elementary charge in C
-	e0=2*h*Omega/(e*a0) #This is the electric field scale.
+	e0=hbar*Omega/(e*a0) #This is the electric field scale.
 	
 	I0=2.50399 #mW/cm^2
 	I0=1.66889451102868 #mW/cm^2
-	I0=I0/1000*(100**2) #W/m^2
 	
-	#return sqrt(c*mu0*s0*I0/2)/e0
+	I0=I0/1000*(100**2) #W/m^2
+	r_ciclic=4.226983616875483 #a0
+	gamma_D2=2*Pi*6.065e6/Omega # The decay frequency of the D2 line.
+	E0_sat=gamma_D2/r_ciclic/sqrt(2.0)
+
+	E0_sat=E0_sat*e0
+	I0=E0_sat**2/2/c/mu0
+
+    #return sqrt(c*mu0*s0*I0/2)/e0
 	#return sqrt(c*mu0*s0*I0)/e0
 	return sqrt(2*c*mu0*s0*I0)/e0
 	
