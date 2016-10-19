@@ -374,7 +374,7 @@ if run_long_tests>=1:
 	pyplot.semilogx(pows2,simple_pops,'-b',basex=10,label=r'$\frac{I/I_0}{2(1+I/I_0)}$')
 	pyplot.semilogx(pows,model_pops,'+r',basex=10,label=r'$\mathrm{Modeled \ \rho_{ee}}$',markersize=13)
 	pyplot.xlabel(r"$I/I_0$",fontsize=18)
-	pyplot.ylabel(r"$\mathrm{Peak\ height \ (MHz)}$",fontsize=18)
+	pyplot.ylabel(r"$\mathrm{Peak\ height}$",fontsize=18)
 
 
 	pyplot.ylim([0,None])
