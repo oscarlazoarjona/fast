@@ -226,14 +226,14 @@ class PlaneWave(object):
 
 class MotField(object):
 	def __init__(self,relative_intensities,parity=1,color='blue'):
-		lx   = PlaneWave(   Pi, Pi/2, 0,  parity*Pi/2,symbolical=False,color=color)
-		lx_r = PlaneWave(    0, Pi/2, 0,  parity*Pi/2,symbolical=False,color=color)
+		lx   = PlaneWave(   Pi, Pi/2, 0,  parity*Pi/8,symbolical=False,color=color)
+		lx_r = PlaneWave(    0, Pi/2, 0,  parity*Pi/8,symbolical=False,color=color)
 		
-		ly   = PlaneWave(-Pi/2, Pi/2, 0,  parity*Pi/2,symbolical=False,color=color)
-		ly_r = PlaneWave( Pi/2, Pi/2, 0,  parity*Pi/2,symbolical=False,color=color)
+		ly   = PlaneWave(-Pi/2, Pi/2, 0,  parity*Pi/8,symbolical=False,color=color)
+		ly_r = PlaneWave( Pi/2, Pi/2, 0,  parity*Pi/8,symbolical=False,color=color)
 		
-		lz   = PlaneWave( 0, Pi, 0,  -parity*Pi/2,symbolical=False,color=color)
-		lz_r = PlaneWave( 0,  0, 0,  -parity*Pi/2,symbolical=False,color=color)
+		lz   = PlaneWave( 0, Pi, 0,  -parity*Pi/8,symbolical=False,color=color)
+		lz_r = PlaneWave( 0,  0, 0,  -parity*Pi/8,symbolical=False,color=color)
 		
 		self.lx=lx; self.ly=ly; self.lz=lz
 		self.lx_r=lx_r;	self.ly_r=ly_r;	self.lz_r=lz_r
