@@ -6,17 +6,21 @@ This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to 
 
 The ipython notebooks included require also an installation of the ipython notebook.
 
-In a Debian based system, such as Ubuntu you can install gfortran, numpy, matplotlib and
-lapack with the command:
+$ sudo apt-get install gfortran liblapack-dev
+$ pip install tabulate
 
-$ sudo apt-get install gfortran python-numpy python-scipy python-matplotlib liblapack-dev python-sympy ipython-notebook
 
-In the file fast/config.py you must set the variable "fast_path" to the directory where the source code will be, something like
+The simplest way to install the Python dependencies is to install Continuum's python distribution, which can be downloaded
 
-fast_path="/home/oscar/my/path/fast-1.0/fast/"
+https://www.continuum.io/downloads
 
-Once this dependencies are fulfilled, tests can be run with
+Fast can then be installed with
+
 ../fast-1.0$ cd fast
+../fast-1.0/fast$ python setup.py
+
+
+Once this completed, tests can be run with
 ../fast-1.0/fast$ python tests.py
 
 or the notebooks can be browsed with
