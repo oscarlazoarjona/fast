@@ -131,6 +131,9 @@ def define_r_components(Ne,explicitly_hermitian=False,helicity=False,real=True):
             
     return r
 
+def vector_element(r,i,j):
+    return Matrix([r[p][i,j] for p in range(3)])
+
 def define_frequencies(Ne,explicitly_antisymmetric=False):
 	
 	omega_level=[Symbol('omega_'+str(i+1),real=True) for i in range(Ne)]
