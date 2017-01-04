@@ -48,8 +48,8 @@ def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
     rho   =Matrix(   rho)
     return rho
 
-def define_laser_variables(Nl):
-    E0         =[Symbol(  r"E_0^"+str(l+1),    real=True ) for l in range(Nl)]
+def define_laser_variables(Nl,real_amplitudes=False):
+    E0         =[Symbol(  r"E_0^"+str(l+1),    real=real_amplitudes ) for l in range(Nl)]
     omega_laser=[Symbol(r"omega^"+str(l+1),    real=True ) for l in range(Nl)]
     return E0,omega_laser
 
@@ -225,11 +225,14 @@ def define_rho_vector(rho,Ne):
 def calculate_A_b(eqs,rho,Ne):
 	rho_vect=define_rho_vector(rho,Ne)
 	A=[]; b=[]
+	ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j]) 
+                for j in range(Ne) for i in range(Ne)}
+	
 	for mu in range(1,Ne**2):
 		i,j,s=IJ(mu,Ne)
 		ii=i-1;jj=j-1
 		#print ii,jj,s
-		eq=part_symbolic( eqs[ii,jj], s)
+		eq=part_symbolic( eqs[ii,jj].subs(ss_comp), s)
 		eq_new=0
 		row=[]
 		for nu in range(1,Ne**2):
