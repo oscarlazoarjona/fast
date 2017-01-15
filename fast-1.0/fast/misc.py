@@ -920,9 +920,14 @@ def compile_code(path,name,optimization_flag=' -O3',lapack=False,parallel=True,c
 	f.close()
 	
 	
-	
+	from fast.config import fast_path
 	#com='gfortran -I '+fast_path+' '+parallel_flag+optimization_flag+' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
-	com='gfortran '+parallel_flag+optimization_flag+' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
+	com ='gfortran -I '
+	com+=fast_path+" "
+	com+=parallel_flag
+	com+=optimization_flag+' '
+	com+=path+name+clone+'.f90 -o '+path+name+clone
+	com+=end_flags
 	#print com
 	exit_code=os.system(com)
 	if exit_code != 0:

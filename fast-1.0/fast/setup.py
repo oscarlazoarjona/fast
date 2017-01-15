@@ -12,6 +12,19 @@ bashrc_file.close()
 install_dir= os.path.dirname(os.path.abspath("setup.py"))
 install_dir=install_dir[:-5]
 
+#We find out if config.py already has the variable fast_path setup
+#and add it if not.
+f=file("config.py","r")
+config=f.read()
+f.close()
+
+if "fast_path=" not in config:
+    config+="\n"
+    config+='fast_path="'+install_dir+"/fast"+'"\n'
+    f=file("config.py","w")
+    f.write(config)
+    f.close()
+
 extra_line='''export PYTHONPATH="${PYTHONPATH}:'''+install_dir+'"'
 
 if extra_line not in bashrc_text:
