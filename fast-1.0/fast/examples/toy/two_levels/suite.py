@@ -95,6 +95,7 @@ fig=pyplot.figure(); ax=fig.add_subplot(111)
 ax.plot(t,rho22,'k-'		,label=r"$\rho_{22}$")
 ax.plot(t,rho21_real,'b-'	,label=r"$\mathfrak{Re}\rho_{21}$")
 ax.plot(t,rho21_imag,'r-'	,label=r"$\mathfrak{Im}\rho_{21}$")
+
 ax.legend(loc=0,fontsize=17)
 ax.set_xlabel(r"$t$",fontsize=20)
 
@@ -111,7 +112,6 @@ f.close()
 run_evolution(path,name+"_evolution",[E00],[-20.0],  2000,  0.01,Ne,spectrum_of_laser=1,N_delta=401,frequency_end=20.0,use_netcdf=use_netcdf)
 #We read the results.
 delta,rho22,rho21_real,rho21_imag = read_result(path,name+"_evolution",N=Ne,use_netcdf=use_netcdf)
-
 ################################################
 #We plot and save the results for future reference.
 fig=pyplot.figure(); ax=fig.add_subplot(111)

@@ -185,7 +185,10 @@ open(unit=3,file='"""+path+name+"""_eigenvalues.dat',status='unknown')
 	
 	if use_netcdf:
 		code0+='''
-				call save_matrix_and_vector("'''+path+name+'''.nc",n,'''+str(Ne**2-1)+''',real(rho),t)
+			call save_matrix_and_vector("'''+path+name+'''.nc",n,'''+str(Ne**2-1)+''',real(rho),t)
+		else
+			rho_spectrum(j,:)=rho(n,:)
+        end if
 '''
 	else:
 		code0+='''
@@ -203,9 +206,10 @@ open(unit=3,file='"""+path+name+"""_eigenvalues.dat',status='unknown')
 	end do
 
 	!We save a spectrum.
-	if (run_spectrum) then'''
+	if (run_spectrum) then\n'''
 	if use_netcdf:
-		code0+='''call save_matrix_and_vector("'''+path+name+'''.nc",ndelta,'''+str(Ne**2-1)+''',real(rho_spectrum),delta)'''
+		code0+='''
+        call save_matrix_and_vector("'''+path+name+'''.nc",ndelta,'''+str(Ne**2-1)+''',real(rho_spectrum),delta)'''
 	else:
 		code0+='''
 		open(unit=1,file="'''+path+name+'''.dat",status='unknown')
