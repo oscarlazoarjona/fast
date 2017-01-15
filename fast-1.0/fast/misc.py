@@ -25,7 +25,7 @@ import os
 
 from config import use_netcdf
 if use_netcdf:
-	from Scientific.IO.NetCDF import NetCDFFile as Dataset
+    from netCDF4 import Dataset
 from numpy import arange
 
 
