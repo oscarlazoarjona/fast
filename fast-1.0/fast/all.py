@@ -27,6 +27,6 @@ from misc import compile_code
 from atomic_structure import S,P,D,F,State,Transition
 from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic, split_hyperfine_to_magnetic
 from atomic_structure import calculate_matrices, make_list_of_states, calculate_gamma_matrix, calculate_omega_matrix
-from atomic_structure import calculate_boundaries
+from atomic_structure import calculate_r_matrices, calculate_boundaries
 
 from sympy.core.numbers import Rational as Integer

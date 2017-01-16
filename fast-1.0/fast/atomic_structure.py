@@ -135,7 +135,7 @@ hyperfine and magnetic detail.'''
             s="The element "+str(element)+" is not in the database."
             raise ValueError,s
             
-		
+        self.i=i
 		#We rewrite the table in Hz
         nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ] for ii in range(len(nivfin)) ]
 
@@ -249,42 +249,73 @@ hyperfine and magnetic detail.'''
 class Transition(object):
 	def __init__(self,e1,e2):
 		'''This class describes a transition between different states of the same level of detail.'''
+		if e1.element != e2.element:
+			raise NotImplementedError,'Transition between diferent elements.'
 		if e1.isotope != e2.isotope:
-			raise ValueError,'Transitions between diferent isotopes are forbidden.'
+			raise NotImplementedError,'Transitions between diferent isotopes.'
 		
 		self.e1=e1; self.e2=e2
-		if e1.f==None or e2.f==None:
-			l1=e1.l; l2=e2.l
-			j1=e1.j; j2=e2.j
-			allowed=True
-			if not (abs(j2-j1) in [-1,0,1]): allowed=False
-			if j1==0 and j2==0: allowed=False
-			if not (abs(l2-l1) in [-1 ,1]): allowed=False
-			if l1==0 and l2==0: allowed=False
+        
+		#We will now determine whether the transition is allowed by electric dipole transition rules.
+		allowed=True
+		#The states must have oposite parity.
+		#In particular, transitions between identical fine states are forbidden.
+		if e1==e2: allowed=False
+        
+		#~ allowed=True
+		#~ l1=e1.l; l2=e2.l
+		#~ j1=e1.j; j2=e2.j
+        
+		l1=e1.l; l2=e2.l
+		j1=e1.j; j2=e2.j
+
+		#DeltaL=+-1
+		if not (abs(l2-l1) in [-1 ,1]): allowed=False
+		#DeltaJ=0,+-1
+		if not (abs(j2-j1) in [-1,0,1]): allowed=False
+
+		if e1.f!=None and e2.f!=None:
+			f1=e1.f; f2=e2.f
+			#DeltaF=0,+-1
+			if not (abs(f2-f1) in [-1,0,1]): allowed=False
+
+			if f1==0 and f2==0: allowed=False			
 			
-			#In dipolar electric transitions states must have oposite parity.
-			#In particular, transitions between identical fine states are forbidden.
-			if e1==e2: allowed=False
-			self.allowed=allowed
-			#raise ValueError, 'Las transiciones deben ser entre estados hiperfinos (con una f específica).'
-		else:			
-			if self.e1.f - self.e2.f in [-1,0,1]:
-				if self.e1 != self.e2:
-					if self.e1.nu > self.e2.nu:
-						if self.e1.m==None and self.e2.m==None:
-							self.allowed=True
-						elif self.e1.m -self.e2.m in [-1,0,1]:
-							self.allowed=True
-						else:
-							self.allowed=False
-					else:
-						self.allowed=False
-				else:
-					self.allowed=False
-			else:
-				self.allowed=False
-		
-		self.nu=self.e1.nu-self.e2.nu
+		if e1.m!=None and e2.m!=None:
+			m1=e1.m; m2=e2.m
+			if abs(m1) not in range(0,f1+1): allowed=False
+			if abs(m2) not in range(0,f2+1): allowed=False
+			if m1==0 and m2==0:
+				if not (abs(f2-f1) in [-1,1]): allowed=False
+			if not (abs(m2-m1) in [-1,0,1]): allowed=False			
+			
+			
+			
+
+		#~ print allowed
+		#~ if l1==0 and l2==0: allowed=False
+			
+		#~ self.allowed=allowed
+		#~ print allowed		
+		#~ if e1.f!=None and e2.f!=None:
+			#~ if self.e1.f - self.e2.f in [-1,0,1]:
+				#~ if self.e1 != self.e2:
+					#~ if self.e1.nu > self.e2.nu:
+						#~ if self.e1.m==None and self.e2.m==None:
+							#~ self.allowed=True
+						#~ elif self.e1.m -self.e2.m in [-1,0,1]:
+							#~ self.allowed=True
+						#~ else:
+							#~ self.allowed=False
+					#~ else:
+						#~ self.allowed=False
+				#~ else:
+					#~ self.allowed=False
+			#~ else:
+				#~ self.allowed=False
+		self.allowed=allowed
+        ####################################################################
+		self.nu=e1.nu-e2.nu
 		if self.nu ==0:
 			self.wavelength=float('inf')
 		else:
@@ -301,28 +332,38 @@ class Transition(object):
 		####################################################################
 		# This is the database of Einstein A coefficients.
 		# The quantum numbers of the lower states followed by those of excited states
-		# followed by Einstein A coefficients in Hz (angular frequency).
-		pairs= [[5, 1, Integer(1)/Integer(2),   5, 0, Integer(1)/Integer(2), 3.61031827750539e7],
-				[5, 1, Integer(3)/Integer(2),   5, 0, Integer(1)/Integer(2), 3.81075188880442e7],
-				[4, 2, Integer(5)/Integer(2),   5, 1, Integer(3)/Integer(2), 1.06814150222053e7],
-				[4, 2, Integer(3)/Integer(2),   5, 1, Integer(1)/Integer(2), 9.42477796076938e6],
-				[4, 2, Integer(3)/Integer(2),   5, 1, Integer(3)/Integer(2), 1.88495559215388e6],
-				[6, 0, Integer(1)/Integer(2),   5, 1, Integer(1)/Integer(2), 1.09704415463356e7],#The branching ratios here are not well referenced.
-				[6, 0, Integer(1)/Integer(2),   5, 1, Integer(3)/Integer(2), 1.09704415463356e7],#The branching ratios here are not well referenced.
-				[6, 1, Integer(3)/Integer(2),   5, 0, Integer(1)/Integer(2), 1.87867240684670e6],
-				[6, 1, Integer(3)/Integer(2),   4, 2, Integer(5)/Integer(2), 179699.099785336],
-				[6, 1, Integer(3)/Integer(2),   4, 2, Integer(3)/Integer(2), 1.61729189806803e6],
-				[6, 1, Integer(3)/Integer(2),   6, 0, Integer(1)/Integer(2), 4.49247749463340e6],
-				[5, 2, Integer(5)/Integer(2),   5, 1, Integer(3)/Integer(2), 3.10264947105589e6],
-				[5, 2, Integer(5)/Integer(2),   6, 1, Integer(3)/Integer(2), 1.09012008442504e6]]
-		
+		# followed by Einstein A coefficients in 2*pi/s (angular frequency).
+		element=e1.element
+		#element="Rb"
+		if element=="Rb":
+			pairs= [[5, 1, 1/Integer(2),   5, 0, Integer(1)/Integer(2), 3.61031827750539e7],
+					[5, 1, 3/Integer(2),   5, 0, Integer(1)/Integer(2), 3.81075188880442e7],
+					[4, 2, 5/Integer(2),   5, 1, Integer(3)/Integer(2), 1.06814150222053e7],
+					[4, 2, 3/Integer(2),   5, 1, Integer(1)/Integer(2), 9.42477796076938e6],
+					[4, 2, 3/Integer(2),   5, 1, Integer(3)/Integer(2), 1.88495559215388e6],
+					[6, 0, 1/Integer(2),   5, 1, Integer(1)/Integer(2), 1.09704415463356e7],#The branching ratios here are not well referenced.
+					[6, 0, 1/Integer(2),   5, 1, Integer(3)/Integer(2), 1.09704415463356e7],#The branching ratios here are not well referenced.
+					[6, 1, 3/Integer(2),   5, 0, Integer(1)/Integer(2), 1.87867240684670e6],
+					[6, 1, 3/Integer(2),   4, 2, Integer(5)/Integer(2), 179699.099785336],
+					[6, 1, 3/Integer(2),   4, 2, Integer(3)/Integer(2), 1.61729189806803e6],
+					[6, 1, 3/Integer(2),   6, 0, Integer(1)/Integer(2), 4.49247749463340e6],
+					[5, 2, 5/Integer(2),   5, 1, Integer(3)/Integer(2), 3.10264947105589e6],
+					[5, 2, 5/Integer(2),   6, 1, Integer(3)/Integer(2), 1.09012008442504e6]]
+		elif element=="Cs":
+			pairs= [[6, 1, Integer(1)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*4.575e6],
+					[6, 1, Integer(3)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*5.234e6]]
+			
+		#print pairs
 		self.einsteinA=0.0
 		#if ord1 == ord2: self.einsteinA=0.0
-		if self.allowed: self.einstein=None
+		if self.allowed: self.einsteinAi=None
 		for pair in pairs:
 			if pair[:-1]==ord1 or pair[:-1]==ord2:
 				self.einsteinA=pair[-1]
-		
+
+		if self.allowed and self.einsteinA==None:
+			print "Warning: the transition",self,"is allowed, but the decay rate is not in the database."
+			self.einsteinA=0.0
 		
 		
 		#~ #The numbers between 5S1/2 -> 5P3/2
@@ -475,12 +516,8 @@ def get_einstein_A_matrix(fine_states,Omega=1):
 def calculate_gamma_matrix(magnetic_states, Omega=1):
 	#index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, full_magnetic_states)
 	Ne=len(magnetic_states)
-
-	if magnetic_states[0].isotope==85:
-		II=Integer(5)/Integer(2)
-	elif magnetic_states[0].isotope==87:
-		II=Integer(3)/Integer(2)
-	#II=float(II)
+    
+	II=magnetic_states[0].i
 	
 	gamma=[ [0.0 for j in range(Ne)] for i in range(Ne)]
 	for i in range(Ne):
@@ -560,10 +597,7 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements):
 		
 	r=[[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
 	
-	if fine_states[0].isotope==85:
-		II=Integer(5)/Integer(2)
-	elif fine_states[0].isotope==87:
-		II=Integer(3)/Integer(2)
+	II=fine_states[0].i
 
 	for p in [-1,0,1]:
 		for i in range(Ne):
@@ -599,11 +633,17 @@ def calculate_matrices(states,Omega=1):
 	'''This function calculates the matrices omega_ij, gamma_ij and r_pij given a list
 	of atomic states. The states can be arbitrarily in their fine, hyperfine or magnetic detail.'''
 	
-	#We check that all states belong to the same isotope
+	#We check that all states belong to the same element and the same isotope.
 	iso=states[0].isotope
+	element=states[0].element
 	for state in states[1:]:
+		if state.element != element:
+			raise ValueError,'All states must belong to the same element.'
 		if state.isotope != iso:
 			raise ValueError,'All states must belong to the same isotope.'
+    
+
+    
 	
 	#We find the fine states involved in the problem.
 	fine_states=find_fine_states(states)
