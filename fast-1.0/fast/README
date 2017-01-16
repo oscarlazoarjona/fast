@@ -10,7 +10,7 @@ $ sudo apt-get install gfortran liblapack-dev
 $ pip install tabulate
 
 
-The simplest way to install the Python dependencies is to install Continuum's python distribution, which can be downloaded
+The simplest way to install the Python dependencies is to install Continuum's python distribution, which can be downloaded from
 
 https://www.continuum.io/downloads
 

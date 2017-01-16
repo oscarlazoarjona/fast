@@ -1,1 +1,2 @@
-#__all__=['symbolic']
+# -*- coding: utf-8 -*-
+#Oscar Gerardo Lazo Arjona

@@ -1,19 +1,24 @@
 # -*- coding: utf-8 -*-
 
 #************************************************************************
-#       Copyright (C) 2014 - 2016 Oscar Gerardo Lazo Arjona             *
+#       Copyright (C) 2014 - 2017 Oscar Gerardo Lazo Arjona             *
 #              <oscar.lazo@correo.nucleares.unam.mx>                    *
 #                                                                       *
-#  Distributed under the terms of the GNU General Public License (GPL)  *
+#  This file is part of FAST.                                           *
 #                                                                       *
-#    This code is distributed in the hope that it will be useful,       *
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of     *
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU  *
-#    General Public License for more details.                           *
+#  FAST is free software: you can redistribute it and/or modify         *
+#  it under the terms of the GNU General Public License as published by *
+#  the Free Software Foundation, either version 3 of the License, or    *
+#  (at your option) any later version.                                  *
 #                                                                       *
-#  The full text of the GPL is available at:                            *
+#  FAST is distributed in the hope that it will be useful,              *
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of       *
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        *
+#  GNU General Public License for more details.                         *
 #                                                                       *
-#                  http://www.gnu.org/licenses/                         *
+#  You should have received a copy of the GNU General Public License    *
+#  along with FAST.  If not, see <http://www.gnu.org/licenses/>.        *
+#                                                                       *
 #************************************************************************
 
 #The class Measurement will be defined as an extention of floats
