@@ -25,17 +25,12 @@ if not sage_included:
 	from sympy.physics.wigner import wigner_3j,wigner_6j
 
 class State(object):
-    def __init__(self,isotope,n,l,j,f=None,m=None):
+    def __init__(self,element,isotope,n,l,j,f=None,m=None):
         '''This class is for atomic states, it allows to specify any atomic state of the form 
 |n,l,j>, |n,l,j,f>, |n,l,j,f,m> which are refered to respectively as states with fine 
 hyperfine and magnetic detail.'''
-        if isotope==85:
-			i=Integer(5)/Integer(2)
-        elif isotope==87:
-			i=Integer(3)/Integer(2)
-        else:
-			raise ValueError,str(isotope)+' is not a valid isotope.'
-			
+
+        self.element=element			
     
         #We go from chemical notation to quantum numbers.
         if str(l)=='S': l=0
@@ -43,11 +38,11 @@ hyperfine and magnetic detail.'''
         if str(l)=='D': l=2
         if str(l)=='F': l=3
 
-        #Revisamos el valor de l
+        #We check the value of l.
         lperm=range(0,n)
         if l not in lperm: raise ValueError, 'l = '+str(l)+' is not allowed.'
     
-        #Revisamos el valor de j
+        #We check the value of j.
         jmin=abs(l-Integer(1)/Integer(2)); nj=int(2*min(l,Integer(1)/Integer(2))+1)
         jperm=[jmin]+[jmin + ii for ii in range(1,nj)]
         if j not in jperm: raise ValueError, 'j = '+str(j)+' is not allowed.'
@@ -58,9 +53,103 @@ hyperfine and magnetic detail.'''
         self.j=j
         self.f=f
         self.m=m
-        self.quantum_numbers=[isotope,n,l,j]
+        self.quantum_numbers=[isotope,n,l,j]			
+
+        #~ if isotope==85:
+			#~ i=Integer(5)/Integer(2)
+        #~ elif isotope==87:
+			#~ i=Integer(3)/Integer(2)
+        #~ else:
+			#~ raise ValueError,str(isotope)+' is not a valid isotope.'
+
         
-        #Revisamos el valor de f
+        #We calculate the energy of the state.
+        ################################################################
+        #All tables are given in (cm^-1).
+        c=299792458
+        if element=="Rb":
+            if isotope==85:
+                i=5/Integer(2)
+                #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)
+                nivfin=[[5, 0, 1/Integer(2), 0.0000000, 0.033753721   , 0.00000000],
+                        [5, 1, 1/Integer(2), 12578.950, 0.004026000   , 0.00000000],
+                        [5, 1, 3/Integer(2), 12816.545, 0.000835200   , 0.00086760],
+                        
+                        [4, 2, 5/Integer(2), 19355.203, 0.000168000   , 0.00000000],
+                        [4, 2, 3/Integer(2), 19355.649, 0.000244000   , 0.00000000],
+                        
+                        [6, 0, 1/Integer(2), 20132.460, 239.18e6/(c*100), 0.00000000],
+                        
+                        [6, 1, 1/Integer(2), 23715.081, 0.001305000   , 0.00000000],
+                        [6, 1, 3/Integer(2), 23792.591, 0.000272300   , 0.00027320],
+                        
+                        [5, 2, 3/Integer(2), 25700.536, 0.000140834   , 0.00006373],
+                        [5, 2, 5/Integer(2), 25703.498,-0.000073090   , 0.00008940],
+                        
+                        [7, 0, 1/Integer(2), 26311.437, 0.003159000   , 0.00000000],
+                        [7, 1, 1/Integer(2), 27835.020, 0.000590000   , 0.00000000],
+                        [7, 1, 3/Integer(2), 27870.110, 0.000123800   , 0.00012300]]
+
+            elif isotope==87:
+                i=3/Integer(2)
+                #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)
+                nivfin=[[5, 0, 1/Integer(2), 0.0000000, 0.113990236053642, 0.00000000],
+                        [5, 1, 1/Integer(2), 12578.950, 0.013650000000000, 0.00000000],
+                        [5, 1, 3/Integer(2), 12816.545, 0.002825900000000, 0.00041684],
+                        
+                        [4, 2, 5/Integer(2), 19355.203,-16.801e6/(c*100), 3.645e6/(c*100)],
+                        [4, 2, 3/Integer(2), 19355.649, 24.750e6/(c*100), 2.190e6/(c*100)],
+
+                        [6, 0, 1/Integer(2), 20132.460, 807.66e6/(c*100), 0.00000000],
+                        
+                        [6, 1, 1/Integer(2), 23715.081, 0.004421700000000, 0.00000000],
+                        [6, 1, 3/Integer(2), 23792.591, 0.000924000000000, 0.00013200],
+                        
+                        [5, 2, 3/Integer(2), 25700.536, 0.000481340000000, 0.00003109],
+                        [5, 2, 5/Integer(2), 25703.498, -0.00024886000000, 0.00004241],
+                        
+                        [7, 0, 1/Integer(2), 26311.437, 0.010664000000000, 0.00000000],
+                        [7, 1, 1/Integer(2), 27835.020, 0.001999000000000, 0.00000000],
+                        [7, 1, 3/Integer(2), 27870.110, 0.000419300000000, 0.00005700]]
+
+            else:
+                s="The isotope "+str(isotope)+str(element)+" is not in the database."
+                raise ValueError,s
+
+        elif element=="Cs":
+            if isotope==133:
+                i=7/Integer(2)
+                #        N, L,     K       , E (cm^-1),                     A (cm^-1)      B (cm^-1)
+                nivfin=[[6, 0, 1/Integer(2), 0.0000000               , 2.2981579425e9/(c*100), 0.0],# A is exact.
+                        [6, 1, 1/Integer(2), 335.116048807e12/(c*100),     291.9201e6/(c*100), 0.0],
+                        [6, 1, 3/Integer(2), 351.72571850e12 /(c*100),     50.28827e6/(c*100),-493.4e3/(c*100)]]# C: 560.0e0/(c*100)
+            else:
+                s="The isotope "+str(isotope)+str(element)+" is not in the database."
+                raise ValueError,s
+        else:
+            s="The element "+str(element)+" is not in the database."
+            raise ValueError,s
+            
+		
+		#We rewrite the table in Hz
+        nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ] for ii in range(len(nivfin)) ]
+
+        #We check whether the quantum numbers given are in the database.
+        #We find the energy of the state up to fine structure.
+        in_database=False
+        for ii in range(len(nivfin)):
+            #print [n,l,j],nivfin[ii][:3]
+            if [n,l,j]==nivfin[ii][:3]:
+                nufin=nivfin[ii][3]; A=nivfin[ii][4]; B=nivfin[ii][5]
+                in_database=True
+                break
+        if not in_database:
+            s ="The values of n,l,k: "+str(n)+", "+str(l)+", "+str(j)
+            s+=" are not in the database for "+str(isotope)+str(element)+"."
+            raise ValueError,s
+
+
+        #We check the value of f.
         fmin=int(abs(j-i)); nf=int(2*min(j,i)+1)
         fperm=[fmin]+[fmin + ii for ii in range(1,nf)]        
         if f != None:
@@ -78,60 +167,8 @@ hyperfine and magnetic detail.'''
             	raise ValueError, 'f = '+str(f)+' is not allowed.'
         else:
             self.fperm=fperm
-			
 
-        
-        #Calculamos la energia del estado
-        ################################################################
-        c=299792458
-        if isotope==87:
-			nivfin=[[5, 0, Integer(1)/Integer(2), 0.0000000, 0.113990236053642, 0.00000000],
-					[5, 1, Integer(1)/Integer(2), 12578.950, 0.013650000000000, 0.00000000],
-					[5, 1, Integer(3)/Integer(2), 12816.545, 0.002825900000000, 0.00041684],
-					
-					[4, 2, Integer(5)/Integer(2), 19355.203, -16.801e6/(c*100), 3.645e6/(c*100)],
-					[4, 2, Integer(3)/Integer(2), 19355.649, 24.750e6/(c*100), 2.190e6/(c*100)],
 
-					[6, 0, Integer(1)/Integer(2), 20132.460, 807.66e6/(c*100), 0.00000000],
-					
-					[6, 1, Integer(1)/Integer(2), 23715.081, 0.004421700000000, 0.00000000],
-					[6, 1, Integer(3)/Integer(2), 23792.591, 0.000924000000000, 0.00013200],
-					
-					[5, 2, Integer(3)/Integer(2), 25700.536, 0.000481340000000, 0.00003109],
-					[5, 2, Integer(5)/Integer(2), 25703.498, -0.00024886000000, 0.00004241],
-					
-					[7, 0, Integer(1)/Integer(2), 26311.437, 0.010664000000000, 0.00000000],
-					[7, 1, Integer(1)/Integer(2), 27835.020, 0.001999000000000, 0.00000000],
-					[7, 1, Integer(3)/Integer(2), 27870.110, 0.000419300000000, 0.00005700]]
-
-        elif isotope==85:
-			nivfin=[[5, 0, Integer(1)/Integer(2), 0.0000000, 0.033753721, 0.00000000],
-					[5, 1, Integer(1)/Integer(2), 12578.950, 0.004026000, 0.00000000],
-					[5, 1, Integer(3)/Integer(2), 12816.545, 0.000835200, 0.00086760],
-					
-					[4, 2, Integer(5)/Integer(2), 19355.203, 0.000168000, 0.00000000],
-					[4, 2, Integer(3)/Integer(2), 19355.649, 0.000244000, 0.00000000],
-					
-					[6, 0, Integer(1)/Integer(2), 20132.460, 239.18e6/(c*100), 0.00000000],
-					
-					[6, 1, Integer(1)/Integer(2), 23715.081, 0.001305000, 0.00000000],
-					[6, 1, Integer(3)/Integer(2), 23792.591, 0.000272300, 0.00027320],
-					
-					[5, 2, Integer(3)/Integer(2), 25700.536, 0.000140834, 0.00006373],
-					[5, 2, Integer(5)/Integer(2), 25703.498,-0.000073090, 0.00008940],
-					
-					[7, 0, Integer(1)/Integer(2), 26311.437, 0.003159000, 0.00000000],
-					[7, 1, Integer(1)/Integer(2), 27835.020, 0.000590000, 0.00000000],
-					[7, 1, Integer(3)/Integer(2), 27870.110, 0.000123800, 0.00012300]]
-		
-		#Pasamos la tabla a Hz
-        nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ] for ii in range(len(nivfin)) ]
-
-        #Encontramos la energia del estado hasta la estructura fina.
-        for ii in range(len(nivfin)):
-            #print [n,l,j],nivfin[ii][:3]
-            if [n,l,j]==nivfin[ii][:3]:
-                nufin=nivfin[ii][3]; A=nivfin[ii][4]; B=nivfin[ii][5]
 
         #print fperm
         #print nufin,A,B
@@ -171,9 +208,9 @@ hyperfine and magnetic detail.'''
             l=str(self.l)
             
         if self.f==None:
-            s= str(self.isotope)+'Rb'+' '+str(self.n)+l+'_'+str(self.j)
+            s= str(self.isotope)+self.element+' '+str(self.n)+l+'_'+str(self.j)
         else:
-            s= str(self.isotope)+'Rb'+' '+str(self.n)+l+'_'+str(self.j)+'^'+str(self.f)
+            s= str(self.isotope)+self.element+' '+str(self.n)+l+'_'+str(self.j)+'^'+str(self.f)
         
         if self.m !=None:
 			s += ','+str(self.m)
@@ -192,9 +229,9 @@ hyperfine and magnetic detail.'''
             l=str(self.l)
         
         if self.f==None:
-            s= '^{'+str(self.isotope)+'}\\mathrm{Rb}\\ '+str(self.n)+l+'_{'+str(self.j)+'}'
+            s= '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}\\ '+str(self.n)+l+'_{'+str(self.j)+'}'
         else:
-            s= '^{'+str(self.isotope)+'}\\mathrm{Rb}\\ '+str(self.n)+l+'_{'+str(self.j)+'}^{'+str(self.f)+'}'
+            s= '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}\\ '+str(self.n)+l+'_{'+str(self.j)+'}^{'+str(self.f)+'}'
         
         if self.m != None:
 			s= s[:-1] + ','+str(self.m)+'}'
@@ -336,7 +373,7 @@ def split_fine_to_hyperfine(state):
 		s=str(state)+' no es un estado fino.'
 		raise ValueError,s
 	
-	return [State(state.isotope,state.n,state.l,state.j,f) for f in state.fperm]
+	return [State(state.element,state.isotope,state.n,state.l,state.j,f) for f in state.fperm]
 	
 def split_hyperfine_to_magnetic(state):
 	if type(state)==list:
@@ -351,7 +388,7 @@ def split_hyperfine_to_magnetic(state):
 	
 	#print state.j,type(state.j)
 	
-	return [State(state.isotope,state.n,state.l,state.j,state.f,m) for m in state.mperm]
+	return [State(state.element,state.isotope,state.n,state.l,state.j,state.f,m) for m in state.mperm]
 
 def split_fine_to_magnetic(state):
 	if type(state)==list:
@@ -674,7 +711,7 @@ def find_fine_states(magnetic_states):
 	fine_states=[]
 	for state in magnetic_states:
 		fq=state.quantum_numbers[:4]
-		fine_state=State(fq[0],fq[1],fq[2],fq[3])
+		fine_state=State(state.element,fq[0],fq[1],fq[2],fq[3])
 		if fine_state not in fine_states: fine_states+=[fine_state]
 	return fine_states
 
@@ -773,9 +810,10 @@ def reduce_magnetic_to_hyperfine(omega,gamma,r,Lij,magnetic_states,hyperfine_sta
 			z_row+=[sqrt(ziijj.real)]
 			Lij_row+=[Liijj]
 		#For the states we check wether there is a reduction, and add the apropiate states.
-		qn=magnetic_states[aii].quantum_numbers[:5]
-		hs=State(qn[0], qn[1], qn[2], qn[3], qn[4])
-		if bii-aii==1:
+		element_n=magnetic_states[aii].element
+        qn=magnetic_states[aii].quantum_numbers[:5]
+        hs=State(element_n,qn[0], qn[1], qn[2], qn[3], qn[4])
+        if bii-aii==1:
 			if split_hyperfine_to_magnetic([hs])==[magnetic_states[aii]]:
 				if hs in hyperfine_states:
 					states_red+=[hs]
@@ -783,13 +821,14 @@ def reduce_magnetic_to_hyperfine(omega,gamma,r,Lij,magnetic_states,hyperfine_sta
 					states_red+=[magnetic_states[aii]]
 			else:
 				states_red+=[magnetic_states[aii]]
-		else:
+        else:
 			qn=magnetic_states[aii].quantum_numbers[:5]
-			states_red+=[State(qn[0], qn[1], qn[2], qn[3], qn[4])]
-		omega_red+=[omega_row]
-		gamma_red+=[gamma_row]
-		xyz[0]+=[x_row]; xyz[1]+=[y_row]; xyz[2]+=[z_row]
-		Lij_red+=[Lij_row]
+			element_n=magnetic_states[aii].element
+			states_red+=[State(element_n,qn[0], qn[1], qn[2], qn[3], qn[4])]
+        omega_red+=[omega_row]
+        gamma_red+=[gamma_row]
+        xyz[0]+=[x_row]; xyz[1]+=[y_row]; xyz[2]+=[z_row]
+        Lij_red+=[Lij_row]
 
 	#We calculate the reduced r from xyz
 	if isotropic_r:

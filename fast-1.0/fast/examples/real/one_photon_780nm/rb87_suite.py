@@ -39,9 +39,10 @@ path='./examples/real/one_photon_780nm/'
 name='rb87_suite'
 
 #First we specify the states we will use
+element="Rb"
 isotope=87
-e1=State(isotope,5,S,Integer(1)/2)
-e3=State(isotope,5,P,Integer(3)/2)
+e1=State(element,isotope,5,S,Integer(1)/2)
+e3=State(element,isotope,5,P,Integer(3)/2)
 fine_states=[e1,e3]
 
 #Next we split these fine states into their hyperfine substates.

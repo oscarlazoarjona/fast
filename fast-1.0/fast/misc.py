@@ -34,8 +34,8 @@ sage_included = 'sage' in globals().keys()
 if not sage_included:
 	from math import atan2,sqrt,pi,cos,sin,exp
 	from sympy import solve,Symbol,diff
-	from atomic_structure_Rb import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
-	from atomic_structure_Rb import calculate_boundaries
+	from atomic_structure import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
+	from atomic_structure import calculate_boundaries
 else:
 	pi=Pi.n()
 
