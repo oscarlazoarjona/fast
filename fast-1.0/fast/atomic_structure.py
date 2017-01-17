@@ -95,6 +95,7 @@ hyperfine and magnetic detail.'''
                         [7, 1, 1/Integer(2), 27835.020, 0.000590000   , 0.00000000],
                         [7, 1, 3/Integer(2), 27870.110, 0.000123800   , 0.00012300]]
 
+
             elif isotope==87:
                 i=3/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)
@@ -120,24 +121,46 @@ hyperfine and magnetic detail.'''
             else:
                 s="The isotope "+str(isotope)+str(element)+" is not in the database."
                 raise ValueError,s
+            #We rewrite the table in Hz
+            nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ] 
+                    for ii in range(len(nivfin)) ]
+
 
         elif element=="Cs":
             if isotope==133:
                 i=7/Integer(2)
-                #        N, L,     K       , E (cm^-1),                     A (cm^-1)      B (cm^-1)
-                nivfin=[[6, 0, 1/Integer(2), 0.0000000               , 2.2981579425e9/(c*100), 0.0],# A is exact.
-                        [6, 1, 1/Integer(2), 335.116048807e12/(c*100),     291.9201e6/(c*100), 0.0],
-                        [6, 1, 3/Integer(2), 351.72571850e12 /(c*100),     50.28827e6/(c*100),-493.4e3/(c*100)]]# C: 560.0e0/(c*100)
+                #Reference [1], others not used yet [2]:
+                #        N, L,     K       , E (cm^-1),                     A (MHz)      B (MHz)
+                nivfin=[[6, 0, 1/Integer(2), 0.0 , 2298.157493, 0.0],# A is exact.
+                                        
+                        [6, 1, 1/Integer(2), 11178.26815870, 291.9309, 0.0   ],
+                        [6, 1, 3/Integer(2), 11732.3071041 , 50.28825,-0.4940],# C: 0.000000560 Steck
+                        
+                        [5, 2, 3/Integer(2), 14499.2568 , 48.78, 0.1   ],
+                        [5, 2, 5/Integer(2), 14596.84232,-21.24, 0.2   ],
+                        
+                        [7, 0, 1/Integer(2), 18535.5286 , 545.90, 0.0   ],
+                        
+                        [7, 1, 1/Integer(2), 21765.348 , 94.35 , 0.0   ],
+                        [7, 1, 3/Integer(2), 21946.397 , 16.609, 0.0   ],
+                        
+                        [6, 2, 3/Integer(2), 22588.8210 , 16.34,-0.1   ],
+                        [6, 2, 5/Integer(2), 22631.6863 , -4.66, 0.9   ],
+                        ]
+
+       
             else:
                 s="The isotope "+str(isotope)+str(element)+" is not in the database."
                 raise ValueError,s
+            #We rewrite the table in Hz
+            nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*1e6 ] +[nivfin[ii][5]*1e6 ] 
+                    for ii in range(len(nivfin)) ]
+                
         else:
             s="The element "+str(element)+" is not in the database."
             raise ValueError,s
             
         self.i=i
-		#We rewrite the table in Hz
-        nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ] for ii in range(len(nivfin)) ]
 
         #We check whether the quantum numbers given are in the database.
         #We find the energy of the state up to fine structure.
@@ -350,8 +373,24 @@ class Transition(object):
 					[5, 2, 5/Integer(2),   5, 1, Integer(3)/Integer(2), 3.10264947105589e6],
 					[5, 2, 5/Integer(2),   6, 1, Integer(3)/Integer(2), 1.09012008442504e6]]
 		elif element=="Cs":
+			#Reference [3]
+			#
+			################################################################################################
+			#According to
+			# Measurement of the lifetime of the atomic cesium 5(2)D(5/2) state with diode-laser excitation.
+			# the lifetime of 6 D_5/2 is
+			tau=1225e-9# s
+			gam=2*pi/tau
+			#If the branching ratios between 6D_5/2 -> 6P_3/2 and 6D_5/2 -> 7P_3/2 are 0.74 and 0.26
+			#as they are for                 5D_5/2 -> 5P_3/2 and 5D_5/2 -> 6P_3/2 in rubidium, then
+			gam1=gam*0.74
+			gam2=gam*0.26
+			################################################################################################
 			pairs= [[6, 1, Integer(1)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*4.575e6],
-					[6, 1, Integer(3)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*5.234e6]]
+					[6, 1, Integer(3)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*5.234e6],
+                    
+                    [6, 2, Integer(5)/Integer(2),   7, 1, Integer(3)/Integer(2), gam2],
+                    [6, 2, Integer(5)/Integer(2),   6, 1, Integer(3)/Integer(2), gam1]]
 			
 		#print pairs
 		self.einsteinA=0.0
@@ -1051,3 +1090,14 @@ k_B=1.3806488e-23 #Boltzman's constant in J/K
 uma=1.660538782e-27#Atomic mass unit in kg
 m_Rb85=84.911789732*uma#Rb85 mass in kg
 m_Rb87=86.909180520*uma#Rb87 mass in kg
+
+# [1] Wavelengths, Transition Probabilities, and Energy Levels for the Spectra of Cesium (Cs I–Cs LV),
+#     J. E. Sansonetti, 
+#     J. Phys. Chem. Ref. Data 38, 761–923 (2009) 
+#     DOI:10.1063/1.3132702 
+#
+# [2] Measurement of the 6DJ hyperfine structure of cesium using resonant two-photon sub-Doppler spectroscopy
+#     Kortyna
+#
+# [3] Cesium D Line Data
+#     Daniel Adam Steck
