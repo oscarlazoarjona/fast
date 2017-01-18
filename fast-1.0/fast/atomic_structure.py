@@ -285,11 +285,7 @@ hyperfine and magnetic detail.'''
         else:
             self.fperm=fperm
 
-
-
-        #print fperm
-        #print nufin,A,B
-        #Establecemos la corrección hiperfina de la energía o la estructura hiperfina.
+        #We establish the hyperfine correction to the energies.
         if f != None:
             K=f*(f+1)-i*(i+1)-j*(j+1)
             deltanu_hfin=A*K/Integer(2)
@@ -299,16 +295,16 @@ hyperfine and magnetic detail.'''
             self.nu= nufin + deltanu_hfin
             
         else:
-            estructura_hiperfina=[]
+            hyperfine_structure=[]
             for f in fperm:
                 K=f*(f+1)-i*(i+1)-j*(j+1)
                 deltanu_hfin=A*K/Integer(2)
                 if j != Integer(1)/Integer(2):
 					deltanu_hfin= deltanu_hfin + B*( 3*K*(K+1)/Integer(2) -2*i*(i+1)*j*(j+1) )/(4*i*(2*i-1)*j*(2*j-1))
-                estructura_hiperfina.append( (deltanu_hfin,f) )
-            estructura_hiperfina.sort()
+                hyperfine_structure.append( (deltanu_hfin,f) )
+            hyperfine_structure.sort()
             
-            self.estructura_hiperfina=estructura_hiperfina
+            self.hyperfine_structure=hyperfine_structure
             self.nu=nufin
         
 
