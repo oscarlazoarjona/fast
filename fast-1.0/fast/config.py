@@ -9,3 +9,4 @@ use_netcdf=True#; use_netcdf=False
 #An integer between 0 and 2 to control which tests are ran.
 run_long_tests=0
 
+fast_path="/home/oscar/modelo/programas/fast/fast-1.0/fast"

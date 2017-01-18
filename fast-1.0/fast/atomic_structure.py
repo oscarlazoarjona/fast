@@ -29,6 +29,32 @@ if not sage_included:
 	from math import sqrt,pi
 	from sympy.physics.wigner import wigner_3j,wigner_6j
 
+#Physical constants (SI units):
+from scipy.constants import physical_constants
+from scipy.constants import pi as Pi # Every one's favourite constant
+#                                                              units
+c        =physical_constants["speed of light in vacuum"][0]  # m/s
+a0       =physical_constants["Bohr radius"][0]               # m
+hbar     =physical_constants["Planck constant over 2 pi"][0] # J s
+mu0      =physical_constants["mag. constant"][0]             # N / A^2
+epsilon0 =physical_constants["electric constant"][0]         # F / m
+e        =physical_constants["elementary charge"][0]         # C
+me       =physical_constants["electron mass"][0]             # kg
+k_B      =physical_constants["Boltzmann constant"][0]        # J / K
+uma      =physical_constants["unified atomic mass unit"][0]  # kg
+
+m_Rb85=84.911789732*uma # Rb85 mass in kg
+m_Rb87=86.909180520*uma # Rb87 mass in kg
+
+if sage_included:
+	var('S P D F')
+else:
+	S='S'
+	P='P'
+	D='D'
+	F='F'
+
+
 class State(object):
     def __init__(self,element,isotope,n,l,j,f=None,m=None):
         '''This class is for atomic states, it allows to specify any atomic state of the form 
@@ -37,11 +63,15 @@ hyperfine and magnetic detail.'''
 
         self.element=element			
     
-        #We go from chemical notation to quantum numbers.
-        if str(l)=='S': l=0
-        if str(l)=='P': l=1
-        if str(l)=='D': l=2
-        if str(l)=='F': l=3
+        # We go from chemical notation to quantum numbers.
+        if str(l) in ['S','s']: l=0
+        if str(l) in ['P','p']: l=1
+        if str(l) in ['D','d']: l=2
+        if str(l) in ['F','f']: l=3
+        if str(l) in ['G','g']: l=4
+        if str(l) in ['H','h']: l=5
+        if str(l) in ['I','i']: l=6
+
 
         #We check the value of l.
         lperm=range(0,n)
@@ -58,15 +88,7 @@ hyperfine and magnetic detail.'''
         self.j=j
         self.f=f
         self.m=m
-        self.quantum_numbers=[isotope,n,l,j]			
-
-        #~ if isotope==85:
-			#~ i=Integer(5)/Integer(2)
-        #~ elif isotope==87:
-			#~ i=Integer(3)/Integer(2)
-        #~ else:
-			#~ raise ValueError,str(isotope)+' is not a valid isotope.'
-
+        self.quantum_numbers=[isotope,n,l,j]
         
         # We calculate the energy of the state.
         ################################################################
@@ -550,7 +572,6 @@ def calculate_omega_matrix(states,Omega=1):
 	omega_ij matrix, rescaled to units of Omega. These are understood to be
 	absolute frequencies (as opposed angular frequencies)."""
 	
-	Pi = 3.14159265358979
 	N=len(states)
 	omega=[[ 2*Pi*(states[i].nu-states[j].nu)/Omega for j in range(N)] for i in range(N)]
 
@@ -611,16 +632,9 @@ def calculate_gamma_matrix(magnetic_states, Omega=1):
 def calculate_reduced_matrix_elements(fine_states):
 	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.'''
 	#We calculate the reduced matrix elements starting from the list of fine_states
-	#In SI units
-	epsilon0 = 8.854187817e-12  #The permitivity of vacuum
-	c        = 299792458.0      #The speed of light
-	h        = 1.054571726e-34  #Plank's reduced constant
-	e        = 1.602176565e-19  #The charge of the electron
-	me       = 9.10938291e-31   #The electron rest mass
-	Pi       = 3.14159265358979 #Everyone's favourite constant
 
 	#The factor composed of physical quantities.
-	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*h**3))	
+	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))	
 	#We read the database to obtain the Einstein A coefficients in Hz.
 	einsteinA=get_einstein_A_matrix(fine_states)
 	#We read the database to obtain the transition frequencies in Hz.
@@ -951,16 +965,9 @@ def reduce_magnetic_to_hyperfine(omega,gamma,r,Lij,magnetic_states,hyperfine_sta
 def calculate_reduced_matrix_elements_0(fine_states):
 	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.'''
 	#We calculate the reduced matrix elements starting from the list of fine_states
-	#In SI units
-	epsilon0 = 8.854187817e-12  #The permitivity of vacuum
-	c        = 299792458.0      #The speed of light
-	h        = 1.054571726e-34  #Plank's reduced constant
-	e        = 1.602176565e-19  #The charge of the electron
-	me       = 9.10938291e-31   #The electron rest mass
-	Pi       = 3.14159265358979 #Everyone's favourite constant
 
 	#The factor composed of physical quantities.
-	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*h**3))	
+	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))	
 	#We read the database to obtain the Einstein A coefficients in Hz.
 	einsteinA=get_einstein_A_matrix(fine_states)
 	#We read the database to obtain the transition frequencies in Hz.
@@ -993,16 +1000,9 @@ def calculate_reduced_matrix_elements_0(fine_states):
 def calculate_reduced_matrix_elements_steck(fine_states):
 	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.'''
 	#We calculate the reduced matrix elements starting from the list of fine_states
-	#In SI units
-	epsilon0 = 8.854187817e-12  #The permitivity of vacuum
-	c        = 299792458.0      #The speed of light
-	h        = 1.054571726e-34  #Plank's reduced constant
-	e        = 1.602176565e-19  #The charge of the electron
-	me       = 9.10938291e-31   #The electron rest mass
-	Pi       = 3.14159265358979 #Everyone's favourite constant
 
 	#The factor composed of physical quantities.
-	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*h**3))	
+	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))	
 	#We read the database to obtain the Einstein A coefficients in Hz.
 	einsteinA=get_einstein_A_matrix(fine_states)
 	#We read the database to obtain the transition frequencies in Hz.
@@ -1100,19 +1100,6 @@ def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
 					r[p+1][i][j]=float(rpij)
 	return r
 
-
-if sage_included:
-	var('S P D F')
-else:
-	S='S'
-	P='P'
-	D='D'
-	F='F'
-
-k_B=1.3806488e-23 #Boltzman's constant in J/K
-uma=1.660538782e-27#Atomic mass unit in kg
-m_Rb85=84.911789732*uma#Rb85 mass in kg
-m_Rb87=86.909180520*uma#Rb87 mass in kg
 
 # [1] Wavelengths, Transition Probabilities, and Energy Levels for the Spectra of Cesium (Cs I–Cs LV),
 #     J. E. Sansonetti, 
