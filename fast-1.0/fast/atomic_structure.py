@@ -68,10 +68,18 @@ hyperfine and magnetic detail.'''
 			#~ raise ValueError,str(isotope)+' is not a valid isotope.'
 
         
-        #We calculate the energy of the state.
+        # We calculate the energy of the state.
         ################################################################
-        #All tables are given in (cm^-1).
-        c=299792458
+        # the l values of letters in
+        S=0
+        P=1
+        D=2
+        F=3
+        G=4
+        H=5
+        I=6
+        from scipy.constants import c
+        # All tables are given in (cm^-1).
         if element=="Rb":
             if isotope==85:
                 i=5/Integer(2)
@@ -129,23 +137,81 @@ hyperfine and magnetic detail.'''
         elif element=="Cs":
             if isotope==133:
                 i=7/Integer(2)
-                #Reference [1], others not used yet [2]:
+                # If the table shows 0 and not 0.0 that indicates that there is a reference
+                # that shows that the value is exactly zero, as opposed to the value not being known.
+                #
+                # Reference [1], others not used yet [2]:
                 #        N, L,     K       , E (cm^-1),                     A (MHz)      B (MHz)
-                nivfin=[[6, 0, 1/Integer(2), 0.0 , 2298.157493, 0.0],# A is exact.
+                
+                nivfin=[[ 6, S, 1/Integer(2),     0         , 2298.157493, 0     ],# A is exact.
                                         
-                        [6, 1, 1/Integer(2), 11178.26815870, 291.9309, 0.0   ],
-                        [6, 1, 3/Integer(2), 11732.3071041 , 50.28825,-0.4940],# C: 0.000000560 Steck
+                        [ 6, P, 1/Integer(2), 11178.26815870,  291.9309  , 0.0   ],
+                        [ 6, P, 3/Integer(2), 11732.3071041 ,  50.28825  ,-0.4940],# C: 0.000000560 Steck
                         
-                        [5, 2, 3/Integer(2), 14499.2568 , 48.78, 0.1   ],
-                        [5, 2, 5/Integer(2), 14596.84232,-21.24, 0.2   ],
+                        [ 5, D, 3/Integer(2), 14499.2568    ,  48.78     , 0.1   ],
+                        [ 5, D, 5/Integer(2), 14596.84232   , -21.24     , 0.2   ],
                         
-                        [7, 0, 1/Integer(2), 18535.5286 , 545.90, 0.0   ],
+                        [ 7, S, 1/Integer(2), 18535.5286    , 545.90     , 0.0   ],
                         
-                        [7, 1, 1/Integer(2), 21765.348 , 94.35 , 0.0   ],
-                        [7, 1, 3/Integer(2), 21946.397 , 16.609, 0.0   ],
+                        [ 7, P, 1/Integer(2), 21765.348     ,  94.35     , 0.0   ],
+                        [ 7, P, 3/Integer(2), 21946.397     ,  16.609    , 0.0   ],
                         
-                        [6, 2, 3/Integer(2), 22588.8210 , 16.34,-0.1   ],
-                        [6, 2, 5/Integer(2), 22631.6863 , -4.66, 0.9   ],
+                        [ 6, D, 3/Integer(2), 22588.8210    ,  16.34     ,-0.1   ],
+                        [ 6, D, 5/Integer(2), 22631.6863    ,  -4.66     , 0.9   ],
+                        
+                        [ 8, S, 1/Integer(2), 24317.149400  , 219.12     , 0.0   ],
+                        [ 4, F, 7/Integer(2), 24472.0455    ,   0.0      , 0.0   ],
+                        [ 4, F, 5/Integer(2), 24472.2269    ,   0.0      , 0.0   ],
+                        [ 8, P, 1/Integer(2), 25708.85473   ,  42.97     , 0.0   ],
+                        [ 8, P, 3/Integer(2), 25791.508     ,   7.626    , 0.0   ],
+                        [ 7, D, 3/Integer(2), 26047.8342    ,   7.4      , 0.0   ],
+                        [ 7, D, 5/Integer(2), 26068.7730    ,  -1.7      , 0.0   ],
+                        
+                        [ 9, S, 1/Integer(2), 26910.6627    , 110.1      , 0.0   ],
+                        [ 5, F, 7/Integer(2), 26971.1535    ,   0.0      , 0.0   ],
+                        [ 5, F, 5/Integer(2), 26971.3030    ,   0.0      , 0.0   ],
+                        [ 5, G, 7/Integer(2), 27008.0541    ,   0.0      , 0.0   ],
+                        [ 5, G, 9/Integer(2), 27008.0569    ,   0.0      , 0.0   ],
+                        [ 9, P, 1/Integer(2), 27636.9966    ,   0.0      , 0.0   ],
+                        [ 9, P, 3/Integer(2), 27681.6782    ,  23.19     , 0.0   ],
+                        [ 8, D, 3/Integer(2), 27811.2400    ,   4.129    , 0.0   ],
+                        [ 8, D, 5/Integer(2), 27822.8802    ,   3.95     , 0.0   ],
+                        [10, S, 1/Integer(2), 28300.2287    ,  -0.85     , 0.0   ],
+                        [ 6, F, 7/Integer(2), 28329.4075    ,  63.2      , 0.0   ],
+                        [ 6, F, 5/Integer(2), 28329.5133    ,   0.0      , 0.0   ],
+                        [ 6, G, 7/Integer(2), 28352.4444    ,   0.0      , 0.0   ],
+                        [ 6, G, 9/Integer(2), 28352.4460    ,   0.0      , 0.0   ],
+                        [10, P, 1/Integer(2), 28726.8123    ,  13.9      , 0.0   ],
+                        [10, P, 3/Integer(2), 28753.6769    ,   2.485    , 0.0   ],
+                        
+                        [ 9, D, 3/Integer(2), 28828.6820    ,   2.38     , 0.0   ],
+                        [ 9, D, 5/Integer(2), 28835.79192   ,  -0.45     , 0.0   ],
+                        [11, S, 1/Integer(2), 29131.73004   ,  39.4      , 0.0   ],
+                        [ 7, F, 7/Integer(2), 29147.90818   ,   0.0      , 0.0   ],
+                        [ 7, F, 5/Integer(2), 29147.98188   ,   0.0      , 0.0   ],
+                        [ 7, G, 7/Integer(2), 29163.07206   ,   0.0      , 0.0   ],
+                        [ 7, G, 9/Integer(2), 29163.0731    ,   0.0      , 0.0   ],
+                        [11, P, 1/Integer(2), 29403.42310   ,   0.0      , 0.0   ],
+                        [11, P, 3/Integer(2), 29420.824     ,   1.600    , 0.0   ],
+                        [10, D, 3/Integer(2), 29468.2878    ,   1.54     , 0.0   ],
+                        [10, D, 5/Integer(2), 29472.93995   ,  -0.35     , 0.0   ],
+                        [12, S, 1/Integer(2), 29668.80336   ,  26.31     , 0.0   ],
+                        
+                        [ 8, F, 7/Integer(2), 29678.68970   ,   0.0      , 0.0   ],
+                        [ 8, F, 5/Integer(2), 29678.74280   ,   0.0      , 0.0   ],
+                        [ 8, G, 7/Integer(2), 29689.13795   ,   0.0      , 0.0   ],
+                        [ 8, G, 9/Integer(2), 29689.1388    ,   0.0      , 0.0   ],
+                        [12, P, 1/Integer(2), 29852.43153   ,   0.0      , 0.0   ],
+                        [12, P, 3/Integer(2), 29864.345     ,   1.10     , 0.0   ],
+                        [11, D, 3/Integer(2), 29896.3399    ,   1.055    , 0.0   ],
+                        [11, D, 5/Integer(2), 29899.54646   ,   0.24     , 0.0   ],
+                        [13, S, 1/Integer(2), 30035.78836   ,  18.4      , 0.0   ],
+                        [ 9, F, 7/Integer(2), 30042.27515   ,   0.0      , 0.0   ],
+                        [ 9, F, 5/Integer(2), 30042.31405   ,   0.0      , 0.0   ],
+                        [ 9, G, 7/Integer(2), 30049.75317   ,   0.0      , 0.0   ],
+                        [ 9, G, 9/Integer(2), 30049.7545    ,   0.0      , 0.0   ],
+                        [13, P, 1/Integer(2), 30049.7545    ,   0.0      , 0.0   ],
+                        [13, P, 3/Integer(2), 30165.66826   ,   0.77     , 0.0   ],
                         ]
 
        
@@ -270,7 +336,7 @@ hyperfine and magnetic detail.'''
 		return self.quantum_numbers==other.quantum_numbers
 
 class Transition(object):
-	def __init__(self,e1,e2):
+	def __init__(self,e1,e2,verbose=1):
 		'''This class describes a transition between different states of the same level of detail.'''
 		if e1.element != e2.element:
 			raise NotImplementedError,'Transition between diferent elements.'
@@ -312,30 +378,6 @@ class Transition(object):
 				if not (abs(f2-f1) in [-1,1]): allowed=False
 			if not (abs(m2-m1) in [-1,0,1]): allowed=False			
 			
-			
-			
-
-		#~ print allowed
-		#~ if l1==0 and l2==0: allowed=False
-			
-		#~ self.allowed=allowed
-		#~ print allowed		
-		#~ if e1.f!=None and e2.f!=None:
-			#~ if self.e1.f - self.e2.f in [-1,0,1]:
-				#~ if self.e1 != self.e2:
-					#~ if self.e1.nu > self.e2.nu:
-						#~ if self.e1.m==None and self.e2.m==None:
-							#~ self.allowed=True
-						#~ elif self.e1.m -self.e2.m in [-1,0,1]:
-							#~ self.allowed=True
-						#~ else:
-							#~ self.allowed=False
-					#~ else:
-						#~ self.allowed=False
-				#~ else:
-					#~ self.allowed=False
-			#~ else:
-				#~ self.allowed=False
 		self.allowed=allowed
         ####################################################################
 		self.nu=e1.nu-e2.nu
@@ -395,34 +437,15 @@ class Transition(object):
 		#print pairs
 		self.einsteinA=0.0
 		#if ord1 == ord2: self.einsteinA=0.0
-		if self.allowed: self.einsteinAi=None
+		if self.allowed: self.einsteinA=None
 		for pair in pairs:
 			if pair[:-1]==ord1 or pair[:-1]==ord2:
 				self.einsteinA=pair[-1]
 
-		if self.allowed and self.einsteinA==None:
-			print "Warning: the transition",self,"is allowed, but the decay rate is not in the database."
-			self.einsteinA=0.0
-		
-		
-		#~ #The numbers between 5S1/2 -> 5P3/2
-		#~ 
-		#~ 
-		#~ pair1=[5,0,Integer(1)/Integer(2),   5,1,Integer(3)/Integer(2)]
-		#~ #print ord1,ord2,pair1
-		#~ pair1=ord1==pair1 or ord2==pair1
-		#~ #print pair1
-		#~ 
-		#~ A1=6.0666e6
-		#~ ####################################################################
-		#~ 
-		#~ if pair1:
-			#~ self.einsteinA=A1
-		#~ elif ord1==ord2:
-			#~ self.einsteinA=0.0
-		#~ else:
-			#~ self.einsteinA=None
-		
+		#print self.allowed, self.einsteinA
+		if self.allowed and self.einsteinA==None and verbose>0:
+			print "Warning: the transition",self,"is electric dipole-allowed, but the Einstein A is not in the database."
+			self.einsteinA="Unknown, but different from zero!"
 	
 	def __repr__(self):
 		if self.allowed==True:
