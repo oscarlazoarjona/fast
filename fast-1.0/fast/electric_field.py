@@ -22,6 +22,17 @@
 #************************************************************************
 
 sage_included = 'sage' in globals().keys()
+
+#Physical constants (SI units):
+from scipy.constants import physical_constants
+from scipy.constants import pi as Pi # Every one's favourite constant
+#                                                         units
+c   =physical_constants["speed of light in vacuum"][0]  # m/s
+a0  =physical_constants["Bohr radius"][0]               # m
+hbar=physical_constants["Planck constant over 2 pi"][0] # J s
+e   =physical_constants["elementary charge"][0]         # C
+mu0 =physical_constants["mag. constant"][0]             # N / A^2
+
 if not sage_included:
 	from math import pi,sqrt,cos,sin
 	Pi=pi
@@ -278,12 +289,6 @@ def electric_field_amplitude_gaussian(P,sigmax,sigmay=None,Omega=1.0e6):
 	distribution of standard deviations sigmax, sigmay (in meters). The value of E0 is given in rescaled units
 	according to the frequency scale  Omega (in Hertz) understood as absolute frequency
 	(as opposed to angular frequency).'''
-	Pi=3.141592653589793 #Every one's favourite constant
-	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
-	c=299792458.0 #The speed of light in m/s
-	a0=5.2917721092e-11 #Bohr's radius in m
-	hbar=1.054571726e-34 #The planck constant in J s
-	e=1.602176565e-19 #The elementary charge in C
 	e0=hbar*Omega/(e*a0) #This is the electric field scale.
 	
 	if sigmay==None: sigmay=sigmax
@@ -295,12 +300,6 @@ def electric_field_amplitude_top(P,a,Omega=1.0e6):
 	distribution of radius a (in meters). The value of E0 is given in rescaled units
 	according to the frequency scale  Omega (in Hertz) understood as absolute frequency
 	(as opposed to angular frequency).'''
-	Pi=3.141592653589793 #Everyone's favourite constant
-	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
-	c=299792458.0 #The speed of light in m/s
-	a0=5.2917721092e-11 #Bohr's radius in m
-	hbar=1.054571726e-34 #The planck constant in J s
-	e=1.602176565e-19 #The elementary charge in C
 	e0=hbar*Omega/(e*a0) #This is the electric field scale.
 	
 	return sqrt((c*mu0*P)/(Pi*a**2))/e0
@@ -309,12 +308,6 @@ def electric_field_amplitude_intensity(s0,Omega=1.0e6):
 	'''This function returns the value of E0 (the amplitude of the electric field)
 	at a given saturation parameter s0=I/I0, where I0=2.50399 mW/cm^2 is the
 	saturation intensity of the D2 line of Rubidium for linearly polarized light.'''
-	Pi=3.141592653589793 #Everyone's favourite constant
-	mu0=4*Pi*1e-7 #Vacuum's permitivity in N/A^2
-	c=299792458.0 #The speed of light in m/s
-	a0=5.2917721092e-11 #Bohr's radius in m
-	hbar=1.054571726e-34 #The planck constant in J s
-	e=1.602176565e-19 #The elementary charge in C
 	e0=hbar*Omega/(e*a0) #This is the electric field scale.
 	
 	I0=2.50399 #mW/cm^2
