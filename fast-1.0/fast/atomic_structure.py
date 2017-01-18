@@ -257,6 +257,7 @@ hyperfine and magnetic detail.'''
             #print [n,l,j],nivfin[ii][:3]
             if [n,l,j]==nivfin[ii][:3]:
                 nufin=nivfin[ii][3]; A=nivfin[ii][4]; B=nivfin[ii][5]
+                self.Ahfs=A; self.Bhfs=B; self.Chfs=0.0
                 in_database=True
                 break
         if not in_database:
