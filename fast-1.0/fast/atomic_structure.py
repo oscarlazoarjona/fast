@@ -341,71 +341,71 @@ hyperfine and magnetic detail.'''
                         [18, D, 3/Integer(2), 30951.68259   ,   0.0       , 0.0   ],
                         [20, S, 1/Integer(2), 30975.10034   ,   0.0       , 0.0   ],
                         
-                        [16, F, 7/Integer(2), 30976.046 20  ,   0.0       , 0.0   ],
-                        [16, F, 5/Integer(2), 30976.053 85  ,   0.0       , 0.0   ],
-                        [16, G, 7/Integer(2), 30977.440 90  ,   0.0       , 0.0   ],
+                        [16, F, 7/Integer(2), 30976.04620   ,   0.0       , 0.0   ],
+                        [16, F, 5/Integer(2), 30976.05385   ,   0.0       , 0.0   ],
+                        [16, G, 7/Integer(2), 30977.44090   ,   0.0       , 0.0   ],
                         [20, P, 1/Integer(2), 30998.79      ,   0.0       , 0.0   ],
                         [20, P, 3/Integer(2), 31000.40      ,   0.0       , 0.0   ],
-                        [19, D, 3/Integer(2), 31004.590 0   ,   0.0       , 0.0   ],
-                        [19, D, 5/Integer(2), 31005.032 31  ,   0.0       , 0.0   ],
-                        [21, S, 1/Integer(2), 31024.503 55  ,   0.0       , 0.0   ],
+                        [19, D, 3/Integer(2), 31004.5900    ,   0.0       , 0.0   ],
+                        [19, D, 5/Integer(2), 31005.03231   ,   0.0       , 0.0   ],
+                        [21, S, 1/Integer(2), 31024.50355   ,   0.0       , 0.0   ],
                         
-                        [17, F, 7/Integer(2), 31025.28272  ,   0.0       , 0.0   ],
-                        [17, F, 5/Integer(2), 31025.28907  ,   0.0       , 0.0   ],
-                        [17, G, 7/Integer(2), 31026.44832  ,   0.0       , 0.0   ],
-                        [21, P, 1/Integer(2), 31044.31315  ,   0.0       , 0.0   ],
-                        [21, P, 3/Integer(2), 31045.664    ,   0.0       , 0.0   ],
-                        [20, D, 3/Integer(2), 31049.1456   ,   0.0       , 0.0   ],
-                        [20, D, 5/Integer(2), 31049.51701  ,   0.0       , 0.0   ],
-                        [22, S, 1/Integer(2), 31065.88056  ,   0.0       , 0.0   ],
+                        [17, F, 7/Integer(2), 31025.28272   ,   0.0       , 0.0   ],
+                        [17, F, 5/Integer(2), 31025.28907   ,   0.0       , 0.0   ],
+                        [17, G, 7/Integer(2), 31026.44832   ,   0.0       , 0.0   ],
+                        [21, P, 1/Integer(2), 31044.31315   ,   0.0       , 0.0   ],
+                        [21, P, 3/Integer(2), 31045.664     ,   0.0       , 0.0   ],
+                        [20, D, 3/Integer(2), 31049.1456    ,   0.0       , 0.0   ],
+                        [20, D, 5/Integer(2), 31049.51701   ,   0.0       , 0.0   ],
+                        [22, S, 1/Integer(2), 31065.88056   ,   0.0       , 0.0   ],
                         
-                        [18, F, 7/Integer(2), 31066.530 42 ,   0.0       , 0.0   ],
-                        [18, F, 5/Integer(2), 31066.535 82 ,   0.0       , 0.0   ],
-                        [18, G, 7/Integer(2), 31067.514 35 ,   0.0       , 0.0   ],
-                        [22, P, 1/Integer(2), 31082.597 9  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [22, P, 3/Integer(2), 31083.77     ,   0.0       , 0.0   ],
-                        [21, D, 3/Integer(2), 31086.6824   ,   0.0       , 0.0   ],
-                        [21, D, 5/Integer(2), 31086.99717  ,   0.0       , 0.0   ],
-                        [23, S, 1/Integer(2), 31100.88052  ,   2.4       , 0.0   ],
-                        [19, F, 7/Integer(2), 31101.42859  ,   0.0       , 0.0   ],
-                        [19, F, 5/Integer(2), 31101.43321  ,   0.0       , 0.0   ],
-                        [19, G, 7/Integer(2), 31102.26518  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [23, P, 1/Integer(2), 31115.11733  ,   0.56      , 0.0   ],
-                        [23, P, 3/Integer(2), 31116.0904   ,   0.0       , 0.0   ],
-                        [22, D, 3/Integer(2), 31118.60105  ,   0.0       , 0.0   ],
-                        [22, D, 5/Integer(2), 31118.86983  ,   0.0       , 0.0   ],
-                        [24, S, 1/Integer(2), 31130.74987  ,   0.0       , 0.0   ],
+                        [18, F, 7/Integer(2), 31066.53042  ,   0.0       , 0.0   ],
+                        [18, F, 5/Integer(2), 31066.53582  ,   0.0       , 0.0   ],
+                        [18, G, 7/Integer(2), 31067.51435  ,   0.0       , 0.0   ],
+                        [22, P, 1/Integer(2), 31082.5979   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [22, P, 3/Integer(2), 31083.77      ,   0.0       , 0.0   ],
+                        [21, D, 3/Integer(2), 31086.6824    ,   0.0       , 0.0   ],
+                        [21, D, 5/Integer(2), 31086.99717   ,   0.0       , 0.0   ],
+                        [23, S, 1/Integer(2), 31100.88052   ,   2.4       , 0.0   ],
+                        [19, F, 7/Integer(2), 31101.42859   ,   0.0       , 0.0   ],
+                        [19, F, 5/Integer(2), 31101.43321   ,   0.0       , 0.0   ],
+                        [19, G, 7/Integer(2), 31102.26518   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [23, P, 1/Integer(2), 31115.11733   ,   0.56      , 0.0   ],
+                        [23, P, 3/Integer(2), 31116.0904    ,   0.0       , 0.0   ],
+                        [22, D, 3/Integer(2), 31118.60105   ,   0.0       , 0.0   ],
+                        [22, D, 5/Integer(2), 31118.86983   ,   0.0       , 0.0   ],
+                        [24, S, 1/Integer(2), 31130.74987   ,   0.0       , 0.0   ],
                         
-                        [20, F, 7/Integer(2), 31131.21615  ,   0.0       , 0.0   ],
-                        [20, F, 5/Integer(2), 31131.22012  ,   0.0       , 0.0   ],
-                        [20, G, 7/Integer(2), 31131.93570  ,   0.0       , 0.0   ],
-                        [24, P, 1/Integer(2), 31142.9734   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [24, P, 3/Integer(2), 31143.84     ,   0.0       , 0.0   ],
-                        [23, D, 3/Integer(2), 31145.9690   ,   0.0       , 0.0   ],
-                        [23, D, 5/Integer(2), 31146.20007  ,   0.0       , 0.0   ],
-                        [25, S, 1/Integer(2), 31156.44439  ,   1.4       , 0.0   ],
+                        [20, F, 7/Integer(2), 31131.21615   ,   0.0       , 0.0   ],
+                        [20, F, 5/Integer(2), 31131.22012   ,   0.0       , 0.0   ],
+                        [20, G, 7/Integer(2), 31131.93570   ,   0.0       , 0.0   ],
+                        [24, P, 1/Integer(2), 31142.9734    ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [24, P, 3/Integer(2), 31143.84      ,   0.0       , 0.0   ],
+                        [23, D, 3/Integer(2), 31145.9690    ,   0.0       , 0.0   ],
+                        [23, D, 5/Integer(2), 31146.20007   ,   0.0       , 0.0   ],
+                        [25, S, 1/Integer(2), 31156.44439   ,   1.4       , 0.0   ],
                         
-                        [21, F, 7/Integer(2), 31156.844 7  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [21, F, 5/Integer(2), 31156.848 2  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [21, G, 7/Integer(2), 31157.465 95 ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [25, P, 1/Integer(2), 31167.017 27 ,   0.40      , 0.0   ],
-                        [25, P, 3/Integer(2), 31167.742 57 ,   0.0       , 0.0   ],
-                        [24, D, 3/Integer(2), 31169.614 4  ,   0.0       , 0.0   ],
-                        [24, D, 5/Integer(2), 31169.811 87 ,   0.0       , 0.0   ],
-                        [22, F, 7/Integer(2), 31179.053 92 ,   0.0       , 0.0   ],
-                        [22, F, 5/Integer(2), 31179.056 92 ,   0.0       , 0.0   ],
-                        [22, G, 7/Integer(2), 31179.595 67 ,   0.0       , 0.0   ],
-                        [25, D, 3/Integer(2), 31190.175 69 ,   0.0       , 0.0   ],
-                        [25, D, 5/Integer(2), 31190.350 63 ,   0.0       , 0.0   ],
-                        [23, F, 7/Integer(2), 31198.425 7  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [23, F, 5/Integer(2), 31198.428 3  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [23, G, 7/Integer(2), 31198.899 36 ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [24, F, 7/Integer(2), 31215.423 83 ,   0.0       , 0.0   ],
-                        [24, F, 5/Integer(2), 31215.426 20 ,   0.0       , 0.0   ],
-                        [24, G, 7/Integer(2), 31215.841 76 ,   0.0       , 0.0   ],
-                        [25, F, 7/Integer(2), 31230.420 8  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [25, F, 5/Integer(2), 31230.422 9  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
-                        [25, G, 7/Integer(2), 31230.790 13 ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [21, F, 7/Integer(2), 31156.8447   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [21, F, 5/Integer(2), 31156.8482   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [21, G, 7/Integer(2), 31157.46595  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [25, P, 1/Integer(2), 31167.01727  ,   0.40      , 0.0   ],
+                        [25, P, 3/Integer(2), 31167.74257  ,   0.0       , 0.0   ],
+                        [24, D, 3/Integer(2), 31169.6144   ,   0.0       , 0.0   ],
+                        [24, D, 5/Integer(2), 31169.81187  ,   0.0       , 0.0   ],
+                        [22, F, 7/Integer(2), 31179.05392  ,   0.0       , 0.0   ],
+                        [22, F, 5/Integer(2), 31179.05692  ,   0.0       , 0.0   ],
+                        [22, G, 7/Integer(2), 31179.59567  ,   0.0       , 0.0   ],
+                        [25, D, 3/Integer(2), 31190.17569  ,   0.0       , 0.0   ],
+                        [25, D, 5/Integer(2), 31190.35063  ,   0.0       , 0.0   ],
+                        [23, F, 7/Integer(2), 31198.4257   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [23, F, 5/Integer(2), 31198.4283   ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [23, G, 7/Integer(2), 31198.89936  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [24, F, 7/Integer(2), 31215.42383  ,   0.0       , 0.0   ],
+                        [24, F, 5/Integer(2), 31215.42620  ,   0.0       , 0.0   ],
+                        [24, G, 7/Integer(2), 31215.84176 ,   0.0       , 0.0   ],
+                        [25, F, 7/Integer(2), 31230.4208  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [25, F, 5/Integer(2), 31230.4229  ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
+                        [25, G, 7/Integer(2), 31230.79013 ,   0.0       , 0.0   ],# not experimental (isoelectronic fitting).
                         ]
 
        
