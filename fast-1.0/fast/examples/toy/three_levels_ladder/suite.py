@@ -21,7 +21,7 @@
 #                                                                       *
 #************************************************************************
 
-from all import *
+from fast import *
 from matplotlib import pyplot,cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np

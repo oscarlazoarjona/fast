@@ -21,7 +21,7 @@
 #                                                                       *
 #************************************************************************
 
-from all import *
+from fast import *
 from matplotlib import pyplot
 from config import parallel, use_netcdf
 
