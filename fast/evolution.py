@@ -141,8 +141,6 @@ open(unit=3,file='"""+path+name+"""_eigenvalues.dat',status='unknown')
 			#~ det_index+=1
 	#~ code0+='\n'
 
-	code0+='''
-	if (.not. run_spectrum) WRITE(1,*) t,real(rho)\n'''
 	code0+='''	!We start the detuning variation, which might consist of a single detuning.\n'''
 
 	code0+='''    do j=1,ndelta
@@ -539,7 +537,6 @@ def run_evolution(path,name,E0,laser_frequencies,  N_iter,dt,N_states,
 	f.close()
 	
 	os.system(path+name)
-	
 	return time()-t0
 
 def get_eigenvalues(path,name):
