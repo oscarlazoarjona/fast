@@ -87,8 +87,8 @@ Lij=formatLij(Lij,Ne)
 #because all the allowed excitations are driven by the same laser.
 #If there were more than one laser it would show different
 #excitations driven by different lasers as differently colored squares.
-fig=pyplot.figure(); ax=fig.add_subplot(111)
-plot_Lij(ax,Lij,Nl,magnetic_states,path,name+'_Lij.png')
+#fig=pyplot.figure(); ax=fig.add_subplot(111)
+#plot_Lij(ax,Lij,Nl,magnetic_states,path,name+'_Lij.png')
 
 ########################################################################
 #We define the lasers.
