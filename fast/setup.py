@@ -24,11 +24,15 @@
 ########################################################################
 #We build the config.py file
 
-config_text="""
-#Whether to use parallelization through OpenMP.
+#We get the current directory (from which python setup.py is running).
+import os
+install_dir=os.path.dirname(os.path.abspath("setup.py"))
+install_dir=install_dir[:-5]
+
+config_text="""#Whether to use parallelization through OpenMP.
 parallel=True; parallel=False
 #Whether to use NETCDF binary files for data communication.
-use_netcdf=True#; use_netcdf=False
+use_netcdf=True; use_netcdf=False
 
 #An integer between 0 and 2 to control which tests are ran.
 run_long_tests=0
@@ -44,9 +48,10 @@ config.close()
 
 ########################################################################
 #We add an extra line to the .bashrc file.
+
 extra_line='''export PYTHONPATH="${PYTHONPATH}:'''+install_dir+'"'
 
-import os
+
 bashrc_file=file(os.path.expanduser('~')+'/.bashrc',"r")
 bashrc_text=bashrc_file.read()
 bashrc_file.close()
