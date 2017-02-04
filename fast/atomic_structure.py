@@ -107,6 +107,10 @@ hyperfine and magnetic detail.'''
         from scipy.constants import c
         # All tables are given in (cm^-1).
         if element=="Rb":
+            #We set the atomic number.
+            self.Z=37
+            #We set the number of neutrons.
+            self.N=self.isotope-self.Z
             if isotope==85:
                 i=5/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)    C (cm^-1)
@@ -209,11 +213,12 @@ hyperfine and magnetic detail.'''
 
 
         elif element=="Cs":
+            #We set the atomic number.
+            self.Z=55
+            #We set the number of neutrons.
+            self.N=self.isotope-self.Z
             if isotope==133:
                 i=7/Integer(2)
-                # If the table shows 0 and not 0.0 that indicates that there is a reference
-                # that shows that the value is exactly zero, as opposed to the value not being known.
-                #
                 # Reference [1], others not used yet [2]:
                 #        N, L,     K       , E (cm^-1),       A (MHz)      B (MHz)   C (MHz)
                 
