@@ -40,8 +40,11 @@ me       =physical_constants["electron mass"][0]             # kg
 k_B      =physical_constants["Boltzmann constant"][0]        # J / K
 uma      =physical_constants["unified atomic mass unit"][0]  # kg
 
-m_Rb85=84.911789732*uma # Rb85 mass in kg
-m_Rb87=86.909180520*uma # Rb87 mass in kg
+
+m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
+m_Rb87  = 86.9091805310*uma # Rb87  mass in kg [4]
+m_Cs133 =132.9054519610*uma # Cs133 mass in kg [4]
+
 
 
 S='S'
@@ -54,9 +57,59 @@ I='I'
 
 class State(object):
     def __init__(self,element,isotope,n,l=None,j=None,f=None,m=None):
-        '''This class is for atomic states, it allows to specify any atomic state of the form 
-|n,l,j>, |n,l,j,f>, |n,l,j,f,m> which are refered to respectively as states with fine 
-hyperfine and magnetic detail.'''
+        r'''This class implements the specific eigenstates of the atomic hamiltonian.
+        The states must be identified by element, isotope and quantum numbers
+        in one of these forms:
+        
+        1 .- |n, l, j>
+        >>> State("Rb",85,5,0,1/Integer(2))
+        85Rb 5S_1/2
+
+        2 .- |n, l, j, f>
+        >>> State("Cs", 133, 6, 0, 1/Integer(2), 3)
+        133Cs 6S_1/2^3
+
+        3 .- |n, l, j, f, m>
+        >>> State("Rb", 87, 5, 0, 1/Integer(2), 2, -1)
+        87Rb 5S_1/2^2,-1
+        
+        States have many useful properties:
+        >>> g2=State("Cs", 133, 6, 0, 1/Integer(2), 4, 4)
+        >>> e =State("Cs", 133, 6, 1, 3/Integer(2), 5, 5)
+
+        The defining properties of the state:
+        >>> g2.element, g2.isotope, g2.n, g2.l, g2.j, g2.f, g2.m
+        ('Cs', 133, 6, 0, 1/2, 4, 4)
+        
+        The atomic number of the element:
+        >>> g2.Z
+        55
+        
+        The number of neutrons:
+        >>> g2.N
+        78
+        
+        The mass of the atom (in kilograms):
+        >>> print g2.mass
+        2.2069469161e-25
+        
+        The absolute frequency of the state relative to the groundstate energy (in Hz):
+        >>> print g2.nu
+        4021776399.38
+        
+        The angular frequency of the state (in rad/s):
+        >>> print g2.omega
+        25269566381.3
+        
+        The hyperfine constants Ahfs, Bhfs, Chfs:
+        >>> print e.Ahfs, e.Bhfs, e.Chfs
+        50288250.0 -494000.0 560.0
+        
+        A latex representation:
+        >>> print g2._latex_()
+        ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
+        
+'''
 
         self.element=element			
         self.isotope=isotope
@@ -108,7 +161,11 @@ hyperfine and magnetic detail.'''
             self.Z=37
             #We set the number of neutrons.
             self.N=self.isotope-self.Z
+
             if isotope==85:
+                #We set the mass of the atom.
+                self.mass=m_Rb85
+
                 i=5/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)    C (cm^-1)
                 nivfin=[[ 5, S, 1/Integer(2), 0.0000000  , 0.033753721     , 0.0       , 0.0],
@@ -178,6 +235,9 @@ hyperfine and magnetic detail.'''
 
 
             elif isotope==87:
+                #We set the mass of the atom.
+                self.mass=m_Rb87
+
                 i=3/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)      C (cm^-1)
                 nivfin=[[5, S, 1/Integer(2), 0.0000000, 0.113990236053642, 0.0            , 0.0],
@@ -215,6 +275,9 @@ hyperfine and magnetic detail.'''
             #We set the number of neutrons.
             self.N=self.isotope-self.Z
             if isotope==133:
+                #We set the mass of the atom.
+                self.mass=m_Cs133
+
                 i=7/Integer(2)
                 # Reference [1], others not used yet [2]:
                 #        N, L,     K       , E (cm^-1),       A (MHz)      B (MHz)   C (MHz)
@@ -477,6 +540,7 @@ hyperfine and magnetic detail.'''
                 
             deltanu_hfin=float(deltanu_hfin)
             self.nu= nufin + deltanu_hfin
+            self.omega=2*pi*self.nu
             
         else:
             hyperfine_structure=[]
@@ -497,7 +561,7 @@ hyperfine and magnetic detail.'''
             
             self.hyperfine_structure=hyperfine_structure
             self.nu=nufin
-        
+            self.omega=2*pi*self.nu
 
     def __repr__(self):
         if self.l==0:
@@ -541,7 +605,7 @@ hyperfine and magnetic detail.'''
 			s= s[:-1] + ','+str(self.m)+'}'
         
         return s
-    
+
     def __eq__(self,other):
 		return self.quantum_numbers==other.quantum_numbers
 
@@ -1276,3 +1340,5 @@ def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
 #
 # [3] Cesium D Line Data
 #     Daniel Adam Steck
+#
+# [4] http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=html&isotype=some
