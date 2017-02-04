@@ -27,7 +27,8 @@
 #We get the current directory (from which python setup.py is running).
 import os
 install_dir=os.path.dirname(os.path.abspath("setup.py"))
-install_dir=install_dir[:-5]
+install_dir=install_dir+"/fast"
+print install_dir
 
 config_text="""#Whether to use parallelization through OpenMP.
 parallel=True; parallel=False
