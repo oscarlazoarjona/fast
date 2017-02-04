@@ -25,7 +25,7 @@ from fast import *
 from matplotlib import pyplot,cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-from config import parallel, use_netcdf, run_long_tests
+from fast.config import parallel, use_netcdf, run_long_tests
 
 ########################################################################
 #                      Three level atom (ladder)                       #

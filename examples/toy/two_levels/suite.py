@@ -23,7 +23,7 @@
 
 from fast import *
 from matplotlib import pyplot
-from config import parallel, use_netcdf
+from fast.config import parallel, use_netcdf
 
 ################################################
 #We define the basic characteristics of the experiment.

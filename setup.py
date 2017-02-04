@@ -42,7 +42,7 @@ run_long_tests=0
 """
 config_text+='fast_path="'+install_dir+"/fast"+'"\n'
 
-config=file("config.py","w")
+config=file("fast/config.py","w")
 config.write(config_text)
 config.close()
 

@@ -8,6 +8,8 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 """
 __version__="1.0"
 
+from math import sqrt,pi
+
 from matplotlib import use; use('Agg')# This allows plots to be made remotely via ssh.
 
 from electric_field import PlaneWave, MotField
