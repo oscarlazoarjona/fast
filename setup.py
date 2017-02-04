@@ -27,7 +27,7 @@
 #We get the current directory (from which python setup.py is running).
 import os
 install_dir=os.path.dirname(os.path.abspath("setup.py"))
-install_dir=install_dir+"/fast"
+#install_dir=install_dir+"/fast"
 print install_dir
 
 config_text="""#Whether to use parallelization through OpenMP.
@@ -73,8 +73,8 @@ if extra_line not in bashrc_text:
 try:
 	import fast
 	print "Install finished."
-	print "Try"
-	print "$ python tests.py"
+	print "Try:"
+	print "$ python examples/tests.py"
 	print "to verify everything runs smoothly."
 except:
 	raise RuntimeError,'Fast could not be found, something went wrong with the installation.'
