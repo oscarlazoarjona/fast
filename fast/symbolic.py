@@ -33,6 +33,20 @@ from sympy import re,im
 from fast.misc import IJ
 
 def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
+    r"""This function returns a symbolic density matrix. The arguments are
+    
+    Ne (integer):
+        The number of atomic states.
+    explicitly_hermitian (boolean):
+        Whether to make $\rho_{ij}=\bar{\rho}_{ij}$ for $i<j$
+    normalized (boolean):
+        Whether to make $\rho_{11}=1-\sum_{i>1} \rho_{ii}$
+    
+    >>> define_density_matrix(2)
+    Matrix([
+    [rho11, rho12],
+    [rho21, rho22]])
+    """
     if Ne>9:
 		comma=","
 		name=r"\rho"

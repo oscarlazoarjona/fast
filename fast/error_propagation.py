@@ -131,12 +131,3 @@ k=5
 
 E02=k*P/a**2
 E0=(k*P/a**2)**0.5
-
-#print a,rel(a)
-#print a**2,rel(a**2)
-#print 1/a**2,rel(1/a**2)
-
-#~ print P,P.sigma/P.value
-#~ print E02,E02.sigma/E02.value
-print E02,rel(E02)
-print E0, rel(E0)
