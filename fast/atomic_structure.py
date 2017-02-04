@@ -21,6 +21,10 @@
 #                                                                       *
 #************************************************************************
 
+r"""This file contains all the information about the atoms, and routines
+to calculate the necessary operators:
+"""
+
 from sympy.core.numbers import Rational as Integer
 #from fractions import Fraction as Integer
 from math import sqrt,pi
@@ -56,60 +60,65 @@ H='H'
 I='I'
 
 class State(object):
+    r'''This class implements the specific eigenstates of the atomic hamiltonian.
+    The states must be identified by element, isotope and quantum numbers
+    in one of these forms:
+    
+    1 .- |n, l, j>
+    >>> State("Rb",85,5,0,1/Integer(2))
+    85Rb 5S_1/2
+
+    2 .- |n, l, j, f>
+    >>> State("Cs", 133, 6, 0, 1/Integer(2), 3)
+    133Cs 6S_1/2^3
+
+    3 .- |n, l, j, f, m>
+    >>> State("Rb", 87, 5, 0, 1/Integer(2), 2, -1)
+    87Rb 5S_1/2^2,-1
+    
+    States have many useful properties:
+    >>> g2=State("Cs", 133, 6, 0, 1/Integer(2), 4, 4)
+    >>> e =State("Cs", 133, 6, 1, 3/Integer(2), 5, 5)
+
+    The defining properties of the state:
+    >>> g2.element, g2.isotope, g2.n, g2.l, g2.j, g2.f, g2.m
+    ('Cs', 133, 6, 0, 1/2, 4, 4)
+    
+    The atomic number of the element:
+    >>> g2.Z
+    55
+    
+    The number of neutrons:
+    >>> g2.N
+    78
+    
+    The mass of the atom (in kilograms):
+    >>> print g2.mass
+    2.2069469161e-25
+    
+    The absolute frequency of the state relative to the groundstate energy (in Hz):
+    >>> print g2.nu
+    4021776399.38
+    
+    The angular frequency of the state (in rad/s):
+    >>> print g2.omega
+    25269566381.3
+    
+    The hyperfine constants Ahfs, Bhfs, Chfs:
+    >>> print e.Ahfs, e.Bhfs, e.Chfs
+    50288250.0 -494000.0 560.0
+    
+    A latex representation:
+    >>> print g2._latex_()
+    ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
+    
+'''
     def __init__(self,element,isotope,n,l=None,j=None,f=None,m=None):
-        r'''This class implements the specific eigenstates of the atomic hamiltonian.
-        The states must be identified by element, isotope and quantum numbers
-        in one of these forms:
+        r'''Initialize states:
         
-        1 .- |n, l, j>
         >>> State("Rb",85,5,0,1/Integer(2))
         85Rb 5S_1/2
-
-        2 .- |n, l, j, f>
-        >>> State("Cs", 133, 6, 0, 1/Integer(2), 3)
-        133Cs 6S_1/2^3
-
-        3 .- |n, l, j, f, m>
-        >>> State("Rb", 87, 5, 0, 1/Integer(2), 2, -1)
-        87Rb 5S_1/2^2,-1
-        
-        States have many useful properties:
-        >>> g2=State("Cs", 133, 6, 0, 1/Integer(2), 4, 4)
-        >>> e =State("Cs", 133, 6, 1, 3/Integer(2), 5, 5)
-
-        The defining properties of the state:
-        >>> g2.element, g2.isotope, g2.n, g2.l, g2.j, g2.f, g2.m
-        ('Cs', 133, 6, 0, 1/2, 4, 4)
-        
-        The atomic number of the element:
-        >>> g2.Z
-        55
-        
-        The number of neutrons:
-        >>> g2.N
-        78
-        
-        The mass of the atom (in kilograms):
-        >>> print g2.mass
-        2.2069469161e-25
-        
-        The absolute frequency of the state relative to the groundstate energy (in Hz):
-        >>> print g2.nu
-        4021776399.38
-        
-        The angular frequency of the state (in rad/s):
-        >>> print g2.omega
-        25269566381.3
-        
-        The hyperfine constants Ahfs, Bhfs, Chfs:
-        >>> print e.Ahfs, e.Bhfs, e.Chfs
-        50288250.0 -494000.0 560.0
-        
-        A latex representation:
-        >>> print g2._latex_()
-        ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
-        
-'''
+        '''
 
         self.element=element			
         self.isotope=isotope
@@ -607,7 +616,13 @@ class State(object):
         return s
 
     def __eq__(self,other):
-		return self.quantum_numbers==other.quantum_numbers
+        r"""Two states are equal if all of their identifiers are the same:
+        >>> g1=State("Rb",87,5,0,1/Integer(2),1,1)
+        >>> g2=State("Rb",87,5,0,1/Integer(2),2,2)
+        >>> g1 == g2
+        False
+        """
+        return self.quantum_numbers==other.quantum_numbers
 
 class Transition(object):
 	def __init__(self,e1,e2,verbose=1):
