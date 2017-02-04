@@ -71,7 +71,6 @@ if extra_line not in bashrc_text:
 
 try:
 	import fast
-	from fast.all import *
 	print "Install finished."
 	print "Try"
 	print "$ python tests.py"
