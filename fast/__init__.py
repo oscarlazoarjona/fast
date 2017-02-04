@@ -8,14 +8,6 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 """
 __version__="1.0"
 
-#This flag tells whether we are running in Sage or not.
-sage_included = 'sage' in globals().keys()
-if not sage_included:
-	from math import pi,sqrt
-else:
-	from symbolic import define_density_matrix,define_substitutions
-
-
 from matplotlib import use; use('Agg')# This allows plots to be made remotely via ssh.
 
 from electric_field import PlaneWave, MotField
@@ -32,7 +24,7 @@ from evolution import write_evolution, run_evolution
 from stationary import write_stationary, run_stationary
 from misc import compile_code
 
-from atomic_structure import S,P,D,F,State,Transition
+from atomic_structure import S,P,D,F,G,H,I,State,Transition
 from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic, split_hyperfine_to_magnetic
 from atomic_structure import calculate_matrices, make_list_of_states, calculate_gamma_matrix, calculate_omega_matrix
 from atomic_structure import calculate_r_matrices, calculate_boundaries

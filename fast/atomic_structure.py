@@ -21,13 +21,10 @@
 #                                                                       *
 #************************************************************************
 
-sage_included = 'sage' in globals().keys()
-
-if not sage_included:
-	from sympy.core.numbers import Rational as Integer
-	#from fractions import Fraction as Integer
-	from math import sqrt,pi
-	from sympy.physics.wigner import wigner_3j,wigner_6j
+from sympy.core.numbers import Rational as Integer
+#from fractions import Fraction as Integer
+from math import sqrt,pi
+from sympy.physics.wigner import wigner_3j,wigner_6j
 
 #Physical constants (SI units):
 from scipy.constants import physical_constants
@@ -46,14 +43,14 @@ uma      =physical_constants["unified atomic mass unit"][0]  # kg
 m_Rb85=84.911789732*uma # Rb85 mass in kg
 m_Rb87=86.909180520*uma # Rb87 mass in kg
 
-if sage_included:
-	var('S P D F')
-else:
-	S='S'
-	P='P'
-	D='D'
-	F='F'
 
+S='S'
+P='P'
+D='D'
+F='F'
+G='G'
+H='H'
+I='I'
 
 class State(object):
     def __init__(self,element,isotope,n,l=None,j=None,f=None,m=None):
