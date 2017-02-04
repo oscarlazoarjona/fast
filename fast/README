@@ -4,28 +4,25 @@ Installation instructions:
 
 This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to run.
 
-The ipython notebooks included require also an installation of the ipython notebook.
+All of this can be installed with the following commands in Ubuntu:
 
+1.- Install the fortran dependencies:
 $ sudo apt-get install gfortran liblapack-dev
+
+2.- Install Anaconda, that is Continuum's python distribution:
+$ wget https://repo.continuum.io/archive/Anaconda2-4.3.0-Linux-x86_64.sh
+$ chmod u+x Anaconda2-4.3.0-Linux-x86_64.sh
+$ .Anaconda2-4.3.0-Linux-x86_64.sh
+
+The installer will ask you to accept a few things: the terms and conditions, the default location for the install, and adding anaconda to your .bashrc file. Agree to all of them.
+
+3.- Install tabulate:
 $ pip install tabulate
 
+4.- Install FAST itself
 
-The simplest way to install the Python dependencies is to install Continuum's python distribution, which can be downloaded from
-
-https://www.continuum.io/downloads
-
-Fast can then be installed with
-
-../fast-1.0$ cd fast
-../fast-1.0/fast$ python setup.py
-
-
-Once this completed, tests can be run with
-../fast-1.0/fast$ python tests.py
-
-or the notebooks can be browsed with
-
-$ jupyter notebook
+../fast$ cd fast
+../fast/fast$ python setup.py
 
 ########################################################################
                                 netCDF
@@ -54,6 +51,14 @@ Anaconda is brought to you by Continuum Analytics.
 Please check out: http://continuum.io/thanks and https://anaconda.org
 >>> from netCDF4 import Dataset
 
+########################################################################
+				Using FAST
+########################################################################
+Once this completed, (with netCDF or not) tests can be run with
+../fast/fast$ python tests.py
 
+or the notebooks can be browsed with
+
+$ jupyter notebook
 
 Enjoy!
