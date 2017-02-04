@@ -21,31 +21,35 @@
 #                                                                       *
 #************************************************************************
 
-import os
+########################################################################
+#We build the config.py file
 
+config_text="""
+#Whether to use parallelization through OpenMP.
+parallel=True; parallel=False
+#Whether to use NETCDF binary files for data communication.
+use_netcdf=True#; use_netcdf=False
+
+#An integer between 0 and 2 to control which tests are ran.
+run_long_tests=0
+
+#The install directory for FAST:
+"""
+config_text+='fast_path="'+install_dir+"/fast"+'"\n'
+
+config=file("config.py","w")
+config.write(config_text)
+config.close()
+
+
+########################################################################
+#We add an extra line to the .bashrc file.
+extra_line='''export PYTHONPATH="${PYTHONPATH}:'''+install_dir+'"'
+
+import os
 bashrc_file=file(os.path.expanduser('~')+'/.bashrc',"r")
 bashrc_text=bashrc_file.read()
 bashrc_file.close()
-
-
-#We get the current directory (from which python setup.py)
-install_dir= os.path.dirname(os.path.abspath("setup.py"))
-install_dir=install_dir[:-5]
-
-#We find out if config.py already has the variable fast_path setup
-#and add it if not.
-f=file("config.py","r")
-config=f.read()
-f.close()
-
-if "fast_path=" not in config:
-    config+="\n"
-    config+='fast_path="'+install_dir+"/fast"+'"\n'
-    f=file("config.py","w")
-    f.write(config)
-    f.close()
-
-extra_line='''export PYTHONPATH="${PYTHONPATH}:'''+install_dir+'"'
 
 if extra_line not in bashrc_text:
 	bashrc_text+="\n"+extra_line+"\n"
