@@ -23,7 +23,7 @@
 
 sage_included = 'sage' in globals().keys()
 if not sage_included:
-	from math import sqrt,log
+	from math import sqrt,log,pi
 	from misc import Mu,IJ,find_phase_transformation, format_double
 	from misc import write_equations_code
 	from rk4 import write_rk4, run_rk4
@@ -556,7 +556,6 @@ The results are lists ordered as:
 '''
 	re,im=get_eigenvalues(path,name)
 	
-	Pi=3.14159265358979
 	log12=log(0.5)
 	Nr=len(re[0]); Nd=len(re)
 	half_lives=[]; oscillation_periods=[]
@@ -572,7 +571,7 @@ The results are lists ordered as:
 			if im[j][i]==0.0 and i!=0:
 				col_osci+=[float('inf')]
 			else:
-				col_osci+=[abs(2*Pi/im[j][i])/Omega]
+				col_osci+=[abs(2*pi/im[j][i])/Omega]
 		half_lives+=[col_half]
 		oscillation_periods+=[col_osci]
 	return oscillation_periods+half_lives[1:]

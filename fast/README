@@ -20,7 +20,6 @@ The installer will ask you to accept a few things: the terms and conditions, the
 $ pip install tabulate
 
 4.- Install FAST itself
-
 ../fast$ cd fast
 ../fast/fast$ python setup.py
 
@@ -54,7 +53,7 @@ Please check out: http://continuum.io/thanks and https://anaconda.org
 ########################################################################
 				Using FAST
 ########################################################################
-Once this completed, (with netCDF or not) tests can be run with
+Once this completed (with netCDF or not), tests can be run with
 ../fast/fast$ python tests.py
 
 or the notebooks can be browsed with

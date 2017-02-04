@@ -995,29 +995,6 @@ def quaver(isotope,p,  J,F,M,  Jp,Fp,Mp, numeric=False,verbose=False):
 	if numeric: return float(qu)
 	else: return qu
 
-#~ def calculate_gamma_matrix(full_magnetic_states, reduced_matrix_elements, index_list_fine, Omega=1):
-	#~ epsilon0 = 8.854187817e-12  #The permitivity of vacuum
-	#~ c        = 299792458.0      #The speed of light
-	#~ h        = 1.054571726e-34  #Plank's reduced constant
-	#~ e        = 1.602176565e-19  #The charge of the electron
-	#~ Pi       = 3.14159265358979
-	#~ N_magnetic=len(full_magnetic_states)
-	#~ gamma=[]
-	#~ for i in range(N_magnetic):
-		#~ row=[]
-		#~ ISO,N,L,J,F,M=full_magnetic_states[i].quantum_numbers
-		#~ ii=fine_index(i, index_list_fine)
-		#~ for j in range(N_magnetic):
-			#~ ISOp,Np,Lp,Jp,Fp,Mp=full_magnetic_states[j].quantum_numbers
-			#~ jj=fine_index(j, index_list_fine)
-			#~ 
-			#~ t=Transition(full_magnetic_states[i],full_magnetic_states[j])
-			#~ omegaij=2*Pi*t.nu
-			#~ red=reduced_matrix_elements[ii][jj]
-			#~ s=sum([quaver(ISO,p, J, F, M, Jp, Fp, Mp,numeric=True)**2 for p in [-1,0,1]])
-			#~ row+=[4*e**2*omegaij**3*red**2*s/(3*epsilon0*c**3*h*Omega)]
-		#~ gamma+=[row]
-	#~ return gamma
 
 def find_fine_states(magnetic_states):
 	fine_states=[]

@@ -29,9 +29,7 @@ if not sage_included:
 	from atomic_structure import calculate_boundaries
 	from misc import read_result
 
-else:
-	pi=Pi.n()
-
+from math import pi
 from colorsys import hls_to_rgb,hsv_to_rgb
 from scipy.optimize import curve_fit
 from matplotlib import pyplot
@@ -47,13 +45,13 @@ def complex_to_color(z):
 		if imag(z)==0 and real(z)==0:
 			return [(0,0,0),0]
 
-		h=(atan2(imag(z),real(z)) + 3.14159265358979)/(2*3.14159265358979)
+		h=(atan2(imag(z),real(z)) + pi)/(2*pi)
 		l=sqrt(imag(z)**2+real(z)**2)
 	else:
 		if z.imag==0 and z.real==0:
 			return [(0,0,0),0]
 
-		h=(atan2(z.imag,z.real) + 3.14159265358979)/(2*3.14159265358979)
+		h=(atan2(z.imag,z.real) + pi)/(2*pi)
 		l=sqrt(z.imag**2+z.real**2)
 	#print z,h,l
 	h=float(h); l=float(l)
@@ -598,8 +596,7 @@ def plot_populations(path,name,Ne,states=None,filename='a.png',fontsize=12,absol
 	dat=read_result(path,name,N=Ne,use_netcdf=use_netcdf)
 	x=dat[0]
 	if absolute_frequency:
-		Pi=3.14159265358979
-		x=[xi/2/Pi for xi in x]
+		x=[xi/2/pi for xi in x]
 	pop=dat[1:Ne]
 	Nd=len(pop[0]);	Nr=Ne**2-1
 	

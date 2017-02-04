@@ -36,13 +36,10 @@ from numpy import arange
 
 sage_included = 'sage' in globals().keys()
 
-if not sage_included:
-	from math import atan2,sqrt,pi,cos,sin,exp
-	from sympy import solve,Symbol,diff
-	from atomic_structure import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
-	from atomic_structure import calculate_boundaries
-else:
-	pi=Pi.n()
+from math import atan2,sqrt,pi,cos,sin,exp
+from sympy import solve,Symbol,diff
+from atomic_structure import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
+from atomic_structure import calculate_boundaries
 
 def format_double(num):
 	num=str(num)
@@ -538,7 +535,6 @@ def write_equations_code(path,name,laser,omega,gamma,r,Lij,
 	Ne=len(omega[0])
 	Nl=len(laser)
 	N_excluded_mu=len(excluded_mu)
-	Pi       = 3.14159265358979
 	
 	if states==None: states=range(1,Ne+1)
 		
