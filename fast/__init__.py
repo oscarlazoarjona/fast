@@ -14,7 +14,13 @@ __version__="1.0"
 
 from math import sqrt,pi
 
-from matplotlib import use; use('Agg')# This allows plots to be made remotely via ssh.
+
+import matplotlib
+#We set matplotlib to use a nice latex font.
+matplotlib.rcParams['mathtext.fontset'] = 'cm'
+matplotlib.rcParams['mathtext.rm'] = 'serif'
+# This allows plots to be made remotely via ssh.
+from matplotlib import use; use('Agg')
 
 from electric_field import PlaneWave, MotField
 from electric_field import electric_field_amplitude_gaussian, electric_field_amplitude_top, electric_field_amplitude_intensity
