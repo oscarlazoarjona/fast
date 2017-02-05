@@ -227,6 +227,9 @@ def ket(i,Ne):
         raise ValueError,"i must be in [1 .. Ne]."
     return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)])
 
+def ketbra(i,j,Ne):
+    return ket(i,Ne)*bra(j,Ne)
+
 def lindblad_operator(A,rho):
     return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
 

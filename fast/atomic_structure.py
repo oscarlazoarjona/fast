@@ -573,6 +573,18 @@ class State(object):
             self.omega=2*pi*self.nu
 
     def __repr__(self):
+        r"""The representation routine for states:
+        
+        >>> State("Rb",85,5,0,1/Integer(2)).__repr__()
+        '85Rb 5S_1/2'
+        
+        >>> State("Rb",85,5,0,1/Integer(2),2).__repr__()
+        '85Rb 5S_1/2^2'
+        
+        >>> State("Rb",85,5,0,1/Integer(2),2,2).__repr__()
+        '85Rb 5S_1/2^2,2'
+
+        """
         if self.l==0:
             l='S'
         elif self.l==1:
@@ -594,6 +606,18 @@ class State(object):
         return s
 
     def _latex_(self):
+        r"""The LaTeX routine for states:
+        
+        >>> State("Rb",85,5,0,1/Integer(2))._latex_()
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}'
+        
+        >>> State("Rb",85,5,0,1/Integer(2),2)._latex_()
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2}'
+        
+        >>> State("Rb",85,5,0,1/Integer(2),2,2)._latex_()
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2,2}'
+
+        """
         if self.l==0:
             l='S'
         elif self.l==1:
@@ -625,12 +649,70 @@ class State(object):
         return self.quantum_numbers==other.quantum_numbers
 
 class Transition(object):
+	r"""This class describes a transition between different atomic states. 
+    For instance, the transition between the hyperfine ground states of cesium used in the definition of the second.
+        
+    >>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+    >>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+    >>> clock =Transition(g2,g1)
+    >>> clock
+    133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3
+        
+    """
 	def __init__(self,e1,e2,verbose=1):
-		'''This class describes a transition between different states of the same level of detail.'''
+		r'''This class describes a transition between atomic states. For instance, the transition between the hyperfine ground states of 
+        cesium used in the definition of the second.
+        
+        >>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+        >>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+        >>> clock =Transition(g2,g1)
+        >>> clock
+        133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3
+        
+        Useful properties of transitions are whether they are electric-dipole
+        allowed:
+        >>> clock.allowed
+        False
+        
+        The absolute frequency of the transition (in Hz):
+        >>> print clock.nu
+        9192631770.0
+        
+        The angular frequency of the transition (in rad/s):
+        >>> print clock.omega
+        57759008871.6
+        
+        The wavelength of the transition (in m):
+        >>> print clock.wavelength
+        0.0326122557175
+        
+        The Einstein A coefficient at the fine structure level (in Hz):
+        >>> print clock.einsteinA
+        0.0
+        
+        The states that form the transition:
+        >>> clock.e1, clock.e2
+        (133Cs 6S_1/2^4, 133Cs 6S_1/2^3)
+        
+        A transition between two different atoms will raise an error:
+        >>> g2Rb85 = State("Rb", 85, 5, 0, 1/Integer(2), 3)
+        >>> Transition(g2Rb85, g1)
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: Transition between different elements.
+        
+        A transition between two different isotopes will raise an error:
+        >>> g1Rb87 = State("Rb", 87, 5, 0, 1/Integer(2), 1)
+        >>> Transition(g2Rb85, g1Rb87)
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: Transition between different isotopes.
+        
+        '''
 		if e1.element != e2.element:
-			raise NotImplementedError,'Transition between diferent elements.'
+			raise NotImplementedError,'Transition between different elements.'
 		if e1.isotope != e2.isotope:
-			raise NotImplementedError,'Transitions between diferent isotopes.'
+			raise NotImplementedError,'Transition between different isotopes.'
 		
 		self.e1=e1; self.e2=e2
         
@@ -737,6 +819,14 @@ class Transition(object):
 			self.einsteinA="Unknown, but different from zero!"
 	
 	def __repr__(self):
+		r"""The representation routine for transitions:
+		>>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+		>>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+		>>> Transition(g2,g1).__repr__()
+		'133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3'
+		
+        """
+
 		if self.allowed==True:
 			return self.e1.__repr__()+' -----> '+self.e2.__repr__()
 		elif self.allowed==False:
@@ -745,6 +835,13 @@ class Transition(object):
 			return self.e1.__repr__()+' --?--> '+self.e2.__repr__()
 
 	def _latex_(self):
+		r"""The representation routine for transitions:
+		>>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+		>>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+		>>> Transition(g2,g1)._latex_()
+		'^{133}\\mathrm{Cs}\\ 6S_{1/2}^{4}\\ \\nrightarrow \\ ^{133}\\mathrm{Cs}\\ 6S_{1/2}^{3}'
+		
+        """
 		if self.allowed==True:
 			return self.e1._latex_()+'\\ \\rightarrow \\ '+self.e2._latex_()
 		elif self.allowed==False:
@@ -756,6 +853,19 @@ class Transition(object):
 		return self.e1._latex_()+'\\ \\nleftrightarrow \\ '+self.e2._latex_()
 
 	def __eq__(self,other):
+		r"""The equals routine for transitions. Two transitions are equal
+        if their constituent states are equal:
+		>>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+		>>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+		>>> t1=Transition(g2,g1)._latex_()
+		>>> G1 = State("Rb",  85, 5, 0, 1/Integer(2),2)
+		>>> G2 = State("Rb",  85, 5, 0, 1/Integer(2),3)
+		>>> t2=Transition(G2,G1)._latex_()
+		>>> t1 == t2
+		False
+		
+        """
+        
 		return self.e1==other.e1 and self.e2==other.e2
 
 def split_fine_to_hyperfine(state):

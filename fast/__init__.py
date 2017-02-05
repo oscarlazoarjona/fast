@@ -5,6 +5,10 @@ FAST is an acronym for FAST Atomic Spectroscopy from Theory. It calculates
 the density matrix dynamics and steady states of generic atoms,
 rubidium, and cesium using an arbitrary number of states and radiation fields.
 
+>>> from fast import __version__
+>>> print __version__
+1.0
+
 """
 __version__="1.0"
 
@@ -42,7 +46,7 @@ from symbolic import define_density_matrix, define_laser_variables, polarization
 from symbolic import cartesian_to_helicity, helicity_to_cartesian, helicity_dot_product
 from symbolic import define_r_components, define_frequencies
 from symbolic import delta_greater, delta_lesser
-from symbolic import ket,bra,lindblad_operator,lindblad_terms
+from symbolic import ket,bra,ketbra,lindblad_operator,lindblad_terms
 from symbolic import define_psi_coefficients
 from symbolic import define_rho_vector,calculate_A_b
 from symbolic import vector_element
