@@ -218,19 +218,74 @@ def delta_lesser(i,j):
     else: return 0
 
 def bra(i,Ne):
+    r"""This function returns the transpose of the i-th element of the 
+    canonical basis of a Hilbert space of dimension Ne (in the form of a
+    row vector).
+    
+    >>> bra(2,4)
+    Matrix([[0, 1, 0, 0]])
+
+    This will return an error if i is not in [1 .. Ne]:
+    >>> bra(5,3)
+    Traceback (most recent call last):
+    ...
+    ValueError: i must be in [1 .. Ne].
+    
+    """
     if i not in range(1,Ne+1):
         raise ValueError,"i must be in [1 .. Ne]."
     return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)]).transpose()
 
 def ket(i,Ne):
+    r"""This function returns the i-th element of the canonical basis 
+    of a Hilbert space of dimension Ne (in the form of a column vector).
+    
+    >>> ket(2,4)
+    Matrix([
+    [0],
+    [1],
+    [0],
+    [0]])
+
+    This will return an error if i is not in [1 .. Ne]:
+    >>> ket(5,3)
+    Traceback (most recent call last):
+    ...
+    ValueError: i must be in [1 .. Ne].
+    
+    """
+
     if i not in range(1,Ne+1):
         raise ValueError,"i must be in [1 .. Ne]."
     return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)])
 
 def ketbra(i,j,Ne):
+    r"""This function returns the outer product |i><j| where |i> and |j>
+    are elements of the canonical basis of an Ne-dimensional Hilbert space
+    (in matrix form).
+    
+    >>> ketbra(2,3,3)
+    Matrix([
+    [0, 0, 0],
+    [0, 0, 1],
+    [0, 0, 0]])
+    
+    """
     return ket(i,Ne)*bra(j,Ne)
 
 def lindblad_operator(A,rho):
+    r"""This function returns the action of a Lindblad operator A on a density matrix rho.
+    This is defined as :
+        L(A,rho) = A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2.
+    
+    >>> rho=define_density_matrix(3)
+    >>> lindblad_operator( ketbra(1,2,3) ,rho )
+    Matrix([
+    [   rho22, -rho12/2,        0],
+    [-rho21/2,   -rho22, -rho23/2],
+    [       0, -rho32/2,        0]])
+    
+    """
     return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
 
 def lindblad_terms(gamma,rho,Ne):

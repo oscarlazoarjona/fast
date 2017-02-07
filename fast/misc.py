@@ -74,8 +74,9 @@ def Mu(i,j,s,N,excluded_mu=[]):
 		
 def IJ(mu,N):
 	"""This function returns i,j,s for any given mu."""
+	if mu==0: return 1,1,1
     
-	if mu not in range(1,N**2): raise ValueError,'mu has an invalid value mu='+str(mu)+'.'
+	if mu not in range(0,N**2): raise ValueError,'mu has an invalid value mu='+str(mu)+'.'
 
 	if 1 <= mu <=N-1:
 		return mu+1,mu+1,1
