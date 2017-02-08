@@ -83,11 +83,72 @@ def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
     return rho
 
 def define_laser_variables(Nl,real_amplitudes=False):
+    r"""This function returns the amplitudes and frequencies of Nl fields.
+    
+    >>> E0, omega_laser = define_laser_variables(2)
+    >>> E0, omega_laser
+    ([E_0^1, E_0^2], [omega^1, omega^2])
+    
+    The amplitudes are complex by default:
+    >>> conjugate(E0[0])
+    conjugate(E_0^1)
+    
+    But they can optionally be made real:
+    >>> E0, omega_laser = define_laser_variables(2, real_amplitudes=True)
+    >>> conjugate(E0[0])
+    E_0^1
+    
+    """
     E0         =[Symbol(  r"E_0^"+str(l+1),    real=real_amplitudes ) for l in range(Nl)]
     omega_laser=[Symbol(r"omega^"+str(l+1),    real=True ) for l in range(Nl)]
     return E0,omega_laser
 
 def polarization_vector(phi,theta,alpha,beta,p):
+    r"""This function returns a unitary vector describing the polarization
+    of plane waves. It recieves as arguments:
+    
+    phi   .- The spherical coordinates azimuthal angle of the wave vector k.
+    theta .- The spherical coordinates polar angle of the wave vector k.
+    alpha .- The rotation of a half-wave plate.
+    beta  .- The rotation of a quarter-wave plate.
+    p     .- either 1 or -1 to indicate whether to return epsilon^(+) or
+             epsilon^(-) respectively.
+    
+    If alpha and beta are zero, the result will be linearly polarized light
+    along some fast axis. alpha and beta are measured from that fast axis.
+
+    Propagation towards y, linear polarization (for pi transitions):
+    >>> polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta= 0,p=1)
+    Matrix([
+    [0],
+    [0],
+    [1]])
+
+    Propagation towards +z, circular polarization (for sigma + transitions):
+    >>> polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p=1)
+    Matrix([
+    [  -sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+    
+    Propagation towards -z, circular polarization for sigma + transitions:
+    >>> polarization_vector(phi=0, theta=pi, alpha=   0, beta=-pi/8,p=1)
+    Matrix([
+    [  -sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+    
+    Components + and - are complex conjugates of each other
+    >>> phi, theta, alpha, beta = symbols("phi theta alpha beta", real=True)
+    >>> ep = polarization_vector(phi,theta,alpha,beta, 1)
+    >>> em = polarization_vector(phi,theta,alpha,beta,-1)
+    >>> ep-em.conjugate()
+    Matrix([
+    [0],
+    [0],
+    [0]])
+    
+    """
     epsilon=Matrix([cos(2*beta),p*I*sin(2*beta),0])
     
     R1=Matrix([[ cos(2*alpha), -sin(2*alpha), 0         ],
@@ -105,6 +166,57 @@ def polarization_vector(phi,theta,alpha,beta,p):
     return R3*R2*R1*epsilon
 
 def cartesian_to_helicity(vector):
+    r"""This function takes vectors from the cartesian basis to the helicity basis.
+    For instance, we can check what are the vectors of the helicity basis. 
+    
+    >>> em=polarization_vector(phi=0, theta= 0, alpha=0, beta=-pi/8,p= 1)
+    >>> em
+    Matrix([
+    [   sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+    >>> cartesian_to_helicity(em)
+    Matrix([
+    [ 0],
+    [ 0],
+    [-1]])
+
+    >>> e0=polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta=0,p=1)
+    >>> e0
+    Matrix([
+    [0],
+    [0],
+    [1]])
+    >>> cartesian_to_helicity(e0)
+    Matrix([
+    [0],
+    [1],
+    [0]])
+
+    >>> ep=polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p= 1)
+    >>> ep
+    Matrix([
+    [  -sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+    >>> cartesian_to_helicity(ep)
+    Matrix([
+    [-1],
+    [ 0],
+    [ 0]])
+
+    Note that vectors in the helicity basis are built in a weird way:
+                a = -ap*em +a0*e0 -am*ep
+
+    >>> am,a0,ap = symbols("am a0 ap")
+    >>> a=-ap*em +a0*e0 -am*ep
+    >>> cartesian_to_helicity(a).expand()
+    Matrix([
+    [am],
+    [a0],
+    [ap]])
+        
+    """
     return Matrix([ (vector[0]-I*vector[1])/sqrt(2), vector[2], -(vector[0]+I*vector[1])/sqrt(2) ])
 
 def helicity_to_cartesian(vector):
