@@ -5,7 +5,7 @@
 from doctest import testmod
 import fast
 
-verbose=True; verbose=False
+verbose=True#; verbose=False
 print testmod(fast                   , verbose=verbose)
 print testmod(fast.atomic_structure  , verbose=verbose)
 print testmod(fast.symbolic          , verbose=verbose)

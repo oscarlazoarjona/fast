@@ -205,11 +205,16 @@ def cartesian_to_helicity(vector):
     [ 0],
     [ 0]])
 
-    Note that vectors in the helicity basis are built in a weird way:
+    Note that vectors in the helicity basis are built in a weird way by convention:
                 a = -ap*em +a0*e0 -am*ep
 
     >>> am,a0,ap = symbols("am a0 ap")
     >>> a=-ap*em +a0*e0 -am*ep
+    >>> a
+    Matrix([
+    [    sqrt(2)*am/2 - sqrt(2)*ap/2],
+    [sqrt(2)*I*am/2 + sqrt(2)*I*ap/2],
+    [                             a0]])
     >>> cartesian_to_helicity(a).expand()
     Matrix([
     [am],
