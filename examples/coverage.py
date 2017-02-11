@@ -5,9 +5,9 @@
 from os import system
 from fast.config import fast_path
 
-system("python "+fast_path+"/../examples/tests.py > "+fast_path+"/../examples/res.txt")
+system("python "+fast_path+"/../examples/tests.py > "+fast_path+"/../examples/doctest_output.txt")
 
-f=file(fast_path+"/../examples/res.txt","r")
+f=file(fast_path+"/../examples/doctest_output.txt","r")
 lines=f.readlines()
 f.close()
 
@@ -42,5 +42,5 @@ for line in lines:
 coverage= (1.0 - float(sum(items_without_tests))/sum(items_total))*100
 success = float(sum(tests_passed))/(sum(tests_total))*100
 
-print "The coverage of doctests is:",coverage,"%."
-print "The sucess is of the doctests is",success,"%."
+print "The coverage of doctests is",coverage,"%."
+print "The sucess of the doctests is",success,"%."
