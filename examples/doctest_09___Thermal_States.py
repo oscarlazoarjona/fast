@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2017 Oscar Gerardo Lazo Arjona
+# mailto: oscar.lazoarjona@physics.ox.ac.uk
+
 __doc__ = r"""
 
 Let us calculate the populations $p_i$ for the hyperfine magnetic states of the $5S_{1/2}$ ground state of rubidium in a thermal state. A thermal state has populations
@@ -202,7 +206,7 @@ Let's make a plot of the variation with temperature.
 >>> from matplotlib import pyplot
 
 
->>> plots_path="doctest_09___Thermal_States"
+>>> plots_path="folder_09___Thermal_States"
 
 >>> pyplot.close("all")
 >>> pyplot.semilogx(T,p185,"b",label=r"$\mathrm{lower \ magnetic \ state}$") # doctest: +IGNORE_PLOT_STEP1
@@ -230,7 +234,7 @@ Let's make a plot of the variation with temperature.
     
 >>> pyplot.ylim([0,1]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(plots_path+"/01_populations.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9d107f8050>
+<matplotlib.figure.Figure at 0x7ff6d4ee6fd0>
 
 
 
@@ -262,7 +266,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(plots_path+"/02_entropy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9d09e5c610>
+<matplotlib.figure.Figure at 0x7ff6d4ee6a50>
 
 
 
@@ -296,10 +300,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(plots_path+"/03_energy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.legend.Legend at 0x7f9d09cb5b90>
-
-
-<matplotlib.figure.Figure at 0x7f9d09e71dd0>
+<matplotlib.figure.Figure at 0x7ff6d4ef5f10>
 
 
 

@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# Copyright (C) 2017 Oscar Gerardo Lazo Arjona
+# mailto: oscar.lazoarjona@physics.ox.ac.uk
+
 __doc__ = r"""
 
 This is a review of all the states in the Cesium database. We will check which states are available up to a maximum N:
