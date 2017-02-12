@@ -73,7 +73,11 @@ def write_evolution(path,name,laser,omega,gamma,r,Lij,states=None,excluded_mu=[]
 
 	code0+='    !We load the parameters\n'
 	code0+='    n_aprox=1500\n'
-	code0+="    open(unit=2,file='"+path+name+"_params.dat',status='unknown')\n" 
+	# We break the path name into several lines if it is needed.
+	long_line="    open(unit=2,file='"+path+name+"_params.dat',status='unknown')\n" 
+	if len(long_line)>=72:
+		long_line=long_line[:72]+"&\n&"+long_line[72:]
+	code0+=long_line
 
 	code0+='''    read(2,*) n
     read(2,*) dt
@@ -121,11 +125,15 @@ def write_evolution(path,name,laser,omega,gamma,r,Lij,states=None,excluded_mu=[]
     if (n_mod==0) n_mod=1\n\n'''
 
 	#code0+='    n_aprox=1500\n'
-	code0+=r"""    if (save_eigenvalues) then
-open(unit=3,file='"""+path+name+"""_eigenvalues.dat',status='unknown')
-	end if\n\n"""
-
-
+	code0+="""    if (save_eigenvalues) then\n"""
+    
+	# We break the path name into several lines if it is needed.
+	long_line="""open(unit=3,file='"""+path+name+"""_eigenvalues.dat',status='unknown')\n"""
+	if len(long_line)>=72:
+		long_line=long_line[:72]+"&\n&"+long_line[72:]
+	code0+=long_line
+	
+	code0+="""	end if\n\n"""
 
 	#~ #We add the code to caculate all the initial detunings for each laser.
 	#~ code0+='	!We calculate the initial detunings.\n'

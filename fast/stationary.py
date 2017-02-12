@@ -94,8 +94,13 @@ def write_stationary(path,name,laser,omega,gamma,r,Lij,
     logical :: print_steps,save_systems,specific_deltas,use_netcdf
     real*4 :: start_time, end_time
     
-    !We load the parameters
-    open(unit=2,file='"""+path+name+"""_params.dat',status='unknown')
+    !We load the parameters\n"""
+	# We break the path name into several lines if it is needed.
+	long_line="""open(unit=2,file='"""+path+name+"""_params.dat',status='unknown')\n"""
+	if len(long_line)>=72:
+		long_line=long_line[:72]+"&\n&"+long_line[72:]
+	code0+=long_line
+	code0+="""
     read(2,*) E0
     read(2,*) detuning_knob
 	read(2,*) ldelta
