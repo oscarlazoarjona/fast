@@ -90,22 +90,22 @@ notebooks=[ r"01 - Two level atom.ipynb",
             r"09 - Thermal States.ipynb",
             r"10 - States database.ipynb"]
 
-# We read the text of the noebook.
-notebook_name=notebooks[7]
+# We choose a notebook.
+notebook_name=notebooks[0]
 f=file(path_notebooks+notebook_name,"r")
 text=f.read()
 f.close()
 
 cell_ini     = '   "cell_type": "'
-max_cells=1000
+
 cells=get_cells(text)
 doc='''# -*- coding: utf-8 -*-
 # Copyright (C) 2017 Oscar Gerardo Lazo Arjona
 # mailto: oscar.lazoarjona@physics.ox.ac.uk
 
 __doc__ = r"""\n'''
-Nt=35
-for i,cell in enumerate(cells[:Nt]):
+Nt=46
+for i,cell in enumerate(cells[:]):
     cell_code=""
     
     if cell[0]=="markdown":
@@ -151,15 +151,29 @@ for i,cell in enumerate(cells[:Nt]):
                     
                 if "pyplot.semilogx" in line: line=line+" # doctest: +IGNORE_PLOT_STEP1"
                 if "pyplot.plot"     in line: line=line+" # doctest: +IGNORE_PLOT_STEP1"
+                if "ax.plot"     in line: line=line+" # doctest: +IGNORE_PLOT_STEP1"
                 
                 
                 if "pyplot.ylabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "pyplot.xlabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "pyplot.legend"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "ax.text("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "ax.set_xlabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "ax.set_ylabel"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "ax.legend"  in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
                 
-                if "pyplot.ylim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
+                
+                if "pyplot.axis"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "ax.set_xlim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "ax.set_ylim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
 
                 if "pyplot.savefig" in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "fancy_matrix_plot("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "fancy_r_plot("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "draw_lasers_3d("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "excitation("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "decay("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
+                
                 
                 line=line.replace(r"\\","\\")
                 line+="\n"
@@ -172,19 +186,36 @@ for i,cell in enumerate(cells[:Nt]):
         
         # We enter the results, if any.
         outputs=cell[2]
+        
         for output in outputs:
             #print output
             lines=output.split("\n")
             for line in lines:
                 if line not in ['[','   ]']:
-                    if line[-4:]=='\\n",': line=line[ :-4]
-                    if line[-1:]==   '"' : line=line[ :-1]
-                    if line[:7]=='      "' : line=line[7:  ]
-                    if line[:8]=='       "' : line=line[8:  ]
-                    if line[-2:]=='\\n': line=line[ :-2]
+                    line=line.replace(r"\\","\\")
                     
-                    if line[-7:]=='      ]': line="\n"
-                    if line[-6:]=='     ]': line="\n"
+                    if line[-4:]=='\\n",': line=line[ :-4]
+                    
+                    if line[-1:]==   '"' : line=line[ :-1]
+                    
+                    if line[:7]=='      "' : line=line[7:  ]
+                    
+                    if line[:8]=='       "' : line=line[8:  ]
+                    
+                    if line[-2:]=='\\n': line=line[ :-2]
+
+                    if line[-7:]=='      ]' and len(line)==len('      ]'): line="\n"
+                    if line[-6:]== '     ]' and len(line)==len( '     ]'): line="\n"
+                    
+                    
+                    
+                    blankline=True
+                    for char in line:
+                        if  char != ' ':
+                            blankline=False
+                            break
+                    if blankline: line="<BLANKLINE>"
+                    
                     
                     line+="\n"
                     cell_code+=line
@@ -211,14 +242,18 @@ f=file(doctest_name,"w")
 f.write(doc)
 f.close()
 
+import os
+try:
+    os.system("mkdir "+doctest_name[:-3].replace("doctest","folder"))
+except:
+    pass
 
 s="import "+doctest_name[:-3]
 exec(s)
 s="print testmod("+doctest_name[:-3]+")"
 print s
 exec(s)
-#~ import doctest_09___Thermal_States
-#~ print testmod(doctest_09___Thermal_States)
+
 
 #Rules: cells that return text must do so at the end.
 #       cells for plotting must end with a savefig call

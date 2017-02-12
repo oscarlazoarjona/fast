@@ -19,6 +19,9 @@ print testmod(fast.stationary        , verbose=verbose)
 
 ########################################################################
 # Run all codes from notebook-generated examples.
+import doctest_01___Two_level_atom
+import doctest_02___Three_level_atom_ladder
+import doctest_03___Rb87_one_photon
 import doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
 import doctest_05___Two_level_atom_symbolic
 import doctest_06___Three_level_atom_ladder_symbolic
@@ -27,6 +30,8 @@ import doctest_08___Three_level_atom_V_symbolic
 import doctest_09___Thermal_States
 import doctest_10___States_database
 
+print testmod(doctest_01___Two_level_atom  , verbose=verbose)
+print testmod(doctest_03___Rb87_one_photon  , verbose=verbose)
 print testmod(doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field  , verbose=verbose)
 print testmod(doctest_05___Two_level_atom_symbolic  , verbose=verbose)
 print testmod(doctest_06___Three_level_atom_ladder_symbolic  , verbose=verbose)

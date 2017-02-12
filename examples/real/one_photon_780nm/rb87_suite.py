@@ -38,7 +38,7 @@ pyplot.ioff()
 ################################################
 #We define the basic characteristics of the experiment.
 #The path in which files will be placed.
-path='./examples/real/one_photon_780nm/'
+path='./real/one_photon_780nm/'
 #The name of te experiments.
 name='rb87_suite'
 
