@@ -794,21 +794,20 @@ class Transition(object):
 			#Reference [3]
 			#
 			################################################################################################
-			#According to
-			# Measurement of the lifetime of the atomic cesium 5(2)D(5/2) state with diode-laser excitation.
-			# the lifetime of 6 D_5/2 is
-			tau=1225e-9# s
-			gam=2*pi/tau
+            # [1] Steck
+            # [2] Georgiades, Polzik, Kimble - 1994 - Two-photon spectroscopy of the 6S 1 2 -
+			# [3] Measurement of the lifetime of the atomic cesium 5(2)D(5/2) state with diode-laser excitation.
+			gam=2*pi*3.2e6
 			#If the branching ratios between 6D_5/2 -> 6P_3/2 and 6D_5/2 -> 7P_3/2 are 0.74 and 0.26
 			#as they are for                 5D_5/2 -> 5P_3/2 and 5D_5/2 -> 6P_3/2 in rubidium, then
 			gam1=gam*0.74
 			gam2=gam*0.26
 			################################################################################################
-			pairs= [[6, 1, Integer(1)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*4.575e6],
-					[6, 1, Integer(3)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*5.234e6],
+			pairs= [[6, 1, Integer(1)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*4.575e6],#[1]
+					[6, 1, Integer(3)/Integer(2),   6, 0, Integer(1)/Integer(2), 2*pi*5.234e6],#[1]
                     
-                    [6, 2, Integer(5)/Integer(2),   7, 1, Integer(3)/Integer(2), gam2],
-                    [6, 2, Integer(5)/Integer(2),   6, 1, Integer(3)/Integer(2), gam1]]
+                    [6, 2, Integer(5)/Integer(2),   7, 1, Integer(3)/Integer(2), gam2],#[2]
+                    [6, 2, Integer(5)/Integer(2),   6, 1, Integer(3)/Integer(2), gam1]]#[2]
 			
 		#print pairs
 		self.einsteinA=0.0

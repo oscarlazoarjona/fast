@@ -90,6 +90,7 @@ class Measurement(object):
 		sigmaf = (self.sigma/self.value)**2 
 		sigmaf+= (other.sigma/other.value)**2 - 2*cov/(self.value*other.value)
 		sigmaf = sqrt(sigmaf)
+		sigmaf = sqrt((self.value/other.value)**2)*sigmaf
 
 		return Measurement(self.value / other.value,sigmaf)			
 	def __rdiv__(self,other):
