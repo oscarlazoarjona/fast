@@ -202,7 +202,7 @@ def write_evolution(path,name,laser,omega,gamma,r,Lij,states=None,excluded_mu=[]
         end if
 '''
 	else:
-        code0+="\n"
+		code0+="\n"
 		long_line="			open(unit=1,file='"+path+name+".dat',status='unknown')\n" 
 		if len(long_line)>=72:
 			long_line=long_line[:72]+"&\n&"+long_line[72:]
