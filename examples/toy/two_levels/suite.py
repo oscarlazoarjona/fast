@@ -28,7 +28,7 @@ from fast.config import parallel, use_netcdf
 ################################################
 #We define the basic characteristics of the experiment.
 #The path in which files will be placed.
-path='./toy/two_levels/'
+path='./examples/toy/two_levels/'
 #The name of the experiments.
 name='suite'
 #The number of states.

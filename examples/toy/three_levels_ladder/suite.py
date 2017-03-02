@@ -34,7 +34,7 @@ from fast.config import parallel, use_netcdf, run_long_tests
 ################################################
 #We define the basic characteristics of the experiment.
 #The path in which files will be placed.
-path='./toy/three_levels_ladder/'
+path='./examples/toy/three_levels_ladder/'
 #The name of te experiments.
 name='suite'
 #The number of states.
