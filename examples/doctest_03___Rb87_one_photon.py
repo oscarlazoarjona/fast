@@ -54,7 +54,7 @@ We plot the resonant frequencies $\\omega_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,omega,magnetic_states,path,name+'_omega.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f39774ea950>
+<matplotlib.figure.Figure at 0x7fc84032c3d0>
 
 
 
@@ -62,14 +62,14 @@ We plot the matrix of decays $\\gamma_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,gamma,magnetic_states,path,name+'_gamma.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3974036c50>
+<matplotlib.figure.Figure at 0x7fc83bff6890>
 
 
 
 We plot the components of the position operator $\\hat{\\vec{r}}$.
 
 >>> fancy_r_plot(r         ,magnetic_states,path,name+'_r.png', complex_matrix=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973dc50d0>
+<matplotlib.figure.Figure at 0x7fc83f4ce850>
 
 
 
@@ -80,7 +80,7 @@ We define the laser we will use.
 >>> Nl=len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973b82950>
+<matplotlib.figure.Figure at 0x7fc83bc91b90>
 
 
 
@@ -119,7 +119,7 @@ We draw a level diagram.
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_levels.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+'_levels.pdf',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973b866d0>
+<matplotlib.figure.Figure at 0x7fc83f4aba50>
 
 
 
@@ -192,7 +192,7 @@ We plot what happens to the states $5S_{1/2}F=1$.
     
 >>> pyplot.savefig(path+name+"_tshort_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973b86450>
+<matplotlib.figure.Figure at 0x7fc83b0d3b90>
 
 
 
@@ -210,7 +210,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f39734fcb50>
+<matplotlib.figure.Figure at 0x7fc83b3a3790>
 
 
 
@@ -230,7 +230,7 @@ We plot what happens to the states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973a580d0>
+<matplotlib.figure.Figure at 0x7fc83b44cc50>
 
 
 
@@ -260,7 +260,7 @@ We plot what happens to states $5S_{1/2}F=1$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973c903d0>
+<matplotlib.figure.Figure at 0x7fc83bb3c310>
 
 
 
@@ -278,7 +278,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f3973019850>
+<matplotlib.figure.Figure at 0x7fc83b353810>
 
 
 
@@ -298,7 +298,7 @@ We plot what happens to states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f397405ead0>
+<matplotlib.figure.Figure at 0x7fc83b4be6d0>
 
 
 
@@ -378,7 +378,7 @@ We now make a test of this stationary two-level state to make sure.
 >>> pyplot.xlabel(r"$\delta/2\pi \ \mathrm{(MHz)}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.ylabel(r"$\rho_{22}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(path+name+"_1power.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f397923a090>
+<matplotlib.figure.Figure at 0x7fc83ba1ae90>
 
 
 I/I0= 0.01 E0= 0.637477867488
@@ -403,7 +403,7 @@ I/I0= 100.0 E0= 63.7477867488
 
 
 
-[]
+>>> pyplot.close("all")
 
 []
 

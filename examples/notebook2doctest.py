@@ -91,7 +91,7 @@ notebooks=[ r"01 - Two level atom.ipynb",
             r"10 - States database.ipynb"]
 
 # We choose a notebook.
-notebook_name=notebooks[2]
+notebook_name=notebooks[8]
 f=file(path_notebooks+notebook_name,"r")
 text=f.read()
 f.close()
@@ -166,6 +166,8 @@ for i,cell in enumerate(cells[:]):
                 if "pyplot.axis"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
                 if "ax.set_xlim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
                 if "ax.set_ylim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "pyplot.xlim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "pyplot.ylim"    in line: line=line+" # doctest: +IGNORE_PLOT_STEP3"
 
                 if "pyplot.savefig" in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
                 if "fancy_matrix_plot("  in line: line=line+" # doctest: +IGNORE_PLOT_STEP4"
@@ -255,6 +257,8 @@ print s
 exec(s)
 
 
-#Rules: cells that return text must do so at the end.
+#Rules: 
+#       cells that return text must do so at the end.
 #       cells for plotting must end with a savefig call
 #       lines of code cannot end in "
+#       pyplot. lines cannot be commented.

@@ -68,7 +68,7 @@ We define the lasers.
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f632857dcd0>
+<matplotlib.figure.Figure at 0x7fe5ac8d8bd0>
 
 
 
@@ -90,7 +90,7 @@ We make a diagram level.
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f6325038f50>
+<matplotlib.figure.Figure at 0x7fe5ac6fef10>
 
 
 
@@ -127,7 +127,7 @@ We plot the components we have just read.
 >>> ax.set_xlabel(r"$t$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+'evolution_evo.png',bbox_inches='tight',figsize=25) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f6324812f90>
+<matplotlib.figure.Figure at 0x7fe5ac8d8dd0>
 
 
 
@@ -146,7 +146,7 @@ We run the time evolution many times now varying the detuning of the laser.
     
 >>> ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+'spectrum_'+name+'_evolution.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f6350255450>
+<matplotlib.figure.Figure at 0x7fe5a9193dd0>
 
 
 
@@ -178,7 +178,7 @@ We run the spectroscopy.
     
 >>> ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+'spectrum_'+name+'.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f6324762dd0>
+<matplotlib.figure.Figure at 0x7fe5e2350ad0>
 
 
 
@@ -213,9 +213,11 @@ We run the spectroscopy.
     
 ...     pyplot.savefig(path+name+'_power_broadening.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
 ... 
-<matplotlib.figure.Figure at 0x7f6324809e10>
+<matplotlib.figure.Figure at 0x7fe5a8ad7c50>
 
 
+
+>>> pyplot.close("all")
 
 []
 

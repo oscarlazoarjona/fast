@@ -11,6 +11,7 @@ $$p_i=\\frac{ \\exp{(-E_i/k_B T)} }{Z} \\hspace{1cm} Z=\\sum_j \\exp{(-E_j/k_B T
 where $E_i$ are the energies of each state and $k_B$ is Boltzman's constant.
 
 >>> from fast.atomic_structure import State, make_list_of_states
+>>> from fast.config import fast_path
 >>> from sympy import Integer
 >>> from math import pi,exp,log
 
@@ -206,7 +207,7 @@ Let's make a plot of the variation with temperature.
 >>> from matplotlib import pyplot
 
 
->>> plots_path="folder_09___Thermal_States"
+>>> plots_path=fast_path[:-5]+"/examples/folder_09___Thermal_States/" 
 
 >>> pyplot.close("all")
 >>> pyplot.semilogx(T,p185,"b",label=r"$\mathrm{lower \ magnetic \ state}$") # doctest: +IGNORE_PLOT_STEP1
@@ -234,7 +235,7 @@ Let's make a plot of the variation with temperature.
     
 >>> pyplot.ylim([0,1]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(plots_path+"/01_populations.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7ff6d4ee6fd0>
+<matplotlib.figure.Figure at 0x7f40ed3b39d0>
 
 
 
@@ -266,7 +267,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(plots_path+"/02_entropy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7ff6d4ee6a50>
+<matplotlib.figure.Figure at 0x7f4115088150>
 
 
 
@@ -300,9 +301,235 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(plots_path+"/03_energy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7ff6d4ef5f10>
+<matplotlib.figure.Figure at 0x7f40e98cc5d0>
 
 
+
+# An atom in thermal equilibrium
+Let us solve the master equation found in [1]. These are simply the usual Bloch equations for a two level system.
+
+>>> from fast import *
+>>> from sympy import oo,exp
+>>> init_printing()
+>>> use_unicode=False
+
+>>> hbar,k,omega2,T,gamma,n=symbols("hbar k omega2 T gamma n",positive=True)
+>>> omega1=symbols("omega1",negative=True)
+
+>>> Omega=symbols("Omega",real=True)
+>>> delta=symbols("delta",real=True)
+
+>>> H=hbar*Matrix([[delta,Omega.conjugate()/2],[Omega/2,0]])
+
+>>> rho=define_density_matrix(2,explicitly_hermitian=True,normalized=True)
+
+>>> eqs =I/hbar*(rho*H-H*rho)
+
+However, instead of the usual Lindblad terms, we will use the following
+
+>>> eqs+=(1+n)*gamma*lindblad_operator(ketbra(1,2,2),rho)
+>>> eqs+=(  n)*gamma*lindblad_operator(ketbra(2,1,2),rho)
+
+Where $\\bar{n}$ is the "mean photon number" here simply defined as 
+
+>>> ns=exp(-hbar*(omega2-omega1)/k/T)/(1-exp(-hbar*(omega2-omega1)/k/T))
+>>> ns=1/(exp(hbar*(omega2-omega1)/k/T)-1)
+>>> pprint(ns,use_unicode=use_unicode)
+             1              
+----------------------------
+ hbar*(-omega1 + omega2)    
+ -----------------------    
+           T*k              
+e                        - 1
+
+
+
+Where $\\omega_1$ and $\\omega_2$ are the energy frequencies of our two states, and $T$ will become our definition of temperature. We solve these equations for the steady state. Notice that $n\\rightarrow0$ as $T\\rightarrow0$  and $n \\rightarrow\\infty$ as $T\\rightarrow \\infty$.
+
+>>> print ns.limit(T,0), ns.limit(T,oo)
+0 oo
+
+
+
+>>> eq2=eqs[1,1].subs({rho[1,0]:re(rho[1,0])+I*im(rho[1,0])}).expand()
+>>> eq3=re(eqs[1,0].expand())
+>>> eq4=im(eqs[0,1].expand())
+
+>>> sol=solve([eq2,eq3,eq4],[rho[1,1],re(rho[1,0]),im(rho[1,0])])
+
+>>> rho11T=(1-sol[rho[1,1]]).expand().factor()
+>>> rho22T=sol[rho[1,1]]
+>>> rho21T=(sol[re(rho[1,0])]+I*sol[im(rho[1,0])]).factor()
+
+>>> pprint(rho11T,use_unicode=use_unicode,num_columns=150)
+       2          2          2            2          2  3          2  2          2          2
+2*Omega *n + Omega  + 4*delta *n + 4*delta  + 4*gamma *n  + 8*gamma *n  + 5*gamma *n + gamma 
+---------------------------------------------------------------------------------------------
+                       /       2          2          2  2          2          2\             
+             (2*n + 1)*\2*Omega  + 4*delta  + 4*gamma *n  + 4*gamma *n + gamma /             
+
+
+
+>>> pprint(rho22T,use_unicode=use_unicode,num_columns=150)
+     2               /       2        2          2\
+Omega *(2*n + 1) + n*\4*delta  + gamma *(2*n + 1) /
+---------------------------------------------------
+          /       2          2        2          2\
+(2*n + 1)*\2*Omega  + 4*delta  + gamma *(2*n + 1) /
+
+
+
+>>> pprint(rho21T,use_unicode=use_unicode,num_columns=150)
+             -Omega*(-2*delta + 2*I*gamma*n + I*gamma)             
+-------------------------------------------------------------------
+          /       2          2          2  2          2          2\
+(2*n + 1)*\2*Omega  + 4*delta  + 4*gamma *n  + 4*gamma *n + gamma /
+
+
+
+Obviously, if we take the temperature to zero, we recover the usual solutions to Bloch equations in the steady state.
+
+>>> pprint(rho11T.limit(n,0),use_unicode=use_unicode)
+      2          2        2 
+ Omega  + 4*delta  + gamma  
+----------------------------
+       2          2        2
+2*Omega  + 4*delta  + gamma 
+
+
+
+>>> pprint(rho22T.limit(n,0),use_unicode=use_unicode)
+                2           
+           Omega            
+----------------------------
+       2          2        2
+2*Omega  + 4*delta  + gamma 
+
+
+
+>>> pprint(rho21T.limit(n,0),use_unicode=use_unicode)
+-(-2*Omega*delta + I*Omega*gamma) 
+----------------------------------
+          2          2        2   
+   2*Omega  + 4*delta  + gamma    
+
+
+
+Now let's explore what happens when the temperature goes to infinity:
+
+>>> print [rho11T.limit(n,oo), rho22T.limit(n,oo), rho21T.limit(n,oo)]
+[1/2, 1/2, 0]
+
+
+
+Which is exactly what one would expect of thermal states. Furthermore, at finite temperature, and in the abscence of optical fields
+
+>>> vapour={delta:0,Omega:0}
+>>> rho11_vapour=rho11T.subs(vapour).factor()
+>>> rho22_vapour=rho22T.subs(vapour).factor()
+>>> rho21_vapour=rho21T.subs(vapour)
+>>> pprint([rho11_vapour,rho22_vapour,rho21_vapour],use_unicode=use_unicode)
+  n + 1      n       
+[-------, -------, 0]
+ 2*n + 1  2*n + 1    
+
+
+
+Remarkably, the populations do not depend on the decay frequency $\\gamma$! Thus only the temperature determines the populations in the abscence of fields!
+
+Explicitly, the populations are
+
+>>> rho11_vapour=rho11_vapour.subs({n:ns}).expand().factor()
+>>> rho22_vapour=rho22_vapour.subs({n:ns}).expand().factor()
+>>> pprint([rho11_vapour,rho22_vapour],use_unicode=use_unicode)
+          hbar*omega2                  hbar*omega1        
+          -----------                  -----------        
+              T*k                          T*k            
+         e                            e                   
+[---------------------------, ---------------------------]
+  hbar*omega1    hbar*omega2   hbar*omega1    hbar*omega2 
+  -----------    -----------   -----------    ----------- 
+      T*k            T*k           T*k            T*k     
+ e            + e             e            + e            
+
+
+
+We can check that these are in deed thermal states
+
+>>> Z=exp(-hbar*omega1/k/T)+exp(-hbar*omega2/k/T)
+>>> rho11_thermal=exp(-hbar*omega1/k/T)/Z
+>>> rho22_thermal=exp(-hbar*omega2/k/T)/Z
+    
+>>> print [(rho11_vapour-rho11_thermal).simplify(),(rho22_vapour-rho22_thermal).simplify()]
+[0, 0]
+
+
+
+So we may define a thermalization temperature as the temperature required so that in the abscence of fields, the excited state has population 1/4 (in much the same way as the saturation intensity is defined for the field).
+
+>>> Tterm=solve(rho22_vapour-1/Integer(4),T)[0]
+>>> pprint(Tterm,use_unicode=use_unicode)
+-hbar*(omega1 - omega2) 
+------------------------
+        k*log(3)        
+
+
+
+Let us now apply this to the hyperfine splittings of the ground states of the alkalis that we examined before, which is very questionable.
+
+>>> g1Rb85=State("Rb",85,5,0,1/Integer(2),2)
+>>> g2Rb85=State("Rb",85,5,0,1/Integer(2),3)
+    
+>>> g1Rb87=State("Rb",87,5,0,1/Integer(2),1)
+>>> g2Rb87=State("Rb",87,5,0,1/Integer(2),2)
+    
+>>> g1Cs133=State("Cs",133,6,0,1/Integer(2),3)
+>>> g2Cs133=State("Cs",133,6,0,1/Integer(2),4)
+
+>>> from scipy.constants import k as ks
+>>> from scipy.constants import hbar as hbars
+
+>>> ns.subs({hbar:hbars,k:ks,omega1:g1Cs133.omega,omega2:g2Cs133.omega,T:293.})
+663.632828136148
+
+
+
+>>> TtermRb85 =Tterm.subs({hbar:hbars,k:ks,omega1: g1Rb85.omega, omega2:g2Rb85.omega}).n()
+>>> TtermRb87 =Tterm.subs({hbar:hbars,k:ks,omega1: g1Rb87.omega, omega2:g2Rb87.omega}).n()
+>>> TtermCs133=Tterm.subs({hbar:hbars,k:ks,omega1:g1Cs133.omega,omega2:g2Cs133.omega}).n()
+    
+>>> print [TtermRb85, TtermRb87, TtermCs133]
+[0.132614817483323, 0.298570427225583, 0.401576510739131]
+
+
+
+Let us now find the populations for the exited multiplets for a thermal state at these temperatures:
+
+>>> E85 =get_energies("Rb",85)
+>>> E87 =get_energies("Rb",87)
+>>> E133=get_energies("Cs",133)
+>>> print pops(TtermRb85,E85,"Rb",85)[3].subs({hbar:hbars})
+0.318181818181818
+
+
+
+>>> print pops(TtermRb87,E87,"Rb",87)[3].subs({hbar:hbars})
+0.357142857142857
+
+
+
+>>> print pops(TtermCs133,E133,"Cs",133)[3].subs({hbar:hbars})
+0.300000000000000
+
+
+
+If the two level system theory was appropiate for this problem, we should have got 1/4, so we did get pretty good estimates!
+
+>>> pyplot.close("all")
+
+[]
+
+[1] An open systems approach to quantum optics : lectures presented at the Universite Libre de Bruxelles, October 28 to November 4, 1991. Carmichael, Howard.
 
 []
 
