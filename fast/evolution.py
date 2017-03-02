@@ -334,7 +334,12 @@ end subroutine check
 	print*,'time to form A:',t2-t1\n\n"""
 	
 	code+="	if (save_systems) then\n"
-	code+="		open(file='"+path+name+"_AB.dat',unit=4,status='unknown')\n"
+	
+    long_line="    open(unit=4,file='"+path+name+"_AB.dat',status='unknown')\n" 
+	if len(long_line)>=72:
+		long_line=long_line[:72]+"&\n&"+long_line[72:]
+	code+=long_line
+
 	code+="		do j=1,"+str(Ne**2-1-N_excluded_mu)+'\n'
 	code+="			write(4,*) A(j,:),B(j,1)\n"
 	code+="		end do\n"
