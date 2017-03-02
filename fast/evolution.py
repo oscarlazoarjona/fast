@@ -335,7 +335,7 @@ end subroutine check
 	
 	code+="	if (save_systems) then\n"
 	
-    long_line="    open(unit=4,file='"+path+name+"_AB.dat',status='unknown')\n" 
+	long_line="    open(unit=4,file='"+path+name+"_AB.dat',status='unknown')\n" 
 	if len(long_line)>=72:
 		long_line=long_line[:72]+"&\n&"+long_line[72:]
 	code+=long_line
