@@ -7,22 +7,24 @@ This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to 
 All of this can be installed with the following commands in Ubuntu:
 
 1.- Install the fortran dependencies:
-$ sudo apt-get install gfortran liblapack-dev
+ $ sudo apt-get install gfortran liblapack-dev
 
 2.- Install Anaconda, that is Continuum's python distribution:
-$ wget https://repo.continuum.io/archive/Anaconda2-4.3.0-Linux-x86_64.sh
-$ chmod u+x Anaconda2-4.3.0-Linux-x86_64.sh
-$ ./Anaconda2-4.3.0-Linux-x86_64.sh
+ $ wget https://repo.continuum.io/archive/Anaconda2-4.3.0-Linux-x86_64.sh
+ $ chmod u+x Anaconda2-4.3.0-Linux-x86_64.sh
+ $ ./Anaconda2-4.3.0-Linux-x86_64.sh
 
 The installer will ask you to accept a few things: the terms and conditions,
 the default location for the install, and adding anaconda to your .bashrc 
-file. Agree to all of them.
+file. Agree to all of them. All python and pip commands in this readme
+should be ran using the Anaconda distribution, and not the default Python
+distribution that might be available in your operative system.
 
 3.- Open a new terminal in order to reload you .bashrc file and continue 
 from the new terminal.
 
 4.- Install tabulate:
-$ pip install tabulate
+ $ pip install tabulate
 
 5.- Install FAST itself
 ../fast$ python setup.py
@@ -35,11 +37,12 @@ Optionally, to make the Python-Fortran interface faster (this can be an importan
 To install netcdf in Python
 sudo apt-get install libhdf5-dev,libnetcdf-dev, libnetcdff-dev
 
-Then download the tar.gz from
+Then download the tar.gz for Python's netCDF inteface (in some directory
+other than the fast install directory).
 
-https://pypi.python.org/pypi/netCDF4
+ $ wget https://pypi.python.org/packages/d8/22/8c3a488af29aa387e5fde0d677a8c3808cad46d3cd59b8160bdab6249edd/netCDF4-1.2.7.tar.gz#md5=77b357d78f9658dd973dee901f6d86f8
 
-which is Python's netCDF interface. To install this, extract the tar.gz and run
+To install this, extract the tar.gz and run
 
  $ python setup build
  $ sudo /home/YOUR.USERNAME/anaconda2/bin/python setup.py install
@@ -58,10 +61,10 @@ Please check out: http://continuum.io/thanks and https://anaconda.org
 				Using FAST
 ########################################################################
 Once this completed (with netCDF or not), tests can be run with
-../fast/fast$ python tests.py
+../fast$ python examples/tests.py
 
 or the notebooks can be browsed with
 
-$ jupyter notebook
+ $ jupyter notebook
 
 Enjoy!
