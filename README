@@ -14,12 +14,17 @@ $ wget https://repo.continuum.io/archive/Anaconda2-4.3.0-Linux-x86_64.sh
 $ chmod u+x Anaconda2-4.3.0-Linux-x86_64.sh
 $ ./Anaconda2-4.3.0-Linux-x86_64.sh
 
-The installer will ask you to accept a few things: the terms and conditions, the default location for the install, and adding anaconda to your .bashrc file. Agree to all of them.
+The installer will ask you to accept a few things: the terms and conditions,
+the default location for the install, and adding anaconda to your .bashrc 
+file. Agree to all of them.
 
-3.- Install tabulate:
+3.- Open a new terminal in order to reload you .bashrc file and continue 
+from the new terminal.
+
+4.- Install tabulate:
 $ pip install tabulate
 
-4.- Install FAST itself
+5.- Install FAST itself
 ../fast$ python setup.py
 
 ########################################################################
