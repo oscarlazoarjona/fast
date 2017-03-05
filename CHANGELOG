@@ -1,3 +1,15 @@
 The changes from version 1.0 were:
+    * Added arbitrary alkalis.
+    * NetCDF can now be used in the Python-Fortran interface.
+    * Added GPL licence.
+    * Included all of Sansonetti's data.
+    * Added magnetic octupole constants to the databas of hyperfine structure.
+    * Importing fundamental constants from Scipy, which is in turn referenced to CODATA.
+    * Added atomic number and number of neutrons to State properties.
 	* Automatic setup has been included.
 	* Jupyter notebooks have now been included.
+    * All tests have been implemented as doctests.
+    * All notebooks have been implemented as doctests.
+    * Generating config.py from setup.py
+    * Added version.
+    * Added description.
