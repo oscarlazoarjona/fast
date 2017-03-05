@@ -54,7 +54,7 @@ We plot the resonant frequencies $\\omega_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,omega,magnetic_states,path,name+'_omega.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc84032c3d0>
+<matplotlib.figure.Figure at 0x7fc54a174d90>
 
 
 
@@ -62,14 +62,14 @@ We plot the matrix of decays $\\gamma_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,gamma,magnetic_states,path,name+'_gamma.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83bff6890>
+<matplotlib.figure.Figure at 0x7fc546b77850>
 
 
 
 We plot the components of the position operator $\\hat{\\vec{r}}$.
 
 >>> fancy_r_plot(r         ,magnetic_states,path,name+'_r.png', complex_matrix=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83f4ce850>
+<matplotlib.figure.Figure at 0x7fc54a04cb90>
 
 
 
@@ -80,7 +80,7 @@ We define the laser we will use.
 >>> Nl=len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83bc91b90>
+<matplotlib.figure.Figure at 0x7fc54669f050>
 
 
 
@@ -119,7 +119,7 @@ We draw a level diagram.
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_levels.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+'_levels.pdf',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83f4aba50>
+<matplotlib.figure.Figure at 0x7fc546649610>
 
 
 
@@ -192,7 +192,7 @@ We plot what happens to the states $5S_{1/2}F=1$.
     
 >>> pyplot.savefig(path+name+"_tshort_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83b0d3b90>
+<matplotlib.figure.Figure at 0x7fc57461c290>
 
 
 
@@ -210,7 +210,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83b3a3790>
+<matplotlib.figure.Figure at 0x7fc545ecacd0>
 
 
 
@@ -230,7 +230,7 @@ We plot what happens to the states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83b44cc50>
+<matplotlib.figure.Figure at 0x7fc546571290>
 
 
 
@@ -260,7 +260,7 @@ We plot what happens to states $5S_{1/2}F=1$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83bb3c310>
+<matplotlib.figure.Figure at 0x7fc546687e10>
 
 
 
@@ -278,7 +278,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83b353810>
+<matplotlib.figure.Figure at 0x7fc54657eb50>
 
 
 
@@ -298,7 +298,7 @@ We plot what happens to states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83b4be6d0>
+<matplotlib.figure.Figure at 0x7fc5465be710>
 
 
 
@@ -313,93 +313,106 @@ We compile it.
 
 We now make a test of this stationary two-level state to make sure.
 
->>> run_long_tests=1
->>> if run_long_tests>=1:
-...     def model_lorentzian(n=1):
-...         s='lambda x,'
-...         for i in range(1,n+1): s+=' A'+str(i)+','
-...         for i in range(1,n+1): s+=' x0'+str(i)+','
-...         for i in range(1,n+1): s+=' gamma'+str(i)+','
-...         s=s[:-1]
-...         s+=' :'
-...         for i in range(1,n+1): s+=' A'+str(i)+'*gamma'+str(i)+'**2/(4*(x-x0'+str(i)+')**2+gamma'+str(i)+'**2) +'
-...         s=s[:-1]
-...         return eval(s)
+>>> def model_lorentzian(n=1):
+...     s='lambda x,'
+...     for i in range(1,n+1): s+=' A'+str(i)+','
+...     for i in range(1,n+1): s+=' x0'+str(i)+','
+...     for i in range(1,n+1): s+=' gamma'+str(i)+','
+...     s=s[:-1]
+...     s+=' :'
+...     for i in range(1,n+1): s+=' A'+str(i)+'*gamma'+str(i)+'**2/(4*(x-x0'+str(i)+')**2+gamma'+str(i)+'**2) +'
+...     s=s[:-1]
+...     return eval(s)
     
-...     def fit_lorentzians(x,y,p0=None,n=1,return_p0=False):
-...         '''Fits a lorentzian curve using p0=[A1,A2,...,x1,x2,...,gamma1,gamma2,...] as an initial guess.
-...         It returns a curve with N_points.'''
-...         
-...         lorentzians=model_lorentzian(n)
-...         N=len(x)
-...         if return_p0:
-...             fit=p0;pcov=None
-...         else:
-...             fit,pcov = curve_fit(lorentzians,x,y,p0=p0)
-...         s=''.join([',fit['+str(i)+']' for i in range(3*n)])
-...         s='[lorentzians(xi'+s+') for xi in x]'
-...         fitted_curve=eval(s)
-...         
-...         for i in range(n):
-...             fit[-i-1]=abs(fit[-i-1])
-...         return fit,pcov,fitted_curve
+>>> def fit_lorentzians(x,y,p0=None,n=1,return_p0=False):
+...     '''Fits a lorentzian curve using p0=[A1,A2,...,x1,x2,...,gamma1,gamma2,...] as an initial guess.
+...     It returns a curve with N_points.'''
+...     lorentzians=model_lorentzian(n)
+...     N=len(x)
+...     if return_p0:
+...         fit=p0;pcov=None
+...     else:
+...         fit,pcov = curve_fit(lorentzians,x,y,p0=p0)
+...     s=''.join([',fit['+str(i)+']' for i in range(3*n)])
+...     s='[lorentzians(xi'+s+') for xi in x]'
+...     fitted_curve=eval(s)    
+...     for i in range(n):
+...         fit[-i-1]=abs(fit[-i-1])
+...     return fit,pcov,fitted_curve
     
-...     ########################################################################
-...     Npow=19; pow_ini=-2.0; pow_end=2.0; pow_step=(pow_end-pow_ini)/(Npow-1)
-...     pows=[10**(pow_ini+i*pow_step) for i in range(Npow)]
-...     model_widths=[]; simple_widths=[]
-...     model_pops=[]; simple_pops=[]
-...     detuning_knob=[(t1[2]-30)*2*pi]
-...     frequency_end=(t1[2]+30)*2*pi
-...     #print 111
-...     N_delta=250
-...     for s0 in pows:
-...         E000=[electric_field_amplitude_intensity(s0,Omega=Omega)]
-...         
-...         run_stationary(path,name+"_steady",E000,detuning_knob,spectrum_of_laser=1,N_delta=N_delta, frequency_end=frequency_end,use_netcdf=use_netcdf)
-...         
-...         nu,pop0=read_result(path,name+"_steady",Ne,Ne,1,Ne,use_netcdf=use_netcdf)
-...         nu=[nui/2/pi for nui in nu]
-...         
-...         fit,pcov,fitted_curve=fit_lorentzians(nu,pop0,[pop0[N_delta/2],t1[2],1.04],n=1,return_p0=False)
-...         pyplot.plot(nu,pop0,'r+') # doctest: +IGNORE_PLOT_STEP1
-...         pyplot.plot(nu,fitted_curve,'b-') # doctest: +IGNORE_PLOT_STEP1
-...         Ai,x0i,gammai=fit
-...         
-...         model_widths+=[gammai]
-...         Gamma=6.065
-...         simple_widths+=[Gamma*sqrt(1+2*s0)]
-...         
-...         model_pops+=[Ai]
-...         simple_pops+=[2*s0/2/(1+2*s0)]
-...         
-...         print 'I/I0=',s0,'E0=',E000[0]
+>>> ########################################################################
+>>> pyplot.close("all")
+>>> Npow=19; pow_ini=-2.0; pow_end=2.0; pow_step=(pow_end-pow_ini)/(Npow-1)
+>>> pows=[10**(pow_ini+i*pow_step) for i in range(Npow)]
+>>> detuning_knob=[(t1[2]-30)*2*pi]
+>>> frequency_end=(t1[2]+30)*2*pi
+>>> #print 111
+>>> Gamma=6.065
+>>> N_delta=250
     
->>> pyplot.xlabel(r"$\delta/2\pi \ \mathrm{(MHz)}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.ylabel(r"$\rho_{22}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.savefig(path+name+"_1power.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc83ba1ae90>
+>>> def aux2(s0):
+...     E000=[electric_field_amplitude_intensity(s0,Omega=Omega)]
+...     run_stationary(path,name+"_steady",E000,detuning_knob,spectrum_of_laser=1,N_delta=N_delta, frequency_end=frequency_end,use_netcdf=use_netcdf)
+...     nu,pop0=read_result(path,name+"_steady",Ne,Ne,1,Ne,use_netcdf=use_netcdf)
+...     nu=[nui/2/pi for nui in nu]
+...     res=fit_lorentzians(nu,pop0,[pop0[N_delta/2],t1[2],1.04],n=1,return_p0=False)
+...     fit,pcov,fitted_curve=res
+...     Ai,x0i,gammai=fit
+...     return (gammai,Gamma*sqrt(1+2*s0),Ai,2*s0/2/(1+2*s0))
+    
+>>> def aux():
+...     res=[aux2(s0) for s0 in pows]
+...     model_widths =[i[0] for i in res]
+...     simple_widths=[i[1] for i in res]
+...     model_pops   =[i[2] for i in res]
+...     simple_pops  =[i[3] for i in res]
+...     return model_widths,simple_widths,model_pops,simple_pops
+... 
+
+>>> model_widths,simple_widths,model_pops,simple_pops=aux()
+
+>>> pyplot.close("all")
+>>> Npow=1000; pow_ini=-2.0; pow_end=2.0; pow_step=(pow_end-pow_ini)/(Npow-1)
+>>> pows2=[10**(pow_ini+i*pow_step) for i in range(Npow)]
+    
+>>> #We plot widths
+>>> simple_widths =[6.065*sqrt(1+s0) for s0 in pows2]
+    
+>>> pyplot.semilogx(pows2,simple_widths,'-b',basex=10,label=r'$\Gamma\sqrt{1+I/I_0}$') # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx(pows,model_widths,'+r',basex=10,label=r'$\mathrm{Modeled \ width}$',markersize=13) # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.plot(pows2,[6.065]*Npow,'g-',label=r'$\mathrm{Natural \ width}$') # doctest: +IGNORE_PLOT_STEP1
+    
+>>> pyplot.xlabel(r"$I/I_0$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.ylabel(r"$\mathrm{Width \ (MHz)}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+    
+>>> pyplot.ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
+>>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
+    
+>>> pyplot.savefig(path+name+'_2power.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
+<matplotlib.figure.Figure at 0x7fc5469bff10>
 
 
-I/I0= 0.01 E0= 0.637477867488
-I/I0= 0.016681005372 E0= 0.823334326209
-I/I0= 0.0278255940221 E0= 1.06337717321
-I/I0= 0.0464158883361 E0= 1.37340443184
-I/I0= 0.0774263682681 E0= 1.77382003388
-I/I0= 0.129154966501 E0= 2.29097667055
-I/I0= 0.215443469003 E0= 2.95891015141
-I/I0= 0.35938136638 E0= 3.82157941486
-I/I0= 0.599484250319 E0= 4.93575961309
-I/I0= 1.0 E0= 6.37477867488
-I/I0= 1.6681005372 E0= 8.23334326209
-I/I0= 2.78255940221 E0= 10.6337717321
-I/I0= 4.64158883361 E0= 13.7340443184
-I/I0= 7.74263682681 E0= 17.7382003388
-I/I0= 12.9154966501 E0= 22.9097667055
-I/I0= 21.5443469003 E0= 29.5891015141
-I/I0= 35.938136638 E0= 38.2157941486
-I/I0= 59.9484250319 E0= 49.3575961309
-I/I0= 100.0 E0= 63.7477867488
+
+>>> pyplot.close()
+>>> #We plot amplitudes
+>>> simple_pops =[ s0/2/(1+ s0) for s0 in pows2]
+>>> pyplot.semilogx(pows2,simple_pops,'-b',basex=10,label=r'$\frac{I/I_0}{2(1+I/I_0)}$') # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx(pows,model_pops,'+r',basex=10,label=r'$\mathrm{Modeled \ \rho_{ee}}$',markersize=13) # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx([pows2[0],pows2[-1]],[0.25,0.25],'k-',alpha=0.25) # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx([1,1],[0,0.5],'k-',alpha=0.25) # doctest: +IGNORE_PLOT_STEP1
+    
+>>> pyplot.xlabel(r"$I/I_0$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.ylabel(r"$\mathrm{Peak\ height}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+    
+    
+>>> pyplot.ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
+>>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
+    
+>>> pyplot.ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
+>>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
+    
+>>> pyplot.savefig(path+name+'_3power.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
+<matplotlib.figure.Figure at 0x7fc5468fce90>
 
 
 
