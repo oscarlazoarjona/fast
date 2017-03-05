@@ -30,34 +30,6 @@ from the new terminal.
 ../fast$ python setup.py
 
 ########################################################################
-                                netCDF
-########################################################################
-Optionally, to make the Python-Fortran interface faster (this can be an important bottleneck).
-
-To install netcdf in Python
-sudo apt-get install libhdf5-dev,libnetcdf-dev, libnetcdff-dev
-
-Then download the tar.gz for Python's netCDF inteface (in some directory
-other than the fast install directory).
-
- $ wget https://pypi.python.org/packages/d8/22/8c3a488af29aa387e5fde0d677a8c3808cad46d3cd59b8160bdab6249edd/netCDF4-1.2.7.tar.gz#md5=77b357d78f9658dd973dee901f6d86f8
-
-To install this, extract the tar.gz and run
-
- $ python setup build
- $ sudo /home/YOUR.USERNAME/anaconda2/bin/python setup.py install
-
-and test if netCDF is available everything from outside the installation folder
-
- $ python
-Python 2.7.12 |Anaconda 4.2.0 (64-bit)| (default, Jul  2 2016, 17:42:40) 
-[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
-Anaconda is brought to you by Continuum Analytics.
-Please check out: http://continuum.io/thanks and https://anaconda.org
->>> from netCDF4 import Dataset
-
-########################################################################
 				Using FAST
 ########################################################################
 Once this completed (with netCDF or not), tests can be run with
