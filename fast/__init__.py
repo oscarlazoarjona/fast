@@ -7,10 +7,10 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 
 >>> from fast import __version__
 >>> print __version__
-1.0
+1.1
 
 """
-__version__="1.0"
+__version__="1.1"
 
 from math import sqrt,pi
 
