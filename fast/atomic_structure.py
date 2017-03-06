@@ -49,12 +49,13 @@ me       =physical_constants["electron mass"][0]             # kg
 k_B      =physical_constants["Boltzmann constant"][0]        # J / K
 uma      =physical_constants["unified atomic mass unit"][0]  # kg
 
-
 m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
 m_Rb87  = 86.9091805310*uma # Rb87  mass in kg [4]
 m_Cs133 =132.9054519610*uma # Cs133 mass in kg [4]
 
-
+abundance_Rb85 =0.7217 # [5]
+abundance_Rb87 =0.2783 # [5]
+abundance_Cs133=1.0    # [5]
 
 S='S'
 P='P'
@@ -1230,7 +1231,6 @@ def quaver(isotope,p,  J,F,M,  Jp,Fp,Mp, numeric=False,verbose=False):
 	if numeric: return float(qu)
 	else: return qu
 
-
 def find_fine_states(magnetic_states):
 	fine_states=[]
 	for state in magnetic_states:
@@ -1503,16 +1503,121 @@ def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
 					r[p+1][i][j]=float(rpij)
 	return r
 
+def vapour_pressure(Temperature,element):
+    r"""This function returns the vapour pressure of rubidium or cesium
+    in Pascals. It receives as input the temperature in Kelvins and the 
+    name of the element.
+    
+    >>> print vapour_pressure(25.0 + 273.15,"Rb")
+    5.31769896107e-05
+    >>> print vapour_pressure(39.3 + 273.15,"Rb")
+    0.000244249795696
+    >>> print vapour_pressure(90.0 + 273.15,"Rb")
+    0.0155963687128
+    >>> print vapour_pressure(25.0 + 273.15,"Cs")
+    0.000201461144963
+    >>> print vapour_pressure(28.5 + 273.15,"Cs")
+    0.000297898928349
+    >>> print vapour_pressure(90.0 + 273.15,"Cs")
+    0.0421014384667
+    
+    The element must be in the database.
+    
+    >>> print vapour_pressure(90.0 + 273.15,"Ca")
+    Traceback (most recent call last):
+    ...
+    ValueError: Ca is not an element in the database for this function.
+    
+    References:
+    [1] Daniel A. Steck, “Cesium D Line Data,” available online at 
+        http://steck.us/alkalidata (revision 2.1.4, 23 December 2010).
+    [2] Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
+        http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
+    [3] Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
+        http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
+    """
+    
+    if element=="Rb":
+        Tmelt=39.30+273.15 # K.
+        if Temperature<Tmelt:
+            P = 10**(2.881+4.857-4215.0/Temperature) # Torr.
+        else:
+            P = 10**(2.881+4.312-4040.0/Temperature) # Torr.
+    elif element=="Cs":
+        Tmelt=28.5 +273.15 # K.
+        if Temperature<Tmelt:
+            P = 10**(2.881+4.711-3999.0/Temperature) # Torr.
+        else:
+            P = 10**(2.881+4.165-3830.0/Temperature) # Torr.
+    else:
+        s=str(element)+" is not an element in the database for this function."
+        raise ValueError,s
 
-# [1] Wavelengths, Transition Probabilities, and Energy Levels for the Spectra of Cesium (Cs I–Cs LV),
+    P= P * 101325.0/760.0 # Pascals.
+    return P
+
+def vapour_number_density(Temperature,element):
+    r"""This function returns the number of atoms in a rubidium or cesium
+    vapour in m^-3. It receives as input the temperature in Kelvins and the 
+    name of the element.
+    
+    >>> print vapour_number_density(90.0 + 273.15,"Cs")
+    8.39706962725e+18
+    
+    """
+    
+    return vapour_pressure(Temperature,element)/k_B/Temperature
+
+def vapour_density(Temperature,element,isotope=None):
+    r"""This function returns the density in a rubidium or cesium
+    vapour in kg/m^-3. It receives as input the temperature in Kelvins, the 
+    name of the element, and optionally the isotope. If no isotope is 
+    specified, the density of a vapour with the natural abundances will 
+    be returned.
+    
+    >>> print vapour_density(90.0 + 273.15,"Cs",133)
+    1.85318869181e-06
+
+    >>> print vapour_density(25.0 + 273.15,"Rb")
+    1.83339788085e-09
+
+    """
+    if element=="Rb":
+        if isotope==None:
+            rho85=vapour_number_density(Temperature,element)*m_Rb85
+            rho87=vapour_number_density(Temperature,element)*m_Rb87
+            return rho85*abundance_Rb85 + rho87*abundance_Rb87
+        elif isotope==85:
+            return vapour_number_density(Temperature,element)*m_Rb85
+        elif isotope==87:
+            return vapour_number_density(Temperature,element)*m_Rb87
+        else:
+            s="The isotope "+str(isotope)+str(element)+" is not in the database."
+            raise ValueError,s
+
+    elif element=="Cs":
+        if isotope==None:
+            return vapour_number_density(Temperature,element)*m_Cs133*abundance_Cs133
+        elif isotope==133:
+            return vapour_number_density(Temperature,element)*m_Cs133
+        else:
+            s="The isotope "+str(isotope)+str(element)+" is not in the database."
+            raise ValueError,s
+
+
+# [1] Wavelengths, Transition Probabilities, and Energy Levels for the 
+#     Spectra of Cesium (Cs I–Cs LV),
 #     J. E. Sansonetti, 
 #     J. Phys. Chem. Ref. Data 38, 761–923 (2009) 
 #     DOI:10.1063/1.3132702 
 #
-# [2] Measurement of the 6DJ hyperfine structure of cesium using resonant two-photon sub-Doppler spectroscopy
+# [2] Measurement of the 6DJ hyperfine structure of cesium using resonant
+#     two-photon sub-Doppler spectroscopy
 #     Kortyna
 #
 # [3] Cesium D Line Data
 #     Daniel Adam Steck
 #
 # [4] http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=html&isotype=some
+#
+# [5] http://www.nndc.bnl.gov/nudat2/chartNuc.jsp
