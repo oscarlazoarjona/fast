@@ -1049,7 +1049,18 @@ def calculate_gamma_matrix(magnetic_states, Omega=1):
 	return gamma
 
 def calculate_reduced_matrix_elements(fine_states):
-	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.'''
+	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.
+    
+    >>> g=State("Rb",87,5,0,1/Integer(2))
+    >>> e1=State("Rb",87,5,1,1/Integer(2))
+    >>> e2=State("Rb",87,5,1,3/Integer(2))
+    >>> red=calculate_reduced_matrix_elements([g,e1,e2])
+    >>> print red[1][0]
+    4.23143658816481
+    >>> print red[2][0]
+    8.45396724128841
+    
+    '''
 	#We calculate the reduced matrix elements starting from the list of fine_states
 
 	#The factor composed of physical quantities.

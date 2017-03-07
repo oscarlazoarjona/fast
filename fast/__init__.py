@@ -37,9 +37,12 @@ from stationary import write_stationary, run_stationary
 from misc import compile_code
 
 from atomic_structure import S,P,D,F,G,H,I,State,Transition
-from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic, split_hyperfine_to_magnetic
-from atomic_structure import calculate_matrices, make_list_of_states, calculate_gamma_matrix, calculate_omega_matrix
+from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic
+from atomic_structure import split_hyperfine_to_magnetic
+from atomic_structure import calculate_matrices, make_list_of_states
+from atomic_structure import calculate_gamma_matrix, calculate_omega_matrix
 from atomic_structure import calculate_r_matrices, calculate_boundaries
+from atomic_structure import vapour_pressure, vapour_number_density, vapour_density
 
 from sympy.core.numbers import Rational as Integer
 

@@ -186,8 +186,6 @@ cdict2 = {
 
 yellow_purple1 = LinearSegmentedColormap('BlueRed1', cdict2)
 
-
-
 def fmt(x, pos):
 	if x==0.0: return r'$0$'
 	a, b = '{:.1e}'.format(x).split('e')

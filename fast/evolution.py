@@ -34,7 +34,8 @@ if not sage_included:
 else:
 	from time import time
 
-def write_evolution(path,name,laser,omega,gamma,r,Lij,states=None,excluded_mu=[],rk4=False,verbose=1):
+def write_evolution(path,name,laser,omega,gamma,r,Lij,states=None,
+                    excluded_mu=[],rk4=False,verbose=1):
 	
 	if rk4:
 		return write_rk4(path,name,laser,omega,gamma,r,Lij,
