@@ -21,9 +21,8 @@
 #                                                                       *
 #************************************************************************
 
-sage_included = 'sage' in globals().keys()
-
 #Physical constants (SI units):
+from sympy import symbols, Matrix, I, exp, sin, cos, pprint
 from scipy.constants import physical_constants
 from scipy.constants import pi as Pi # Every one's favourite constant
 #                                                         units
@@ -32,12 +31,6 @@ a0  =physical_constants["Bohr radius"][0]               # m
 hbar=physical_constants["Planck constant over 2 pi"][0] # J s
 e   =physical_constants["elementary charge"][0]         # C
 mu0 =physical_constants["mag. constant"][0]             # N / A^2
-
-if not sage_included:
-	from math import pi,sqrt,cos,sin
-	Pi=pi
-else:
-	Pi=pi.n()
 
 class PlaneWave(object):
     r"""This class implements plane waves propagating in an arbitrary direction and with an arbitrary (and well-defined) polarization. It takes as input:
@@ -49,10 +42,60 @@ class PlaneWave(object):
     beta .- The angle between the fast axis of a quarter-wave plate and 
              an incident linearly polarized beam.
     
-    The overall form of the electric field of this plane wave is the following.
+    The easiest way to understand what this means is to use the function
+    draw_lasers to get a 3d view of the direction and polarization of the
+    wave.
     
-    >>> phi, theta, alpha, beta = symbols("phi, theta, alpha, beta")
+    An explicit way to understand what alpha and beta are is to see how the
+    overall form of the electric field is contructed. We begin with a
+    polarization vector for a plane wave propagating towards z:
     
+    >>> E0=symbols("E0",real=True)
+    >>> t,x,y,z,omega,kx,ky,kz=symbols("t,x,y,z,omega,kx,ky,kz",real=True)
+    >>> phi, theta, alpha, beta = symbols("phi, theta, alpha, beta",real=True)
+    >>> ep=Matrix([cos(2*beta),I*sin(2*beta),0])
+    >>> pprint(ep,use_unicode=False)
+    [ cos(2*beta) ]
+    [             ]
+    [I*sin(2*beta)]
+    [             ]
+    [      0      ]
+    
+    Where beta specifies the circularity of the polarization. We define 
+    the following rotation matrices
+    
+    >>> R1=Matrix([[cos(2*alpha),-sin(2*alpha),0],[sin(2*alpha),cos(2*alpha),0],[0,0,1]])
+    >>> pprint(R1,use_unicode=False)
+    [cos(2*alpha)  -sin(2*alpha)  0]
+    [                              ]
+    [sin(2*alpha)  cos(2*alpha)   0]
+    [                              ]
+    [     0              0        1]
+    
+    >>> R2=Matrix([[cos(theta),0, sin(theta)],[0,1,0],[-sin(theta),0,cos(theta)]])
+    >>> pprint(R2,use_unicode=False)
+    [cos(theta)   0  sin(theta)]
+    [                          ]
+    [     0       1      0     ]
+    [                          ]
+    [-sin(theta)  0  cos(theta)]
+    
+    >>> R3=Matrix([[cos(phi),-sin(theta),0],[ sin(theta),cos(theta),0],[0,0,1]])
+    >>> pprint(R3,use_unicode=False)
+    [ cos(phi)   -sin(theta)  0]
+    [                          ]
+    [sin(theta)  cos(theta)   0]
+    [                          ]
+    [    0            0       1]
+    
+    Then we create a general polarization vector applying this rotation to ep
+    
+    >>> epsilonp=R3*R2*R1*ep
+    
+    And we build the plane wave in the following way
+    
+    >>> plane_wave=E0/2 * exp(I*(kx*x+ky*y+kz*z-omega*t)) * epsilonp
+    >>> plane_wave=plane_wave + plane_wave.conjugate()
     
     """
     def __init__(self,phi,theta,alpha,beta,omega=1,E0=1,color='blue',symbolical=True):
