@@ -40,6 +40,21 @@ else:
 	Pi=pi.n()
 
 class PlaneWave(object):
+    r"""This class implements plane waves propagating in an arbitrary direction and with an arbitrary (and well-defined) polarization. It takes as input:
+    
+    phi .- The azimutal angle in spherical coordinates of the wave vector.
+    theta .- The polar angle in spherical coordinates of the wave vector.
+    alpha .- The angle between the fast axis of a half-wave plate and 
+             an incident linearly polarized beam.
+    beta .- The angle between the fast axis of a quarter-wave plate and 
+             an incident linearly polarized beam.
+    
+    The overall form of the electric field of this plane wave is the following.
+    
+    >>> phi, theta, alpha, beta = symbols("phi, theta, alpha, beta")
+    
+    
+    """
     def __init__(self,phi,theta,alpha,beta,omega=1,E0=1,color='blue',symbolical=True):
         self.phi=phi
         self.theta=theta
