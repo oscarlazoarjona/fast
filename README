@@ -30,9 +30,9 @@ from the new terminal.
 ../fast$ python setup.py
 
 ########################################################################
-				Using FAST
+                              Using FAST
 ########################################################################
-Once this completed (with netCDF or not), tests can be run with
+Once this completed tests can be run with
 ../fast$ python examples/tests.py
 
 or the notebooks can be browsed with
