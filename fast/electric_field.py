@@ -21,6 +21,8 @@
 #                                                                       *
 #************************************************************************
 
+sage_included = 'sage' in globals().keys()
+
 #Physical constants (SI units):
 from sympy import symbols, Matrix, I, exp, sin, cos, pprint
 from scipy.constants import physical_constants
@@ -31,6 +33,12 @@ a0  =physical_constants["Bohr radius"][0]               # m
 hbar=physical_constants["Planck constant over 2 pi"][0] # J s
 e   =physical_constants["elementary charge"][0]         # C
 mu0 =physical_constants["mag. constant"][0]             # N / A^2
+
+if not sage_included:
+    from math import pi,sqrt,cos,sin
+	Pi=pi
+else:
+	Pi=pi.n()
 
 class PlaneWave(object):
     r"""This class implements plane waves propagating in an arbitrary direction and with an arbitrary (and well-defined) polarization. It takes as input:
