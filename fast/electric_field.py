@@ -36,9 +36,9 @@ mu0 =physical_constants["mag. constant"][0]             # N / A^2
 
 if not sage_included:
     from math import pi,sqrt,cos,sin
-	Pi=pi
+    Pi=pi
 else:
-	Pi=pi.n()
+    Pi=pi.n()
 
 class PlaneWave(object):
     r"""This class implements plane waves propagating in an arbitrary direction and with an arbitrary (and well-defined) polarization. It takes as input:
