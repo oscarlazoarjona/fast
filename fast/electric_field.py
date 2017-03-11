@@ -24,7 +24,6 @@
 sage_included = 'sage' in globals().keys()
 
 #Physical constants (SI units):
-from sympy import symbols, Matrix, I, exp, sin, cos, pprint
 from scipy.constants import physical_constants
 from scipy.constants import pi as Pi # Every one's favourite constant
 #                                                         units
@@ -58,10 +57,12 @@ class PlaneWave(object):
     overall form of the electric field is contructed. We begin with a
     polarization vector for a plane wave propagating towards z:
     
+    >>> from sympy import symbols, Matrix, I, exp, sin, cos, pprint
     >>> E0=symbols("E0",real=True)
     >>> t,x,y,z,omega,kx,ky,kz=symbols("t,x,y,z,omega,kx,ky,kz",real=True)
     >>> phi, theta, alpha, beta = symbols("phi, theta, alpha, beta",real=True)
     >>> ep=Matrix([cos(2*beta),I*sin(2*beta),0])
+
     >>> pprint(ep,use_unicode=False)
     [ cos(2*beta) ]
     [             ]
