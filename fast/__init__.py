@@ -12,8 +12,6 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 """
 __version__="1.1"
 
-from math import sqrt,pi
-
 
 import matplotlib
 #We set matplotlib to use a nice latex font.
@@ -36,7 +34,7 @@ from evolution import write_evolution, run_evolution
 from stationary import write_stationary, run_stationary
 from misc import compile_code
 
-from atomic_structure import S,P,D,F,G,H,I,State,Transition
+from atomic_structure import State,Transition
 from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic
 from atomic_structure import split_hyperfine_to_magnetic
 from atomic_structure import calculate_matrices, make_list_of_states
@@ -48,7 +46,7 @@ from sympy.core.numbers import Rational as Integer
 
 from sympy import init_printing,pprint
 from sympy import Symbol,Matrix,symbols
-from sympy import I,conjugate,re,im
+from sympy import conjugate,re,im
 from sympy import simplify, KroneckerDelta, Function, Derivative, solve
 
 from symbolic import define_density_matrix, define_laser_variables, polarization_vector
