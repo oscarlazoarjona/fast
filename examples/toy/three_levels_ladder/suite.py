@@ -26,7 +26,7 @@ from matplotlib import pyplot,cm
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from fast.config import parallel, use_netcdf, run_long_tests
-
+from math import pi,sqrt
 ########################################################################
 #                      Three level atom (ladder)                       #
 ########################################################################

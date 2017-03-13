@@ -17,8 +17,8 @@ print testmod(fast.misc              , verbose=verbose)
 print testmod(fast.rk4               , verbose=verbose)
 print testmod(fast.stationary        , verbose=verbose)
 
-########################################################################
-# Run all codes from notebook-generated doctests.
+#~ ########################################################################
+#~ # Run all codes from notebook-generated doctests.
 import doctest_01___Two_level_atom
 import doctest_02___Three_level_atom_ladder
 import doctest_03___Rb87_one_photon

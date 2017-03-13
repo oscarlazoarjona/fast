@@ -8,7 +8,7 @@ __doc__ = r"""
 >>> init_printing()
 >>> use_unicode=True; use_unicode=False
 
->>> from sympy import sin,cos,exp,sqrt,pi,zeros
+>>> from sympy import sin,cos,exp,sqrt,pi,zeros,I
 >>> from numpy import array
 
 We define the number of states and of radiation fields.

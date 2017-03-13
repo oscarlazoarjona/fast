@@ -6,6 +6,7 @@ __doc__ = r"""
 
 >>> from fast import *
 
+>>> from math import pi,sqrt
 >>> from matplotlib import pyplot
 >>> from fast.config import parallel, use_netcdf, fast_path
 >>> from scipy.optimize import curve_fit
@@ -18,8 +19,8 @@ We first specify the states that we will use.
 
 >>> element="Rb" 
 >>> isotope=87
->>> e1=State(element,isotope,5,S,Integer(1)/2)
->>> e3=State(element,isotope,5,P,Integer(3)/2)
+>>> e1=State(element,isotope,5,0,Integer(1)/2)
+>>> e3=State(element,isotope,5,1,Integer(3)/2)
 >>> fine_states=[e1,e3]
 >>> print fine_states
 [87Rb 5S_1/2, 87Rb 5P_3/2]
@@ -54,7 +55,7 @@ We plot the resonant frequencies $\\omega_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,omega,magnetic_states,path,name+'_omega.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc54a174d90>
+<matplotlib.figure.Figure at 0x7f520170dd50>
 
 
 
@@ -62,14 +63,14 @@ We plot the matrix of decays $\\gamma_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,gamma,magnetic_states,path,name+'_gamma.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc546b77850>
+<matplotlib.figure.Figure at 0x7f51fde8ded0>
 
 
 
 We plot the components of the position operator $\\hat{\\vec{r}}$.
 
 >>> fancy_r_plot(r         ,magnetic_states,path,name+'_r.png', complex_matrix=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc54a04cb90>
+<matplotlib.figure.Figure at 0x7f52015deb10>
 
 
 
@@ -80,7 +81,7 @@ We define the laser we will use.
 >>> Nl=len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc54669f050>
+<matplotlib.figure.Figure at 0x7f51fdc2d810>
 
 
 
@@ -119,7 +120,7 @@ We draw a level diagram.
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_levels.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+'_levels.pdf',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc546649610>
+<matplotlib.figure.Figure at 0x7f51fdbd90d0>
 
 
 
@@ -192,7 +193,7 @@ We plot what happens to the states $5S_{1/2}F=1$.
     
 >>> pyplot.savefig(path+name+"_tshort_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc57461c290>
+<matplotlib.figure.Figure at 0x7f51fe145190>
 
 
 
@@ -210,7 +211,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc545ecacd0>
+<matplotlib.figure.Figure at 0x7f51fd575c10>
 
 
 
@@ -230,7 +231,7 @@ We plot what happens to the states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc546571290>
+<matplotlib.figure.Figure at 0x7f51fdb41110>
 
 
 
@@ -260,7 +261,7 @@ We plot what happens to states $5S_{1/2}F=1$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc546687e10>
+<matplotlib.figure.Figure at 0x7f51fdd5d790>
 
 
 
@@ -278,7 +279,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc54657eb50>
+<matplotlib.figure.Figure at 0x7f51fdb0d5d0>
 
 
 
@@ -298,7 +299,7 @@ We plot what happens to states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc5465be710>
+<matplotlib.figure.Figure at 0x7f51fe145dd0>
 
 
 
@@ -389,7 +390,7 @@ We now make a test of this stationary two-level state to make sure.
 >>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+name+'_2power.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc5469bff10>
+<matplotlib.figure.Figure at 0x7f5203e75590>
 
 
 
@@ -412,7 +413,7 @@ We now make a test of this stationary two-level state to make sure.
 >>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+name+'_3power.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc5468fce90>
+<matplotlib.figure.Figure at 0x7f51fe12e390>
 
 
 

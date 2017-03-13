@@ -24,7 +24,7 @@
 from fast import *
 from matplotlib import pyplot
 from fast.config import parallel, use_netcdf
-
+from math import pi,sqrt
 ################################################
 #We define the basic characteristics of the experiment.
 #The path in which files will be placed.

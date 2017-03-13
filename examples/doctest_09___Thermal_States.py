@@ -235,7 +235,7 @@ Let's make a plot of the variation with temperature.
     
 >>> pyplot.ylim([0,1]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(plots_path+"/01_populations.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f40ed3b39d0>
+<matplotlib.figure.Figure at 0x7f9061a92d90>
 
 
 
@@ -267,7 +267,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(plots_path+"/02_entropy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f4115088150>
+<matplotlib.figure.Figure at 0x7f905e391fd0>
 
 
 
@@ -301,7 +301,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(plots_path+"/03_energy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f40e98cc5d0>
+<matplotlib.figure.Figure at 0x7f9061a92ad0>
 
 
 
@@ -309,7 +309,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 Let us solve the master equation found in [1]. These are simply the usual Bloch equations for a two level system.
 
 >>> from fast import *
->>> from sympy import oo,exp
+>>> from sympy import oo,exp,I
 >>> init_printing()
 >>> use_unicode=False
 

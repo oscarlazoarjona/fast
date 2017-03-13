@@ -27,6 +27,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 from scipy.optimize import curve_fit
 from fast.config import parallel, use_netcdf, run_long_tests
+from math import pi,sqrt
 
 pyplot.ioff()
 
@@ -45,8 +46,8 @@ name='rb87_suite'
 #First we specify the states we will use
 element="Rb"
 isotope=87
-e1=State(element,isotope,5,S,Integer(1)/2)
-e3=State(element,isotope,5,P,Integer(3)/2)
+e1=State(element,isotope,5,0,Integer(1)/2)
+e3=State(element,isotope,5,1,Integer(3)/2)
 fine_states=[e1,e3]
 
 #Next we split these fine states into their hyperfine substates.

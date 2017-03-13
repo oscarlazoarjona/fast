@@ -89,9 +89,10 @@ notebooks=[ r"01 - Two level atom.ipynb",
             r"08 - Three level atom, V (symbolic).ipynb",
             r"09 - Thermal States.ipynb",
             r"10 - States database.ipynb"]
-
+########################################################################
 # We choose a notebook.
-notebook_name=notebooks[2]
+index=8
+notebook_name=notebooks[index]
 f=file(path_notebooks+notebook_name,"r")
 text=f.read()
 f.close()
