@@ -66,18 +66,45 @@ I='I'
 class Atom(object):
     def __init__(self,element,isotope=None):
         r"""This class implements specific atoms and their properties. The
-        atoms must be identified by element and isotope.
-        
-        >>> Atom("Rb",85)
-        85Rb
-        
-        We can also not specify the isotope
+        atoms can be identified by element and optionally by isotope.
+
         >>> atom=Atom("Rb")
         >>> print atom
         Rb
+        
+        We can get the atomic number
+        >>> atom.Z
+        37
+        
+        We can get the available isotopes
         >>> atom.isotopes
         [85, 87]
         
+        The melting temperature
+        >>> atom.Tboil
+        961.15
+
+        The boiling temperature
+        >>> atom.Tboil
+        961.15
+        
+        If we also specify an isotope, new information becomes available
+        >>> atom=Atom("Rb",85)
+        >>> print atom
+        85Rb
+        
+        The number of neutrons
+        >>> atom.neutrons
+        48
+        
+        The abundance of the isotope
+        >>> print atom.abundance
+        0.7217
+        
+        The mass of the atom (in kilograms)
+        >>> print atom.mass
+        1.40999341816e-25
+                
         """
 
         m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
@@ -118,6 +145,7 @@ class Atom(object):
                     isotopes+=[item[1]]
                     valid_input=True
                     self.element=item[0]
+                    self.Z      =item[2]
                     self.Tmelt  =item[5]
                     self.Tboil  =item[6]
                     self.abundance=1.0
