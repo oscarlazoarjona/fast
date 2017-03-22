@@ -1771,6 +1771,39 @@ def speed_average(Temperature,element,isotope):
     atom=Atom(element,isotope)
     return sqrt(8*k_B*Temperature/atom.mass/pi)
 
+def collision_rate(Temperature, element, isotope):
+    r"""This function recieves the temperature of an atomic vapour (in Kelvin),
+    the element, and the isotope of the atoms, and returns the angular 
+    frequency rate of collisions (in rad/s) in a vapour assuming a 
+    Maxwell-Boltzmann velocity distribution, and taking the cross section
+    of the collision to be
+    
+        sigma=pi*(2*r)**2
+    
+    where r is the atomic radius. colission rate returned is
+    
+        gamma_col=2*pi* ( sigma * v * n )
+    
+    where v is the average velocity of the distribution, and n is the
+    number density of the vapour.
+    
+    A few examples (in Hz):
+    >>> print collision_rate(25 + 273.15, "Cs", 133)/2/pi
+    9.0607260277
+    
+    For cesium collisions become important for temperatures above 120 Celsius.
+    >>> print collision_rate(120 + 273.15, "Cs", 133)/2/pi
+    10519.235289
+    
+    """
+    atom=Atom(element,isotope)
+    
+    sigma=pi*(2*atom.radius)**2
+    v=speed_average(Temperature,element,isotope)
+    n=vapour_number_density(Temperature,element)
+    return 2*pi*sigma*v*n
+    
+
 # [1] Wavelengths, Transition Probabilities, and Energy Levels for the 
 #     Spectra of Cesium (Cs I–Cs LV),
 #     J. E. Sansonetti, 
