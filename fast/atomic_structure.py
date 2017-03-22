@@ -50,6 +50,11 @@ k_B      =physical_constants["Boltzmann constant"][0]        # J / K
 uma      =physical_constants["unified atomic mass unit"][0]  # kg
 
 
+TmeltRb=39.30+273.15 # K. [6]
+TboilRb=688  +273.15 # K. [6]
+TmeltCs=28.5 +273.15 # K. [3]
+TboilCs=671  +273.15 # K. [3]
+
 S='S'
 P='P'
 D='D'
@@ -85,9 +90,9 @@ class Atom(object):
 
         # This is the database of implemented atoms.
         #          element, isotope, atomic number,    mass, abundance
-        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85],
-                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87],
-                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133]]
+        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85,  TmeltRb,TboilRb],
+                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87,  TmeltRb,TboilRb],
+                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs,TboilCs]]
         
         # We scan the database
         valid_input=False
@@ -100,6 +105,8 @@ class Atom(object):
                 self.Z        =item[2]
                 self.mass     =item[3]
                 self.abundance=item[4]
+                self.Tmelt    =item[5]
+                self.Tboil    =item[6]
                 
                 self.neutrons=self.isotope-self.Z
                 break
@@ -111,6 +118,8 @@ class Atom(object):
                     isotopes+=[item[1]]
                     valid_input=True
                     self.element=item[0]
+                    self.Tmelt  =item[5]
+                    self.Tboil  =item[6]
                     self.abundance=1.0
         if isotope==None:
             self.isotope=None
@@ -1627,6 +1636,7 @@ def vapour_pressure(Temperature,element):
         http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
     """
         
+
     if element=="Rb":
         Tmelt=39.30+273.15 # K.
         if Temperature<Tmelt:
@@ -1704,6 +1714,10 @@ def vapour_density(Temperature,element,isotope=None):
 # [4] http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=html&isotype=some
 #
 # [5] http://www.nndc.bnl.gov/nudat2/chartNuc.jsp
+#
+# [6] Rubidium 85 D Line Data
+#     Daniel Adam Steck
+
 #
 # Not reviewed yet:
 #
