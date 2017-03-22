@@ -1615,7 +1615,6 @@ def vapour_density(Temperature,element,isotope=None):
             s="The isotope "+str(isotope)+str(element)+" is not in the database."
             raise ValueError,s
 
-
 # [1] Wavelengths, Transition Probabilities, and Energy Levels for the 
 #     Spectra of Cesium (Cs I–Cs LV),
 #     J. E. Sansonetti, 
@@ -1632,3 +1631,17 @@ def vapour_density(Temperature,element,isotope=None):
 # [4] http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=html&isotype=some
 #
 # [5] http://www.nndc.bnl.gov/nudat2/chartNuc.jsp
+#
+# Not reviewed yet:
+#
+# [21] Arimondo E, Inguscio M and Violino P 1977
+# Rev. Mod. Phys.49 31
+# 
+# [22] Gustafsson J, Rojas D and Axner O 1997
+# Spectrochim. Acta B 52 1937
+# 
+# [23] Rapol UD, Krishna A and Natarajan V 2003
+# Eur. Phys. J. D 23 185
+# 
+# [24] Banerjee A, Das D and Natarajan V 2004
+# Europhys. Lett. 65 172
