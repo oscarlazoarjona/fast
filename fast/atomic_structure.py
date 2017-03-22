@@ -49,13 +49,6 @@ me       =physical_constants["electron mass"][0]             # kg
 k_B      =physical_constants["Boltzmann constant"][0]        # J / K
 uma      =physical_constants["unified atomic mass unit"][0]  # kg
 
-m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
-m_Rb87  = 86.9091805310*uma # Rb87  mass in kg [4]
-m_Cs133 =132.9054519610*uma # Cs133 mass in kg [4]
-
-abundance_Rb85 =0.7217 # [5]
-abundance_Rb87 =0.2783 # [5]
-abundance_Cs133=1.0    # [5]
 
 S='S'
 P='P'
@@ -66,32 +59,62 @@ H='H'
 I='I'
 
 class Atom(object):
-    def __init__(self,element,isotope):
+    def __init__(self,element,isotope=None):
         r"""This class implements specific atoms and their properties. The
         atoms must be identified by element and isotope.
         
         >>> Atom("Rb",85)
         85Rb
         
+        We can also not specify the isotope
+        >>> atom=Atom("Rb")
+        >>> print atom
+        Rb
+        >>> atom.isotopes
+        [85, 87]
+        
         """
+
+        m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
+        m_Rb87  = 86.9091805310*uma # Rb87  mass in kg [4]
+        m_Cs133 =132.9054519610*uma # Cs133 mass in kg [4]
+
+        abundance_Rb85 =0.7217 # [5]
+        abundance_Rb87 =0.2783 # [5]
+        abundance_Cs133=1.0    # [5]
+
         # This is the database of implemented atoms.
         #          element, isotope, atomic number,    mass, abundance
         database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85],
-                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb85],
+                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87],
                   ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133]]
         
         # We scan the database
         valid_input=False
+        isotopes=[]
         for item in database:
             if element==item[0] and isotope==item[1]:
                 valid_input=True
-                self.element=element
-                self.isotope=isotope
-                self.Z=item[2]
-                self.mass=item[3]
+                self.element  =item[0]
+                self.isotope  =item[1]
+                self.Z        =item[2]
+                self.mass     =item[3]
                 self.abundance=item[4]
+                
                 self.neutrons=self.isotope-self.Z
                 break
+            
+            # If an isotope is not provided we return an object with a reduced
+            # number of properties.
+            if isotope==None:
+                if element==item[0]:
+                    isotopes+=[item[1]]
+                    valid_input=True
+                    self.element=item[0]
+                    self.abundance=1.0
+        if isotope==None:
+            self.isotope=None
+            self.isotopes=isotopes
 
         if not valid_input:
             s="The isotope "+str(isotope)+str(element)+" is not in the database."
@@ -105,7 +128,10 @@ class Atom(object):
         '85Rb'
         
         """
-        return str(self.isotope)+self.element
+        if self.isotope!=None:
+            return str(self.isotope)+self.element
+        else:
+            return self.element
 
     def __str__(self):
         r"""The string routine for atoms:
@@ -124,8 +150,6 @@ class Atom(object):
         
         """
         return '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}'
-
-    
 
 class State(object):
     r'''This class implements the specific eigenstates of the atomic hamiltonian.
@@ -157,7 +181,7 @@ class State(object):
     55
     
     The number of neutrons:
-    >>> g2.N
+    >>> g2.neutrons
     78
     
     The mass of the atom (in kilograms):
@@ -188,8 +212,17 @@ class State(object):
         85Rb 5S_1/2
         '''
 
+        # We declare the atom to which this state belongs.
+        atom=Atom(element,isotope)
+        self.atom=atom
         self.element=element			
         self.isotope=isotope
+        
+        # We draw a few properties from the atom.
+        self.Z=atom.Z
+        self.neutrons=atom.neutrons
+        self.abundance=atom.abundance
+        self.mass=atom.mass
         
         if l==None: raise NotImplementedError,"The orbital angular momentum quantum number l must be specified."
         if j==None: raise NotImplementedError,"The total angular momentum quantum number j=l+s must be specified."
@@ -234,15 +267,7 @@ class State(object):
         from scipy.constants import c
         # All tables are given in (cm^-1).
         if element=="Rb":
-            #We set the atomic number.
-            self.Z=37
-            #We set the number of neutrons.
-            self.N=self.isotope-self.Z
-
             if isotope==85:
-                #We set the mass of the atom.
-                self.mass=m_Rb85
-
                 i=5/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)    C (cm^-1)
                 nivfin=[[ 5, S, 1/Integer(2), 0.0000000  , 0.033753721     , 0.0       , 0.0],
@@ -312,8 +337,6 @@ class State(object):
 
 
             elif isotope==87:
-                #We set the mass of the atom.
-                self.mass=m_Rb87
 
                 i=3/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)      C (cm^-1)
@@ -347,14 +370,8 @@ class State(object):
 
 
         elif element=="Cs":
-            #We set the atomic number.
-            self.Z=55
-            #We set the number of neutrons.
-            self.N=self.isotope-self.Z
-            if isotope==133:
-                #We set the mass of the atom.
-                self.mass=m_Cs133
 
+            if isotope==133:
                 i=7/Integer(2)
                 # Reference [1], others not used yet [2]:
                 #        N, L,     K       , E (cm^-1),       A (MHz)      B (MHz)   C (MHz)
@@ -1609,7 +1626,7 @@ def vapour_pressure(Temperature,element):
     [3] Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
         http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
     """
-    
+        
     if element=="Rb":
         Tmelt=39.30+273.15 # K.
         if Temperature<Tmelt:
@@ -1651,31 +1668,23 @@ def vapour_density(Temperature,element,isotope=None):
     >>> print vapour_density(90.0 + 273.15,"Cs",133)
     1.85318869181e-06
 
+    If no isotope is specified, the natural abundances are used to calculate
+    the density.
+    
     >>> print vapour_density(25.0 + 273.15,"Rb")
     1.83339788085e-09
-
+    
     """
-    if element=="Rb":
-        if isotope==None:
-            rho85=vapour_number_density(Temperature,element)*m_Rb85
-            rho87=vapour_number_density(Temperature,element)*m_Rb87
-            return rho85*abundance_Rb85 + rho87*abundance_Rb87
-        elif isotope==85:
-            return vapour_number_density(Temperature,element)*m_Rb85
-        elif isotope==87:
-            return vapour_number_density(Temperature,element)*m_Rb87
-        else:
-            s="The isotope "+str(isotope)+str(element)+" is not in the database."
-            raise ValueError,s
 
-    elif element=="Cs":
-        if isotope==None:
-            return vapour_number_density(Temperature,element)*m_Cs133*abundance_Cs133
-        elif isotope==133:
-            return vapour_number_density(Temperature,element)*m_Cs133
-        else:
-            s="The isotope "+str(isotope)+str(element)+" is not in the database."
-            raise ValueError,s
+    atom=Atom(element,isotope)
+    if atom.isotope==None:
+        rho=0.0
+        for iso in atom.isotopes:
+            atom=Atom(element,iso)
+            rho+=vapour_number_density(Temperature,element)*atom.mass*atom.abundance
+        return rho
+    else:
+        return vapour_number_density(Temperature,element)*atom.mass
 
 
 
