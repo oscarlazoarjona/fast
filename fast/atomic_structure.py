@@ -65,6 +65,68 @@ G='G'
 H='H'
 I='I'
 
+class Atom(object):
+    def __init__(self,element,isotope):
+        r"""This class implements specific atoms and their properties. The
+        atoms must be identified by element and isotope.
+        
+        >>> Atom("Rb",85)
+        85Rb
+        
+        """
+        # This is the database of implemented atoms.
+        #          element, isotope, atomic number,    mass, abundance
+        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85],
+                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb85],
+                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133]]
+        
+        # We scan the database
+        valid_input=False
+        for item in database:
+            if element==item[0] and isotope==item[1]:
+                valid_input=True
+                self.element=element
+                self.isotope=isotope
+                self.Z=item[2]
+                self.mass=item[3]
+                self.abundance=item[4]
+                self.neutrons=self.isotope-self.Z
+                break
+
+        if not valid_input:
+            s="The isotope "+str(isotope)+str(element)+" is not in the database."
+            raise ValueError,s
+
+        
+    def __repr__(self):
+        r"""The representation routine for atoms:
+        
+        >>> Atom("Rb",85).__repr__()
+        '85Rb'
+        
+        """
+        return str(self.isotope)+self.element
+
+    def __str__(self):
+        r"""The string routine for atoms:
+        
+        >>> Atom("Cs",133).__str__()
+        '133Cs'
+        
+        """
+        return self.__repr__()
+
+    def _latex_(self):
+        r"""The LaTeX routine for atoms:
+        
+        >>> Atom("Rb",87)._latex_()
+        '^{87}\\mathrm{Rb}'
+        
+        """
+        return '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}'
+
+    
+
 class State(object):
     r'''This class implements the specific eigenstates of the atomic hamiltonian.
     The states must be identified by element, isotope and quantum numbers
@@ -1614,6 +1676,8 @@ def vapour_density(Temperature,element,isotope=None):
         else:
             s="The isotope "+str(isotope)+str(element)+" is not in the database."
             raise ValueError,s
+
+
 
 # [1] Wavelengths, Transition Probabilities, and Energy Levels for the 
 #     Spectra of Cesium (Cs I–Cs LV),
