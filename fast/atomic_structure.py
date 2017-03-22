@@ -104,7 +104,11 @@ class Atom(object):
         The mass of the atom (in kilograms)
         >>> print atom.mass
         1.40999341816e-25
-                
+        
+        The atomic radius (in meters)
+        >>> print atom.radius
+        2.35e-10
+        
         """
 
         m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
@@ -115,11 +119,12 @@ class Atom(object):
         abundance_Rb87 =0.2783 # [5]
         abundance_Cs133=1.0    # [5]
 
+        # Atomic radii from [7]
         # This is the database of implemented atoms.
         #          element, isotope, atomic number,    mass, abundance
-        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85,  TmeltRb,TboilRb],
-                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87,  TmeltRb,TboilRb],
-                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs,TboilCs]]
+        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85,  TmeltRb,TboilRb, 2.35e-10],
+                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87,  TmeltRb,TboilRb, 2.35e-10],
+                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs,TboilCs, 2.60e-10]]
         
         # We scan the database
         valid_input=False
@@ -134,6 +139,7 @@ class Atom(object):
                 self.abundance=item[4]
                 self.Tmelt    =item[5]
                 self.Tboil    =item[6]
+                self.radius   =item[7]
                 
                 self.neutrons=self.isotope-self.Z
                 break
@@ -148,6 +154,7 @@ class Atom(object):
                     self.Z      =item[2]
                     self.Tmelt  =item[5]
                     self.Tboil  =item[6]
+                    self.radius =item[7]
                     self.abundance=1.0
         if isotope==None:
             self.isotope=None
@@ -1783,6 +1790,27 @@ def speed_average(Temperature,element,isotope):
 #
 # [6] Rubidium 85 D Line Data
 #     Daniel Adam Steck
+# [7]
+#@article{atomic_radii-Slater,
+#author = {J. C. Slater},
+#title = {Atomic Radii in Crystals},
+#journal = {The Journal of Chemical Physics},
+#volume = {41},
+#number = {10},
+#pages = {3199-3204},
+#year = {1964},
+#doi = {10.1063/1.1725697},
+#
+#URL = { 
+#        http://dx.doi.org/10.1063/1.1725697
+#    
+#},
+#eprint = { 
+#        http://dx.doi.org/10.1063/1.1725697   
+#}
+#}
+
+
 
 #
 # Not reviewed yet:
