@@ -1724,7 +1724,45 @@ def vapour_density(Temperature,element,isotope=None):
     else:
         return vapour_number_density(Temperature,element)*atom.mass
 
+def speed_likely(Temperature,element,isotope):
+    r"""This function calculates the most likely speed (in meters per second)
+    of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
+    This is simply
+    
+    sqrt(2*k_B*T/m)
+    
+    where k_B is Boltzmann's constant, T is the temperature (in Kelvins) and 
+    m is the mass of the atom (in kilograms).
+    
+    >>> print speed_likely(25+273.15,"Rb",85)
+    241.638108688
+    
+    >>> print speed_likely(25+273.15,"Cs",133)
+    193.142579342
+    
+    """
+    atom=Atom(element,isotope)
+    return sqrt(2*Temperature*k_B/atom.mass)
 
+def speed_average(Temperature,element,isotope):
+    r"""This function calculates the average speed (in meters per second)
+    of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
+    This is simply
+    
+    sqrt(8*k_B*T/m/pi)
+    
+    where k_B is Boltzmann's constant, T is the temperature (in Kelvins) and 
+    m is the mass of the atom (in kilograms).
+    
+    >>> print speed_average(25+273.15,"Rb",85)
+    272.65940782
+    
+    >>> print speed_average(25+273.15,"Cs",133)
+    217.938062809
+    
+    """
+    atom=Atom(element,isotope)
+    return sqrt(8*k_B*Temperature/atom.mass/pi)
 
 # [1] Wavelengths, Transition Probabilities, and Energy Levels for the 
 #     Spectra of Cesium (Cs I–Cs LV),
