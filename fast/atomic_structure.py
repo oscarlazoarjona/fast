@@ -200,6 +200,65 @@ class Atom(object):
         """
         return '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}'
 
+    def states(self,Nmax=50,omega_min=None,omega_max=None, return_missing=False):
+        r"""This function returns all available states up to the fine structure
+        such that the principal quantum number is N<=Nmax. Nmax is 50 by default.
+        
+        >>> atom=Atom("Rb",85)
+        >>> states=atom.states()
+        >>> print states
+        [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 6S_1/2, 85Rb 6P_1/2, 85Rb 6P_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2, 85Rb 7S_1/2, 85Rb 7P_1/2, 85Rb 7P_3/2, 85Rb 6D_3/2, 85Rb 7D_3/2, 85Rb 14S_1/2, 85Rb 15S_1/2, 85Rb 16S_1/2, 85Rb 17S_1/2, 85Rb 18S_1/2, 85Rb 19S_1/2, 85Rb 20S_1/2, 85Rb 21S_1/2, 85Rb 22S_1/2, 85Rb 23S_1/2, 85Rb 24S_1/2, 85Rb 25S_1/2, 85Rb 26S_1/2, 85Rb 27S_1/2, 85Rb 28S_1/2, 85Rb 29S_1/2, 85Rb 30S_1/2, 85Rb 31S_1/2, 85Rb 32S_1/2, 85Rb 33S_1/2, 85Rb 34S_1/2, 85Rb 35S_1/2, 85Rb 36S_1/2, 85Rb 37S_1/2, 85Rb 38S_1/2, 85Rb 39S_1/2, 85Rb 40S_1/2, 85Rb 41S_1/2, 85Rb 42S_1/2, 85Rb 43S_1/2, 85Rb 44S_1/2, 85Rb 45S_1/2, 85Rb 46S_1/2, 85Rb 47S_1/2, 85Rb 48S_1/2, 85Rb 49S_1/2, 85Rb 50S_1/2]
+        
+        If an omega_max is provided any state with an energy higher than hbar*omega
+        will not be returned. If an omega_min is provided any state with an energy
+        lower than hbar*omega will not be returned.
+
+        >>> atom.states(omega_min=1.00845e15*2*pi, omega_max=1.0086e+15*2*pi)
+        [85Rb 49S_1/2, 85Rb 50S_1/2]
+        
+        If return_missing=True then the function will return a 2-tuple composed
+        by a list of the states available, and a list of the valid states not available.
+        
+        >>> available,not_available=atom.states(Nmax=5,return_missing=True)
+        >>> print available
+        [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2]
+        >>> print not_available
+        [('Rb', 85, 1, 0, 1/2), ('Rb', 85, 2, 0, 1/2), ('Rb', 85, 2, 1, 1/2), ('Rb', 85, 2, 1, 3/2), ('Rb', 85, 3, 0, 1/2), ('Rb', 85, 3, 1, 1/2), ('Rb', 85, 3, 1, 3/2), ('Rb', 85, 3, 2, 3/2), ('Rb', 85, 3, 2, 5/2), ('Rb', 85, 4, 0, 1/2), ('Rb', 85, 4, 1, 1/2), ('Rb', 85, 4, 1, 3/2), ('Rb', 85, 4, 3, 5/2), ('Rb', 85, 4, 3, 7/2), ('Rb', 85, 5, 3, 5/2), ('Rb', 85, 5, 3, 7/2), ('Rb', 85, 5, 4, 7/2), ('Rb', 85, 5, 4, 9/2)]
+        
+        
+        """
+        
+        # We generate all possible quantum numbers for N<=Nmax.
+        
+        S=1/Integer(2)# The spin of the electron.
+        available=[]; not_available=[]
+        for N in range(1,Nmax+1):
+            for L in range(N):
+                Jmin=abs(L-S); Jmax=L+S
+                Jpos=[Jmin+i for i in range(Jmax-Jmin+1)]
+                for J in Jpos:
+                    try:
+                        state=State(self.element,self.isotope,N,L,J)
+                        available+=[state]
+                    except:
+                        not_available+=[(self.element,self.isotope,N,L,J)]
+        
+        if omega_min!=None:
+            available=[s for s in available if s.omega>=omega_min]
+        if omega_max!=None:
+            available=[s for s in available if s.omega<=omega_max]
+
+        
+        # We sort the states by energy.
+        available=[(s.omega,s) for s in available]
+        available=sorted(available)
+        available=[s[1] for s in available]
+        
+        if return_missing:
+            return available,not_available
+        else:
+            return available
+
 
 class State(object):
     r'''This class implements the specific eigenstates of the atomic hamiltonian.
