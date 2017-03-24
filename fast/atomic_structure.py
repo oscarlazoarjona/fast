@@ -113,6 +113,7 @@ class Atom(object):
         >>> atom.nuclear_spin
         5/2
         
+        The frequency of the ionization limit (in Hz)
         >>> print atom.ionization_frequency
         1.01002474142e+13
         
