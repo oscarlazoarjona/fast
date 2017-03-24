@@ -1055,6 +1055,16 @@ class Transition(object):
         
 		return self.e1==other.e1 and self.e2==other.e2
 
+#~ def all_atoms():
+    #~ r"""This function returns all available atoms in the database.
+    
+    #~ >>> all_atoms()
+    #~ [85Rb, 87Rb, 133Cs]
+    
+    #~ """
+    
+    #~ return 
+
 def split_fine_to_hyperfine(state):
 
 	if type(state)==list:

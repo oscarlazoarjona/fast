@@ -9,6 +9,10 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 >>> print __version__
 1.1
 
+>>> from fast import all_atoms
+>>> all_atoms
+[85Rb, 87Rb, 133Cs]
+
 """
 __version__="1.1"
 
@@ -34,7 +38,7 @@ from evolution import write_evolution, run_evolution
 from stationary import write_stationary, run_stationary
 from misc import compile_code
 
-from atomic_structure import State,Transition
+from atomic_structure import Atom, State, Transition
 from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic
 from atomic_structure import split_hyperfine_to_magnetic
 from atomic_structure import calculate_matrices, make_list_of_states
@@ -60,3 +64,5 @@ from symbolic import define_rho_vector,calculate_A_b
 from symbolic import vector_element
 
 from error_propagation import Measurement
+
+all_atoms=[Atom("Rb",85),Atom("Rb",87),Atom("Cs",133)]
