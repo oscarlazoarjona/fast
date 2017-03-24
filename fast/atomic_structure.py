@@ -202,7 +202,8 @@ class Atom(object):
 
     def states(self,Nmax=50,omega_min=None,omega_max=None, return_missing=False):
         r"""This function returns all available states up to the fine structure
-        such that the principal quantum number is N<=Nmax. Nmax is 50 by default.
+        (ordered by energy) such that the principal quantum number is N<=Nmax.
+        Nmax is 50 by default.
         
         >>> atom=Atom("Rb",85)
         >>> states=atom.states()
@@ -259,6 +260,51 @@ class Atom(object):
         else:
             return available
 
+    def transitions(self,omega_min=None,omega_max=None):
+        r"""This function returns all allowed transitions (by electric-dipole 
+        selection rules) in the atom.
+                
+        >>> atom=Atom("Rb",85)
+        >>> transitions=atom.transitions()
+        >>> print len(transitions)
+        270
+        
+        Arguments omega_min and omega_max can be used to make filter out the
+        results.
+        
+        >>> from scipy.constants import c
+        >>> wavelength_min=770e-9
+        >>> wavelength_max=790e-9
+        >>> omega_min=2*pi*c/wavelength_max
+        >>> omega_max=2*pi*c/wavelength_min
+        
+        >>> easy_transitions=atom.transitions(omega_min=omega_min, omega_max=omega_max)
+        >>> for ti in easy_transitions:
+        ...     print abs(ti.wavelength)*1e9, ti
+        780.241476935 85Rb 5S_1/2 -----> 85Rb 5P_3/2
+        776.157015322 85Rb 5P_3/2 -----> 85Rb 5D_3/2
+        775.978619616 85Rb 5P_3/2 -----> 85Rb 5D_5/2
+        
+        """
+        
+        states=self.states()
+        transitions=states
+        transitions=[]
+        for i in range(len(states)):
+            si=states[i]
+            for j in range(i):
+                sj=states[j]
+                t=Transition(sj,si,verbose=0)
+                if t.allowed:
+                    transitions+=[t]
+        
+        if omega_min!=None:
+            transitions=[ti for ti in transitions if abs(ti.omega)>=omega_min]
+        if omega_max!=None:
+            transitions=[ti for ti in transitions if abs(ti.omega)<=omega_max]
+        
+        return transitions
+        
 
 class State(object):
     r'''This class implements the specific eigenstates of the atomic hamiltonian.
@@ -312,7 +358,7 @@ class State(object):
     A latex representation:
     >>> print g2._latex_()
     ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
-    
+        
 '''
     def __init__(self,element,isotope,n,l=None,j=None,f=None,m=None):
         r'''Initialize states:
@@ -546,8 +592,8 @@ class State(object):
                         [ 9, F, 5/Integer(2), 30042.31405   ,   0.0       , 0.0   , 0.0     ],
                         [ 9, G, 7/Integer(2), 30049.75317   ,   0.0       , 0.0   , 0.0     ],
                         [ 9, G, 9/Integer(2), 30049.7545    ,   0.0       , 0.0   , 0.0     ],
-                        [13, P, 1/Integer(2), 30049.7545    ,   0.0       , 0.0   , 0.0     ],
-                        [13, P, 3/Integer(2), 30165.66826   ,   0.77      , 0.0   , 0.0     ],
+                        [13, P, 1/Integer(2), 30165.66826   ,   0.0       , 0.0   , 0.0     ],
+                        [13, P, 3/Integer(2), 30174.178     ,   0.77      , 0.0   , 0.0     ],
                         
                         [12, D, 3/Integer(2), 30196.7963    ,   0.758     , 0.0   , 0.0     ],
                         [12, D, 5/Integer(2), 30199.09821   ,   0.19      , 0.0   , 0.0     ],
@@ -773,16 +819,15 @@ class State(object):
         '85Rb 5S_1/2^2,2'
 
         """
-        if self.l==0:
-            l='S'
-        elif self.l==1:
-            l='P'
-        elif self.l==2:
-            l='D'
-        elif self.l==3:
-            l='F'
+        if   self.l==0: l='S'
+        elif self.l==1: l='P'
+        elif self.l==2: l='D'
+        elif self.l==3: l='F'
+        elif self.l==4: l='G'
+        elif self.l==5: l='H'
+        elif self.l==6: l='I'
         else:
-            l=str(self.l)
+            l="(L="+str(self.l)+")"
             
         if self.f==None:
             s= str(self.isotope)+self.element+' '+str(self.n)+l+'_'+str(self.j)
