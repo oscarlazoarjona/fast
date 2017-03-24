@@ -113,6 +113,9 @@ class Atom(object):
         >>> atom.nuclear_spin
         5/2
         
+        >>> print atom.ionization_frequency
+        1.01002474142e+13
+        
         """
 
         m_Rb85  = 84.9117897379*uma # Rb85  mass in kg [4]
@@ -126,10 +129,12 @@ class Atom(object):
         # Atomic radii from [7]
         # This is the database of implemented atoms.
         # nuclear spins from [5]
-        #          element, isotope, atomic number,    mass, abundance      , Tmelt  , Tboil  , radius (m) , nuclear spin  
-        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85 , TmeltRb, TboilRb, 2.35e-10   , 5/Integer(2)],
-                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87 , TmeltRb, TboilRb, 2.35e-10   , 3/Integer(2)],
-                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs, TboilCs, 2.60e-10   , 7/Integer(2)]]
+        # ionization frequencies from [3,6,8]
+        #          element, isotope, atomic number,    mass, abundance      , Tmelt  , Tboil  , radius (m) , nuclear spin , ionization frequencies
+
+        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85 , TmeltRb, TboilRb, 2.35e-10   , 5/Integer(2) ,c*33690.79890], 
+                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87 , TmeltRb, TboilRb, 2.35e-10   , 3/Integer(2) ,c*33690.80480],
+                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs, TboilCs, 2.60e-10   , 7/Integer(2) ,c*31406.46766]]
         
         # We scan the database
         valid_input=False
@@ -137,15 +142,16 @@ class Atom(object):
         for item in database:
             if element==item[0] and isotope==item[1]:
                 valid_input=True
-                self.element      =item[0]
-                self.isotope      =item[1]
-                self.Z            =item[2]
-                self.mass         =item[3]
-                self.abundance    =item[4]
-                self.Tmelt        =item[5]
-                self.Tboil        =item[6]
-                self.radius       =item[7]
-                self.nuclear_spin =item[8]
+                self.element              =item[0]
+                self.isotope              =item[1]
+                self.Z                    =item[2]
+                self.mass                 =item[3]
+                self.abundance            =item[4]
+                self.Tmelt                =item[5]
+                self.Tboil                =item[6]
+                self.radius               =item[7]
+                self.nuclear_spin         =item[8]
+                self.ionization_frequency =item[9]
                 
                 self.neutrons=self.isotope-self.Z
                 break
@@ -2013,6 +2019,9 @@ def collision_rate(Temperature, element, isotope):
 #        http://dx.doi.org/10.1063/1.1725697   
 #}
 #}
+#
+# [8] Rubidium 87 D Line Data
+#     Daniel Adam Steck
 
 
 
