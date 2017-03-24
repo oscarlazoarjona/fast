@@ -305,6 +305,63 @@ class Atom(object):
         
         return transitions
         
+    def find_decays(self,fine_state):
+        r"""This function finds all the states to which a given fine structure state 
+        can decay (through electric dipole selection rules).
+        
+        >>> atom=Atom("Cs",133)
+        >>> e=State("Cs",133,6,"P",3/Integer(2))
+        >>> atom.find_decays(e)
+        [133Cs 6P_3/2, 133Cs 6S_1/2]
+        
+        >>> s=State("Cs",133,6,"D",5/Integer(2))
+        >>> atom.find_decays(s)
+        [133Cs 6D_5/2, 133Cs 6P_3/2, 133Cs 7P_3/2, 133Cs 6S_1/2, 133Cs 5D_3/2, 133Cs 5D_5/2, 133Cs 7S_1/2, 133Cs 6P_1/2]
+        
+        """
+        def decays_from(fine_state,transitions):
+            r"""This function executes one step of search in the decay tree.
+            
+            >>> atom=Atom("Cs",133)
+            >>> e=State("Cs",133,6,"P",3/Integer(2))
+            >>> transitions=atom.transitions()
+            >>> decays_from(e,transitions)
+            [133Cs 6P_3/2, 133Cs 6S_1/2]
+            
+            """
+            states_below=[]
+            for t in transitions:
+                if t.e2==fine_state:
+                    states_below+=[t.e1]
+            return states_below
+        
+        def iterate(states,transitions):
+            r"""This function makes a recursive search of the decay tree.
+                        
+            >>> atom=Atom("Cs",133)
+            >>> e=State("Cs",133,6,"P",3/Integer(2))
+            >>> transitions=atom.transitions()
+            >>> iterate([e],transitions)
+            [133Cs 6P_3/2, 133Cs 6S_1/2]
+            
+            """
+
+            new_and_old_states=states[:]
+            for state in states:
+                new_states=decays_from(state,transitions)
+                for new_state in new_states:
+                    if new_state not in new_and_old_states:
+                        new_and_old_states+=[new_state]
+            
+            if states==new_and_old_states:
+                return states
+            else:
+                return iterate(new_and_old_states,transitions)
+        
+        transitions=self.transitions()
+        states=iterate([fine_state],transitions)
+        
+        return states
 
 class State(object):
     r'''This class implements the specific eigenstates of the atomic hamiltonian.
