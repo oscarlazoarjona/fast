@@ -79,6 +79,10 @@ class Atom(object):
         We can get the available isotopes
         >>> atom.isotopes
         [85, 87]
+
+        The atomic radius (in meters)
+        >>> print atom.radius
+        2.35e-10
         
         The melting temperature
         >>> atom.Tboil
@@ -105,9 +109,9 @@ class Atom(object):
         >>> print atom.mass
         1.40999341816e-25
         
-        The atomic radius (in meters)
-        >>> print atom.radius
-        2.35e-10
+        The nuclear spin of the atom
+        >>> atom.nuclear_spin
+        5/2
         
         """
 
@@ -121,10 +125,11 @@ class Atom(object):
 
         # Atomic radii from [7]
         # This is the database of implemented atoms.
-        #          element, isotope, atomic number,    mass, abundance
-        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85,  TmeltRb,TboilRb, 2.35e-10],
-                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87,  TmeltRb,TboilRb, 2.35e-10],
-                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs,TboilCs, 2.60e-10]]
+        # nuclear spins from [5]
+        #          element, isotope, atomic number,    mass, abundance      , Tmelt  , Tboil  , radius (m) , nuclear spin  
+        database=[["Rb"   ,      85,            37,  m_Rb85, abundance_Rb85 , TmeltRb, TboilRb, 2.35e-10   , 5/Integer(2)],
+                  ["Rb"   ,      87,            37,  m_Rb87, abundance_Rb87 , TmeltRb, TboilRb, 2.35e-10   , 3/Integer(2)],
+                  ["Cs"   ,     133,            55, m_Cs133, abundance_Cs133, TmeltCs, TboilCs, 2.60e-10   , 7/Integer(2)]]
         
         # We scan the database
         valid_input=False
@@ -132,14 +137,15 @@ class Atom(object):
         for item in database:
             if element==item[0] and isotope==item[1]:
                 valid_input=True
-                self.element  =item[0]
-                self.isotope  =item[1]
-                self.Z        =item[2]
-                self.mass     =item[3]
-                self.abundance=item[4]
-                self.Tmelt    =item[5]
-                self.Tboil    =item[6]
-                self.radius   =item[7]
+                self.element      =item[0]
+                self.isotope      =item[1]
+                self.Z            =item[2]
+                self.mass         =item[3]
+                self.abundance    =item[4]
+                self.Tmelt        =item[5]
+                self.Tboil        =item[6]
+                self.radius       =item[7]
+                self.nuclear_spin =item[8]
                 
                 self.neutrons=self.isotope-self.Z
                 break
@@ -164,7 +170,6 @@ class Atom(object):
             s="The isotope "+str(isotope)+str(element)+" is not in the database."
             raise ValueError,s
 
-        
     def __repr__(self):
         r"""The representation routine for atoms:
         
@@ -194,6 +199,7 @@ class Atom(object):
         
         """
         return '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}'
+
 
 class State(object):
     r'''This class implements the specific eigenstates of the atomic hamiltonian.
@@ -310,9 +316,9 @@ class State(object):
         I=6
         from scipy.constants import c
         # All tables are given in (cm^-1).
+        i=atom.nuclear_spin
         if element=="Rb":
             if isotope==85:
-                i=5/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)    C (cm^-1)
                 nivfin=[[ 5, S, 1/Integer(2), 0.0000000  , 0.033753721     , 0.0       , 0.0],
                         [ 5, P, 1/Integer(2), 12578.950  , 0.004026        , 0.0       , 0.0],
@@ -379,10 +385,7 @@ class State(object):
                         [50, S, 1/Integer(2), 33640.84283, 0.0             , 0.0       , 0.0],
                         ]
 
-
             elif isotope==87:
-
-                i=3/Integer(2)
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)      C (cm^-1)
                 nivfin=[[5, S, 1/Integer(2), 0.0000000, 0.113990236053642, 0.0            , 0.0],
                         [5, P, 1/Integer(2), 12578.950, 0.01365          , 0.0            , 0.0],
@@ -412,11 +415,8 @@ class State(object):
             nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ] 
                                     + [nivfin[ii][6]*c*100 ] for ii in range(len(nivfin)) ]
 
-
         elif element=="Cs":
-
             if isotope==133:
-                i=7/Integer(2)
                 # Reference [1], others not used yet [2]:
                 #        N, L,     K       , E (cm^-1),       A (MHz)      B (MHz)   C (MHz)
                 
