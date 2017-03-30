@@ -54,7 +54,7 @@ def fprint(expr,print_ascii=False):
     """
     
     if print_ascii:
-        pprint(expr,use_unicode=False)
+        pprint(expr,use_unicode=False,num_columns=120)
     else:
         return expr
 
