@@ -27,7 +27,7 @@ from matplotlib import use; use('Agg')
 from electric_field import PlaneWave, MotField
 from electric_field import electric_field_amplitude_gaussian, electric_field_amplitude_top, electric_field_amplitude_intensity
 from misc import Mu, IJ, find_phase_transformation
-from misc import formatLij, convolve_with_gaussian, read_result
+from misc import formatLij, convolve_with_gaussian, read_result, fprint
 
 from graphic import complex_matrix_plot, plot_Lij
 from graphic import Arrow3D,bar_chart_mf,draw_atom3d,draw_mot_field_3d,draw_plane_wave_3d,draw_lasers_3d

@@ -37,9 +37,26 @@ from numpy import arange
 sage_included = 'sage' in globals().keys()
 
 from math import atan2,sqrt,pi,cos,sin,exp
-from sympy import solve,Symbol,diff
+from sympy import solve,Symbol,diff,pprint
 from atomic_structure import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
 from atomic_structure import calculate_boundaries
+
+def fprint(expr,print_ascii=False):
+    r"""This function chooses whether to use ascii characters to represent
+    a symbolic expression in the notebook or to use sympy's pprint.
+    
+    >>> from sympy import cos
+    >>> omega=Symbol("omega")
+    >>> fprint(cos(omega),print_ascii=True)
+    cos(omega)
+        
+    
+    """
+    
+    if print_ascii:
+        pprint(expr,use_unicode=False)
+    else:
+        return expr
 
 def format_double(num):
 	num=str(num)
