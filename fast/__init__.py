@@ -14,6 +14,8 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 [85Rb, 87Rb, 133Cs]
 
 """
+# This allows plots to be made remotely via ssh.
+from matplotlib import use; use('Agg')
 
 from electric_field import PlaneWave, MotField
 from electric_field import electric_field_amplitude_gaussian
@@ -62,14 +64,11 @@ from symbolic import vector_element
 
 from error_propagation import Measurement
 
-import matplotlib
-from matplotlib import use
-use('Agg')
-# We set matplotlib to use a nice latex font.
-matplotlib.rcParams['mathtext.fontset'] = 'cm'
-matplotlib.rcParams['mathtext.rm'] = 'serif'
-# This allows plots to be made remotely via ssh.
+from matplotlib import rcParams
 
+# We set matplotlib to use a nice latex font.
+rcParams['mathtext.fontset'] = 'cm'
+rcParams['mathtext.rm'] = 'serif'
 
 __version__ = "1.1"
 all_atoms = [Atom("Rb", 85), Atom("Rb", 87), Atom("Cs", 133)]
