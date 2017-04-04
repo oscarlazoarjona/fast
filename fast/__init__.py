@@ -60,7 +60,7 @@ from symbolic import delta_greater, delta_lesser
 from symbolic import ket, bra, ketbra, lindblad_operator, lindblad_terms
 from symbolic import define_psi_coefficients
 from symbolic import define_rho_vector, calculate_A_b
-from symbolic import vector_element
+from symbolic import vector_element, phase_transformation
 
 from error_propagation import Measurement
 

@@ -30,18 +30,18 @@ from sympy import KroneckerDelta
 from sympy import Function, Derivative
 from sympy import re,im
 
-from fast.misc import IJ
+from fast.misc import IJ, find_phase_transformation, formatLij
 
 def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
     r"""This function returns a symbolic density matrix. The arguments are
-    
+
     Ne (integer):
         The number of atomic states.
     explicitly_hermitian (boolean):
         Whether to make $\rho_{ij}=\bar{\rho}_{ij}$ for $i<j$
     normalized (boolean):
         Whether to make $\rho_{11}=1-\sum_{i>1} \rho_{ii}$
-    
+
     >>> define_density_matrix(2)
     Matrix([
     [rho11, rho12],
@@ -71,33 +71,33 @@ def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
                     row_rho   +=[ conjugate(Symbol(            name+open_brace+str(j+1)+comma+str(i+1)+close_brace               ))]
                 else:
                     row_rho   +=[           Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace              )]
-        
+
         rho+=[row_rho]
-    
+
     if normalized:
         rho11=1-sum([ rho[i][i] for i in range(1,Ne)])
         rho[0][0]   =rho11
-    
-    
+
+
     rho   =Matrix(   rho)
     return rho
 
 def define_laser_variables(Nl,real_amplitudes=False):
     r"""This function returns the amplitudes and frequencies of Nl fields.
-    
+
     >>> E0, omega_laser = define_laser_variables(2)
     >>> E0, omega_laser
     ([E_0^1, E_0^2], [omega^1, omega^2])
-    
+
     The amplitudes are complex by default:
     >>> conjugate(E0[0])
     conjugate(E_0^1)
-    
+
     But they can optionally be made real:
     >>> E0, omega_laser = define_laser_variables(2, real_amplitudes=True)
     >>> conjugate(E0[0])
     E_0^1
-    
+
     """
     E0         =[Symbol(  r"E_0^"+str(l+1),    real=real_amplitudes ) for l in range(Nl)]
     omega_laser=[Symbol(r"omega^"+str(l+1),    real=True ) for l in range(Nl)]
@@ -106,14 +106,14 @@ def define_laser_variables(Nl,real_amplitudes=False):
 def polarization_vector(phi,theta,alpha,beta,p):
     r"""This function returns a unitary vector describing the polarization
     of plane waves. It recieves as arguments:
-    
+
     phi   .- The spherical coordinates azimuthal angle of the wave vector k.
     theta .- The spherical coordinates polar angle of the wave vector k.
     alpha .- The rotation of a half-wave plate.
     beta  .- The rotation of a quarter-wave plate.
     p     .- either 1 or -1 to indicate whether to return epsilon^(+) or
              epsilon^(-) respectively.
-    
+
     If alpha and beta are zero, the result will be linearly polarized light
     along some fast axis. alpha and beta are measured from that fast axis.
 
@@ -130,14 +130,14 @@ def polarization_vector(phi,theta,alpha,beta,p):
     [  -sqrt(2)/2],
     [-sqrt(2)*I/2],
     [           0]])
-    
+
     Propagation towards -z, circular polarization for sigma + transitions:
     >>> polarization_vector(phi=0, theta=pi, alpha=   0, beta=-pi/8,p=1)
     Matrix([
     [  -sqrt(2)/2],
     [-sqrt(2)*I/2],
     [           0]])
-    
+
     Components + and - are complex conjugates of each other
     >>> phi, theta, alpha, beta = symbols("phi theta alpha beta", real=True)
     >>> ep = polarization_vector(phi,theta,alpha,beta, 1)
@@ -147,10 +147,10 @@ def polarization_vector(phi,theta,alpha,beta,p):
     [0],
     [0],
     [0]])
-    
+
     """
     epsilon=Matrix([cos(2*beta),p*I*sin(2*beta),0])
-    
+
     R1=Matrix([[ cos(2*alpha), -sin(2*alpha), 0         ],
                [ sin(2*alpha),  cos(2*alpha), 0         ],
                [  0          ,   0          , 1         ]])
@@ -162,13 +162,13 @@ def polarization_vector(phi,theta,alpha,beta,p):
     R3=Matrix([[ cos(phi)    , -sin(phi)    , 0         ],
                [ sin(phi)    ,  cos(phi)    , 0         ],
                [  0          ,   0          , 1         ]])
- 
+
     return R3*R2*R1*epsilon
 
 def cartesian_to_helicity(vector):
     r"""This function takes vectors from the cartesian basis to the helicity basis.
-    For instance, we can check what are the vectors of the helicity basis. 
-    
+    For instance, we can check what are the vectors of the helicity basis.
+
     >>> em=polarization_vector(phi=0, theta= 0, alpha=0, beta=-pi/8,p= 1)
     >>> em
     Matrix([
@@ -220,7 +220,7 @@ def cartesian_to_helicity(vector):
     [am],
     [a0],
     [ap]])
-        
+
     """
     return Matrix([ (vector[0]-I*vector[1])/sqrt(2), vector[2], -(vector[0]+I*vector[1])/sqrt(2) ])
 
@@ -236,12 +236,12 @@ def cartesian_dot_product(v1,v2):
 def define_r_components(Ne,explicitly_hermitian=False,helicity=False,real=True):
     if Ne>9: comma=","
     else: comma=""
-    
+
     if helicity:
         names=["r_{-1;","r_{0;","r_{+1;"]
     else:
         names=["x","y","z"]
-    
+
     r=[]
     if helicity:
         for p in range(3):
@@ -279,16 +279,16 @@ def define_r_components(Ne,explicitly_hermitian=False,helicity=False,real=True):
                 r_comp+=[r_row]
             r_comp=Matrix(r_comp)
             r+=[r_comp]
-            
+
     return r
 
 def vector_element(r,i,j):
     return Matrix([r[p][i,j] for p in range(3)])
 
 def define_frequencies(Ne,explicitly_antisymmetric=False):
-	
+
 	omega_level=[Symbol('omega_'+str(i+1),real=True) for i in range(Ne)]
-	
+
 	if Ne>9:
 		comma=","
 		open_brace= "{"
@@ -313,17 +313,17 @@ def define_frequencies(Ne,explicitly_antisymmetric=False):
 			else:
 				om= Symbol(r"omega_"+open_brace+str(i+1)+comma+str(j+1)+close_brace,real=True)
 				ga= Symbol(r"gamma_"+open_brace+str(i+1)+comma+str(j+1)+close_brace,real=True)
-				
+
 
 			row_omega+=[om]
 			row_gamma+=[ga]
-			
+
 		omega+=[row_omega]
 		gamma+=[row_gamma]
-		
+
 	omega=Matrix(omega)
 	gamma=Matrix(gamma)
-	
+
 	return omega_level,omega,gamma
 
 def delta_greater(i,j):
@@ -335,10 +335,10 @@ def delta_lesser(i,j):
     else: return 0
 
 def bra(i,Ne):
-    r"""This function returns the transpose of the i-th element of the 
+    r"""This function returns the transpose of the i-th element of the
     canonical basis of a Hilbert space of dimension Ne (in the form of a
     row vector).
-    
+
     >>> bra(2,4)
     Matrix([[0, 1, 0, 0]])
 
@@ -347,16 +347,16 @@ def bra(i,Ne):
     Traceback (most recent call last):
     ...
     ValueError: i must be in [1 .. Ne].
-    
+
     """
     if i not in range(1,Ne+1):
         raise ValueError,"i must be in [1 .. Ne]."
     return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)]).transpose()
 
 def ket(i,Ne):
-    r"""This function returns the i-th element of the canonical basis 
+    r"""This function returns the i-th element of the canonical basis
     of a Hilbert space of dimension Ne (in the form of a column vector).
-    
+
     >>> ket(2,4)
     Matrix([
     [0],
@@ -369,7 +369,7 @@ def ket(i,Ne):
     Traceback (most recent call last):
     ...
     ValueError: i must be in [1 .. Ne].
-    
+
     """
 
     if i not in range(1,Ne+1):
@@ -380,13 +380,13 @@ def ketbra(i,j,Ne):
     r"""This function returns the outer product |i><j| where |i> and |j>
     are elements of the canonical basis of an Ne-dimensional Hilbert space
     (in matrix form).
-    
+
     >>> ketbra(2,3,3)
     Matrix([
     [0, 0, 0],
     [0, 0, 1],
     [0, 0, 0]])
-    
+
     """
     return ket(i,Ne)*bra(j,Ne)
 
@@ -394,14 +394,14 @@ def lindblad_operator(A,rho):
     r"""This function returns the action of a Lindblad operator A on a density matrix rho.
     This is defined as :
         L(A,rho) = A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2.
-    
+
     >>> rho=define_density_matrix(3)
     >>> lindblad_operator( ketbra(1,2,3) ,rho )
     Matrix([
     [   rho22, -rho12/2,        0],
     [-rho21/2,   -rho22, -rho23/2],
     [       0, -rho32/2,        0]])
-    
+
     """
     return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
 
@@ -434,9 +434,9 @@ def define_rho_vector(rho,Ne):
 def calculate_A_b(eqs,rho,Ne):
 	rho_vect=define_rho_vector(rho,Ne)
 	A=[]; b=[]
-	ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j]) 
+	ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j])
                 for j in range(Ne) for i in range(Ne)}
-	
+
 	for mu in range(1,Ne**2):
 		i,j,s=IJ(mu,Ne)
 		ii=i-1;jj=j-1
@@ -449,10 +449,45 @@ def calculate_A_b(eqs,rho,Ne):
 			coefficient=Derivative(eq,variable).doit()
 			row+=[ coefficient ]
 			eq_new+=coefficient*variable
-		
+
 		b+= [ -(eq-eq_new).expand()]
-		
+
 		A+=[row]
 	A=Matrix(A); b=Matrix(b)
 	return A,b
 
+
+def phase_transformation(Ne, Nl, r, Lij, omega_laser, phase):
+    r"""Obtain a phase transformation to eliminate explicit time dependence.
+
+    >>> Ne = 2
+
+
+    """
+    ph = find_phase_transformation(Ne, Nl, r, Lij)
+
+    return {phase[i]: sum([ph[i][j]*omega_laser[j] for j in range(Nl)])
+            for i in range(Ne)}
+
+
+def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
+    r"""Obtain a phase transformation to eliminate explicit time dependence.
+
+    >>> Ne = 3
+    >>> Nl = 2
+
+    >>> r = define_r_components(Ne, helicity=True, explicitly_hermitian=True)
+    >>> r = [ri.subs({r[0][2,0]:0,r[1][2,0]:0,r[2][2,0]:0}) for ri in r]
+
+    >>> Lij = [[1,2,[1]],[2,3,[2]]]
+    >>> Lij = formatLij(Lij,Ne)
+    >>> E0, omega_laser = define_laser_variables(Nl)
+    >>> c, ctilde, phase = define_psi_coefficients(Ne)
+    >>> print phase_transformation(Ne, Nl, r, Lij, omega_laser, phase)
+    {theta3: 0, theta1: omega^1 + omega^2, theta2: omega^2}
+
+    """
+    ph = find_phase_transformation(Ne, Nl, r, Lij)
+
+    return {phase[i]: sum([ph[i][j]*omega_laser[j] for j in range(Nl)])
+            for i in range(Ne)}
