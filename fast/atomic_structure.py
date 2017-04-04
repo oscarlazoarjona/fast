@@ -1385,8 +1385,13 @@ def calculate_gamma_matrix(magnetic_states, Omega=1):
 
     return gamma
 
+
 def calculate_reduced_matrix_elements(fine_states):
-	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.
+    '''Calculate the reduced matrix elements for a list of fine states.
+
+    This function calculates the reduced matrix elments
+                <N,L,J||T^1(r)||N',L',J'>
+    given a list of fine states.
 
     >>> g=State("Rb",87,5,0,1/Integer(2))
     >>> e1=State("Rb",87,5,1,1/Integer(2))
@@ -1398,125 +1403,130 @@ def calculate_reduced_matrix_elements(fine_states):
     8.45396724128841
 
     '''
-	#We calculate the reduced matrix elements starting from the list of fine_states
+    # We calculate the reduced matrix elements starting from the list of
+    # fine_states. The factor composed of physical quantities.
+    factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
+    # We read the database to obtain the Einstein A coefficients in Hz.
+    einsteinA = get_einstein_A_matrix(fine_states)
+    # We read the database to obtain the transition frequencies in Hz.
+    omega_fine = calculate_omega_matrix(fine_states)
 
-	#The factor composed of physical quantities.
-	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-	#We read the database to obtain the Einstein A coefficients in Hz.
-	einsteinA=get_einstein_A_matrix(fine_states)
-	#We read the database to obtain the transition frequencies in Hz.
-	omega_fine=calculate_omega_matrix(fine_states)
+    reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
+                               for ii in range(len(fine_states))]
 
-	reduced_matrix_elements=[[0.0 for jj in range(len(fine_states))] for ii in range(len(fine_states))]
+    for ii in range(len(fine_states)):
+        i = fine_states[ii]
+        for jj in range(ii):
+            j = fine_states[jj]
+            t = Transition(i, j)
+            einsteinAij = einsteinA[ii][jj]
+            omega0 = omega_fine[ii][jj]
 
-	for ii in range(len(fine_states)):
-		i=fine_states[ii]
-		for jj in range(ii):
-			j=fine_states[jj]
-			t=Transition(i,j)
-			einsteinAij=einsteinA[ii][jj]
-			omega0=omega_fine[ii][jj]
+            # The formula is valid only for i =/= j so that omega0 =/= 0.
+            # Because fine states are asumed to be ordered by their energies we
+            # can asume that i decays in j.
+            Ji = i.j; Jj = j.j
 
-			#The formula is valid only for i =/= j so that omega0 =/= 0.
-			#Because fine states are asumed to be ordered by their energies we can asume that
-			# i decays in j.
-			Ji=i.j; Jj=j.j
+            rij = (2.0*Ji+1)/sqrt(2.0*Jj+1)*sqrt(einsteinAij/omega0**3)
+            rij = factor*rij
 
-			rij=(2.0*Ji+1)/sqrt(2.0*Jj+1)*sqrt(einsteinAij/omega0**3)
-			rij=factor*rij
+            reduced_matrix_elements[ii][jj] = rij
+            # We add the matrix elements on the other side of the diagonal.
+            reduced_matrix_elements[jj][ii] = rij*(-1)**(Ji-Jj)
 
-			reduced_matrix_elements[ii][jj]=rij
-			#We add the matrix elements on the other side of the diagonal.
-			reduced_matrix_elements[jj][ii]=rij*(-1)**(Ji-Jj)
+    return reduced_matrix_elements
 
-	return reduced_matrix_elements
 
 def calculate_r_matrices(fine_states, reduced_matrix_elements):
+    magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
+    index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, magnetic_states)
 
-	magnetic_states=make_list_of_states(fine_states,'magnetic',verbose=0)
-	index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, magnetic_states)
+    Ne = len(magnetic_states)
 
-	Ne=len(magnetic_states)
+    r = [[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
 
-	r=[[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+    II = fine_states[0].i
 
-	II=fine_states[0].i
+    for p in [-1, 0, 1]:
+        for i in range(Ne):
+            ei = magnetic_states[i]
+            ii = fine_index(i, index_list_fine)
 
-	for p in [-1,0,1]:
-		for i in range(Ne):
-			ei=magnetic_states[i]
-			ii=fine_index(i, index_list_fine)
+            for j in range(Ne):
+                ej = magnetic_states[j]
+                jj = fine_index(j, index_list_fine)
 
-			for j in range(Ne):
-				ej=magnetic_states[j]
-				jj=fine_index(j, index_list_fine)
+                reduced_matrix_elementij = reduced_matrix_elements[ii][jj]
+                if reduced_matrix_elementij != 0:
 
-				reduced_matrix_elementij=reduced_matrix_elements[ii][jj]
-				if reduced_matrix_elementij != 0:
+                    ji = ei.j; jj = ej.j
+                    fi = ei.f; fj = ej.f
+                    mi = ei.m; mj = ej.m
 
-					ji=ei.j; jj=ej.j
-					fi=ei.f; fj=ej.f
-					mi=ei.m; mj=ej.m
+                    rpij = (-1)**(fi-mi)
+                    rpij *= wigner_3j(fi, 1, fj, -mi, p, mj)
 
-					rpij =(-1)**(fi-mi)
-					#print fi,1,jj,-mi,p, mj
-					rpij*=wigner_3j(fi,1,fj,-mi,p, mj)
+                    rpij *= (-1)**(fj+ji+1+II)
+                    rpij *= sqrt(2*fj+1)
+                    rpij *= sqrt(2*fi+1)
+                    rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
 
-					rpij*=(-1)**(fj+ji+1+II)
-					rpij*=sqrt(2*fj+1)
-					rpij*=sqrt(2*fi +1)
-					rpij*=wigner_6j(ji,jj,1,fj,fi,II)
+                    rpij *= reduced_matrix_elementij
 
-					rpij*=reduced_matrix_elementij
-
-					r[p+1][i][j]=float(rpij)
-	return r
-
-def calculate_matrices(states,Omega=1):
-	'''This function calculates the matrices omega_ij, gamma_ij and r_pij given a list
-	of atomic states. The states can be arbitrarily in their fine, hyperfine or magnetic detail.'''
-
-	#We check that all states belong to the same element and the same isotope.
-	iso=states[0].isotope
-	element=states[0].element
-	for state in states[1:]:
-		if state.element != element:
-			raise ValueError,'All states must belong to the same element.'
-		if state.isotope != iso:
-			raise ValueError,'All states must belong to the same isotope.'
+                    r[p+1][i][j] = float(rpij)
+    return r
 
 
+def calculate_matrices(states, Omega=1):
+    r"""Calculate the matrices omega_ij, gamma_ij, r_pij.
+
+    This function calculates the matrices omega_ij, gamma_ij and r_pij given a
+    list of atomic states. The states can be arbitrarily in their fine,
+    hyperfine or magnetic detail.
+    """
+    # We check that all states belong to the same element and the same isotope.
+    iso = states[0].isotope
+    element = states[0].element
+    for state in states[1:]:
+        if state.element != element:
+            raise ValueError, 'All states must belong to the same element.'
+        if state.isotope != iso:
+            raise ValueError, 'All states must belong to the same isotope.'
+
+    # We find the fine states involved in the problem.
+    fine_states = find_fine_states(states)
+
+    # We find the full magnetic states. The matrices will be first calculated
+    # for the complete problem and later reduced to include only the states of
+    # interest.
+    full_magnetic_states = make_list_of_states(fine_states, 'magnetic',
+                                               verbose=0)
+
+    # We calculate the indices corresponding to each sub matrix of fine and
+    # hyperfine levels.
+
+    # We calculate the frequency differences between states.
+    omega_full = calculate_omega_matrix(full_magnetic_states, Omega)
+    # We calculate the matrix gamma.
+
+    gamma_full = calculate_gamma_matrix(full_magnetic_states, Omega)
+    # We calculate the reduced matrix elements
+    reduced_matrix_elements = calculate_reduced_matrix_elements(fine_states)
+
+    # We calculate the matrices r_-1, r_0, r_1
+    r_full = calculate_r_matrices(fine_states, reduced_matrix_elements)
+
+    # Reduction to be implemented
+    omega = omega_full
+    r = r_full
+    gamma = gamma_full
+    return omega, gamma, r
 
 
-	#We find the fine states involved in the problem.
-	fine_states=find_fine_states(states)
+def calculate_boundaries(fine_states, full_magnetic_states):
+    r"""Calculate the boundary indices within a list of magnetic states.
 
-	#We find the full magnetic states. The matrices will be first calculated for the complete
-	#problem and later reduced to include only the states of interest.
-	full_magnetic_states=make_list_of_states(fine_states,'magnetic',verbose=0)
-
-	#We calculate the indices corresponding to each sub matrix of fine and hyperfine levels.
-	#index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, full_magnetic_states)
-
-	#We calculate the frequency differences between states.
-	omega_full=calculate_omega_matrix(full_magnetic_states,Omega)
-	#We calculate the matrix gamma
-
-	gamma_full=calculate_gamma_matrix(full_magnetic_states, Omega)
-	#We calculate the reduced matrix elements
-	reduced_matrix_elements=calculate_reduced_matrix_elements(fine_states)
-
-	#We calculate the matrices r_-1, r_0, r_1
-	r_full=calculate_r_matrices(fine_states,reduced_matrix_elements)
-
-	#Reduction to be implemented
-	omega=omega_full
-	r=r_full
-	gamma=gamma_full
-	return omega,gamma,r
-
-def calculate_boundaries(fine_states,full_magnetic_states):
-	r"""This function calculates the boundary indices of each fine state
+    This function calculates the boundary indices of each fine state
     and each hyperfine state within a list of magnetic states. The output
     is a list of tuples (a,b) with a the starting index of a state and
     b it's ending index.
@@ -1527,33 +1537,34 @@ def calculate_boundaries(fine_states,full_magnetic_states):
     ([(0, 8)], [(0, 3), (3, 8)])
 
     """
-	N_magnetic=len(full_magnetic_states)
+    N_magnetic = len(full_magnetic_states)
 
-	#We calculate the boundaries of the various detail levels
-	#First we will make a list of indices of that will tell where each fine level begins and ends.
-	fq=full_magnetic_states[0].quantum_numbers[:4]
-	index_list_fine=[]; start_fine=0
-	#And another list of indices that will tell where each hyperfine level begins and ends.
-	hq=full_magnetic_states[0].quantum_numbers[:5]
-	index_list_hyperfine=[]; start_hyperfine=0
+    # We calculate the boundaries of the various detail levels
+    # First we will make a list of indices of that will tell where each fine
+    # level begins and ends.
+    fq = full_magnetic_states[0].quantum_numbers[:4]
+    index_list_fine = []; start_fine = 0
+    # And another list of indices that will tell where each hyperfine level
+    # begins and ends.
+    hq = full_magnetic_states[0].quantum_numbers[:5]
+    index_list_hyperfine = []; start_hyperfine = 0
 
-	for i in range(N_magnetic):
-		magnetic=full_magnetic_states[i]
-		if magnetic.quantum_numbers[:4]!=fq:
-			index_list_fine+=[(start_fine,i)]
-			start_fine=i
-			fq=magnetic.quantum_numbers[:4]
+    for i in range(N_magnetic):
+        magnetic = full_magnetic_states[i]
+        if magnetic.quantum_numbers[:4] != fq:
+            index_list_fine += [(start_fine, i)]
+            start_fine = i
+            fq = magnetic.quantum_numbers[:4]
 
-		if magnetic.quantum_numbers[:5]!=hq:
-			index_list_hyperfine+=[(start_hyperfine,i)]
-			start_hyperfine=i
-			hq=magnetic.quantum_numbers[:5]
+        if magnetic.quantum_numbers[:5] != hq:
+            index_list_hyperfine += [(start_hyperfine, i)]
+            start_hyperfine = i
+            hq = magnetic.quantum_numbers[:5]
 
-
-		if i==N_magnetic-1:
-			index_list_fine+=[(start_fine,i+1)]
-			index_list_hyperfine+=[(start_hyperfine,i+1)]
-	return index_list_fine,index_list_hyperfine
+        if i == N_magnetic-1:
+            index_list_fine += [(start_fine, i+1)]
+            index_list_hyperfine += [(start_hyperfine, i+1)]
+    return index_list_fine, index_list_hyperfine
 
 def fine_index(magnetic_index,index_list_fine):
 	""""""
@@ -1562,61 +1573,68 @@ def fine_index(magnetic_index,index_list_fine):
 		if index_list_fine[i][0] <= magnetic_index < index_list_fine[i][1]:
 			return i
 
-def quaver(isotope,p,  J,F,M,  Jp,Fp,Mp, numeric=False,verbose=False):
-	if isotope==85:
-		II=Integer(5)/Integer(2)
-	elif isotope==87:
-		II=Integer(3)/Integer(2)
 
-	qu =(-1)**(F-M+J+II+Fp+1)
-	qu*=sqrt((2*F+1)*(2*Fp+1))
-	if not sage_included:
-		II=float(II)
-		J=float(J)
-		Jp=float(Jp)
-	qu*=wigner_3j(F,1,Fp,  -M,p,Mp)*wigner_6j(II,J,F,  1,Fp,Jp)
+def quaver(isotope, p, J, F, M, Jp, Fp, Mp, numeric=False, verbose=False):
+    if isotope == 85:
+        II = Integer(5)/Integer(2)
+    elif isotope == 87:
+        II = Integer(3)/Integer(2)
 
-	if numeric: return float(qu)
-	else: return qu
+    qu = (-1)**(F-M+J+II+Fp+1)
+    qu *= sqrt((2*F+1)*(2*Fp+1))
+    if not sage_included:
+        II = float(II)
+        J = float(J)
+        Jp = float(Jp)
+    qu *= wigner_3j(F, 1, Fp, -M, p, Mp)*wigner_6j(II, J, F, 1, Fp, Jp)
+
+    if numeric: return float(qu)
+    else: return qu
+
 
 def find_fine_states(magnetic_states):
-	fine_states=[]
-	for state in magnetic_states:
-		fq=state.quantum_numbers[:4]
-		fine_state=State(state.element,fq[0],fq[1],fq[2],fq[3])
-		if fine_state not in fine_states: fine_states+=[fine_state]
-	return fine_states
+    fine_states = []
+    for state in magnetic_states:
+        fq = state.quantum_numbers[:4]
+        fine_state = State(state.element, fq[0], fq[1], fq[2], fq[3])
+        if fine_state not in fine_states: fine_states += [fine_state]
+    return fine_states
 
-def exclude_states(omega,gamma,r,Lij,states,excluded_states):
-	"""This function takes the matrices and excludes the states listed in excluded_states."""
-	Ne=len(omega)
-	excluded_indices=[i for i in range(Ne) if states[i] in excluded_states]
 
-	omega_new=[]; gamma_new=[]; r_new=[[],[],[]]; Lij_new=[]
-	for i in range(Ne):
-		row_om=[]; row_ga=[]; row_L=[]
-		for j in range(Ne):
-			if j not in excluded_indices:
-				row_om+=[omega[i][j]]
-				row_ga+=[gamma[i][j]]
-				row_L +=[Lij[i][j]]
-		if i not in excluded_indices:
-			omega_new+=[row_om]
-			gamma_new+=[row_ga]
-			Lij_new+=[row_L]
+def exclude_states(omega, gamma, r, Lij, states, excluded_states):
+    """Exclude states from matrices.
 
-	for p in range(3):
-		for i in range(Ne):
-			row_r=[]
-			for j in range(Ne):
-				if j not in excluded_indices:
-					row_r+=[r[p][i][j]]
-			if i not in excluded_indices:
-				r_new[p]+=[row_r]
+    This function takes the matrices and excludes the states listed in
+    excluded_states.
+    """
+    Ne = len(omega)
+    excluded_indices = [i for i in range(Ne) if states[i] in excluded_states]
 
-	states_new=[states[i] for i in range(Ne) if i not in excluded_indices]
+    omega_new = []; gamma_new = []; r_new = [[], [], []]; Lij_new = []
+    for i in range(Ne):
+        row_om = []; row_ga = []; row_L = []
+        for j in range(Ne):
+            if j not in excluded_indices:
+                row_om += [omega[i][j]]
+                row_ga += [gamma[i][j]]
+                row_L += [Lij[i][j]]
+        if i not in excluded_indices:
+            omega_new += [row_om]
+            gamma_new += [row_ga]
+            Lij_new += [row_L]
 
-	return omega_new, gamma_new, r_new, Lij_new, states_new
+    for p in range(3):
+        for i in range(Ne):
+            row_r = []
+            for j in range(Ne):
+                if j not in excluded_indices:
+                    row_r += [r[p][i][j]]
+            if i not in excluded_indices:
+                r_new[p] += [row_r]
+
+    states_new = [states[i] for i in range(Ne) if i not in excluded_indices]
+
+    return omega_new, gamma_new, r_new, Lij_new, states_new
 
 def reduce_magnetic_to_hyperfine(omega,gamma,r,Lij,magnetic_states,hyperfine_states,isotropic_r=False):
 	#We find the fine states involved in the problem.
