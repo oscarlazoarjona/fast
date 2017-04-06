@@ -1137,7 +1137,7 @@ class Transition(object):
 
         # print self.allowed, self.einsteinA
         if self.allowed and self.einsteinA is None and verbose > 0:
-            s = "Warning: the transition", self
+            s = "Warning: the transition" + str(self)
             s += "is electric dipole-allowed, but the Einstein A is not in "
             s += "the database."
             print s
