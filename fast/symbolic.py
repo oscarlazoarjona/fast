@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#************************************************************************
+# ************************************************************************
 #       Copyright (C) 2014 - 2017 Oscar Gerardo Lazo Arjona             *
 #              <oscar.lazo@correo.nucleares.unam.mx>                    *
 #                                                                       *
@@ -19,7 +19,18 @@
 #  You should have received a copy of the GNU General Public License    *
 #  along with FAST.  If not, see <http://www.gnu.org/licenses/>.        *
 #                                                                       *
-#************************************************************************
+# ***********************************************************************
+r"""This module contains all the routines to produce symbolic equations.
+
+A simple example:
+
+>>> define_density_matrix(2)
+Matrix([
+[rho11, rho12],
+[rho21, rho22]])
+
+"""
+
 
 from sympy import Symbol,Matrix,symbols
 from sympy import I,conjugate
@@ -32,8 +43,12 @@ from sympy import re,im
 
 from fast.misc import IJ, find_phase_transformation, formatLij
 
-def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
-    r"""This function returns a symbolic density matrix. The arguments are
+
+def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
+                          variables=None):
+    r"""Return a symbolic density matrix.
+
+    The arguments are
 
     Ne (integer):
         The number of atomic states.
@@ -47,39 +62,42 @@ def define_density_matrix(Ne,explicitly_hermitian=False,normalized=False):
     [rho11, rho12],
     [rho21, rho22]])
     """
-    if Ne>9:
-		comma=","
-		name=r"\rho"
-		open_brace="}"
-		close_brace="}"
+    if Ne > 9:
+        comma = ","
+        name = r"\rho"
+        open_brace = "}"
+        close_brace = "}"
     else:
-		comma=""
-		name="rho"
-		open_brace=""
-		close_brace=""
+        comma = ""
+        name = "rho"
+        open_brace = ""
+        close_brace = ""
 
-    rho=[]; re_rho=[]; im_rho=[]
+    rho = []
     for i in range(Ne):
-        row_rho=[]; row_re_rho=[]; row_im_rho=[]
+        row_rho = []
         for j in range(Ne):
-            if i==j:
-                row_rho   +=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace,positive=True )]
-            elif i>j:
-                row_rho   +=[ Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace               )]
+            if i == j:
+                row_rho += [Symbol(name+open_brace+str(i+1)+comma+str(j+1) +
+                                   close_brace, positive=True)]
+            elif i > j:
+                row_rho += [Symbol(name+open_brace+str(i+1)+comma+str(j+1) +
+                                   close_brace)]
             else:
                 if explicitly_hermitian:
-                    row_rho   +=[ conjugate(Symbol(            name+open_brace+str(j+1)+comma+str(i+1)+close_brace               ))]
+                    row_rho += [conjugate(Symbol(name+open_brace+str(j+1) +
+                                                 comma+str(i+1)+close_brace))]
                 else:
-                    row_rho   +=[           Symbol(            name+open_brace+str(i+1)+comma+str(j+1)+close_brace              )]
+                    row_rho += [Symbol(name+open_brace+str(i+1) +
+                                       comma+str(j+1) + close_brace)]
 
-        rho+=[row_rho]
+        rho += [row_rho]
 
     if normalized:
-        rho11=1-sum([ rho[i][i] for i in range(1,Ne)])
-        rho[0][0]   =rho11
+        rho11 = 1-sum([rho[i][i] for i in range(1, Ne)])
+        rho[0][0] = rho11
 
-
-    rho   =Matrix(   rho)
+    rho = Matrix(rho)
     return rho
 
 def define_laser_variables(Nl,real_amplitudes=False):
