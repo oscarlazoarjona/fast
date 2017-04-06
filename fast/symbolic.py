@@ -151,7 +151,7 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
 
     >>> E0, omega_laser = define_laser_variables(2)
     >>> E0, omega_laser
-    ([E_0^1, E_0^2], [omega^1, omega^2])
+    ([E_0^1, E_0^2], [varpi_1, varpi_2])
 
     The amplitudes are complex by default:
     >>> conjugate(E0[0])
@@ -176,10 +176,10 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
         E0 = [Function(r"E_0^"+str(l+1), real=real_amplitudes)(*variables)
               for l in range(Nl)]
 
-    omega_laser = [Symbol(r"omega^"+str(l+1), real=True) for l in range(Nl)]
+    omega_laser = [Symbol(r"varpi_"+str(l+1), positive=True) for l in range(Nl)]
     return E0, omega_laser
 
-def polarization_vector(phi,theta,alpha,beta,p):
+def polarization_vector(phi, theta, alpha, beta, p):
     r"""This function returns a unitary vector describing the polarization
     of plane waves. It recieves as arguments:
 
@@ -560,7 +560,7 @@ def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
     >>> E0, omega_laser = define_laser_variables(Nl)
     >>> c, ctilde, phase = define_psi_coefficients(Ne)
     >>> print phase_transformation(Ne, Nl, r, Lij, omega_laser, phase)
-    {theta3: 0, theta1: omega^1 + omega^2, theta2: omega^2}
+    {theta3: 0, theta1: varpi_1 + varpi_2, theta2: varpi_2}
 
     """
     ph = find_phase_transformation(Ne, Nl, r, Lij)

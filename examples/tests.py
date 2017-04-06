@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+r"""This script runs all doctests in FAST."""
 
 ########################################################################
 # Run all doctests for the core code:
@@ -34,7 +35,9 @@ print testmod(fast.stationary, verbose=verbose)
 print testmod(doctest_01___Two_level_atom, verbose=verbose)
 print testmod(doctest_02___Three_level_atom_ladder, verbose=verbose)
 print testmod(doctest_03___Rb87_one_photon, verbose=verbose)
-print testmod(doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field, verbose=verbose)
+s = testmod(doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field,
+            verbose=verbose)
+print s
 print testmod(doctest_05___Two_level_atom_symbolic, verbose=verbose)
 print testmod(doctest_06___Three_level_atom_ladder_symbolic, verbose=verbose)
 print testmod(doctest_07___Three_level_atom_Lambda_symbolic, verbose=verbose)
