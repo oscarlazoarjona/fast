@@ -31,17 +31,39 @@ Matrix([
 
 """
 
-
-from sympy import Symbol,Matrix,symbols
-from sympy import I,conjugate
-from sympy import sin,cos,exp,sqrt,pi
-from sympy import pprint
-from sympy import simplify
+from sympy import Symbol, Matrix, symbols
+from sympy import pi, I, conjugate
+from sympy import sin, cos, sqrt
 from sympy import KroneckerDelta
 from sympy import Function, Derivative
-from sympy import re,im
-
+from sympy import re, im
 from fast.misc import IJ, find_phase_transformation, formatLij
+
+
+def define_symbol(name, open_brace, comma, i, j,
+                  close_brace, variables, **kwds):
+    r"""Define a nice symbol with matrix indices.
+
+    >>> name = "rho"
+    >>> t, x, y, z = symbols("t, x, y, z", positive=True)
+    >>> variables = [t, x, y, z]
+    >>> open_brace = ""
+    >>> comma = ""
+    >>> close_brace = ""
+    >>> i = 0
+    >>> j = 1
+    >>> f = define_symbol(name, open_brace, comma, i, j, close_brace,
+    ...                   variables, positive=True)
+    >>> print f
+    rho12(t, x, y, z)
+
+    """
+    if variables is None:
+        return Symbol(name+open_brace+str(i+1)+comma+str(j+1) +
+                      close_brace, **kwds)
+    else:
+        return Function(name+open_brace+str(i+1)+comma+str(j+1) +
+                        close_brace, **kwds)(*variables)
 
 
 def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
@@ -57,15 +79,36 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
     normalized (boolean):
         Whether to make $\rho_{11}=1-\sum_{i>1} \rho_{ii}$
 
+    A very simple example:
     >>> define_density_matrix(2)
     Matrix([
     [rho11, rho12],
     [rho21, rho22]])
+
+    The density matrix can be made explicitly hermitian
+    >>> define_density_matrix(2, explicitly_hermitian=True)
+    Matrix([
+    [rho11, conjugate(rho21)],
+    [rho21,            rho22]])
+
+    or normalized
+    >>> define_density_matrix(2, normalized=True)
+    Matrix([
+    [-rho22 + 1, rho12],
+    [     rho21, rho22]])
+
+    or it can be made an explicit function of given variables
+    >>> t, z = symbols("t, z", positive=True)
+    >>> define_density_matrix(2, variables=[t, z])
+    Matrix([
+    [rho11(t, z), rho12(t, z)],
+    [rho21(t, z), rho22(t, z)]])
+
     """
     if Ne > 9:
         comma = ","
         name = r"\rho"
-        open_brace = "}"
+        open_brace = "_{"
         close_brace = "}"
     else:
         comma = ""
@@ -78,19 +121,21 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
         row_rho = []
         for j in range(Ne):
             if i == j:
-                row_rho += [Symbol(name+open_brace+str(i+1)+comma+str(j+1) +
-                                   close_brace, positive=True)]
+                row_rho += [define_symbol(name, open_brace, comma, i, j,
+                                          close_brace, variables,
+                                          positive=True)]
             elif i > j:
-                row_rho += [Symbol(name+open_brace+str(i+1)+comma+str(j+1) +
-                                   close_brace)]
+                row_rho += [define_symbol(name, open_brace, comma, i, j,
+                                          close_brace, variables)]
             else:
                 if explicitly_hermitian:
-                    row_rho += [conjugate(Symbol(name+open_brace+str(j+1) +
-                                                 comma+str(i+1)+close_brace))]
+                    row_rho += [conjugate(define_symbol(name, open_brace,
+                                                        comma, j, i,
+                                                        close_brace,
+                                                        variables))]
                 else:
-                    row_rho += [Symbol(name+open_brace+str(i+1) +
-                                       comma+str(j+1) + close_brace)]
-
+                    row_rho += [define_symbol(name, open_brace, comma, i, j,
+                                              close_brace, variables)]
         rho += [row_rho]
 
     if normalized:
@@ -100,8 +145,9 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
     rho = Matrix(rho)
     return rho
 
-def define_laser_variables(Nl,real_amplitudes=False):
-    r"""This function returns the amplitudes and frequencies of Nl fields.
+
+def define_laser_variables(Nl, real_amplitudes=False, variables=None):
+    r"""Return the amplitudes and frequencies of Nl fields.
 
     >>> E0, omega_laser = define_laser_variables(2)
     >>> E0, omega_laser
@@ -116,10 +162,22 @@ def define_laser_variables(Nl,real_amplitudes=False):
     >>> conjugate(E0[0])
     E_0^1
 
+    They can also be made explicit functions of given variables:
+    >>> t, z = symbols("t, z", real=True)
+    >>> E0, omega_laser = define_laser_variables(2, variables=[t, z])
+    >>> E0
+    [E_0^1(t, z), E_0^2(t, z)]
+
     """
-    E0         =[Symbol(  r"E_0^"+str(l+1),    real=real_amplitudes ) for l in range(Nl)]
-    omega_laser=[Symbol(r"omega^"+str(l+1),    real=True ) for l in range(Nl)]
-    return E0,omega_laser
+    if variables is None:
+        E0 = [Symbol(r"E_0^"+str(l+1), real=real_amplitudes)
+              for l in range(Nl)]
+    else:
+        E0 = [Function(r"E_0^"+str(l+1), real=real_amplitudes)(*variables)
+              for l in range(Nl)]
+
+    omega_laser = [Symbol(r"omega^"+str(l+1), real=True) for l in range(Nl)]
+    return E0, omega_laser
 
 def polarization_vector(phi,theta,alpha,beta,p):
     r"""This function returns a unitary vector describing the polarization
