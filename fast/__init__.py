@@ -42,7 +42,8 @@ from atomic_structure import calculate_gamma_matrix, calculate_omega_matrix
 from atomic_structure import calculate_r_matrices, calculate_boundaries
 from atomic_structure import vapour_pressure, vapour_number_density
 from atomic_structure import vapour_density
-from atomic_structure import speed_likely, speed_average, collision_rate
+from atomic_structure import speed_likely, speed_average, speed_rms
+from atomic_structure import collision_rate
 
 from sympy.core.numbers import Rational as Integer
 

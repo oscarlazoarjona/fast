@@ -1980,7 +1980,7 @@ def speed_likely(Temperature,element,isotope):
     193.142579342
 
     """
-    atom=Atom(element,isotope)
+    atom = Atom(element, isotope)
     return sqrt(2*Temperature*k_B/atom.mass)
 
 def speed_average(Temperature,element,isotope):
@@ -2000,8 +2000,30 @@ def speed_average(Temperature,element,isotope):
     217.938062809
 
     """
-    atom=Atom(element,isotope)
+    atom = Atom(element, isotope)
     return sqrt(8*k_B*Temperature/atom.mass/pi)
+
+
+def speed_rms(Temperature,element,isotope):
+    r"""This function calculates the average speed (in meters per second)
+    of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
+    This is simply
+
+    sqrt(8*k_B*T/m/pi)
+
+    where k_B is Boltzmann's constant, T is the temperature (in Kelvins) and
+    m is the mass of the atom (in kilograms).
+
+    >>> print speed_rms(25+273.15,"Rb",85)
+    295.945034349
+
+    >>> print speed_rms(25+273.15,"Cs",133)
+    236.550383496
+
+    """
+    atom = Atom(element, isotope)
+    return sqrt(3*Temperature*k_B/atom.mass)
+
 
 def collision_rate(Temperature, element, isotope):
     r"""This function recieves the temperature of an atomic vapour (in Kelvin),
