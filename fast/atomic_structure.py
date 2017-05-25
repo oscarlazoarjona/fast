@@ -1869,9 +1869,42 @@ def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
 					r[p+1][i][j]=float(rpij)
 	return r
 
-def vapour_pressure(Temperature,element):
-    r"""This function returns the vapour pressure of rubidium or cesium
-    in Pascals. It receives as input the temperature in Kelvins and the
+
+r"""
+    >>> print vapour_pressure(25.0 + 273.15,"Rb")
+    5.31769896107e-05
+    >>> print vapour_pressure(39.3 + 273.15,"Rb")
+    0.000244249795696
+    >>> print vapour_pressure(90.0 + 273.15,"Rb")
+    0.0155963687128
+    >>> print vapour_pressure(25.0 + 273.15,"Cs")
+    0.000201461144963
+    >>> print vapour_pressure(28.5 + 273.15,"Cs")
+    0.000297898928349
+    >>> print vapour_pressure(90.0 + 273.15,"Cs")
+    0.0421014384667
+
+    The element must be in the database.
+
+    >>> print vapour_pressure(90.0 + 273.15,"Ca")
+    Traceback (most recent call last):
+    ...
+    ValueError: Ca is not an element in the database for this function.
+
+    References:
+    [1] Daniel A. Steck, “Cesium D Line Data,” available online at
+    http://steck.us/alkalidata (revision 2.1.4, 23 December 2010).
+    [2] Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
+    http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
+    [3] Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
+    http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
+"""
+
+
+def vapour_pressure(Temperature, element):
+    r"""Return the vapour pressure of rubidium or cesium in Pascals.
+
+    This function receives as input the temperature in Kelvins and the
     name of the element.
 
     >>> print vapour_pressure(25.0 + 273.15,"Rb")
@@ -1895,45 +1928,46 @@ def vapour_pressure(Temperature,element):
     ValueError: Ca is not an element in the database for this function.
 
     References:
-    [1] Daniel A. Steck, “Cesium D Line Data,” available online at
+    [1] Daniel A. Steck, "Cesium D Line Data," available online at
         http://steck.us/alkalidata (revision 2.1.4, 23 December 2010).
-    [2] Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
+    [2] Daniel A. Steck, "Rubidium 85 D Line Data," available online at
         http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
-    [3] Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
+    [3] Daniel A. Steck, "Rubidium 87 D Line Data," available online at
         http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
     """
-
-
-    if element=="Rb":
-        Tmelt=39.30+273.15 # K.
-        if Temperature<Tmelt:
-            P = 10**(2.881+4.857-4215.0/Temperature) # Torr.
+    if element == "Rb":
+        Tmelt = 39.30+273.15  # K.
+        if Temperature < Tmelt:
+            P = 10**(2.881+4.857-4215.0/Temperature)  # Torr.
         else:
-            P = 10**(2.881+4.312-4040.0/Temperature) # Torr.
-    elif element=="Cs":
-        Tmelt=28.5 +273.15 # K.
-        if Temperature<Tmelt:
-            P = 10**(2.881+4.711-3999.0/Temperature) # Torr.
+            P = 10**(2.881+4.312-4040.0/Temperature)  # Torr.
+    elif element == "Cs":
+        Tmelt = 28.5 + 273.15  # K.
+        if Temperature < Tmelt:
+            P = 10**(2.881+4.711-3999.0/Temperature)  # Torr.
         else:
-            P = 10**(2.881+4.165-3830.0/Temperature) # Torr.
+            P = 10**(2.881+4.165-3830.0/Temperature)  # Torr.
     else:
-        s=str(element)+" is not an element in the database for this function."
-        raise ValueError,s
+        s = str(element)
+        s += " is not an element in the database for this function."
+        raise ValueError(s)
 
-    P= P * 101325.0/760.0 # Pascals.
+    P = P * 101325.0/760.0  # Pascals.
     return P
 
-def vapour_number_density(Temperature,element):
-    r"""This function returns the number of atoms in a rubidium or cesium
-    vapour in m^-3. It receives as input the temperature in Kelvins and the
+
+def vapour_number_density(Temperature, element):
+    r"""Return the number of atoms in a rubidium or cesium vapour in m^-3.
+
+    It receives as input the temperature in Kelvins and the
     name of the element.
 
     >>> print vapour_number_density(90.0 + 273.15,"Cs")
     8.39706962725e+18
 
     """
+    return vapour_pressure(Temperature, element)/k_B/Temperature
 
-    return vapour_pressure(Temperature,element)/k_B/Temperature
 
 def vapour_density(Temperature,element,isotope=None):
     r"""This function returns the density in a rubidium or cesium
@@ -1962,6 +1996,7 @@ def vapour_density(Temperature,element,isotope=None):
         return rho
     else:
         return vapour_number_density(Temperature,element)*atom.mass
+
 
 def speed_likely(Temperature,element,isotope):
     r"""This function calculates the most likely speed (in meters per second)

@@ -38,6 +38,8 @@ from sympy import KroneckerDelta
 from sympy import Function, Derivative
 from sympy import re, im
 from fast.misc import IJ, find_phase_transformation, formatLij
+from numpy import array as nparray
+from numpy import sqrt as npsqrt
 
 
 def define_symbol(name, open_brace, comma, i, j,
@@ -241,7 +243,7 @@ def polarization_vector(phi, theta, alpha, beta, p):
 
     return R3*R2*R1*epsilon
 
-def cartesian_to_helicity(vector):
+def cartesian_to_helicity(vector, numeric=False):
     r"""This function takes vectors from the cartesian basis to the helicity basis.
     For instance, we can check what are the vectors of the helicity basis.
 
@@ -298,10 +300,28 @@ def cartesian_to_helicity(vector):
     [ap]])
 
     """
-    return Matrix([ (vector[0]-I*vector[1])/sqrt(2), vector[2], -(vector[0]+I*vector[1])/sqrt(2) ])
+    if numeric:
+        v = [(vector[0]-1j*vector[1])/npsqrt(2), vector[2], -(vector[0]+1j*vector[1])/npsqrt(2) ]
+        v = nparray(v)
+    else:
+        v = [(vector[0]-I*vector[1])/sqrt(2), vector[2], -(vector[0]+I*vector[1])/sqrt(2) ]
 
-def helicity_to_cartesian(vector):
-    return Matrix([(vector[0]-vector[2])/sqrt(2), I*(vector[0]+vector[2])/sqrt(2), vector[1]])
+    if type(vector[0]) in [type(Matrix([1, 0])), type(nparray([1, 0]))]:
+        return v
+    else:
+        return Matrix(v)
+
+def helicity_to_cartesian(vector, numeric=False):
+    if numeric:
+        v = [(vector[0]-vector[2])/npsqrt(2), 1j*(vector[0]+vector[2])/npsqrt(2), vector[1]]
+        v = nparray(v)
+    else:
+        v = [(vector[0]-vector[2])/sqrt(2), I*(vector[0]+vector[2])/sqrt(2), vector[1]]
+
+    if type(vector[0]) in [type(Matrix([1, 0])), type(nparray([1, 0]))]:
+        return v
+    else:
+        return Matrix(v)
 
 def helicity_dot_product(v1,v2):
     return -v1[2]*v2[0] +v1[1]*v2[1]-v1[0]*v2[2]

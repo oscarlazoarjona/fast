@@ -40,6 +40,7 @@ from atomic_structure import split_hyperfine_to_magnetic
 from atomic_structure import calculate_matrices, make_list_of_states
 from atomic_structure import calculate_gamma_matrix, calculate_omega_matrix
 from atomic_structure import calculate_r_matrices, calculate_boundaries
+from atomic_structure import calculate_reduced_matrix_elements
 from atomic_structure import vapour_pressure, vapour_number_density
 from atomic_structure import vapour_density
 from atomic_structure import speed_likely, speed_average, speed_rms
@@ -55,7 +56,7 @@ from sympy import simplify, KroneckerDelta, Function, Derivative, solve
 from symbolic import define_density_matrix, define_laser_variables
 from symbolic import polarization_vector
 from symbolic import cartesian_to_helicity, helicity_to_cartesian
-from symbolic import helicity_dot_product
+from symbolic import helicity_dot_product, cartesian_dot_product
 from symbolic import define_r_components, define_frequencies
 from symbolic import delta_greater, delta_lesser
 from symbolic import ket, bra, ketbra, lindblad_operator, lindblad_terms
