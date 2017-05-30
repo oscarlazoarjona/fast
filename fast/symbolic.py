@@ -47,6 +47,7 @@ def define_symbol(name, open_brace, comma, i, j,
     r"""Define a nice symbol with matrix indices.
 
     >>> name = "rho"
+    >>> from sympy import symbols
     >>> t, x, y, z = symbols("t, x, y, z", positive=True)
     >>> variables = [t, x, y, z]
     >>> open_brace = ""
@@ -100,6 +101,7 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
     [     rho21, rho22]])
 
     or it can be made an explicit function of given variables
+    >>> from sympy import symbols
     >>> t, z = symbols("t, z", positive=True)
     >>> define_density_matrix(2, variables=[t, z])
     Matrix([
@@ -165,6 +167,7 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
     E_0^1
 
     They can also be made explicit functions of given variables:
+    >>> from sympy import symbols
     >>> t, z = symbols("t, z", real=True)
     >>> E0, omega_laser = define_laser_variables(2, variables=[t, z])
     >>> E0
@@ -198,6 +201,7 @@ def polarization_vector(phi, theta, alpha, beta, p):
     along some fast axis. alpha and beta are measured from that fast axis.
 
     Propagation towards y, linear polarization (for pi transitions):
+    >>> from sympy import pi
     >>> polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta= 0,p=1)
     Matrix([
     [0],
@@ -219,6 +223,7 @@ def polarization_vector(phi, theta, alpha, beta, p):
     [           0]])
 
     Components + and - are complex conjugates of each other
+    >>> from sympy import symbols
     >>> phi, theta, alpha, beta = symbols("phi theta alpha beta", real=True)
     >>> ep = polarization_vector(phi,theta,alpha,beta, 1)
     >>> em = polarization_vector(phi,theta,alpha,beta,-1)
@@ -250,6 +255,7 @@ def cartesian_to_helicity(vector, numeric=False):
     r"""This function takes vectors from the cartesian basis to the helicity basis.
     For instance, we can check what are the vectors of the helicity basis.
 
+    >>> from sympy import pi
     >>> em=polarization_vector(phi=0, theta= 0, alpha=0, beta=-pi/8,p= 1)
     >>> em
     Matrix([
@@ -290,6 +296,7 @@ def cartesian_to_helicity(vector, numeric=False):
     convention:
                 a = -ap*em +a0*e0 -am*ep
 
+    >>> from sympy import symbols
     >>> am,a0,ap = symbols("am a0 ap")
     >>> a=-ap*em +a0*e0 -am*ep
     >>> a
@@ -611,6 +618,7 @@ def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
     >>> r = [ri.subs({r[0][2,0]:0,r[1][2,0]:0,r[2][2,0]:0}) for ri in r]
 
     >>> Lij = [[1,2,[1]],[2,3,[2]]]
+    >>> from fast.misc import formatLij
     >>> Lij = formatLij(Lij,Ne)
     >>> E0, omega_laser = define_laser_variables(Nl)
     >>> c, ctilde, phase = define_psi_coefficients(Ne)
