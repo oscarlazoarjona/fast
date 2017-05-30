@@ -31,13 +31,13 @@ Matrix([
 
 """
 
-from sympy import Symbol, Matrix, symbols
-from sympy import pi, I, conjugate
+from sympy import Symbol, Matrix
+from sympy import I, conjugate
 from sympy import sin, cos, sqrt
 from sympy import KroneckerDelta
 from sympy import Function, Derivative
 from sympy import re, im
-from fast.misc import IJ, find_phase_transformation, formatLij
+from fast.misc import IJ, find_phase_transformation
 from numpy import array as nparray
 from numpy import sqrt as npsqrt
 
@@ -178,8 +178,10 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
         E0 = [Function(r"E_0^"+str(l+1), real=real_amplitudes)(*variables)
               for l in range(Nl)]
 
-    omega_laser = [Symbol(r"varpi_"+str(l+1), positive=True) for l in range(Nl)]
+    omega_laser = [Symbol(r"varpi_"+str(l+1), positive=True)
+                   for l in range(Nl)]
     return E0, omega_laser
+
 
 def polarization_vector(phi, theta, alpha, beta, p):
     r"""This function returns a unitary vector describing the polarization
@@ -227,21 +229,22 @@ def polarization_vector(phi, theta, alpha, beta, p):
     [0]])
 
     """
-    epsilon=Matrix([cos(2*beta),p*I*sin(2*beta),0])
+    epsilon = Matrix([cos(2*beta), p*I*sin(2*beta), 0])
 
-    R1=Matrix([[ cos(2*alpha), -sin(2*alpha), 0         ],
-               [ sin(2*alpha),  cos(2*alpha), 0         ],
-               [  0          ,   0          , 1         ]])
+    R1 = Matrix([[cos(2*alpha), -sin(2*alpha), 0],
+                [sin(2*alpha), cos(2*alpha), 0],
+                [0, 0, 1]])
 
-    R2=Matrix([[ cos(theta)  ,  0           , sin(theta) ],
-               [  0          ,  1           , 0          ],
-               [-sin(theta)  ,  0           , cos(theta) ]])
+    R2 = Matrix([[cos(theta), 0, sin(theta)],
+                 [0, 1, 0],
+                 [-sin(theta), 0, cos(theta)]])
 
-    R3=Matrix([[ cos(phi)    , -sin(phi)    , 0         ],
-               [ sin(phi)    ,  cos(phi)    , 0         ],
-               [  0          ,   0          , 1         ]])
+    R3 = Matrix([[cos(phi), -sin(phi), 0],
+                 [sin(phi), cos(phi), 0],
+                 [0, 0, 1]])
 
     return R3*R2*R1*epsilon
+
 
 def cartesian_to_helicity(vector, numeric=False):
     r"""This function takes vectors from the cartesian basis to the helicity basis.
@@ -283,7 +286,8 @@ def cartesian_to_helicity(vector, numeric=False):
     [ 0],
     [ 0]])
 
-    Note that vectors in the helicity basis are built in a weird way by convention:
+    Note that vectors in the helicity basis are built in a weird way by
+    convention:
                 a = -ap*em +a0*e0 -am*ep
 
     >>> am,a0,ap = symbols("am a0 ap")
@@ -301,80 +305,111 @@ def cartesian_to_helicity(vector, numeric=False):
 
     """
     if numeric:
-        v = [(vector[0]-1j*vector[1])/npsqrt(2), vector[2], -(vector[0]+1j*vector[1])/npsqrt(2) ]
+        v = [(vector[0]-1j*vector[1])/npsqrt(2),
+             vector[2],
+             -(vector[0]+1j*vector[1])/npsqrt(2)]
         v = nparray(v)
     else:
-        v = [(vector[0]-I*vector[1])/sqrt(2), vector[2], -(vector[0]+I*vector[1])/sqrt(2) ]
+        v = [(vector[0]-I*vector[1])/sqrt(2),
+             vector[2],
+             -(vector[0]+I*vector[1])/sqrt(2)]
 
     if type(vector[0]) in [type(Matrix([1, 0])), type(nparray([1, 0]))]:
         return v
     else:
         return Matrix(v)
+
 
 def helicity_to_cartesian(vector, numeric=False):
     if numeric:
-        v = [(vector[0]-vector[2])/npsqrt(2), 1j*(vector[0]+vector[2])/npsqrt(2), vector[1]]
+        v = [(vector[0]-vector[2])/npsqrt(2),
+             1j*(vector[0]+vector[2])/npsqrt(2),
+             vector[1]]
         v = nparray(v)
     else:
-        v = [(vector[0]-vector[2])/sqrt(2), I*(vector[0]+vector[2])/sqrt(2), vector[1]]
+        v = [(vector[0]-vector[2])/sqrt(2),
+             I*(vector[0]+vector[2])/sqrt(2),
+             vector[1]]
 
     if type(vector[0]) in [type(Matrix([1, 0])), type(nparray([1, 0]))]:
         return v
     else:
         return Matrix(v)
 
-def helicity_dot_product(v1,v2):
-    return -v1[2]*v2[0] +v1[1]*v2[1]-v1[0]*v2[2]
+
+def helicity_dot_product(v1, v2):
+    return -v1[2]*v2[0] + v1[1]*v2[1] - v1[0]*v2[2]
+
 
 def cartesian_dot_product(v1,v2):
-    return  v1[0]*v2[0] +v1[1]*v2[1]+v1[2]*v2[2]
+    return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2]
 
-def define_r_components(Ne,explicitly_hermitian=False,helicity=False,real=True):
-    if Ne>9: comma=","
-    else: comma=""
+
+def define_r_components(Ne, explicitly_hermitian=False, helicity=False,
+                        real=True, p=None):
+    frequency_sign = p
+    if Ne > 9: comma = ","
+    else: comma = ""
 
     if helicity:
-        names=["r_{-1;","r_{0;","r_{+1;"]
+        names = ["r_{-1;", "r_{0;", "r_{+1;"]
     else:
-        names=["x","y","z"]
+        names = ["x", "y", "z"]
 
-    r=[]
+    r = []
     if helicity:
         for p in range(3):
-            r_comp=[]
+            r_comp = []
             for i in range(Ne):
-                r_row=[]
+                r_row = []
                 for j in range(Ne):
-                    if i==j:
-                        r_row   +=[ 0 ]
-                    elif i>j:
-                        r_row   +=[           Symbol( names[p  ]+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
+                    if i == j:
+                        r_row += [0]
+                    elif i > j:
+                        r_row += [Symbol(names[p]+str(i+1)+comma+str(j+1)+"}",
+                                  real=real)]
                     elif explicitly_hermitian:
-                        sign=int((-1)**(p-1))
-                        r_row   +=[sign*conjugate(Symbol( names[2-p]+str(j+1)+comma+str(i+1)+"}" ,real=real))]
+                        sign = int((-1)**(p-1))
+                        r_row += [sign*conjugate(Symbol(names[2-p]+str(j+1) +
+                                                        comma+str(i+1)+"}",
+                                                        real=real))]
                     else:
-                        r_row   +=[           Symbol( names[p  ]+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
-                r_comp+=[r_row]
-            r_comp=Matrix(r_comp)
-            r+=[r_comp]
+                        r_row += [Symbol(names[p]+str(i+1)+comma+str(j+1)+"}",
+                                         real=real)]
+                r_comp += [r_row]
+            r_comp = Matrix(r_comp)
+            r += [r_comp]
 
     else:
         for p in range(3):
-            r_comp=[]
+            r_comp = []
             for i in range(Ne):
-                r_row=[]
+                r_row = []
                 for j in range(Ne):
-                    if i==j:
-                        r_row   +=[ 0 ]
-                    elif i>j:
-                        r_row   +=[           Symbol( names[p]+r"_{"+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
+                    if i == j:
+                        r_row += [0]
+                    elif i > j:
+                        r_row += [Symbol(names[p]+r"_{"+str(i+1) +
+                                         comma+str(j+1)+"}", real=real)]
                     elif explicitly_hermitian:
-                        r_row   +=[ conjugate(Symbol( names[p]+r"_{"+str(j+1)+comma+str(i+1)+"}" ,real=real))]
+                        r_row += [conjugate(Symbol(names[p]+r"_{"+str(j+1) +
+                                                   comma+str(i+1)+"}",
+                                                   real=real))]
                     else:
-                        r_row   +=[           Symbol( names[p]+r"_{"+str(i+1)+comma+str(j+1)+"}" ,real=real) ]
-                r_comp+=[r_row]
-            r_comp=Matrix(r_comp)
-            r+=[r_comp]
+                        r_row += [Symbol(names[p]+r"_{"+str(i+1) +
+                                         comma+str(j+1)+"}", real=real)]
+                r_comp += [r_row]
+            r_comp = Matrix(r_comp)
+            r += [r_comp]
+
+    # We select only the upper diagonal or lower diagonal components according
+    # to the sign r^(+) or r^(-) provided.
+    if frequency_sign == 1:
+        r = [[[r[p][i, j]*delta_lesser(i, j)
+               for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+    elif frequency_sign == -1:
+        r = [[[r[p][i, j]*delta_greater(i, j)
+               for j in range(Ne)] for i in range(Ne)] for p in range(3)]
 
     return r
 
