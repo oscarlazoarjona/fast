@@ -11,12 +11,12 @@ We import all the functions of FAST and some other useful stuff.
 >>> from math import pi,sqrt
 
 >>> from matplotlib import pyplot
->>> from fast.config import parallel, use_netcdf, fast_path
+>>> from fast.config import parallel, use_netcdf
 >>> from numpy import array
 
 We establish the basic characteristics of te experiment. The path where we will work, and the name of the experiment.
 
->>> path=fast_path[:-5]+"/examples/folder_01___Two_level_atom/" 
+>>> path="folder_01___Two_level_atom/" 
 >>> name='suite'
 
 The number of states.
@@ -69,7 +69,7 @@ We define the lasers.
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa6c30e1a50>
+<matplotlib.figure.Figure at 0x7f50e79a4090>
 
 
 
@@ -91,7 +91,7 @@ We make a diagram level.
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa6bfb14150>
+<matplotlib.figure.Figure at 0x7f50e45879d0>
 
 
 
@@ -128,7 +128,7 @@ We plot the components we have just read.
 >>> ax.set_xlabel(r"$t$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+'evolution_evo.png',bbox_inches='tight',figsize=25) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa6ec704fd0>
+<matplotlib.figure.Figure at 0x7f50e886ea90>
 
 
 
@@ -147,7 +147,7 @@ We run the time evolution many times now varying the detuning of the laser.
     
 >>> ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+'spectrum_'+name+'_evolution.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa6bf4fabd0>
+<matplotlib.figure.Figure at 0x7f50e3bc91d0>
 
 
 
@@ -179,7 +179,7 @@ We run the spectroscopy.
     
 >>> ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+'spectrum_'+name+'.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa6c4e2e190>
+<matplotlib.figure.Figure at 0x7f50e3c51550>
 
 
 
@@ -214,7 +214,7 @@ We run the spectroscopy.
     
 ...     pyplot.savefig(path+name+'_power_broadening.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
 ... 
-<matplotlib.figure.Figure at 0x7fa6bfd29d10>
+<matplotlib.figure.Figure at 0x7f50e465fa10>
 
 
 

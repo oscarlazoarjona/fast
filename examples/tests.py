@@ -30,7 +30,7 @@ print testmod(fast.misc, verbose=verbose)
 print testmod(fast.rk4, verbose=verbose)
 print testmod(fast.stationary, verbose=verbose)
 
-# ########################################################################
+########################################################################
 # Run all codes from notebook-generated doctests.
 
 print testmod(doctest_01___Two_level_atom, verbose=verbose)
@@ -45,10 +45,10 @@ print testmod(doctest_07___Three_level_atom_Lambda_symbolic, verbose=verbose)
 print testmod(doctest_08___Three_level_atom_V_symbolic, verbose=verbose)
 print testmod(doctest_09___Thermal_States, verbose=verbose)
 print testmod(doctest_10___States_database, verbose=verbose)
-########################################################################
-# Toy examples.
-# from toy.two_levels import suite
-# from toy.three_levels_ladder import suite
-
-# Real atom examples.
-# from real.one_photon_780nm import rb87_suite
+# ########################################################################
+# # Toy examples.
+# # from toy.two_levels import suite
+# # from toy.three_levels_ladder import suite
+#
+# # Real atom examples.
+# # from real.one_photon_780nm import rb87_suite

@@ -5,14 +5,14 @@
 __doc__ = r"""
 
 >>> from fast import *
->>> from fast.config import fast_path
 >>> from matplotlib import pyplot
 >>> from sympy import sin,cos,exp,sqrt,pi,zeros,I
 
 >>> init_printing()
->>> print_ascii=True#; print_ascii=False
+>>> print_ascii=True
+>>> #print_ascii=False
 
->>> path=fast_path[:-5]+"/examples/folder_05___Two_level_atom_symbolic/" 
+>>> path="folder_05___Two_level_atom_symbolic/" 
 >>> name='suite'
 
 We will be deriving the optical Bloch equations for a two level system as that in the figure.
@@ -28,7 +28,7 @@ We will be deriving the optical Bloch equations for a two level system as that i
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9b18046b90>
+<matplotlib.figure.Figure at 0x7fe853346c50>
 
 
 
@@ -108,7 +108,7 @@ We draw this electric field.
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9af00b2410>
+<matplotlib.figure.Figure at 0x7fe8524d54d0>
 
 
 

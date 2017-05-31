@@ -35,6 +35,4 @@ use_netcdf = False
 run_long_tests = 0
 
 # The install directory for FAST:
-
-
 fast_path = __file__[:-len("__init__.pyc")]

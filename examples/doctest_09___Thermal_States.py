@@ -11,7 +11,6 @@ $$p_i=\\frac{ \\exp{(-E_i/k_B T)} }{Z} \\hspace{1cm} Z=\\sum_j \\exp{(-E_j/k_B T
 where $E_i$ are the energies of each state and $k_B$ is Boltzman's constant.
 
 >>> from fast.atomic_structure import State, make_list_of_states
->>> from fast.config import fast_path
 >>> from sympy import Integer
 >>> from math import pi,exp,log
 
@@ -207,7 +206,7 @@ Let's make a plot of the variation with temperature.
 >>> from matplotlib import pyplot
 
 
->>> plots_path=fast_path[:-5]+"/examples/folder_09___Thermal_States/" 
+>>> plots_path="folder_09___Thermal_States/" 
 
 >>> pyplot.close("all")
 >>> pyplot.semilogx(T,p185,"b",label=r"$\mathrm{lower \ magnetic \ state}$") # doctest: +IGNORE_PLOT_STEP1
@@ -235,7 +234,7 @@ Let's make a plot of the variation with temperature.
     
 >>> pyplot.ylim([0,1]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(plots_path+"/01_populations.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9061a92d90>
+<matplotlib.figure.Figure at 0x7fa52802c850>
 
 
 
@@ -267,7 +266,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(plots_path+"/02_entropy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f905e391fd0>
+<matplotlib.figure.Figure at 0x7fa5272ff290>
 
 
 
@@ -301,7 +300,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(plots_path+"/03_energy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9061a92ad0>
+<matplotlib.figure.Figure at 0x7fa527144f50>
 
 
 
@@ -311,6 +310,7 @@ Let us solve the master equation found in [1]. These are simply the usual Bloch 
 >>> from fast import *
 >>> from sympy import oo,exp,I
 >>> init_printing()
+>>> use_unicode=True
 >>> use_unicode=False
 
 >>> hbar,k,omega2,T,gamma,n=symbols("hbar k omega2 T gamma n",positive=True)

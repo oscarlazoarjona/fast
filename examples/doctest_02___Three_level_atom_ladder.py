@@ -12,12 +12,12 @@ We import all FAST functions and other useful things.
 
 >>> from math import pi
 >>> from matplotlib import pyplot
->>> from fast.config import parallel, use_netcdf, fast_path
+>>> from fast.config import parallel, use_netcdf
 >>> from numpy import array
 
 We establish the basic characteristics of the experiment. The path in which we will work, and the name of the experiment.
 
->>> path=fast_path[:-5]+"/examples/folder_02___Three_level_atom_ladder/" 
+>>> path="folder_02___Three_level_atom_ladder/" 
 >>> name='suite'
 
 The number of states.
@@ -75,7 +75,7 @@ We define the lasers.
 >>> Nl=len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,name=path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc39a140f90>
+<matplotlib.figure.Figure at 0x7f5f288e8850>
 
 
 
@@ -111,7 +111,7 @@ We draw a level diagram.
 >>> ax.set_ylim([-0.05,5.05]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc3c4606f50>
+<matplotlib.figure.Figure at 0x7f5f2829e650>
 
 
 
@@ -160,7 +160,7 @@ We read the resultas and we plot them.
 >>> ax.legend(loc=0,ncol=2,fontsize=14) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+'evolution_'+name+'.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc3c4606fd0>
+<matplotlib.figure.Figure at 0x7f5f2807c5d0>
 
 
 
@@ -185,7 +185,7 @@ In this scheme we mantain the first laser in high power, and vary the detuning o
 >>> ax.set_ylabel(r"$\rho_{33}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
 >>> ax.legend(loc=0,fontsize=14) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(path+name+'_spectrum_evolution.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc3969f7c90>
+<matplotlib.figure.Figure at 0x7f5f2888c450>
 
 
 
@@ -218,7 +218,7 @@ We repeat the same spectra using the steady state.
 >>> ax.set_ylabel(r"$\rho_{33}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
 >>> ax.legend(loc=0,fontsize=14) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(path+name+'_spectrum_steady.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fc396419150>
+<matplotlib.figure.Figure at 0x7f5f281d78d0>
 
 
 

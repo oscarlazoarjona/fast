@@ -5,15 +5,15 @@
 __doc__ = r"""
 
 >>> from fast import *
->>> from fast.config import fast_path
 >>> from matplotlib import pyplot
 >>> from sympy import sin,cos,exp,sqrt,pi,zeros,I
 >>> from numpy import array
 
 >>> init_printing()
->>> print_ascii=True#; print_ascii=False
+>>> print_ascii=True
+>>> #print_ascii=False
 
->>> path=fast_path[:-5]+"/examples/folder_08___Three_level_atom_V_symbolic/" 
+>>> path="folder_08___Three_level_atom_V_symbolic/" 
 >>> name='suite'
 
 We will be deriving the optical Bloch equations for a three level system in a V configuration as that in the figure.
@@ -33,7 +33,7 @@ We will be deriving the optical Bloch equations for a three level system in a V 
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f6d2a648ed0>
+<matplotlib.figure.Figure at 0x7fe6a4c51150>
 
 
 
@@ -126,7 +126,7 @@ The electric field (evaluated in $\\vec{R}=0$).
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f6d544710d0>
+<matplotlib.figure.Figure at 0x7fe6a1ca9890>
 
 
 

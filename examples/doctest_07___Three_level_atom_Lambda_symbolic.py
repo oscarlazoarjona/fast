@@ -5,15 +5,15 @@
 __doc__ = r"""
 
 >>> from fast import *
->>> from fast.config import fast_path
 >>> from matplotlib import pyplot
 >>> from sympy import sin,cos,exp,sqrt,pi,zeros,I
 >>> from numpy import array
 
 >>> init_printing()
->>> print_ascii=True#; print_ascii=False
+>>> print_ascii=True
+>>> #print_ascii=False
 
->>> path=fast_path[:-5]+"/examples/folder_07___Three_level_atom_Lambda_symbolic/" 
+>>> path="folder_07___Three_level_atom_Lambda_symbolic/" 
 >>> name='suite'
 
 We will be deriving the optical Bloch equations for a three level system in a Lambda configuration as that in the figure.
@@ -33,7 +33,7 @@ We will be deriving the optical Bloch equations for a three level system in a La
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7ff7457cdf90>
+<matplotlib.figure.Figure at 0x7f9aa6e6f290>
 
 
 
@@ -126,7 +126,7 @@ The electric field (evaluated in $\\vec{R}=0$).
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7ff71e3ec090>
+<matplotlib.figure.Figure at 0x7f9aa363ba10>
 
 
 
