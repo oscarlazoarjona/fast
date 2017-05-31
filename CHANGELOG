@@ -1,4 +1,4 @@
-The changes from version 1.0 were:
+The changes from version 1.0 to 1.1 were:
     * Added arbitrary alkalis.
     * Added GPL licence.
     * Included all of Sansonetti's data.
@@ -12,3 +12,25 @@ The changes from version 1.0 were:
     * Generating config.py from setup.py
     * Added version.
     * Added description.
+
+The changes from version 1.1 to 1.1.2 were:
+    * Added functions for vapour pressure and density.
+    * Moved notebooks to a new repository.
+    * Added an Atom class.
+    * Implemented functions for average and likely speeds.
+    * Added atomic radius as an Atom attribute.
+    * Implemented a states function for the Atom class.
+    * Added nuclear spin as an attribute of the Atom class.
+    * Added a variable all_atoms to fast that contains all available atoms.
+    * Implemented a transitions function for the Atom class.
+    * Added ionization_frequency as a property for the Atom class.
+    * Made a function to choose ascii printing vs latex printing in the notebooks.
+    * Made a symbolic phase_transformation function.
+    * Fixed a bug in warning about Einstein A not in the database.
+    * Replaced super indices on omegas with subindices on varpis for laser frequencies.
+    * Made a speed_rms function.
+    * Made figures in notebooks larger.
+    * Added positive and negative component r operators.
+    * Made a benchmark of Fortran vs Scipy.
+    * Made installation work through setuptools and pip.
+    * Published through pypi.
