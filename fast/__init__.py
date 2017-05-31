@@ -7,7 +7,7 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 
 >>> from fast import __version__
 >>> print __version__
-1.2
+1.1.1
 
 >>> from fast import all_atoms
 >>> all_atoms
