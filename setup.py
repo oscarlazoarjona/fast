@@ -37,12 +37,12 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name=__version__,
+    name="fast",
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.2',
+    version=__version__,
 
     description='FAST is an acronym for FAST Atomic Spectroscopy from Theory.',
     long_description=long_description,
