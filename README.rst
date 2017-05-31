@@ -1,42 +1,57 @@
+FAST
+====
 This is FAST, an acronym for FAST Atomic Spectroscopy from Theory.
 
-Installation instructions:
+Installing
+----------
+This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to
+run. All of this can be installed with the following commands in Ubuntu:
 
-This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to run.
+1.- Install the Python dependencies by installing Anaconda, that is Continuum's
+Python distribution from https://www.continuum.io/downloads
 
-All of this can be installed with the following commands in Ubuntu:
+2.- In Ubuntu, the fortran dependencies (and git) can be installed with:
+::
 
-1.- Install the fortran dependencies:
- $ sudo apt-get install gfortran liblapack-dev
+    $ sudo apt-get install gfortran liblapack-dev git
 
-2.- Install Anaconda, that is Continuum's python distribution:
- $ wget https://repo.continuum.io/archive/Anaconda2-4.3.0-Linux-x86_64.sh
- $ chmod u+x Anaconda2-4.3.0-Linux-x86_64.sh
- $ ./Anaconda2-4.3.0-Linux-x86_64.sh
+Other operative systems are not supported at the moment, but FAST should become
+OS independent in the following releases.
 
-The installer will ask you to accept a few things: the terms and conditions,
-the default location for the install, and adding anaconda to your .bashrc
-file. Agree to all of them. All python and pip commands in this readme
-should be ran using the Anaconda distribution, and not the default Python
-distribution that might be available in your operative system.
+3.- Install FAST. To get the latest stable version of FAST use the command:
+::
 
-3.- Open a new terminal in order to reload you .bashrc file and continue
-from the new terminal.
+    $ pip install fast-atomic
 
-4.- Install tabulate:
- $ pip install tabulate
+To get the latest unstable version (this requires git):
+::
 
-5.- Install FAST itself
-../fast$ python setup.py
+    $ pip install git+git://github.com/oscarlazoarjona/fast
 
-########################################################################
-                              Using FAST
-########################################################################
-Once this completed tests can be run with
-../fast$ python examples/tests.py
+To upgrade to the latest stable version:
+::
 
-or the notebooks can be browsed with
+    $ pip install fast-atomic --upgrade
 
- $ jupyter notebook
+To upgrade to the latest unstable version (this requires git):
+::
+
+    $ pip install git+git://github.com/oscarlazoarjona/fast --upgrade
+
+To uninstall:
+::
+
+    $ pip uninstall fast-atomic
+
+Using FAST
+----------
+
+Once this completed example jupyter notebooks can be downloaded from
+https://github.com/oscarlazoarjona/fast-notebooks
+
+And they can be ran using
+::
+
+    $ jupyter notebook
 
 Enjoy!
