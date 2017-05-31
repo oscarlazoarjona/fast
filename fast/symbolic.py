@@ -36,7 +36,7 @@ from sympy import I, conjugate
 from sympy import sin, cos, sqrt
 from sympy import KroneckerDelta
 from sympy import Function, Derivative
-from sympy import re, im
+from sympy import re, im, zeros
 from fast.misc import IJ, find_phase_transformation
 from numpy import array as nparray
 from numpy import sqrt as npsqrt
@@ -348,7 +348,7 @@ def helicity_dot_product(v1, v2):
     return -v1[2]*v2[0] + v1[1]*v2[1] - v1[0]*v2[2]
 
 
-def cartesian_dot_product(v1,v2):
+def cartesian_dot_product(v1, v2):
     return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2]
 
 
@@ -412,67 +412,85 @@ def define_r_components(Ne, explicitly_hermitian=False, helicity=False,
     # We select only the upper diagonal or lower diagonal components according
     # to the sign r^(+) or r^(-) provided.
     if frequency_sign == 1:
-        r = [[[r[p][i, j]*delta_lesser(i, j)
-               for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+        r = [Matrix([[r[p][i, j]*delta_lesser(i, j)
+                     for j in range(Ne)] for i in range(Ne)])
+             for p in range(3)]
     elif frequency_sign == -1:
-        r = [[[r[p][i, j]*delta_greater(i, j)
-               for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+        r = [Matrix([[r[p][i, j]*delta_greater(i, j)
+                     for j in range(Ne)] for i in range(Ne)])
+             for p in range(3)]
 
     return r
 
-def vector_element(r,i,j):
-    return Matrix([r[p][i,j] for p in range(3)])
 
-def define_frequencies(Ne,explicitly_antisymmetric=False):
-
-	omega_level=[Symbol('omega_'+str(i+1),real=True) for i in range(Ne)]
-
-	if Ne>9:
-		comma=","
-		open_brace= "{"
-		close_brace="}"
-	else:
-		comma=""
-		open_brace= ""
-		close_brace=""
-
-	omega=[]; gamma=[]
-	for i in range(Ne):
-		row_omega=[]; row_gamma=[]
-		for j in range(Ne):
-			if i==j:
-				om=0; ga=0
-			elif i>j:
-				om= Symbol(r"omega_"+open_brace+str(i+1)+comma+str(j+1)+close_brace,real=True)
-				ga= Symbol(r"gamma_"+open_brace+str(i+1)+comma+str(j+1)+close_brace,real=True)
-			elif explicitly_antisymmetric:
-				om=-Symbol(r"omega_"+open_brace+str(j+1)+comma+str(i+1)+close_brace,real=True)
-				ga=-Symbol(r"gamma_"+open_brace+str(j+1)+comma+str(i+1)+close_brace,real=True)
-			else:
-				om= Symbol(r"omega_"+open_brace+str(i+1)+comma+str(j+1)+close_brace,real=True)
-				ga= Symbol(r"gamma_"+open_brace+str(i+1)+comma+str(j+1)+close_brace,real=True)
+def vector_element(r, i, j):
+    return Matrix([r[p][i, j] for p in range(3)])
 
 
-			row_omega+=[om]
-			row_gamma+=[ga]
+def define_frequencies(Ne, explicitly_antisymmetric=False):
 
-		omega+=[row_omega]
-		gamma+=[row_gamma]
+    omega_level = [Symbol('omega_'+str(i+1), real=True) for i in range(Ne)]
 
-	omega=Matrix(omega)
-	gamma=Matrix(gamma)
+    if Ne > 9:
+        comma = ","
+        open_brace = "{"
+        close_brace = "}"
+    else:
+        comma = ""
+        open_brace = ""
+        close_brace = ""
 
-	return omega_level,omega,gamma
+    omega = []; gamma = []
+    for i in range(Ne):
+        row_omega = []; row_gamma = []
+        for j in range(Ne):
+            if i == j:
+                om = 0; ga = 0
+            elif i > j:
+                om = Symbol(r"omega_" +
+                            open_brace+str(i+1)+comma+str(j+1) +
+                            close_brace, real=True)
+                ga = Symbol(r"gamma_" +
+                            open_brace+str(i+1)+comma+str(j+1) +
+                            close_brace, real=True)
+            elif explicitly_antisymmetric:
+                om = -Symbol(r"omega_" +
+                             open_brace+str(j+1)+comma+str(i+1) +
+                             close_brace, real=True)
+                ga = -Symbol(r"gamma_" +
+                             open_brace+str(j+1)+comma+str(i+1) +
+                             close_brace, real=True)
+            else:
+                om = Symbol(r"omega_" +
+                            open_brace+str(i+1)+comma+str(j+1) +
+                            close_brace, real=True)
+                ga = Symbol(r"gamma_" +
+                            open_brace+str(i+1)+comma+str(j+1) +
+                            close_brace, real=True)
 
-def delta_greater(i,j):
-    if i>j: return 1
+            row_omega += [om]
+            row_gamma += [ga]
+
+        omega += [row_omega]
+        gamma += [row_gamma]
+
+    omega = Matrix(omega)
+    gamma = Matrix(gamma)
+
+    return omega_level, omega, gamma
+
+
+def delta_greater(i, j):
+    if i > j: return 1
     else: return 0
 
-def delta_lesser(i,j):
-    if i<j: return 1
+
+def delta_lesser(i, j):
+    if i < j: return 1
     else: return 0
 
-def bra(i,Ne):
+
+def bra(i, Ne):
     r"""This function returns the transpose of the i-th element of the
     canonical basis of a Hilbert space of dimension Ne (in the form of a
     row vector).
@@ -487,11 +505,12 @@ def bra(i,Ne):
     ValueError: i must be in [1 .. Ne].
 
     """
-    if i not in range(1,Ne+1):
-        raise ValueError,"i must be in [1 .. Ne]."
-    return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)]).transpose()
+    if i not in range(1, Ne+1):
+        raise ValueError("i must be in [1 .. Ne].")
+    return Matrix([KroneckerDelta(i-1, j) for j in range(Ne)]).transpose()
 
-def ket(i,Ne):
+
+def ket(i, Ne):
     r"""This function returns the i-th element of the canonical basis
     of a Hilbert space of dimension Ne (in the form of a column vector).
 
@@ -509,12 +528,12 @@ def ket(i,Ne):
     ValueError: i must be in [1 .. Ne].
 
     """
+    if i not in range(1, Ne+1):
+        raise ValueError("i must be in [1 .. Ne].")
+    return Matrix([KroneckerDelta(i-1, j) for j in range(Ne)])
 
-    if i not in range(1,Ne+1):
-        raise ValueError,"i must be in [1 .. Ne]."
-    return Matrix([KroneckerDelta(i-1,j) for j in range(Ne)])
 
-def ketbra(i,j,Ne):
+def ketbra(i, j, Ne):
     r"""This function returns the outer product |i><j| where |i> and |j>
     are elements of the canonical basis of an Ne-dimensional Hilbert space
     (in matrix form).
@@ -526,12 +545,14 @@ def ketbra(i,j,Ne):
     [0, 0, 0]])
 
     """
-    return ket(i,Ne)*bra(j,Ne)
+    return ket(i, Ne)*bra(j, Ne)
 
-def lindblad_operator(A,rho):
-    r"""This function returns the action of a Lindblad operator A on a density matrix rho.
-    This is defined as :
-        L(A,rho) = A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2.
+
+def lindblad_operator(A, rho):
+    r"""This function returns the action of a Lindblad operator A on a density
+    matrix rho. This is defined as :
+        L(A,rho) = A*rho*A.adjoint()
+                 - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2.
 
     >>> rho=define_density_matrix(3)
     >>> lindblad_operator( ketbra(1,2,3) ,rho )
@@ -543,56 +564,62 @@ def lindblad_operator(A,rho):
     """
     return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
 
-def lindblad_terms(gamma,rho,Ne):
-    L=zeros(Ne)
+
+def lindblad_terms(gamma, rho, Ne):
+    L = zeros(Ne)
     for i in range(Ne):
         for j in range(i):
-            L += gamma[i,j]*lindblad_operator(ket(j+1,Ne)*bra(i+1,Ne),rho)
+            L += gamma[i, j]*lindblad_operator(ket(j+1, Ne)*bra(i+1, Ne), rho)
     return L
 
+
 def define_psi_coefficients(Ne):
-	t      = Symbol("t",real=True)
-	c      = Matrix([Function(        "c"   +str(i+1)     )(t) for i in range(Ne)])
-	ctilde = Matrix([Function(r"\tilde{c}_{"+str(i+1)+"}" )(t) for i in range(Ne)])
-	phase  = Matrix([  Symbol( "theta"      +str(i+1)     )    for i in range(Ne)])
-	return c,ctilde,phase
+    t = Symbol("t", real=True)
+    c = Matrix([Function("c"+str(i+1))(t) for i in range(Ne)])
+    ctilde = Matrix([Function(r"\tilde{c}_{"+str(i+1)+"}")(t)
+                     for i in range(Ne)])
+    phase = Matrix([Symbol("theta"+str(i+1)) for i in range(Ne)])
+    return c, ctilde, phase
 
-def part_symbolic(z,s):
-	if s==1: return re(z)
-	else: return im(z)
 
-def define_rho_vector(rho,Ne):
-	rho_vect=[]
-	for mu in range(1,Ne**2):
-		i,j,s=IJ(mu,Ne)
-		i=i-1; j=j-1
-		rho_vect+=[part_symbolic( rho[i,j], s)]
-	return Matrix(rho_vect)
+def part_symbolic(z, s):
+    if s == 1: return re(z)
+    else: return im(z)
 
-def calculate_A_b(eqs,rho,Ne):
-	rho_vect=define_rho_vector(rho,Ne)
-	A=[]; b=[]
-	ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j])
-                for j in range(Ne) for i in range(Ne)}
 
-	for mu in range(1,Ne**2):
-		i,j,s=IJ(mu,Ne)
-		ii=i-1;jj=j-1
-		#print ii,jj,s
-		eq=part_symbolic( eqs[ii,jj].subs(ss_comp), s)
-		eq_new=0
-		row=[]
-		for nu in range(1,Ne**2):
-			variable=rho_vect[nu-1]
-			coefficient=Derivative(eq,variable).doit()
-			row+=[ coefficient ]
-			eq_new+=coefficient*variable
+def define_rho_vector(rho, Ne):
+    rho_vect = []
+    for mu in range(1, Ne**2):
+        i, j, s = IJ(mu, Ne)
+        i = i-1; j = j-1
+        rho_vect += [part_symbolic(rho[i, j], s)]
+    return Matrix(rho_vect)
 
-		b+= [ -(eq-eq_new).expand()]
 
-		A+=[row]
-	A=Matrix(A); b=Matrix(b)
-	return A,b
+def calculate_A_b(eqs, rho, Ne):
+    rho_vect = define_rho_vector(rho, Ne)
+    A = []; b = []
+    ss_comp = {rho[i, j]: re(rho[i, j])+I*im(rho[i, j])
+               for j in range(Ne) for i in range(Ne)}
+
+    for mu in range(1, Ne**2):
+        i, j, s = IJ(mu, Ne)
+        ii = i-1; jj = j-1
+        # print ii,jj,s
+        eq = part_symbolic(eqs[ii, jj].subs(ss_comp), s)
+        eq_new = 0
+        row = []
+        for nu in range(1, Ne**2):
+            variable = rho_vect[nu-1]
+            coefficient = Derivative(eq, variable).doit()
+            row += [coefficient]
+            eq_new += coefficient*variable
+
+        b += [-(eq-eq_new).expand()]
+
+        A += [row]
+    A = Matrix(A); b = Matrix(b)
+    return A, b
 
 
 def phase_transformation(Ne, Nl, r, Lij, omega_laser, phase):
