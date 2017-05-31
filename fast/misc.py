@@ -28,7 +28,7 @@ import numpy as np
 from time import time
 import os
 
-from config import use_netcdf
+use_netcdf = False
 if use_netcdf:
     from netCDF4 import Dataset
 from numpy import arange

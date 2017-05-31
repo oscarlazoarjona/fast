@@ -15,12 +15,12 @@ All of this can be installed with the following commands in Ubuntu:
  $ ./Anaconda2-4.3.0-Linux-x86_64.sh
 
 The installer will ask you to accept a few things: the terms and conditions,
-the default location for the install, and adding anaconda to your .bashrc 
+the default location for the install, and adding anaconda to your .bashrc
 file. Agree to all of them. All python and pip commands in this readme
 should be ran using the Anaconda distribution, and not the default Python
 distribution that might be available in your operative system.
 
-3.- Open a new terminal in order to reload you .bashrc file and continue 
+3.- Open a new terminal in order to reload you .bashrc file and continue
 from the new terminal.
 
 4.- Install tabulate:
