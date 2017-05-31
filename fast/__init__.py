@@ -72,5 +72,5 @@ from matplotlib import rcParams
 rcParams['mathtext.fontset'] = 'cm'
 rcParams['mathtext.rm'] = 'serif'
 
-__version__ = "1.2"
+__version__ = "1.1.1"
 all_atoms = [Atom("Rb", 85), Atom("Rb", 87), Atom("Cs", 133)]
