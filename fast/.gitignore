@@ -1,2 +1,2 @@
 #Let git ignore the following files:
-config.py
+# config.py
