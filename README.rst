@@ -2,6 +2,16 @@ FAST
 ====
 This is FAST, an acronym for FAST Atomic Spectroscopy from Theory.
 
+This software derives and solves optical Bloch equations efficiently. This can
+be done for an arbitrary number of atomic states and radiation fields. The
+equations are used primarily to produce theoretical spectra.
+
+A library of properties of alkali atoms (currently rubidium and cesium) is
+included to produce physically accurate equations from first principles or
+from tables of measured quantities.
+
+Symbolic derivations of the equations are also implemented.
+
 Installing
 ----------
 This software requieres gfortran, numpy, matplotlib, lapack, sympy and scipy to
