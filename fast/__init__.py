@@ -63,6 +63,7 @@ from symbolic import ket, bra, ketbra, lindblad_operator, lindblad_terms
 from symbolic import define_psi_coefficients
 from symbolic import define_rho_vector, calculate_A_b
 from symbolic import vector_element, phase_transformation
+from symbolic import wigner_d_small, wigner_d, density_matrix_rotation
 
 from error_propagation import Measurement
 
