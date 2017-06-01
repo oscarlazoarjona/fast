@@ -33,10 +33,10 @@ Matrix([
 
 from sympy import Symbol, Matrix
 from sympy import I, conjugate
-from sympy import sin, cos, sqrt
+from sympy import sin, cos, sqrt, exp
 from sympy import KroneckerDelta
 from sympy import Function, Derivative
-from sympy import re, im, zeros
+from sympy import re, im, zeros, factorial, binomial
 from fast.misc import IJ, find_phase_transformation
 from numpy import array as nparray
 from numpy import sqrt as npsqrt
@@ -657,3 +657,139 @@ def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
 
     return {phase[i]: sum([ph[i][j]*omega_laser[j] for j in range(Nl)])
             for i in range(Ne)}
+
+
+def wigner_d_small(J, beta):
+    r"""Return the small Wigner d matrix for angular momentum J.
+
+    We use the general formula from [1], equation 4.1.15.
+
+    Some examples form [1]:
+
+    >>> from sympy import Integer, symbols, pi
+    >>> half = 1/Integer(2)
+    >>> beta = symbols("beta", real=True)
+    >>> wigner_d_small(half, beta)
+    Matrix([
+    [ cos(beta/2), sin(beta/2)],
+    [-sin(beta/2), cos(beta/2)]])
+
+    >>> wigner_d_small(2*half, beta)
+    Matrix([
+    [                  cos(beta/2)**2,  sqrt(2)*sin(beta/2)*cos(beta/2),                  sin(beta/2)**2],
+    [-sqrt(2)*sin(beta/2)*cos(beta/2), -sin(beta/2)**2 + cos(beta/2)**2, sqrt(2)*sin(beta/2)*cos(beta/2)],
+    [                  sin(beta/2)**2, -sqrt(2)*sin(beta/2)*cos(beta/2),                  cos(beta/2)**2]])
+
+    From table 4 in [1]
+    >>> wigner_d_small(half, beta).subs({beta:pi/2})
+    Matrix([
+    [ sqrt(2)/2, sqrt(2)/2],
+    [-sqrt(2)/2, sqrt(2)/2]])
+
+    >>> wigner_d_small(2*half, beta).subs({beta:pi/2})
+    Matrix([
+    [       1/2,  sqrt(2)/2,       1/2],
+    [-sqrt(2)/2,          0, sqrt(2)/2],
+    [       1/2, -sqrt(2)/2,       1/2]])
+
+    >>> wigner_d_small(3*half, beta).subs({beta:pi/2})
+    Matrix([
+    [ sqrt(2)/4,  sqrt(6)/4,  sqrt(6)/4, sqrt(2)/4],
+    [-sqrt(6)/4, -sqrt(2)/4,  sqrt(2)/4, sqrt(6)/4],
+    [ sqrt(6)/4, -sqrt(2)/4, -sqrt(2)/4, sqrt(6)/4],
+    [-sqrt(2)/4,  sqrt(6)/4, -sqrt(6)/4, sqrt(2)/4]])
+
+    >>> wigner_d_small(4*half, beta).subs({beta:pi/2})
+    Matrix([
+    [      1/4,  1/2, sqrt(6)/4,  1/2,       1/4],
+    [     -1/2, -1/2,         0,  1/2,       1/2],
+    [sqrt(6)/4,    0,      -1/2,    0, sqrt(6)/4],
+    [     -1/2,  1/2,         0, -1/2,       1/2],
+    [      1/4, -1/2, sqrt(6)/4, -1/2,       1/4]])
+
+    [1] A. R. Edmonds. Angular momentum in quantum mechanics. Investigations
+        in physics, 4.; Investigations in physics, no. 4. Princeton, N.J.,
+        Princeton University Press, 1957.
+    """
+    M = [J-i for i in range(2*J+1)]
+    d = []
+    for Mi in M:
+        row = []
+        for Mj in M:
+
+            # We get the maximum and minimum value of sigma.
+            sigmamax = max([-Mi-Mj, J-Mj])
+            sigmamin = min([0, J-Mi])
+
+            dij = sqrt(factorial(J+Mi)*factorial(J-Mi) /
+                       factorial(J+Mj)/factorial(J-Mj))
+            terms = [(-1)**(J-Mi-s) *
+                     binomial(J+Mj, J-Mi-s) *
+                     binomial(J-Mj, s) *
+                     cos(beta/2)**(2*s+Mi+Mj) *
+                     sin(beta/2)**(2*J-2*s-Mj-Mi)
+                     for s in range(sigmamin, sigmamax+1)]
+            dij = dij*sum(terms)
+            row += [dij]
+        d += [row]
+
+    return Matrix(d)
+
+
+def wigner_d(J, alpha, beta, gamma):
+    r"""Return the Wigner D matrix for angular momentum J.
+
+    We use the general formula from [1], equation 4.1.12.
+
+    The simplest possible example:
+    >>> from sympy import Integer, symbols
+    >>> half = 1/Integer(2)
+    >>> alpha, beta, gamma = symbols("alpha, beta, gamma", real=True)
+    >>> wigner_d(half, alpha, beta, gamma)
+    Matrix([
+    [  exp(I*alpha/2)*exp(I*gamma/2)*cos(beta/2),  exp(I*alpha/2)*exp(-I*gamma/2)*sin(beta/2)],
+    [-exp(-I*alpha/2)*exp(I*gamma/2)*sin(beta/2), exp(-I*alpha/2)*exp(-I*gamma/2)*cos(beta/2)]])
+
+    [1] A. R. Edmonds. Angular momentum in quantum mechanics. Investigations
+        in physics, 4.; Investigations in physics, no. 4. Princeton, N.J.,
+        Princeton University Press, 1957.
+    """
+    d = wigner_d_small(J, beta)
+    M = [J-i for i in range(2*J+1)]
+    D = [[exp(I*Mi*alpha)*d[i, j]*exp(I*Mj*gamma)
+          for j, Mj in enumerate(M)] for i, Mi in enumerate(M)]
+    return Matrix(D)
+
+
+def density_matrix_rotation(J_values, alpha, beta, gamma):
+    r"""Return a block-wise diagonal Wigner D matrix for that rotates
+    a density matrix of an ensemble of particles in definite total
+    angular momentum states given by J_values.
+
+    >>> from sympy import Integer, pi
+    >>> half = 1/Integer(2)
+    >>> J_values = [2*half, 0]
+    >>> density_matrix_rotation(J_values, 0, pi/2, 0)
+    Matrix([
+    [       1/2,  sqrt(2)/2,       1/2, 0],
+    [-sqrt(2)/2,          0, sqrt(2)/2, 0],
+    [       1/2, -sqrt(2)/2,       1/2, 0],
+    [         0,          0,         0, 1]])
+
+    """
+    size = sum([2*J+1for J in J_values])
+    D = zeros(size, size)
+    ind0 = 0
+    for J in J_values:
+        DJ = wigner_d(J, alpha, beta, gamma)
+        sizeJ = 2*J+1
+        indf = ind0 + sizeJ
+        D[ind0: indf, ind0: indf] = DJ
+        ind0 += sizeJ
+
+    return D
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=False)
