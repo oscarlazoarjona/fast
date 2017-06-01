@@ -777,7 +777,7 @@ def density_matrix_rotation(J_values, alpha, beta, gamma):
     [         0,          0,         0, 1]])
 
     """
-    size = sum([2*J+1for J in J_values])
+    size = sum([2*J+1 for J in J_values])
     D = zeros(size, size)
     ind0 = 0
     for J in J_values:
