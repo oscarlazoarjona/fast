@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#************************************************************************
+# ***********************************************************************
 #       Copyright (C) 2014 - 2017 Oscar Gerardo Lazo Arjona             *
 #              <oscar.lazo@correo.nucleares.unam.mx>                    *
 #                                                                       *
@@ -19,276 +19,235 @@
 #  You should have received a copy of the GNU General Public License    *
 #  along with FAST.  If not, see <http://www.gnu.org/licenses/>.        *
 #                                                                       *
-#************************************************************************
+# ***********************************************************************
+r"""This module contains various plotting routines."""
 
-sage_included = 'sage' in globals().keys()
-
-if not sage_included:
-	from math import atan2,sqrt,pi,cos,sin,exp
-	from atomic_structure import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
-	from atomic_structure import calculate_boundaries
-	from misc import read_result
-
-from math import pi
-from colorsys import hls_to_rgb,hsv_to_rgb
-from scipy.optimize import curve_fit
+from math import atan2, sqrt, pi, cos, sin, log
+from atomic_structure import (find_fine_states,
+                              split_hyperfine_to_magnetic,
+                              make_list_of_states,
+                              calculate_boundaries)
+from misc import read_result
+from colorsys import hls_to_rgb, hsv_to_rgb
 from matplotlib import pyplot
 import numpy as np
-from time import time
 import os
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 from electric_field import PlaneWave, MotField
 
-def complex_to_color(z):
-	if sage_included:
-		if imag(z)==0 and real(z)==0:
-			return [(0,0,0),0]
-
-		h=(atan2(imag(z),real(z)) + pi)/(2*pi)
-		l=sqrt(imag(z)**2+real(z)**2)
-	else:
-		if z.imag==0 and z.real==0:
-			return [(0,0,0),0]
-
-		h=(atan2(z.imag,z.real) + pi)/(2*pi)
-		l=sqrt(z.imag**2+z.real**2)
-	#print z,h,l
-	h=float(h); l=float(l)
-	if l> 1.0: return [(1,1,1),l]
-
-	try:
-		rgb=hls_to_rgb(h, l/2, 1.0)
-	except:
-		print h,l,1.0
-		print type(h),type(l)
-		rgb=hls_to_rgb(h, l, 1.0)
-	return [rgb,l]
-
-def complex_matrix_plot(A,logA=False,normalize=False,plot=True,**kwds):
-	N=len(A[0])
-	if logA:
-		Anew=[]
-		for i in range(N):
-			row=[]
-			for j in range(N):
-				if A[i][j]!=0:
-					row+=[log(log(A[i][j]))]
-				else:
-					row+=[0.0]
-			Anew+=[row]
-		A=Anew[:]
-		#A=[[log(A[i][j]) for j in range(N)] for i in range(N)]
-
-	if normalize:
-		norm=1
-		for i in range(N):
-			for j in range(N):
-				if abs(A[i][j])>norm: norm=abs(A[i][j])
-
-		A=[[A[i][j]/norm for j in range(N)]for i in range(N)]
-
-	#print A
-	color_matrix=[]
-	lmax=-1
-	for i in range(N):
-		row=[]
-		for j in range(N):
-			rgb,l=complex_to_color(A[i][j])
-			row+=[rgb]
-			if l> lmax:
-				lmax=l
-		color_matrix+=[row]
-
-	if normalize:
-		color_matrix=[[tuple([k/lmax for k in color_matrix[i][j]])  for j in range(N)] for i in range(N)]
-
-	if plot:
-		pyplot.imshow(color_matrix,interpolation='none')
-		pyplot.savefig('a.png',bbox_inches='tight')
-		pyplot.close('all')
-	else:
-		return color_matrix
-
-def plot_disc(size=100):
-	N=float(size)
-	mat=[[ j/N + 1j*i/N for j in range(-size,size+1)] for i in reversed(range(-size,size+1))]
-	mat=complex_matrix_plot(mat)
-	pyplot.close('all')
-	pyplot.imshow(mat,extent=[-1,1,-1,1])
-
-	N=101; theta_step=2*pi/(N-1)
-	theta=[i*theta_step for i in range(N)]
-	x=[cos(theta[i]) for i in range(N)]
-	y=[sin(theta[i]) for i in range(N)]
-
-	pyplot.plot(x,y,'k-')
-	pyplot.savefig('a.png',bbox_inches='tight')
-	pyplot.close()
-
-from matplotlib.colors import LogNorm,Normalize
-import matplotlib.ticker as ticker
+from matplotlib.colors import LogNorm, Normalize
+# import matplotlib.ticker as ticker
 from matplotlib.colors import LinearSegmentedColormap
 
-aaa=0.15
-cdict1 = {'red':   ((0.0, 0.0, 0.0),
-                   (0.5, 0.0, aaa),
-                   (1.0, 1.0, 1.0)),
 
-         'green': ((0.0, 0.0, 0.0),
-                   (1.0, 0.0, 0.0)),
+def complex_to_color(z):
+    r"""A function to turn an array of complexes to an array of rgb tuples."""
+    if z.imag == 0 and z.real == 0:
+        return [(0, 0, 0), 0]
 
-         'blue':  ((0.0, 0.0, 1.0),
-                   (0.5, aaa, 0.0),
-                   (1.0, 0.0, 0.0))
-        }
+    h = (atan2(z.imag, z.real) + pi)/(2*pi)
+    l = sqrt(z.imag**2+z.real**2)
+    # print z,h,l
+    h = float(h); l = float(l)
+    if l > 1.0: return [(1, 1, 1), l]
 
-bbb=0.002
-
-cdict1 = {'blue':   ((0.0    , 0.0, 0.0),
-					(0.5-bbb, 0.0, 0.0),
-					(0.5+bbb, 0.0, aaa),
-					(1.0    , 1.0, 1.0)),
-
-         'green': ((0.0, 0.0, 0.0),
-                   (1.0, 0.0, 0.0)),
-
-         'red':   ((0.0    , 0.0, 1.0),
-					(0.5-bbb, aaa, 0.0),
-					(0.5+bbb, 0.0, 0.0),
-					(1.0    , 0.0, 0.0))
-        }
-
-blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)
-
-aaa=0.15
-aaa=0.25+.125
-bbb=0.002
+    try:
+        rgb = hls_to_rgb(h, l/2, 1.0)
+    except:
+        print h, l, 1.0
+        print type(h), type(l)
+        rgb = hls_to_rgb(h, l, 1.0)
+    return [rgb, l]
 
 
-cdict2 = {
-		'red':     ((0.0    , 1.0, 1.0),
-					(0.5-bbb, aaa, 0.0),
-					(0.5+bbb, 0.0, aaa),
-					(1.0    , 1.0, 1.0)),
+def complex_matrix_plot(A, logA=False, normalize=False, plot=True, **kwds):
+    r"""A function to plot complex matrices."""
+    N = len(A[0])
+    if logA:
+        Anew = []
+        for i in range(N):
+            row = []
+            for j in range(N):
+                if A[i][j] != 0:
+                    row += [log(log(A[i][j]))]
+                else:
+                    row += [0.0]
+            Anew += [row]
+        A = Anew[:]
+        # A=[[log(A[i][j]) for j in range(N)] for i in range(N)]
 
-		'green':   ((0.0    , 0.0, 0.0),
-					(0.5-bbb, 0.0, 0.0),
-					(0.5+bbb, 0.0, aaa),
-					(1.0    , 1.0, 1.0)),
+    if normalize:
+        norm = 1
+        for i in range(N):
+            for j in range(N):
+                if abs(A[i][j]) > norm: norm = abs(A[i][j])
 
-        'blue':    ((0.0    , 1.0, 1.0),
-					(0.5-bbb, aaa, 0.0),
-					(0.5+bbb, 0.0, 0.0),
-					(1.0    , 0.0, 0.0)),
+        A = [[A[i][j]/norm for j in range(N)]for i in range(N)]
 
-        }
+    # print A
+    color_matrix = []
+    lmax = -1
+    for i in range(N):
+        row = []
+        for j in range(N):
+            rgb, l = complex_to_color(A[i][j])
+            row += [rgb]
+            if l > lmax:
+                lmax = l
+        color_matrix += [row]
 
-yellow_purple1 = LinearSegmentedColormap('BlueRed1', cdict2)
+    if normalize:
+        color_matrix = [[tuple([k/lmax for k in color_matrix[i][j]])
+                         for j in range(N)] for i in range(N)]
+
+    if plot:
+        pyplot.imshow(color_matrix, interpolation='none')
+        pyplot.savefig('a.png', bbox_inches='tight')
+        pyplot.close('all')
+    else:
+        return color_matrix
+
+
+def plot_disc(size=100):
+    r"""A function to plot a legend disk of the complex_matrix_plot."""
+    N = float(size)
+    mat = [[j/N + 1j*i/N for j in range(-size, size+1)]
+           for i in reversed(range(-size, size+1))]
+    mat = complex_matrix_plot(mat)
+    pyplot.close('all')
+    pyplot.imshow(mat, extent=[-1, 1, -1, 1])
+
+    N = 101; theta_step = 2*pi/(N-1)
+    theta = [i*theta_step for i in range(N)]
+    x = [cos(theta[i]) for i in range(N)]
+    y = [sin(theta[i]) for i in range(N)]
+
+    pyplot.plot(x, y, 'k-')
+    pyplot.savefig('a.png', bbox_inches='tight')
+    pyplot.close()
+
 
 def fmt(x, pos):
-	if x==0.0: return r'$0$'
-	a, b = '{:.1e}'.format(x).split('e')
-	b = int(b)
-	if b in [0,1]: return r'$'+str(x)+'$'
-	return r'${} \times 10^{{{}}}$'.format(a, b)
+    r"""A formatter function for ticks."""
+    if x == 0.0: return r'$0$'
+    a, b = '{:.1e}'.format(x).split('e')
+    b = int(b)
+    if b in [0, 1]: return r'$'+str(x)+'$'
+    return r'${} \times 10^{{{}}}$'.format(a, b)
+
 
 def fmt_log(x, pos):
-	if x==0.0: return r'$0$'
-	a, b = '{:.1e}'.format(x).split('e')
-	b = int(b)
-	#if b in [0,1]: return r'$'+str(x)+'$'
-	return r'${} \times 10^{{{}}}$'.format(a, b)
-
-def fancy_matrix_plot(ax,mat,states=None,path='',name='default.png',y_labels=True,
-		complex_matrix=False,take_abs=False,take_log=False,colorbar=False,hyperfine_labels=False,center_on_zero=False,**kwds):
-
-	rmat=[mat[i] for i in reversed(range(len(mat[0])))]
-
-	smallest=min([min([j for j in i ]) for i in rmat])
-	largest =max([max([j for j in i ]) for i in rmat])
-
-	if take_abs:
-		#We make the matrix all positive.
-		rmat=[[abs(i) for i in row] for row in rmat]
-		if take_log:
-			#We make zeros into the smallest.
-			smallest=min([min([j for j in i if j != 0.0]) for i in rmat])
-			largest =max([max([j for j in i if j != 0.0]) for i in rmat])
-			for i in range(len(rmat)):
-				for j in range(len(rmat[0])):
-					if rmat[i][j]==0.0:
-						rmat[i][j]=smallest
-
-	if complex_matrix:
-		rmat=complex_matrix_plot(rmat,normalize=True,plot=False)
-
-	#fig, ax = pyplot.subplots()
-
-	if take_log:
-		ax.imshow(rmat,interpolation='none', norm=LogNorm(vmin=smallest, vmax=largest) ,**kwds)
-	elif center_on_zero:
-		largest=max([abs(smallest),largest])
-		ax.imshow(rmat,interpolation='none', norm=Normalize(vmin=-largest, vmax=largest),**kwds)
-	else:
-		ax.imshow(rmat,interpolation='none',**kwds)
-	pyplot.axis('off')
-	Ne=len(mat[0])
-	ax.set_xlim([-0.5,Ne-0.5])
-	ax.set_ylim([-0.5,Ne-0.5])
-
-	if states != None:
-		fine_states=find_fine_states(states)
-		hyperfine_states    =make_list_of_states(fine_states   ,'hyperfine',verbose=0)#split_fine_to_hyperfine(fine_states)
-		full_magnetic_states=make_list_of_states(fine_states   ,'magnetic',verbose=0)#split_fine_to_magnetic(fine_states)
-		index_list_fine,index_list_hyperfine=calculate_boundaries(fine_states,full_magnetic_states)
-
-		i_fine=[i[0] for i in index_list_fine[1:]]
-		i_hyperfine=[i[0] for i in index_list_hyperfine[1:] if i[0] not in i_fine]
-
-		#We place lines.
-		for i in i_fine:
-			ax.plot([-0.5,Ne-0.5],[Ne-(i+0.5),Ne-(i+0.5)],'r-',linewidth=0.5)
-			ax.plot([i-0.5,i-0.5],[-0.5,Ne-0.5],'r-',linewidth=0.5)
-		for i in i_hyperfine:
-			ax.plot([-0.5,Ne-0.5],[Ne-(i+0.5),Ne-(i+0.5)],'b-',linewidth=0.5)
-			ax.plot([i-0.5,i-0.5],[-0.5,Ne-0.5],'b-',linewidth=0.5)
-
-		#We place the axis labels.
-		if hyperfine_labels:
-			for i in range(len(hyperfine_states)):
-				a=hyperfine_states[i]._latex_()[18:]
-
-				y=Ne- (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -1.2
-				x=    (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -0.5
-				if y_labels: ax.text(-0.75,y,'$'+a+'$',horizontalalignment='right')
-				ax.text( x,Ne-1,'$'+a+'$',rotation=45,verticalalignment='bottom')
-		else:
-			for i in range(len(fine_states)):
-				a=fine_states[i]._latex_()[18:]
-
-				y=Ne- (index_list_fine[i][1]+index_list_fine[i][0])/2 -1.2
-				x=    (index_list_fine[i][1]+index_list_fine[i][0])/2 -3.5
-				if y_labels: ax.text(-0.75,y,'$'+a+'$',horizontalalignment='right')
-				ax.text( x,Ne-1,'$'+a+'$',rotation=45,verticalalignment='bottom')
-	else:
-		for i in range(1,Ne+1):
-			#a=hyperfine_states[i]._latex_()
-			y=i -1 #(index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -1.2
-			x=i -1 #   (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -0.5
-			ax.text(-0.5,y,'$'+str(Ne-i+1)+'$',horizontalalignment='right')
-			ax.text( x,Ne-0.5,'$'+str(i)+'$',verticalalignment='bottom')
+    r"""A formatter function for ticks in a log scale."""
+    if x == 0.0: return r'$0$'
+    a, b = '{:.1e}'.format(x).split('e')
+    b = int(b)
+    # if b in [0,1]: return r'$'+str(x)+'$'
+    return r'${} \times 10^{{{}}}$'.format(a, b)
 
 
-	#pyplot.savefig(path+name,bbox_inches='tight')
-	#~ if colorbar:
-		#~ if take_log:
-			#~ pyplot.colorbar(format=ticker.FuncFormatter(fmt_log))#,norm=Normalize(vmin=smallest, vmax=largest))
-		#~ else:
-			#~ pyplot.colorbar(format=ticker.FuncFormatter(fmt))#,norm=Normalize(vmin=smallest, vmax=largest))
-	#pyplot.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-	pyplot.savefig(path+name,bbox_inches='tight')
-	#pyplot.close('all')
+def fancy_matrix_plot(ax, mat, states=None, path='', name='default.png',
+                      y_labels=True, complex_matrix=False, take_abs=False,
+                      take_log=False, colorbar=False, hyperfine_labels=False,
+                      center_on_zero=False, **kwds):
+    r"""A function to plot matrices labeling axes with atomic states."""
+    rmat = [mat[i] for i in reversed(range(len(mat[0])))]
+
+    smallest = min([min([j for j in i]) for i in rmat])
+    largest = max([max([j for j in i]) for i in rmat])
+
+    if take_abs:
+        # We make the matrix all positive.
+        rmat = [[abs(i) for i in row] for row in rmat]
+        if take_log:
+            # We make zeros into the smallest.
+            smallest = min([min([j for j in i if j != 0.0]) for i in rmat])
+            largest = max([max([j for j in i if j != 0.0]) for i in rmat])
+            for i in range(len(rmat)):
+                for j in range(len(rmat[0])):
+                    if rmat[i][j] == 0.0:
+                        rmat[i][j] = smallest
+
+    if complex_matrix:
+        rmat = complex_matrix_plot(rmat, normalize=True, plot=False)
+
+    # fig, ax = pyplot.subplots()
+
+    if take_log:
+        ax.imshow(rmat, interpolation='none',
+                  norm=LogNorm(vmin=smallest, vmax=largest), **kwds)
+    elif center_on_zero:
+        largest = max([abs(smallest), largest])
+        ax.imshow(rmat, interpolation='none',
+                  norm=Normalize(vmin=-largest, vmax=largest), **kwds)
+    else:
+        ax.imshow(rmat, interpolation='none', **kwds)
+    pyplot.axis('off')
+    Ne = len(mat[0])
+    ax.set_xlim([-0.5, Ne-0.5])
+    ax.set_ylim([-0.5, Ne-0.5])
+
+    if states is not None:
+        fine_states = find_fine_states(states)
+        # split_fine_to_hyperfine(fine_states)
+        hyperfine_states = make_list_of_states(fine_states, 'hyperfine',
+                                               verbose=0)
+        # split_fine_to_magnetic(fine_states)
+        full_magnetic_states = make_list_of_states(fine_states, 'magnetic',
+                                                   verbose=0)
+        aux = calculate_boundaries(fine_states, full_magnetic_states)
+        index_list_fine, index_list_hyperfine = aux
+
+        i_fine = [i[0] for i in index_list_fine[1:]]
+        i_hyperfine = [i[0] for i in index_list_hyperfine[1:]
+                       if i[0] not in i_fine]
+
+        # We place lines.
+        for i in i_fine:
+            ax.plot([-0.5, Ne-0.5], [Ne-(i+0.5), Ne-(i+0.5)], 'r-',
+                    linewidth=0.5)
+            ax.plot([i-0.5, i-0.5], [-0.5, Ne-0.5], 'r-',
+                    linewidth=0.5)
+        for i in i_hyperfine:
+            ax.plot([-0.5, Ne-0.5], [Ne-(i+0.5), Ne-(i+0.5)], 'b-',
+                    linewidth=0.5)
+            ax.plot([i-0.5, i-0.5], [-0.5, Ne-0.5], 'b-', linewidth=0.5)
+
+        # We place the axis labels.
+        if hyperfine_labels:
+            for i in range(len(hyperfine_states)):
+                a = hyperfine_states[i]._latex_()[18:]
+
+                y = Ne-(index_list_hyperfine[i][1] +
+                        index_list_hyperfine[i][0])/2 - 1.2
+                x = (index_list_hyperfine[i][1] +
+                     index_list_hyperfine[i][0])/2 - 0.5
+                if y_labels:
+                    ax.text(-0.75, y, '$'+a+'$', horizontalalignment='right')
+                ax.text(x, Ne-1, '$'+a+'$', rotation=45,
+                        verticalalignment='bottom')
+        else:
+            for i in range(len(fine_states)):
+                a = fine_states[i]._latex_()[18:]
+
+                y = Ne-(index_list_fine[i][1]+index_list_fine[i][0])/2 - 1.2
+                x = (index_list_fine[i][1]+index_list_fine[i][0])/2 - 3.5
+                if y_labels:
+                    ax.text(-0.75, y, '$'+a+'$', horizontalalignment='right')
+                ax.text(x, Ne-1, '$'+a+'$', rotation=45,
+                        verticalalignment='bottom')
+    else:
+        for i in range(1, Ne+1):
+            # a=hyperfine_states[i]._latex_()
+            # (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -1.2
+            y = i - 1
+            # (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -0.5
+            x = i - 1
+            ax.text(-0.5, y, '$'+str(Ne-i+1)+'$', horizontalalignment='right')
+            ax.text(x, Ne-0.5, '$'+str(i)+'$', verticalalignment='bottom')
+
+    pyplot.savefig(path+name, bbox_inches='tight')
+
 
 def plot_Lij(ax,Lij,Nl,states=None,path='',name='default.png',**kwds):
 	Ne=len(Lij)
@@ -311,6 +270,7 @@ def plot_Lij(ax,Lij,Nl,states=None,path='',name='default.png',**kwds):
 		mat+=[row]
 
 	fancy_matrix_plot(ax,mat,states,path,name)
+
 
 def fancy_r_plot(r,states=None,path='',name='default.png',y_labels=True,
 		complex_matrix=False,take_abs=False,take_log=False,hyperfine_labels=False,**kwds):
@@ -371,6 +331,7 @@ def fancy_r_plot(r,states=None,path='',name='default.png',y_labels=True,
 	pyplot.savefig(path+name,bbox_inches='tight')
 	#pyplot.close()
 
+
 def make_video(path,name,Ne,states=None,duration=120,fps=6,digs=6,**kwds):
 	data=read_result(path,name)
 	Nt=len(data)
@@ -403,6 +364,7 @@ def make_video(path,name,Ne,states=None,duration=120,fps=6,digs=6,**kwds):
 	print com
 	os.system(com)
 
+
 def fit_lorentizan(curve,p0=None,N_points=1000):
 	'''Fits a lorentzian curve using p0=[x0,A,gamma] as an initial guess.
 	It returns a curve with N_points.'''
@@ -420,6 +382,7 @@ def fit_lorentizan(curve,p0=None,N_points=1000):
 	x_fit=[a+i*x_step for i in range(N_points)]
 	fited_curve=[(xi,lorentzian(xi,x0,A,gamma)) for xi in x_fit]
 	return fited_curve,A,x0,gamma
+
 
 def fit_lorentizan_with_background(curve,p0=None,N_points=1000):
 	'''Fits a lorentzian curve using p0=[x0,A,gamma] as an initial guess.
@@ -439,8 +402,9 @@ def fit_lorentizan_with_background(curve,p0=None,N_points=1000):
 	fited_curve=[(xi,lorentzian(xi,x0,A,gamma,B)) for xi in x_fit]
 	return fited_curve,A,x0,gamma,B
 
+
 ########################################################################
-#Drawing 3D beam diagrams.
+# Drawing 3D beam diagrams.
 ########################################################################
 
 class Arrow3D(FancyArrowPatch):
@@ -453,6 +417,7 @@ class Arrow3D(FancyArrowPatch):
         xs, ys, zs = proj3d.proj_transform(xs3d, ys3d, zs3d, renderer.M)
         self.set_positions((xs[0],ys[0]),(xs[1],ys[1]))
         FancyArrowPatch.draw(self, renderer)
+
 
 def bar_chart_mf(data,path_name):
 	N=len(data)
@@ -478,6 +443,7 @@ def bar_chart_mf(data,path_name):
 	pyplot.savefig(path_name)
 	pyplot.close()
 
+
 def draw_atom3d(ax):
 	#fig = pyplot.figure()
 	#ax = fig.gca(projection='3d')
@@ -502,6 +468,7 @@ def draw_atom3d(ax):
 	ax.plot(v1[0],v1[1],v1[2],'k-')
 	ax.plot(v2[0],v2[1],v2[2],'k-')
 	ax.plot(v3[0],v3[1],v3[2],'k-')
+
 
 def draw_plane_wave_3d(ax,beam,dist_to_center=0):
 	Ex=[]; Ey=[]; Ez=[]
@@ -541,9 +508,11 @@ def draw_plane_wave_3d(ax,beam,dist_to_center=0):
 	ax.add_artist(arrow)
 	ax.plot([Ex[-1]],[Ey[-1]],[Ez[-1]],'.',markersize=8,color=beam.color)
 
+
 def draw_mot_field_3d(ax,mot_field,dist_to_center=0):
 	for beam in mot_field.beams:
 		draw_plane_wave_3d(ax,beam,dist_to_center=dist_to_center)
+
 
 def draw_lasers_3d(ax,lasers,name='default.png',distances=None,lim=None):
 
@@ -587,6 +556,7 @@ def plot_eigenvalues(path,name,Ne,Omega=1,filename='a.png'):
 				pyplot.loglog(times[1+Nd+i],times[1+i],'+')
 	pyplot.savefig(filename,bbox_inches='tight')
 	pyplot.close('all')
+
 
 def plot_populations(path,name,Ne,states=None,filename='a.png',fontsize=12,absolute_frequency=True,
 					save_path='',use_netcdf=True):
@@ -687,9 +657,6 @@ def plot_populations(path,name,Ne,states=None,filename='a.png',fontsize=12,absol
 ########################################################################
 #Drawing of experiment diagrams.
 ########################################################################
-from matplotlib import pyplot
-import numpy as np
-from math import sin, cos, sqrt, atan2, pi
 
 def rotate_and_traslate(cur,alpha,v0):
 	if len(cur)>2 or (type(cur[0][0]) in [list,tuple]):
@@ -712,6 +679,7 @@ def rotate_and_traslate(cur,alpha,v0):
 
 		return xn,yn
 
+
 def mirror(ax,p0,alpha=0,size=2.54,width=0.5,format=None):
 	if format==None: format='k-'
 
@@ -725,6 +693,7 @@ def mirror(ax,p0,alpha=0,size=2.54,width=0.5,format=None):
 	cur_list=[(x0,y0),(x1,y1),(x2,y2),(x3,y3)]
 	cur_list=rotate_and_traslate(cur_list,alpha,p0)
 	for curi in cur_list: ax.plot(curi[0],curi[1],format)
+
 
 def vacuum_chamber(ax,p0,size=4.5,alpha=0,format=None):
 	if format==None: format='k-'
@@ -755,6 +724,7 @@ def vacuum_chamber(ax,p0,size=4.5,alpha=0,format=None):
 	for curi in cur_list0: ax.plot(curi[0],curi[1],'c-')
 	for curi in cur_list : ax.plot(curi[0],curi[1],format)
 
+
 def cloud(ax,p0,size=1.0,alpha=0,format=None,**kwds):
 	if format==None: format='k-'
 	size=size/4.0
@@ -773,6 +743,7 @@ def cloud(ax,p0,size=1.0,alpha=0,format=None,**kwds):
 
 	cur_list=rotate_and_traslate(cur_list,alpha,p0)
 	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+
 
 def lens(ax,p0,size,focus,format=None,join_with_focus=False,**kwds):
 	if format==None: format='k-'
@@ -801,6 +772,7 @@ def lens(ax,p0,size,focus,format=None,join_with_focus=False,**kwds):
 		ax.plot([x1,focus[0]],[y1,focus[1]],':',**kwds)
 		ax.plot([x2,focus[0]],[y2,focus[1]],':',**kwds)
 
+
 def eye(ax,p0,size=1.0,alpha=0,format=None,**kwds):
 	if format==None: format='k-'
 
@@ -827,6 +799,7 @@ def eye(ax,p0,size=1.0,alpha=0,format=None,**kwds):
 
 	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
 
+
 def beam_splitter(ax,p0,size=2.54,alpha=0,format=None,**kwds):
 	if format==None: format='k-'
 	a=size/2
@@ -837,6 +810,7 @@ def beam_splitter(ax,p0,size=2.54,alpha=0,format=None,**kwds):
 	cur_list=rotate_and_traslate(cur_list,alpha,p0)
 
 	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+
 
 def draw_beam(ax,p1,p2,width=0,beta1=None,beta2=None,format=None,**kwds):
 	if format==None: format='k-'
@@ -868,6 +842,7 @@ def draw_beam(ax,p1,p2,width=0,beta1=None,beta2=None,format=None,**kwds):
 
 		ax.plot([x12,x22],[y12,y22],format,**kwds)
 
+
 def simple_beam_splitter(ax,p0,size=2.54,width=0.1,alpha=0,format=None,**kwds):
 	if format==None: format='k-'
 	a=size/2
@@ -880,21 +855,26 @@ def simple_beam_splitter(ax,p0,size=2.54,width=0.1,alpha=0,format=None,**kwds):
 
 	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
 
+
 def draw_laser(ax,p0,width,height,alpha=0,format=None,**kwds):
 	if format==None: format='k-'
 	simple_beam_splitter(ax,p0,size=width,width=height,alpha=alpha,format=format,**kwds)
+
 
 def cable(ax,p1,p2,format=None,**kwds):
 	if format==None: format='k-'
 	pyplot.plot([p1[0],p2[0]],[p1[1],p2[1]],format,**kwds)
 
+
 ########################################################################
 #Drawing DAQ.
 ########################################################################
 
+
 def draw_box(ax,p0,width,height,alpha=0,format=None,**kwds):
 	if format==None: format='k-'
 	simple_beam_splitter(ax,p0,size=width,width=height,alpha=alpha,format=format,**kwds)
+
 
 def draw_for(ax,p0,pf,r=10,format=None,**kwds):
 	if format==None: format='k-'
@@ -948,6 +928,7 @@ def draw_for(ax,p0,pf,r=10,format=None,**kwds):
 	cur_list4=rotate_and_traslate(cur_list4,-pi/2,p4)
 	for curi in cur_list4 : ax.plot(curi[0],curi[1],format,**kwds)
 
+
 def draw_arith(ax,p0,size=1,alpha=0,arith=None,format=None,fontsize=10,**kwds):
 	if format==None: format='k-'
 	a=size/2.0
@@ -963,10 +944,10 @@ def draw_arith(ax,p0,size=1,alpha=0,arith=None,format=None,fontsize=10,**kwds):
 		pyplot.text( p0[0]+0.75*a,p0[1],arith,horizontalalignment='center',verticalalignment='center',fontsize=fontsize)
 
 
-
 ########################################################################
 #Drawing energy levels.
 ########################################################################
+
 
 def draw_state(ax,p,text='',l=0.5,alignment='left',label_displacement=1.0,fontsize=25,**kwds):
 
@@ -978,6 +959,7 @@ def draw_state(ax,p,text='',l=0.5,alignment='left',label_displacement=1.0,fontsi
 					color='black',fontsize=fontsize)
 		elif alignment=='right':
 			ax.text(p[0] +l/2.0 + label_displacement,p[1],text,horizontalalignment='left' ,color='black',fontsize=fontsize)
+
 
 def draw_multiplet(ax,fine_state,p,hmin,w, fside='right',label_separation=1,label_fontsize=15,fsize=10,deltanu_fontsize=6,
 					proportional=False,text='',text_pos='top',magnetic_lines=False,**kwds):
@@ -1050,6 +1032,7 @@ def draw_multiplet(ax,fine_state,p,hmin,w, fside='right',label_separation=1,labe
 
 	return [[p[0],i] for i in h_list]
 
+
 def excitation(ax,p1,p2,**kwargs):
 	x1,y1=p1
 	x2,y2=p2
@@ -1058,6 +1041,7 @@ def excitation(ax,p1,p2,**kwargs):
 
 	ax.arrow( x1, y1, dx, dy,length_includes_head=True,**kwargs)
 	#ax.arrow( x2, y2,-dx,-dy,length_includes_head=True,**kwargs)
+
 
 def decay(ax,p0,pf,A,n,format=None,**kwds):
 	if format==None: format='k-'
@@ -1071,3 +1055,58 @@ def decay(ax,p0,pf,A,n,format=None,**kwds):
 	cur_list=rotate_and_traslate(cur_list,alpha,p0)
 
 	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+
+
+aaa = 0.15
+cdict1 = {'red': ((0.0, 0.0, 0.0),
+                  (0.5, 0.0, aaa),
+                  (1.0, 1.0, 1.0)),
+
+          'green': ((0.0, 0.0, 0.0),
+                    (1.0, 0.0, 0.0)),
+
+          'blue': ((0.0, 0.0, 1.0),
+                   (0.5, aaa, 0.0),
+                   (1.0, 0.0, 0.0))
+          }
+
+bbb = 0.002
+
+cdict1 = {'blue': ((0.0, 0.0, 0.0),
+                   (0.5-bbb, 0.0, 0.0),
+                   (0.5+bbb, 0.0, aaa),
+                   (1.0, 1.0, 1.0)),
+
+          'green': ((0.0, 0.0, 0.0),
+                    (1.0, 0.0, 0.0)),
+
+          'red': ((0.0, 0.0, 1.0),
+                  (0.5-bbb, aaa, 0.0),
+                  (0.5+bbb, 0.0, 0.0),
+                  (1.0, 0.0, 0.0))
+          }
+
+blue_red1 = LinearSegmentedColormap('BlueRed1', cdict1)
+
+aaa = 0.15
+aaa = 0.25+.125
+bbb = 0.002
+
+
+cdict2 = {'red': ((0.0, 1.0, 1.0),
+                  (0.5-bbb, aaa, 0.0),
+                  (0.5+bbb, 0.0, aaa),
+                  (1.0, 1.0, 1.0)),
+
+          'green': ((0.0, 0.0, 0.0),
+                    (0.5-bbb, 0.0, 0.0),
+                    (0.5+bbb, 0.0, aaa),
+                    (1.0, 1.0, 1.0)),
+
+          'blue': ((0.0, 1.0, 1.0),
+                   (0.5-bbb, aaa, 0.0),
+                   (0.5+bbb, 0.0, 0.0),
+                   (1.0, 0.0, 0.0)),
+          }
+
+yellow_purple1 = LinearSegmentedColormap('BlueRed1', cdict2)

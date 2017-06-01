@@ -194,7 +194,7 @@ class Atom(object):
         if not valid_input:
             s = "The isotope "+str(isotope)+str(element)
             s += " is not in the database."
-            raise ValueError, s
+            raise ValueError(s)
 
     def __repr__(self):
         r"""The representation routine for atoms.
@@ -458,11 +458,11 @@ class State(object):
         if l is None:
             s = "The orbital angular momentum quantum number l "
             s += "must be specified."
-            raise NotImplementedError, s
+            raise NotImplementedError(s)
         if j is None:
             s = "The total angular momentum quantum number j=l+s "
             s += "must be specified."
-            raise NotImplementedError, s
+            raise NotImplementedError(s)
 
         # We go from chemical notation to quantum numbers.
         if str(l) in ['S', 's']: l = 0
@@ -476,14 +476,14 @@ class State(object):
         # We check the value of l.
         lperm = range(0, n)
         if l not in lperm:
-            raise ValueError, 'l = ' + str(l) + ' is not allowed.'
+            raise ValueError('l = ' + str(l) + ' is not allowed.')
 
         # We check the value of j.
         jmin = abs(l - Integer(1) / Integer(2))
         nj = int(2 * min(l, Integer(1) / Integer(2)) + 1)
         jperm = [jmin] + [jmin + ii for ii in range(1, nj)]
         if j not in jperm:
-            raise ValueError, 'j = ' + str(j) + ' is not allowed.'
+            raise ValueError('j = ' + str(j) + ' is not allowed.')
 
         self.n = n
         self.l = l
@@ -506,7 +506,7 @@ class State(object):
         # All tables are given in (cm^-1).
         i = atom.nuclear_spin
         if element == "Rb":
-            if isotope==85:
+            if isotope == 85:
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)    C (cm^-1)
                 nivfin=[[ 5, S, 1/Integer(2), 0.0000000  , 0.033753721     , 0.0       , 0.0],
                         [ 5, P, 1/Integer(2), 12578.950  , 0.004026        , 0.0       , 0.0],
