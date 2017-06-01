@@ -711,6 +711,11 @@ def wigner_d_small(J, beta):
         in physics, 4.; Investigations in physics, no. 4. Princeton, N.J.,
         Princeton University Press, 1957.
     """
+    def prod(x):
+        p = 1
+        for i, xi in enumerate(x): p = p*xi
+        return p
+
     M = [J-i for i in range(2*J+1)]
     d = []
     for Mi in M:
@@ -723,12 +728,15 @@ def wigner_d_small(J, beta):
 
             dij = sqrt(factorial(J+Mi)*factorial(J-Mi) /
                        factorial(J+Mj)/factorial(J-Mj))
-            terms = [(-1)**(J-Mi-s) *
-                     binomial(J+Mj, J-Mi-s) *
-                     binomial(J-Mj, s) *
-                     cos(beta/2)**(2*s+Mi+Mj) *
-                     sin(beta/2)**(2*J-2*s-Mj-Mi)
+            terms = [[(-1)**(J-Mi-s),
+                      binomial(J+Mj, J-Mi-s),
+                      binomial(J-Mj, s),
+                      cos(beta/2)**(2*s+Mi+Mj),
+                      sin(beta/2)**(2*J-2*s-Mj-Mi)]
                      for s in range(sigmamin, sigmamax+1)]
+
+            terms = [prod(term) if 0 not in term else 0 for term in terms]
+
             dij = dij*sum(terms)
             row += [dij]
         d += [row]
