@@ -594,7 +594,21 @@ def vector_element(r, i, j):
 
 
 def define_frequencies(Ne, explicitly_antisymmetric=False):
+    u"""Define all frequencies omega_level, omega, gamma.
 
+    >>> from sympy import pprint
+    >>> pprint(define_frequencies(2))
+    ⎛[ω₁, ω₂], ⎡ 0   ω₁₂⎤, ⎡ 0   γ₁₂⎤⎞
+    ⎜          ⎢        ⎥  ⎢        ⎥⎟
+    ⎝          ⎣ω₂₁   0 ⎦  ⎣γ₂₁   0 ⎦⎠
+
+    We can make these matrices explicitly antisymmetric.
+    >>> pprint(define_frequencies(2, explicitly_antisymmetric=True))
+    ⎛[ω₁, ω₂], ⎡ 0   -ω₂₁⎤, ⎡ 0   -γ₂₁⎤⎞
+    ⎜          ⎢         ⎥  ⎢         ⎥⎟
+    ⎝          ⎣ω₂₁   0  ⎦  ⎣γ₂₁   0  ⎦⎠
+
+    """
     omega_level = [Symbol('omega_'+str(i+1), real=True) for i in range(Ne)]
 
     if Ne > 9:
@@ -647,11 +661,27 @@ def define_frequencies(Ne, explicitly_antisymmetric=False):
 
 
 def delta_greater(i, j):
+    r"""A symbol that 1 if i > j and zero otherwise.
+
+    >>> delta_greater(2, 1)
+    1
+
+    >>> delta_greater(1, 2)
+    0
+    """
     if i > j: return 1
     else: return 0
 
 
 def delta_lesser(i, j):
+    r"""A symbol that 1 if i < j and zero otherwise.
+
+    >>> delta_lesser(2, 1)
+    0
+
+    >>> delta_lesser(1, 2)
+    1
+    """
     if i < j: return 1
     else: return 0
 
@@ -732,6 +762,42 @@ def lindblad_operator(A, rho):
 
 
 def lindblad_terms(gamma, rho, Ne):
+    u"""Return the Lindblad terms for decays gamma in matrix form.
+
+    >>> from sympy import pprint
+    >>> aux = define_frequencies(4, explicitly_antisymmetric=True)
+    >>> omega_level, omega, gamma = aux
+    >>> gamma = gamma.subs({gamma[2, 0]:0, gamma[3, 0]:0, gamma[3, 1]:0})
+    >>> pprint(gamma)
+    ⎡ 0   -γ₂₁   0     0  ⎤
+    ⎢                     ⎥
+    ⎢γ₂₁   0    -γ₃₂   0  ⎥
+    ⎢                     ⎥
+    ⎢ 0   γ₃₂    0    -γ₄₃⎥
+    ⎢                     ⎥
+    ⎣ 0    0    γ₄₃    0  ⎦
+    >>> rho = define_density_matrix(4)
+    >>> pprint(lindblad_terms(gamma, rho, 4))
+    ⎡                -γ₂₁⋅ρ₁₂             -γ₃₂⋅ρ₁₃             -γ₄₃⋅ρ₁₄      ⎤
+    ⎢ γ₂₁⋅ρ₂₂        ─────────            ─────────            ─────────     ⎥
+    ⎢                    2                    2                    2         ⎥
+    ⎢                                                                        ⎥
+    ⎢-γ₂₁⋅ρ₂₁                          γ₂₁⋅ρ₂₃   γ₃₂⋅ρ₂₃    γ₂₁⋅ρ₂₄   γ₄₃⋅ρ₂₄⎥
+    ⎢─────────  -γ₂₁⋅ρ₂₂ + γ₃₂⋅ρ₃₃   - ─────── - ───────  - ─────── - ───────⎥
+    ⎢    2                                2         2          2         2   ⎥
+    ⎢                                                                        ⎥
+    ⎢-γ₃₂⋅ρ₃₁     γ₂₁⋅ρ₃₂   γ₃₂⋅ρ₃₂                         γ₃₂⋅ρ₃₄   γ₄₃⋅ρ₃₄⎥
+    ⎢─────────  - ─────── - ───────  -γ₃₂⋅ρ₃₃ + γ₄₃⋅ρ₄₄   - ─────── - ───────⎥
+    ⎢    2           2         2                               2         2   ⎥
+    ⎢                                                                        ⎥
+    ⎢-γ₄₃⋅ρ₄₁     γ₂₁⋅ρ₄₂   γ₄₃⋅ρ₄₂    γ₃₂⋅ρ₄₃   γ₄₃⋅ρ₄₃                     ⎥
+    ⎢─────────  - ─────── - ───────  - ─────── - ───────       -γ₄₃⋅ρ₄₄      ⎥
+    ⎣    2           2         2          2         2                        ⎦
+
+    Notice that there are more terms than simply adding a decay
+    gamma_ij*rho_ij/2 for each coherence.
+
+    """
     L = zeros(Ne)
     for i in range(Ne):
         for j in range(i):
@@ -740,6 +806,17 @@ def lindblad_terms(gamma, rho, Ne):
 
 
 def define_psi_coefficients(Ne):
+    ur"""Define the components of an arbitrary state vector.
+
+    >>> from sympy import pprint
+    >>> pprint(define_psi_coefficients(3))
+    ⎛⎡c₁(t)⎤, ⎡\tilde{c}_{1}(t)⎤, ⎡θ₁⎤⎞
+    ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
+    ⎜⎢c₂(t)⎥  ⎢\tilde{c}_{2}(t)⎥  ⎢θ₂⎥⎟
+    ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
+    ⎝⎣c₃(t)⎦  ⎣\tilde{c}_{3}(t)⎦  ⎣θ₃⎦⎠
+
+    """
     t = Symbol("t", real=True)
     c = Matrix([Function("c"+str(i+1))(t) for i in range(Ne)])
     ctilde = Matrix([Function(r"\tilde{c}_{"+str(i+1)+"}")(t)
@@ -749,11 +826,43 @@ def define_psi_coefficients(Ne):
 
 
 def part_symbolic(z, s):
+    r"""Extract the real or imaginary part of an expression.
+
+    >>> rho = define_density_matrix(2)
+    >>> part_symbolic(rho[1, 1], -1)
+    0
+
+    >>> part_symbolic(rho[1, 0], 1)
+    re(rho21)
+
+    """
     if s == 1: return re(z)
     else: return im(z)
 
 
 def define_rho_vector(rho, Ne):
+    u"""Define the vectorized density matrix.
+
+    >>> from sympy import pprint
+    >>> rho = define_density_matrix(3)
+    >>> pprint(define_rho_vector(rho, 3))
+    ⎡  ρ₂₂  ⎤
+    ⎢       ⎥
+    ⎢  ρ₃₃  ⎥
+    ⎢       ⎥
+    ⎢re(ρ₂₁)⎥
+    ⎢       ⎥
+    ⎢re(ρ₃₁)⎥
+    ⎢       ⎥
+    ⎢re(ρ₃₂)⎥
+    ⎢       ⎥
+    ⎢im(ρ₂₁)⎥
+    ⎢       ⎥
+    ⎢im(ρ₃₁)⎥
+    ⎢       ⎥
+    ⎣im(ρ₃₂)⎦
+
+    """
     rho_vect = []
     for mu in range(1, Ne**2):
         i, j, s = IJ(mu, Ne)
@@ -763,6 +872,47 @@ def define_rho_vector(rho, Ne):
 
 
 def calculate_A_b(eqs, rho, Ne):
+    u"""Calculate the equations in vector form.
+
+    >>> from sympy import symbols, pprint, I
+    >>> rho = define_density_matrix(2, explicitly_hermitian=True,
+    ...                             normalized=True)
+
+    >>> Omega, delta = symbols("Omega delta")
+    >>> hbar = symbols("hbar", positive=True)
+    >>> H = Matrix([[0, Omega.conjugate()], [Omega, -delta]])
+
+    >>> aux = define_frequencies(2, explicitly_antisymmetric=True)
+    >>> omega_level, omega, gamma = aux
+
+    >>> eqs = I/hbar*(rho*H-H*rho) + lindblad_terms(gamma, rho, 2)
+
+    >>> A, b = calculate_A_b(eqs, rho, 2)
+    >>> pprint(A)
+    ⎡              2⋅im(Ω)       -2⋅re(Ω)   ⎤
+    ⎢  -γ₂₁        ───────       ─────────  ⎥
+    ⎢                 h̅             h̅     ⎥
+    ⎢                                       ⎥
+    ⎢-2⋅im(Ω)     γ₂₁   im(δ)     -re(δ)    ⎥
+    ⎢─────────  - ─── - ─────     ───────   ⎥
+    ⎢    h̅        2      h̅         h̅     ⎥
+    ⎢                                       ⎥
+    ⎢ 2⋅re(Ω)       re(δ)        γ₂₁   im(δ)⎥
+    ⎢ ───────       ─────      - ─── - ─────⎥
+    ⎣    h̅           h̅          2      h̅ ⎦
+
+    >>> pprint(b)
+    ⎡   0   ⎤
+    ⎢       ⎥
+    ⎢-im(Ω) ⎥
+    ⎢───────⎥
+    ⎢   h̅  ⎥
+    ⎢       ⎥
+    ⎢ re(Ω) ⎥
+    ⎢ ───── ⎥
+    ⎣   h̅  ⎦
+
+    """
     rho_vect = define_rho_vector(rho, Ne)
     A = []; b = []
     ss_comp = {rho[i, j]: re(rho[i, j])+I*im(rho[i, j])
@@ -792,7 +942,6 @@ def phase_transformation(Ne, Nl, r, Lij, omega_laser, phase):
     r"""Obtain a phase transformation to eliminate explicit time dependence.
 
     >>> Ne = 2
-
 
     """
     ph = find_phase_transformation(Ne, Nl, r, Lij)
@@ -919,18 +1068,26 @@ def wigner_d_small(J, beta):
 
 
 def wigner_d(J, alpha, beta, gamma):
-    r"""Return the Wigner D matrix for angular momentum J.
+    u"""Return the Wigner D matrix for angular momentum J.
 
     We use the general formula from [1], equation 4.1.12.
 
     The simplest possible example:
-    >>> from sympy import Integer, symbols
+    >>> from sympy import Integer, symbols, pprint
     >>> half = 1/Integer(2)
     >>> alpha, beta, gamma = symbols("alpha, beta, gamma", real=True)
-    >>> wigner_d(half, alpha, beta, gamma)
-    Matrix([
-    [  exp(I*alpha/2)*exp(I*gamma/2)*cos(beta/2),  exp(I*alpha/2)*exp(-I*gamma/2)*sin(beta/2)],
-    [-exp(-I*alpha/2)*exp(I*gamma/2)*sin(beta/2), exp(-I*alpha/2)*exp(-I*gamma/2)*cos(beta/2)]])
+    >>> pprint(wigner_d(half, alpha, beta, gamma))
+    ⎡  ⅈ⋅α  ⅈ⋅γ             ⅈ⋅α  -ⅈ⋅γ         ⎤
+    ⎢  ───  ───             ───  ─────        ⎥
+    ⎢   2    2     ⎛β⎞       2     2      ⎛β⎞ ⎥
+    ⎢ ℯ   ⋅ℯ   ⋅cos⎜─⎟     ℯ   ⋅ℯ     ⋅sin⎜─⎟ ⎥
+    ⎢              ⎝2⎠                    ⎝2⎠ ⎥
+    ⎢                                         ⎥
+    ⎢  -ⅈ⋅α   ⅈ⋅γ          -ⅈ⋅α   -ⅈ⋅γ        ⎥
+    ⎢  ─────  ───          ─────  ─────       ⎥
+    ⎢    2     2     ⎛β⎞     2      2      ⎛β⎞⎥
+    ⎢-ℯ     ⋅ℯ   ⋅sin⎜─⎟  ℯ     ⋅ℯ     ⋅cos⎜─⎟⎥
+    ⎣                ⎝2⎠                   ⎝2⎠⎦
 
     [1] A. R. Edmonds. Angular momentum in quantum mechanics. Investigations
         in physics, 4.; Investigations in physics, no. 4. Princeton, N.J.,
@@ -975,7 +1132,3 @@ def density_matrix_rotation(J_values, alpha, beta, gamma):
 if __name__ == "__main__":
     import doctest
     doctest.testmod(verbose=False)
-
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
