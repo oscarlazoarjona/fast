@@ -328,6 +328,40 @@ def cartesian_to_helicity(vector, numeric=False):
 
 
 def helicity_to_cartesian(vector, numeric=False):
+    r"""Transform a vector in the helicity basis to the cartesian basis.
+
+    >>> sigmam = [1, 0, 0]
+    >>> helicity_to_cartesian(sigmam)
+    Matrix([
+    [  sqrt(2)/2],
+    [sqrt(2)*I/2],
+    [          0]])
+
+    The input vector can be a list of matrices
+
+    >>> r = define_r_components(2, helicity=True)
+    >>> r[0][0, 1] = 0
+    >>> r[1][0, 1] = 0
+    >>> r[2][0, 1] = 0
+    >>> r
+    [Matrix([
+    [        0, 0],
+    [r_{-1;21}, 0]]), Matrix([
+    [       0, 0],
+    [r_{0;21}, 0]]), Matrix([
+    [        0, 0],
+    [r_{+1;21}, 0]])]
+
+    >>> helicity_to_cartesian(r)
+    [Matrix([
+    [                                 0, 0],
+    [sqrt(2)*(-r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
+    [                                  0, 0],
+    [sqrt(2)*I*(r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
+    [       0, 0],
+    [r_{0;21}, 0]])]
+
+    """
     if numeric:
         v = [(vector[0]-vector[2])/npsqrt(2),
              1j*(vector[0]+vector[2])/npsqrt(2),
@@ -345,15 +379,137 @@ def helicity_to_cartesian(vector, numeric=False):
 
 
 def helicity_dot_product(v1, v2):
+    r"""Calculate the dot product of two vectors in the helicity basis.
+
+    >>> from sympy import symbols
+    >>> u = Matrix(symbols("u_{-1}, u_0, u_{+1}"))
+    >>> v = Matrix(symbols("v_{-1}, v_0, v_{+1}"))
+    >>> helicity_dot_product(u, v)
+    u_0*v_0 - u_{+1}*v_{-1} - u_{-1}*v_{+1}
+
+    We can check that this is in deed the same thing as the usual cartesian
+    dot product:
+
+    >>> u = Matrix(symbols("u_x, u_y, u_z"))
+    >>> v = Matrix(symbols("v_x, v_y, v_z"))
+    >>> u_helicity = cartesian_to_helicity(u)
+    >>> v_helicity = cartesian_to_helicity(v)
+    >>> helicity_dot_product(u_helicity, v_helicity).expand()
+    u_x*v_x + u_y*v_y + u_z*v_z
+
+    The inputs vectors can be a list of matrices representing operators.
+
+    >>> rp = define_r_components(2, helicity=True, p=1,
+    ...                          explicitly_hermitian=True)
+    >>> rm = define_r_components(2, helicity=True, p=-1,
+    ...                          explicitly_hermitian=True)
+    >>> from sympy import pi
+    >>> em = polarization_vector(0, 0, 0, pi/8, -1)
+    >>> ep = polarization_vector(0, 0, 0, pi/8, 1)
+    >>> ep = cartesian_to_helicity(ep)
+    >>> em = cartesian_to_helicity(em)
+    >>> H = helicity_dot_product(ep, rm) + helicity_dot_product(em, rp)
+    >>> H
+    Matrix([
+    [         0, -r_{+1;21}],
+    [-r_{+1;21},          0]])
+
+    """
     return -v1[2]*v2[0] + v1[1]*v2[1] - v1[0]*v2[2]
 
 
 def cartesian_dot_product(v1, v2):
+    r"""Calculate the dot product of two vectors in the cartesian basis.
+
+    >>> from sympy import symbols
+    >>> u = Matrix(symbols("u_x, u_y, u_z"))
+    >>> v = Matrix(symbols("v_x, v_y, v_z"))
+    >>> cartesian_dot_product(u, v)
+    u_x*v_x + u_y*v_y + u_z*v_z
+    """
     return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2]
 
 
 def define_r_components(Ne, explicitly_hermitian=False, helicity=False,
                         real=True, p=None):
+    r"""Define the components of the position operators.
+
+    In general, these are representations of the position operators x, y, z
+
+    >>> define_r_components(2)
+    [Matrix([
+    [     0, x_{12}],
+    [x_{21},      0]]), Matrix([
+    [     0, y_{12}],
+    [y_{21},      0]]), Matrix([
+    [     0, z_{12}],
+    [z_{21},      0]])]
+
+    We can make these operators explicitly hermitian
+
+    >>> define_r_components(2, explicitly_hermitian=True)
+    [Matrix([
+    [     0, x_{21}],
+    [x_{21},      0]]), Matrix([
+    [     0, y_{21}],
+    [y_{21},      0]]), Matrix([
+    [     0, z_{21}],
+    [z_{21},      0]])]
+
+    Make them real
+
+    >>> r = define_r_components(2, real=True, explicitly_hermitian=True)
+    >>> print [r[p]-r[p].transpose() for p in range(3)]
+    [Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]])]
+
+    We can get the components of the operator in the helicity basis
+
+    >>> define_r_components(2, helicity=True)
+    [Matrix([
+    [        0, r_{-1;12}],
+    [r_{-1;21},         0]]), Matrix([
+    [       0, r_{0;12}],
+    [r_{0;21},        0]]), Matrix([
+    [        0, r_{+1;12}],
+    [r_{+1;21},         0]])]
+
+    And combinations thereof. For instance, let us check that the components
+    in the helicity basis produce hermitian operators in the cartesian basis.
+
+    >>> r_helicity = define_r_components(2, helicity=True,
+    ...                                  explicitly_hermitian=True)
+
+    [Matrix([
+    [        0, -r_{+1;21}],
+    [r_{-1;21},          0]]), Matrix([
+    [       0, r_{0;21}],
+    [r_{0;21},        0]]), Matrix([
+    [        0, -r_{-1;21}],
+    [r_{+1;21},          0]])]
+
+    >>> r_cartesian = helicity_to_cartesian(r_helicity)
+    >>> r_cartesian[0]
+    Matrix([
+    [                                 0, sqrt(2)*(-r_{+1;21} + r_{-1;21})/2],
+    [sqrt(2)*(-r_{+1;21} + r_{-1;21})/2,                                  0]])
+
+
+    >>> [(r_cartesian[p]-r_cartesian[p].adjoint()).expand() for p in range(3)]
+    [Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]])]
+
+    """
     frequency_sign = p
     if Ne > 9: comma = ","
     else: comma = ""
@@ -424,6 +580,16 @@ def define_r_components(Ne, explicitly_hermitian=False, helicity=False,
 
 
 def vector_element(r, i, j):
+    r"""Extract an matrix element of a vector operator.
+
+    >>> r = define_r_components(2)
+    >>> vector_element(r, 1, 0)
+    Matrix([
+    [x_{21}],
+    [y_{21}],
+    [z_{21}]])
+
+    """
     return Matrix([r[p][i, j] for p in range(3)])
 
 
@@ -657,3 +823,8 @@ def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
 
     return {phase[i]: sum([ph[i][j]*omega_laser[j] for j in range(Nl)])
             for i in range(Ne)}
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
