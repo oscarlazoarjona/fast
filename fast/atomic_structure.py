@@ -65,7 +65,7 @@ H = 'H'
 I = 'I'
 
 
-class Atom(object):
+class Atom(Basic):
     r"""This class implements specific atoms and their properties.
 
     The atoms can be identified by element and optionally by isotope.
@@ -225,7 +225,16 @@ class Atom(object):
         '^{87}\\mathrm{Rb}'
 
         """
-        return '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}'
+        return
+
+    def _latex(self, printer, *args):
+        r"""The LaTeX routine for atoms.
+
+        >>> Atom("Rb",87)._latex_()
+        '^{87}\\mathrm{Rb}'
+
+        """
+        return self._latex_()
 
     def states(self,
                Nmax=50, omega_min=None, omega_max=None, return_missing=False):
@@ -982,7 +991,7 @@ class State(Basic):
         return self.quantum_numbers == other.quantum_numbers
 
 
-class Transition(object):
+class Transition(Basic):
     r"""This class describes a transition between different atomic states.
 
     For instance, the transition between the hyperfine ground states of cesium
@@ -1194,6 +1203,17 @@ class Transition(object):
             return self.e1._latex_()+'\\ \\rightarrow^? \\ '+self.e2._latex_()
 
         return self.e1._latex_()+'\\ \\nleftrightarrow \\ '+self.e2._latex_()
+
+    def _latex(self, printer, *args):
+        r"""The representation routine for transitions.
+
+        >>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+        >>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+        >>> Transition(g2,g1)._latex()
+        '^{133}\\mathrm{Cs}\\ 6S_{1/2}^{4}\\ \\nrightarrow \\ ^{133}\\mathrm{Cs}\\ 6S_{1/2}^{3}'
+
+        """
+        return self._latex_()
 
     def __eq__(self, other):
         r"""The equals routine for transitions.
