@@ -225,7 +225,7 @@ class Atom(Basic):
         '^{87}\\mathrm{Rb}'
 
         """
-        return "^{"+str(self.isotope)+"}"+self.element
+        return "^{"+str(self.isotope)+r"}\mathrm{"+self.element+"}"
 
     def _latex(self, printer, *args):
         r"""The LaTeX routine for atoms.
