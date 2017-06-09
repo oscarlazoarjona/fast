@@ -72,8 +72,6 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
             sol.update({theta[i]: theta[i]})
             extra_thetas += [theta[i]]
 
-    print eqs
-    print sol
     # We make the solution such that theta1 + omega_level1 = 0.
     omega_level, omega, gamma = define_frequencies(Ne)
     eq_crit = sol[theta[0]] + omega_level[0]
@@ -91,6 +89,29 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
     #     sol += [soli]
 
     return sol_simple
+
+
+def define_simplification(omega_level):
+    """Make a function from degenerate state indices to nondegenerate ones."""
+    try:
+        Ne = len(omega_level)
+    except:
+        Ne = omega_level.shape[0]
+
+    om = omega_level[0]
+    iu = 0; Neu = 1
+    omega_levelu = [om]
+    d = {}; di = {0: 0}
+    for i in range(Ne):
+        if omega_level[i] != om:
+            iu += 1
+            om = omega_level[i]
+            Neu += 1
+            omega_levelu += [om]
+            di.update({iu: i})
+        d.update({i: iu})
+
+    return (lambda i: d[i], lambda iu: di[iu], omega_levelu)
 
 
 def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
@@ -149,7 +170,6 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         raise NotImplementedError("epsilonp must be constant.")
     if constant_detuning_knob:
         raise NotImplementedError("detuning_knob must be variable.")
-    print constant_Ep, constant_epsilonp, constant_detuning_knob
 
     # We convert rm to a numpy array
     rm = np.array([[[complex(rm[k][i, j])
@@ -200,14 +220,74 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
             H[i, j] = H[j, i].conjugate()\n\n"""
     ###########################################################################
     # We get the code for the diagonal elements.
-    print theta
-    _omega_level, omega, gamma = define_frequencies(Ne)
+    # print theta
     code += "    # We calculate the diagonal elements.\n"
-    for i in range(Ne):
-        if not constant_detuning_knob:
-            code += "    H["+str(i)+", "+str(i)+"] = "
-            code += str(theta[i]+_omega_level[i])+"\n"
+    _omega_level, omega, gamma = define_frequencies(Ne)
 
+    #####################################
+    # 1 We build the degeneration simplification and its inverse (to avoid
+    # large combinatorics).
+    # omega_level = [1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 4.0]
+    u, invu, omega_levelu = define_simplification(omega_level)
+    #####################################
+    # 2 We build the simplified xi
+    Neu = len(omega_levelu)
+    xiu = np.array([[[xi[l, invu(i), invu(j)]
+                    for j in range(Neu)] for i in range(Neu)]
+                    for l in range(Nl)])
+    #####################################
+    # 3 We find the smallest transition frequency for each field.
+    omega_min = []; iu0 = []; ju0 = []
+    for l in range(Nl):
+        omegasl = []
+        for iu in range(Neu):
+            for ju in range(iu):
+                if xiu[l, iu, ju] == 1:
+                    omegasl += [(omega_levelu[iu]-omega_levelu[ju], iu, ju)]
+        omegasl = list(sorted(omegasl))
+        omega_min += [omegasl[0][0]]
+        iu0 += [omegasl[0][1]]
+        ju0 += [omegasl[0][2]]
+    #####################################
+    # 4 We get the code to calculate the non degenerate detunings.
+    code_det = ""
+    for l in range(Nl):
+        for iu in range(Neu):
+            for ju in range(iu):
+                if xiu[l, iu, ju] == 1:
+                    code_det += "    delta"+str(l+1)
+                    code_det += "_"+str(iu+1)
+                    code_det += "_"+str(ju+1)
+                    code_det += " = detuning_knob["+str(l)+"]"
+                    corr = -omega_levelu[iu]+omega_levelu[iu0[l]]
+                    corr = omega_levelu[ju0[l]]-omega_levelu[ju]
+                    if corr != 0:
+                        code_det += " + ("+str(corr)+")"
+                    code_det += "\n"
+
+    code += code_det
+    #####################################
+    # 5 We get the code to calculate the non degenerate detunings.
+
+    print omega_min, iu0, ju0
+
+    # print xi
+    # print xiu
+    #
+    # print Neu
+    # print omega_level
+    # print omega_levelu
+    # for iu in range(Neu):
+    #     print iu, invu(iu)
+    #####################################
+    # We get the code.
+    # code += "    # We calculate the diagonal elements.\n"
+    # for i in range(Ne):
+    #     if not constant_detuning_knob:
+    #         code += "    H["+str(i)+", "+str(i)+"] = "
+    #         code += str(theta[i]+_omega_level[i])+"\n"
+
+    ###########################################################################
     # print Ne, Nl
     code += "\n"
     code += "    return H\n"
@@ -250,8 +330,15 @@ xi[0, 0, 1] = 1.0
 
 phase = phase_transformation(Ne, Nl, rm, xi, return_equations=False)
 
-hamiltonian2 = fast_hamiltonian(E0, [epsilonp], detuning_knob, rm, omega_level,
-                                xi, phase, "code.py")
+hamiltonian2 = fast_hamiltonian(E0, [epsilonp], detuning_knob, rm,
+                                omega_level, xi, phase, "code.py")
 
 detuning_knob = [1.0]
 print hamiltonian2(detuning_knob)
+
+# omega_level = [1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 4.0]
+# print omega_level
+# simp = define_simplification(omega_level)
+#
+# for i in range(len(omega_level)):
+#     print i, simp(i)
