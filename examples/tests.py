@@ -18,7 +18,7 @@ import doctest_09___Thermal_States
 import doctest_10___States_database
 
 verbose = True
-verbose = False
+# verbose = False
 print testmod(fast, verbose=verbose)
 print testmod(fast.atomic_structure, verbose=verbose)
 print testmod(fast.electric_field, verbose=verbose)

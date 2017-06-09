@@ -933,6 +933,21 @@ class State(Basic):
             s += ','+str(self.m)
         return s
 
+    def __str__(self):
+        r"""The string routine for states.
+
+        >>> State("Rb",85,5,0,1/Integer(2)).__str__()
+        '85Rb 5S_1/2'
+
+        >>> State("Rb",85,5,0,1/Integer(2),2).__str__()
+        '85Rb 5S_1/2^2'
+
+        >>> State("Rb",85,5,0,1/Integer(2),2,2).__str__()
+        '85Rb 5S_1/2^2,2'
+
+        """
+        return self.__repr__()
+
     def _latex_(self):
         r"""The LaTeX routine for states.
 
