@@ -34,6 +34,7 @@ This inclures routines to calculate the necessary matrices.
 from sympy.core.numbers import Rational as Integer
 from math import sqrt, pi
 from sympy.physics.wigner import wigner_3j, wigner_6j
+from sympy import Basic
 
 # Physical constants (SI units):
 from scipy.constants import physical_constants
@@ -381,7 +382,7 @@ class Atom(object):
         return states
 
 
-class State(object):
+class State(Basic):
     r"""This class implements specific eigenstates of the atomic hamiltonian.
 
     The states must be identified by element, isotope and quantum numbers
@@ -953,6 +954,22 @@ class State(object):
             s = s[:-1] + ','+str(self.m)+'}'
 
         return s
+
+    def _latex(self):
+        r"""The LaTeX routine for states.
+
+        >>> State("Rb",85,5,0,1/Integer(2))._latex()
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}'
+
+        >>> State("Rb",85,5,0,1/Integer(2),2)._latex()
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2}'
+
+        >>> State("Rb",85,5,0,1/Integer(2),2,2)._latex()
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2,2}'
+
+        """
+        return self._latex_()
+
 
     def __eq__(self, other):
         r"""Two states are equal if all of their identifiers are the same.
