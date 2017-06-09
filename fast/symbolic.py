@@ -597,13 +597,14 @@ def define_frequencies(Ne, explicitly_antisymmetric=False):
     u"""Define all frequencies omega_level, omega, gamma.
 
     >>> from sympy import pprint
-    >>> pprint(define_frequencies(2))
+    >>> pprint(define_frequencies(2), use_unicode=True)
     ⎛[ω₁, ω₂], ⎡ 0   ω₁₂⎤, ⎡ 0   γ₁₂⎤⎞
     ⎜          ⎢        ⎥  ⎢        ⎥⎟
     ⎝          ⎣ω₂₁   0 ⎦  ⎣γ₂₁   0 ⎦⎠
 
     We can make these matrices explicitly antisymmetric.
-    >>> pprint(define_frequencies(2, explicitly_antisymmetric=True))
+    >>> pprint(define_frequencies(2, explicitly_antisymmetric=True),
+    ...                           use_unicode=True)
     ⎛[ω₁, ω₂], ⎡ 0   -ω₂₁⎤, ⎡ 0   -γ₂₁⎤⎞
     ⎜          ⎢         ⎥  ⎢         ⎥⎟
     ⎝          ⎣ω₂₁   0  ⎦  ⎣γ₂₁   0  ⎦⎠
@@ -768,7 +769,7 @@ def lindblad_terms(gamma, rho, Ne):
     >>> aux = define_frequencies(4, explicitly_antisymmetric=True)
     >>> omega_level, omega, gamma = aux
     >>> gamma = gamma.subs({gamma[2, 0]:0, gamma[3, 0]:0, gamma[3, 1]:0})
-    >>> pprint(gamma)
+    >>> pprint(gamma, use_unicode=True)
     ⎡ 0   -γ₂₁   0     0  ⎤
     ⎢                     ⎥
     ⎢γ₂₁   0    -γ₃₂   0  ⎥
@@ -777,7 +778,7 @@ def lindblad_terms(gamma, rho, Ne):
     ⎢                     ⎥
     ⎣ 0    0    γ₄₃    0  ⎦
     >>> rho = define_density_matrix(4)
-    >>> pprint(lindblad_terms(gamma, rho, 4))
+    >>> pprint(lindblad_terms(gamma, rho, 4), use_unicode=True)
     ⎡                -γ₂₁⋅ρ₁₂             -γ₃₂⋅ρ₁₃             -γ₄₃⋅ρ₁₄      ⎤
     ⎢ γ₂₁⋅ρ₂₂        ─────────            ─────────            ─────────     ⎥
     ⎢                    2                    2                    2         ⎥
@@ -809,7 +810,7 @@ def define_psi_coefficients(Ne):
     ur"""Define the components of an arbitrary state vector.
 
     >>> from sympy import pprint
-    >>> pprint(define_psi_coefficients(3))
+    >>> pprint(define_psi_coefficients(3), use_unicode=True)
     ⎛⎡c₁(t)⎤, ⎡\tilde{c}_{1}(t)⎤, ⎡θ₁⎤⎞
     ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
     ⎜⎢c₂(t)⎥  ⎢\tilde{c}_{2}(t)⎥  ⎢θ₂⎥⎟
@@ -845,7 +846,7 @@ def define_rho_vector(rho, Ne):
 
     >>> from sympy import pprint
     >>> rho = define_density_matrix(3)
-    >>> pprint(define_rho_vector(rho, 3))
+    >>> pprint(define_rho_vector(rho, 3), use_unicode=True)
     ⎡  ρ₂₂  ⎤
     ⎢       ⎥
     ⎢  ρ₃₃  ⎥
@@ -888,7 +889,7 @@ def calculate_A_b(eqs, rho, Ne):
     >>> eqs = I/hbar*(rho*H-H*rho) + lindblad_terms(gamma, rho, 2)
 
     >>> A, b = calculate_A_b(eqs, rho, 2)
-    >>> pprint(A)
+    >>> pprint(A, use_unicode=True)
     ⎡              2⋅im(Ω)       -2⋅re(Ω)   ⎤
     ⎢  -γ₂₁        ───────       ─────────  ⎥
     ⎢                 h̅             h̅     ⎥
@@ -901,7 +902,7 @@ def calculate_A_b(eqs, rho, Ne):
     ⎢ ───────       ─────      - ─── - ─────⎥
     ⎣    h̅           h̅          2      h̅ ⎦
 
-    >>> pprint(b)
+    >>> pprint(b, use_unicode=True)
     ⎡   0   ⎤
     ⎢       ⎥
     ⎢-im(Ω) ⎥
@@ -990,7 +991,7 @@ def wigner_d_small(J, beta):
     [-sin(beta/2), cos(beta/2)]])
 
     >>> from sympy import pprint
-    >>> pprint(wigner_d_small(2*half, beta))
+    >>> pprint(wigner_d_small(2*half, beta), use_unicode=True)
     ⎡        2⎛β⎞              ⎛β⎞    ⎛β⎞           2⎛β⎞     ⎤
     ⎢     cos ⎜─⎟        √2⋅sin⎜─⎟⋅cos⎜─⎟        sin ⎜─⎟     ⎥
     ⎢         ⎝2⎠              ⎝2⎠    ⎝2⎠            ⎝2⎠     ⎥
@@ -1076,7 +1077,7 @@ def wigner_d(J, alpha, beta, gamma):
     >>> from sympy import Integer, symbols, pprint
     >>> half = 1/Integer(2)
     >>> alpha, beta, gamma = symbols("alpha, beta, gamma", real=True)
-    >>> pprint(wigner_d(half, alpha, beta, gamma))
+    >>> pprint(wigner_d(half, alpha, beta, gamma), use_unicode=True)
     ⎡  ⅈ⋅α  ⅈ⋅γ             ⅈ⋅α  -ⅈ⋅γ         ⎤
     ⎢  ───  ───             ───  ─────        ⎥
     ⎢   2    2     ⎛β⎞       2     2      ⎛β⎞ ⎥
