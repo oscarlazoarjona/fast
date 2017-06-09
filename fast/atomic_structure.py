@@ -955,7 +955,7 @@ class State(Basic):
 
         return s
 
-    def _latex(self):
+    def _latex(self, printer, *args):
         r"""The LaTeX routine for states.
 
         >>> State("Rb",85,5,0,1/Integer(2))._latex()
