@@ -330,6 +330,7 @@ def cartesian_to_helicity(vector, numeric=False):
 
     """
     if numeric:
+        vector = list(vector)
         vector[0] = nparray(vector[0])
         vector[1] = nparray(vector[1])
         vector[2] = nparray(vector[2])
@@ -403,6 +404,7 @@ def helicity_to_cartesian(vector, numeric=False):
 
     """
     if numeric:
+        vector = list(vector)
         vector[0] = nparray(vector[0])
         vector[1] = nparray(vector[1])
         vector[2] = nparray(vector[2])
