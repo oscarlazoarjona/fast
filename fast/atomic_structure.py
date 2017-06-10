@@ -34,6 +34,7 @@ This inclures routines to calculate the necessary matrices.
 from sympy.core.numbers import Rational as Integer
 from math import sqrt, pi
 from sympy.physics.wigner import wigner_3j, wigner_6j
+from sympy import Basic
 
 # Physical constants (SI units):
 from scipy.constants import physical_constants
@@ -64,7 +65,7 @@ H = 'H'
 I = 'I'
 
 
-class Atom(object):
+class Atom(Basic):
     r"""This class implements specific atoms and their properties.
 
     The atoms can be identified by element and optionally by isotope.
@@ -224,7 +225,16 @@ class Atom(object):
         '^{87}\\mathrm{Rb}'
 
         """
-        return '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}'
+        return "^{"+str(self.isotope)+r"}\mathrm{"+self.element+"}"
+
+    def _latex(self, printer, *args):
+        r"""The LaTeX routine for atoms.
+
+        >>> Atom("Rb",87)._latex_()
+        '^{87}\\mathrm{Rb}'
+
+        """
+        return self._latex_()
 
     def states(self,
                Nmax=50, omega_min=None, omega_max=None, return_missing=False):
@@ -326,7 +336,7 @@ class Atom(object):
             si = states[i]
             for j in range(i):
                 sj = states[j]
-                t = Transition(sj, si, verbose=0)
+                t = Transition(sj, si)
                 if t.allowed:
                     transitions += [t]
 
@@ -381,7 +391,7 @@ class Atom(object):
         return states
 
 
-class State(object):
+class State(Basic):
     r"""This class implements specific eigenstates of the atomic hamiltonian.
 
     The states must be identified by element, isotope and quantum numbers
@@ -923,6 +933,21 @@ class State(object):
             s += ','+str(self.m)
         return s
 
+    def __str__(self):
+        r"""The string routine for states.
+
+        >>> State("Rb",85,5,0,1/Integer(2)).__str__()
+        '85Rb 5S_1/2'
+
+        >>> State("Rb",85,5,0,1/Integer(2),2).__str__()
+        '85Rb 5S_1/2^2'
+
+        >>> State("Rb",85,5,0,1/Integer(2),2,2).__str__()
+        '85Rb 5S_1/2^2,2'
+
+        """
+        return self.__repr__()
+
     def _latex_(self):
         r"""The LaTeX routine for states.
 
@@ -954,6 +979,23 @@ class State(object):
 
         return s
 
+    def _latex(self, printer, *args):
+        r"""The LaTeX routine for states.
+
+        >>> from sympy import latex
+        >>> latex(State("Rb",85,5,0,1/Integer(2)))
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}'
+
+        >>> latex(State("Rb",85,5,0,1/Integer(2),2))
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2}'
+
+        >>> latex(State("Rb",85,5,0,1/Integer(2),2,2))
+        '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2,2}'
+
+        """
+        return self._latex_()
+
+
     def __eq__(self, other):
         r"""Two states are equal if all of their identifiers are the same.
 
@@ -965,7 +1007,7 @@ class State(object):
         return self.quantum_numbers == other.quantum_numbers
 
 
-class Transition(object):
+class Transition(Basic):
     r"""This class describes a transition between different atomic states.
 
     For instance, the transition between the hyperfine ground states of cesium
@@ -979,8 +1021,8 @@ class Transition(object):
 
     """
 
-    def __init__(self, e1, e2, verbose=1):
-        r'''This class describes a transition between atomic states. For
+    def __init__(self, e1, e2):
+        r"""This class describes a transition between atomic states. For
         instance, the transition between the hyperfine ground states of cesium
         used in the definition of the second.
 
@@ -1029,7 +1071,9 @@ class Transition(object):
         ...
         NotImplementedError: Transition between different isotopes.
 
-        '''
+        """
+        verbose = 0
+
         if e1.element != e2.element:
             raise NotImplementedError, 'Transition between different elements.'
         if e1.isotope != e2.isotope:
@@ -1160,6 +1204,17 @@ class Transition(object):
         else:
             return self.e1.__repr__()+' --?--> '+self.e2.__repr__()
 
+    def __str__(self):
+        r"""The string routine for transitions.
+
+        >>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+        >>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+        >>> Transition(g2,g1).__str__()
+        '133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3'
+
+        """
+        return self.__repr__()
+
     def _latex_(self):
         r"""The representation routine for transitions.
 
@@ -1177,6 +1232,18 @@ class Transition(object):
             return self.e1._latex_()+'\\ \\rightarrow^? \\ '+self.e2._latex_()
 
         return self.e1._latex_()+'\\ \\nleftrightarrow \\ '+self.e2._latex_()
+
+    def _latex(self, printer, *args):
+        r"""The representation routine for transitions.
+
+        >>> from sympy import latex
+        >>> g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+        >>> g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+        >>> latex(Transition(g2,g1))
+        '^{133}\\mathrm{Cs}\\ 6S_{1/2}^{4}\\ \\nrightarrow \\ ^{133}\\mathrm{Cs}\\ 6S_{1/2}^{3}'
+
+        """
+        return self._latex_()
 
     def __eq__(self, other):
         r"""The equals routine for transitions.
@@ -2149,3 +2216,7 @@ def collision_rate(Temperature, element, isotope):
 #
 # [24] Banerjee A, Das D and Natarajan V 2004
 # Europhys. Lett. 65 172
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=False)
