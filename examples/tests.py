@@ -29,6 +29,7 @@ print testmod(fast.graphic, verbose=verbose)
 print testmod(fast.misc, verbose=verbose)
 print testmod(fast.rk4, verbose=verbose)
 print testmod(fast.stationary, verbose=verbose)
+print testmod(fast.bloch, verbose=verbose)
 
 ########################################################################
 # Run all codes from notebook-generated doctests.
