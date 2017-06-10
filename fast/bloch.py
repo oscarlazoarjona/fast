@@ -27,12 +27,7 @@ from fast.symbolic import define_laser_variables
 from scipy.constants import physical_constants
 
 import numpy as np
-import fast
 import sympy
-
-from numpy import array as nparray
-from numpy import sqrt as npsqrt
-from sympy import Matrix, sqrt, I
 
 hbar_num = physical_constants["Planck constant over 2 pi"][0]
 e_num = physical_constants["elementary charge"][0]
@@ -40,14 +35,21 @@ a0 = physical_constants["Bohr radius"][0]
 
 
 def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
-    """This function returns a phase transformation specified as a list of
-    lenght Ne whose elements correspond to each theta_i. Each element is a list
-    of length Nl which specifies the coefficients multiplying each optical
-    frequency omega^l. So for instance [[1,1],[1,0],[0,0]] means
+    """Returns a phase transformation theta_i.
 
-    theta_1=omega^1+omega^2
-    theta_2=omega^1
-    theta_3=0.
+    The phase transformation is defined in a way such that
+        theta1 + omega_level1 = 0.
+
+    >>> xi = np.zeros((1, 2, 2))
+    >>> xi[0, 1, 0] = 1.0
+    >>> xi[0, 0, 1] = 1.0
+    >>> rm = np.zeros((3, 2, 2))
+    >>> rm[0, 1, 0] = 1.0
+    >>> rm[1, 1, 0] = 1.0
+    >>> rm[2, 1, 0] = 1.0
+    >>> phase_transformation(2, 1, rm, xi)
+    [-omega_1, -omega_1 - varpi_1]
+
     """
     # We first define the needed variables
     E0, omega_laser = define_laser_variables(Nl)
@@ -68,7 +70,11 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
         return eqs
 
     # We solve the system of equations.
-    sol = sympy.solve(eqs, theta, dict=True)[0]
+    # print eqs
+    # print theta
+    sol = sympy.solve(eqs, theta, dict=True)
+    # print sol
+    sol = sol[0]
     # We add any missing theta that may be left outside if the system is
     # under determined.
 
@@ -102,6 +108,34 @@ def define_simplification(omega_level, xi, Nl):
 
     This implements an index iu that labels energies in a non-degenerate
     way.
+
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> aux = define_simplification(omega_level, xi, Nl)
+    >>> u, invu, omega_levelu, Neu, xiu = aux
+    >>> print omega_levelu
+    [0.0, 100.0, 200.0, 300.0]
+    >>> print Neu
+    4
+    >>> print xiu
+    [[[ 0.  1.  0.  0.]
+      [ 1.  0.  0.  0.]
+      [ 0.  0.  0.  0.]
+      [ 0.  0.  0.  0.]]
+    <BLANKLINE>
+     [[ 0.  0.  1.  1.]
+      [ 0.  0.  0.  0.]
+      [ 1.  0.  0.  0.]
+      [ 1.  0.  0.  0.]]]
+
     """
     try:
         Ne = len(omega_level)
@@ -139,7 +173,24 @@ def define_simplification(omega_level, xi, Nl):
 
 
 def find_omega_min(omega_levelu, Neu, Nl, xiu):
-    r"""Find the smallest transition frequency for each field."""
+    r"""Find the smallest transition frequency for each field.
+
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> aux = define_simplification(omega_level, xi, Nl)
+    >>> u, invu, omega_levelu, Neu, xiu = aux
+    >>> find_omega_min(omega_levelu, Neu, Nl, xiu)
+    ([100.0, 200.0], [1, 2], [0, 0])
+
+    """
     omega_min = []; iu0 = []; ju0 = []
     for l in range(Nl):
         omegasl = []
@@ -160,7 +211,23 @@ def detunings_indices(Neu, Nl, xiu):
 
     They are returned in the form
         [[(i1, j1), (i2, j2)], ...,[(i1, j1)]].
-    One list of pairs of indices for each field.
+    that is, one list of pairs of indices for each field.
+
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> aux = define_simplification(omega_level, xi, Nl)
+    >>> u, invu, omega_levelu, Neu, xiu = aux
+    >>> detunings_indices(Neu, Nl, xiu)
+    [[(1, 0)], [(2, 0), (3, 0)]]
+
     """
     pairs = []
     for l in range(Nl):
@@ -174,7 +241,29 @@ def detunings_indices(Neu, Nl, xiu):
 
 
 def detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0):
-    r"""Get the code to calculate the simplified detunings."""
+    r"""Get the code to calculate the simplified detunings.
+
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> aux = define_simplification(omega_level, xi, Nl)
+    >>> u, invu, omega_levelu, Neu, xiu = aux
+    >>> omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+    >>> pairs = detunings_indices(Neu, Nl, xiu)
+    >>> print detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+        delta1_2_1 = detuning_knob[0]
+        delta2_3_1 = detuning_knob[1]
+        delta2_4_1 = detuning_knob[1] + (-100.0)
+    <BLANKLINE>
+
+    """
     code_det = ""
 
     for l in range(Nl):
@@ -185,11 +274,46 @@ def detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0):
             code_det += "_"+str(ju+1)
             code_det += " = detuning_knob["+str(l)+"]"
             corr = -omega_levelu[iu]+omega_levelu[iu0[l]]
-            corr = omega_levelu[ju0[l]]-omega_levelu[ju]
+            corr = +omega_levelu[ju0[l]]-omega_levelu[ju] + corr
             if corr != 0:
                 code_det += " + ("+str(corr)+")"
             code_det += "\n"
     return code_det
+
+
+def detunings_combinations(pairs):
+    r"""Return all combinations of detunings.
+
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> aux = define_simplification(omega_level, xi, Nl)
+    >>> u, invu, omega_levelu, Neu, xiu = aux
+    >>> pairs = detunings_indices(Neu, Nl, xiu)
+    >>> detunings_combinations(pairs)
+    [[(1, 0), (2, 0)], [(1, 0), (3, 0)]]
+
+    """
+    def iter(pairs, combs, l):
+        combs_n = []
+        for i in range(len(combs)):
+            for j in range(len(pairs[l])):
+                combs_n += [combs[i] + [pairs[l][j]]]
+        return combs_n
+
+    Nl = len(pairs)
+    combs = [[pairs[0][k]] for k in range(len(pairs[0]))]
+    for l in range(1, Nl):
+        combs = iter(pairs, combs, 1)
+
+    return combs
 
 
 def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
@@ -217,12 +341,52 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     function. xi should be an array of ones and zeros such that xi[l, i, j]
     represents whether the |i> -> |j> transition is driven by field l.
 
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = np.array([0.0, 100.0, 100.0, 200.0, 200.0, 300.0])
+    >>> omega_level = omega_level*1e6*2*np.pi
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> Ep = [1e2, 1e2]
+    >>> epsilonp = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+    >>> rm = np.zeros((3, Ne, Ne))
+    >>> for l in range(Nl):
+    ...     for i in range(Ne):
+    ...         for j in range(i):
+    ...             if xi[l, i, j] != 0:
+    ...                 rm[2, i, j] = float(i)*a0
+
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+    >>> from sympy import symbols
+    >>> detuning_knob = symbols("delta1 delta2")
+    >>> H = fast_hamiltonian(Ep, epsilonp, detuning_knob, rm,
+    ...                      omega_level, xi, theta, "code.py")
+
+    >>> detuning_knob = np.array([-1.0, 3.0])*1e6*2*np.pi
+    >>> print H(detuning_knob)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
     """
+    # We find out the number of fields and states.
     if True:
-        # We find out the number of fields and states.
         Nl = len(Ep)
         Ne = np.array(rm[0]).shape[0]
-        #######################################################################
         # We determine which arguments are constants.
         try:
             Ep = np.array([complex(Ep[l]) for l in range(Nl)])
@@ -255,9 +419,8 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         rm = np.array([[[complex(rm[k][i, j])
                        for j in range(Ne)] for i in range(Ne)]
                        for k in range(3)])
-
-        #######################################################################
-        # We establish the arguments.
+    # We establish the arguments.
+    if True:
         code = ""
         code += "def hamiltonian("
         if not constant_Ep: code += "Ep, "
@@ -266,11 +429,11 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         if code[-2:] == ", ":
             code = code[:-2] + "):\n"
 
+        code += '    r"""A fast calculation of the hamiltonian."""\n'
         code += "    H = np.zeros(("+str(Ne)+", "+str(Ne)+"), complex)\n\n"
-        #######################################################################
-        # We get the code for the below-diagonal elements.
+    # We get the code for the below-diagonal elements.
+    if True:
         code += "    # We calculate the below-diagonal elements.\n"
-
         for i in range(Ne):
             for j in range(i):
                 for l in range(Nl):
@@ -279,82 +442,116 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                         code += "    H["+str(i)+", "+str(j)+"] = "
                         # We get the code for Ep.
                         if constant_Ep:
-                            code += str(Ep[l])
+                            code += str(0.5*Ep[l])
                         else:
-                            code += "Ep["+str(l)+"]"
+                            code += "0.5*Ep["+str(l)+"]"
                         # We get the code for epsilonp dot rm
                         if constant_epsilonp:
                             rmij = rm[:, i, j]
                             dp = cartesian_dot_product(epsilonp[l], rmij)
+                            dp = dp*e_num
                             code += "*("+str(dp)+")"
                         else:
                             code += "cartesian_dot_product(epsilonp[l], rm)"
 
                         code += "\n"
-
-        #######################################################################
-        # We get the code for the above-diagonal elements.
-        code += r"""
-    # We calculate the above-diagonal elements.
-    for i in range("""+str(Ne)+"""):
-        for j in range(i+1, """+str(Ne)+"""):
-            H[i, j] = H[j, i].conjugate()\n\n"""
-    ###########################################################################
+    # We get the code for the above-diagonal elements.
+    if True:
+        code += "\n"
+        code += """    # We calculate the above-diagonal elements.\n"""
+        code += """    for i in range("""+str(Ne)+"""):\n"""
+        code += """        for j in range(i+1, """+str(Ne)+"""):\n"""
+        code += """            H[i, j] = H[j, i].conjugate()\n\n"""
     # We get the code for the diagonal elements.
-    code += "    # We calculate the diagonal elements.\n"
-    # 1 We build the degeneration simplification and its inverse (to avoid
-    # large combinatorics).
-    aux = define_simplification(omega_level, xi, Nl)
-    u, invu, omega_levelu, Neu, xiu = aux
-    # For each field we find the smallest transition frequency, and its
-    # simplified indices.
-    omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
-    # We get the code to calculate the non degenerate detunings.
-    pairs = detunings_indices(Neu, Nl, xiu)
-    code_det = detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
-    code += code_det
-    #####################################
-    # We find the coefficients a_l that multiply omega_laser_l in
-    # H_ii = omega_level_iu + theta_iu = \sum_i a_i varpi_i + other terms
-    _omega_levelu, omega, gamma = define_frequencies(Neu)
-    E0, omega_laser = define_laser_variables(Nl)
-    # _omega_level, omega, gamma = define_frequencies(Ne)
-    print pairs
-    combs = [[pairs[0][k]] for k in range(len(pairs[0]))]
-    print combs
+    if True:
+        code += "    # We calculate the diagonal elements.\n"
+        # 1 We build the degeneration simplification and its inverse (to avoid
+        # large combinatorics).
+        aux = define_simplification(omega_level, xi, Nl)
+        u, invu, omega_levelu, Neu, xiu = aux
+        # For each field we find the smallest transition frequency, and its
+        # simplified indices.
+        omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+        # We get the code to calculate the non degenerate detunings.
+        pairs = detunings_indices(Neu, Nl, xiu)
+        code_det = detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+        code += code_det
+        code += "\n"
+        #####################################
+        # We find the coefficients a_l that multiply omega_laser_l in
+        # H_ii = omega_level_iu + theta_iu = \sum_i a_i varpi_i + remainder
+        _omega_level, omega, gamma = define_frequencies(Ne)
+        _omega_levelu, omega, gamma = define_frequencies(Neu)
+        E0, omega_laser = define_laser_variables(Nl)
+        # _omega_level, omega, gamma = define_frequencies(Ne)
+        # So we build all combinations.
+        combs = detunings_combinations(pairs)
+        for i in range(Ne):
+            _Hii = theta[i] + _omega_levelu[u(i)]
+            a = [diff(_Hii, omega_laser[l]) for l in range(Nl)]
 
-    for i in range(Ne):
-        _Hii = theta[i] + _omega_levelu[u(i)]
-        a = [diff(_Hii, omega_laser[l]) for l in range(Nl)]
-        # We look for a combination of the detunings obtained with the function
-        # detunings_code. So we build all combinations.
-        a = str(a)
+            # We look for a combination of the detunings obtained with the
+            # function detunings_code. For each combination we sum the
+            # detunings weighed by a_i.
+            success = False
+            for comb in combs:
+                _Hii_try = 0
+                for l in range(Nl):
+                    _Hii_try += a[l]*(omega_laser[l] -
+                                      _omega_levelu[comb[l][0]] +
+                                      _omega_levelu[comb[l][1]])
+                if _Hii-_Hii_try == 0:
+                    success = True
+                    break
+            line = ""
+            assign = ""
 
-    # We define symbolic omegas.
-    #####################################
-    # 5 We get the code to calculate the non degenerate detunings.
+            if success:
+                for l in range(Nl):
+                    if a[l] != 0:
+                        if a[l] == 1:
+                            assign += "+"
+                        elif a[l] == -1:
+                            assign += "-"
+                        assign += "delta"+str(l+1)
+                        assign += "_"+str(comb[l][0]+1)
+                        assign += "_"+str(comb[l][1]+1)
+                if assign != "":
+                    line = "    H["+str(i)+", "+str(i)+"] = "
+                    line += assign+"\n"
+            else:
+                # We get the code for Hii using detuning knobs.
+                # We find out the remainder terms.
+                _remainder = _Hii - sum([a[l]*omega_laser[l]
+                                         for l in range(Nl)])
+                # We find the coefficients of the remainder.
+                b = [diff(_remainder, _omega_level[j]) for j in range(Neu)]
+                # We calculate the remainder numerically.
+                remainder = sum([b[j]*omega_levelu[j] for j in range(Neu)])
+                # We add the contributions from the detuning knobs.
+                remainder += sum([a[l]*(omega_levelu[iu0[l]] -
+                                        omega_levelu[ju0[l]])
+                                  for l in range(Nl)])
+                # We get the code for Hii using detuning knobs.
+                for l in range(Nl):
+                    if a[l] != 0:
+                        if a[l] == 1:
+                            assign += "+"
+                        elif a[l] == -1:
+                            assign += "-"
+                        assign += "detuning_knob["+str(l)+"]"
+                if remainder != 0:
+                    assign += "+("+str(remainder)+")"
+                if assign != "":
+                    line = "    H["+str(i)+", "+str(i)+"] = "
+                    line += assign+"\n"
 
-    # print omega_min, iu0, ju0
+            code += line
 
-    # print xi
-    # print xiu
-    #
-    # print Neu
-    # print omega_level
-    # print omega_levelu
-    # for iu in range(Neu):
-    #     print iu, invu(iu)
-    #####################################
-    # We get the code.
-    # code += "    # We calculate the diagonal elements.\n"
-    # for i in range(Ne):
-    #     if not constant_detuning_knob:
-    #         code += "    H["+str(i)+", "+str(i)+"] = "
-    #         code += str(theta[i]+_omega_level[i])+"\n"
-
-    ###########################################################################
-    # print Ne, Nl
     code += "\n"
+    code += """    for i in range("""+str(Ne)+"""):\n"""
+    code += """        H[i, i] = H[i, i]*"""+str(hbar_num)+"\n"
+
     code += "    return H\n"
 
     if file_name is not None:
@@ -401,78 +598,71 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
 # detuning_knob = [1.0]
 # print hamiltonian2(detuning_knob)
 ###############################################################################
-# A real example.
-element = "Rb"; isotope = 87; N = 5
-fine_states = [fast.State(element, isotope, N, 0, 1/fast.Integer(2)),
-               fast.State(element, isotope, N, 1, 3/fast.Integer(2))]
-magnetic_states = fast.make_list_of_states(fine_states, "magnetic")
+# # A real example.
+# import fast
+# element = "Rb"; isotope = 87; N = 5
+# fine_states = [fast.State(element, isotope, N, 0, 1/fast.Integer(2)),
+#                fast.State(element, isotope, N, 1, 3/fast.Integer(2))]
+# magnetic_states = fast.make_list_of_states(fine_states, "magnetic")
+#
+# Ne = len(magnetic_states)
+# Nl = 2
+# E0 = [1.0, 1.0]
+# epsilonp = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+#
+# omega, gamma, r = fast.calculate_matrices(magnetic_states)
+# omega_level = [omega[i][0] for i in range(Ne)]
+# r = fast.helicity_to_cartesian(r, numeric=True)
+# rm = np.array([[[r[p, i, j]*fast.symbolic.delta_greater(i, j)
+#                for j in range(Ne)] for i in range(Ne)] for p in range(3)])
+#
+#
+# def coupled1(l, i, j):
+#     r"""Verify coupling 1."""
+#     if r[0, i, j] != 0 or \
+#        r[1, i, j] != 0 or \
+#        r[2, i, j] != 0:
+#         return 1.0
+#     else:
+#         return 0.0
+#
+#
+# def coupled2(l, i, j):
+#     r"""Verify coupling 1."""
+#     if r[0, i, j] != 0 or \
+#        r[1, i, j] != 0 or \
+#        r[2, i, j] != 0:
+#
+#         if i < j:
+#             i, j = j, i
+#         if magnetic_states[j].f == 1 and l == 0:
+#             return 1.0
+#         if magnetic_states[j].f == 2 and l == 1:
+#             return 1.0
+#         else:
+#             return 0.0
+#     else:
+#         return 0.0
+#
+#
+# xi = np.array([[[coupled2(l, i, j)
+#                for j in range(Ne)] for i in range(Ne)] for l in range(Nl)])
+#
+# # fig = pyplot.figure(); ax = fig.add_subplot(111)
+# # fast.fancy_matrix_plot(ax, xi[1], magnetic_states,
+# #                        "", 'xi.png', take_abs=True, colorbar=True)
+# # pyplot.close("all")
+#
+# phase = phase_transformation(Ne, Nl, rm, xi, return_equations=False)
+#
+# detuning_knob = [fast.symbols("delta"+str(i+1)) for i in range(Nl)]
+# hamiltonian2 = fast_hamiltonian(E0, epsilonp, detuning_knob, rm,
+#                                 omega_level, xi, phase, "code.py")
+#
+# detuning_knob = [0.0, 0.0]
+# print hamiltonian2(detuning_knob)
 
-Ne = len(magnetic_states)
-Nl = 1
-E0 = [1.0]
-epsilonp = [[0.0, 0.0, 1.0]]
-detuning_knob = [0.0]
-
-
-def helicity_to_cartesian(vector, numeric=False):
-    r"""Transform a vector in the helicity basis to the cartesian basis.
-
-    >>> sigmam = [1, 0, 0]
-    >>> helicity_to_cartesian(sigmam)
-    Matrix([
-    [  sqrt(2)/2],
-    [sqrt(2)*I/2],
-    [          0]])
-
-    The input vector can be a list of matrices
-
-    >>> r = define_r_components(2, helicity=True)
-    >>> r[0][0, 1] = 0
-    >>> r[1][0, 1] = 0
-    >>> r[2][0, 1] = 0
-    >>> r
-    [Matrix([
-    [        0, 0],
-    [r_{-1;21}, 0]]), Matrix([
-    [       0, 0],
-    [r_{0;21}, 0]]), Matrix([
-    [        0, 0],
-    [r_{+1;21}, 0]])]
-
-    >>> helicity_to_cartesian(r)
-    [Matrix([
-    [                                 0, 0],
-    [sqrt(2)*(-r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
-    [                                  0, 0],
-    [sqrt(2)*I*(r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
-    [       0, 0],
-    [r_{0;21}, 0]])]
-
-    """
-    if numeric:
-        v = [(vector[0]-vector[2])/npsqrt(2),
-             1j*(vector[0]+vector[2])/npsqrt(2),
-             vector[1]]
-        v = nparray(v)
-    else:
-        v = [(vector[0]-vector[2])/sqrt(2),
-             I*(vector[0]+vector[2])/sqrt(2),
-             vector[1]]
-
-    if type(vector[0]) in [type(Matrix([1, 0])), type(nparray([1, 0]))]:
-        return v
-    else:
-        return Matrix(v)
-
-
-r = fast.calculate_matrices(magnetic_states)
-# r = [np.array(r[i]) for i in range(3)]
-print r[0][0][0], type(r[0][0][0])
-r = helicity_to_cartesian(r, numeric=True)
-# print len(r), r[0].shape
-print r[0].shape
-# print r[0][0, 0], type(r[0][0, 0])
-print
+###############################################################################
 
 # omega_level = [1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 4.0]
 # print omega_level
@@ -480,3 +670,6 @@ print
 #
 # for i in range(len(omega_level)):
 #     print i, simp(i)
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod(verbose=False)

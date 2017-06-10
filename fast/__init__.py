@@ -67,6 +67,8 @@ from symbolic import wigner_d_small, wigner_d, density_matrix_rotation
 
 from error_propagation import Measurement
 
+from bloch import fast_hamiltonian
+
 from matplotlib import rcParams
 
 # We set matplotlib to use a nice latex font.
