@@ -30,6 +30,10 @@ import numpy as np
 import fast
 import sympy
 
+from numpy import array as nparray
+from numpy import sqrt as npsqrt
+from sympy import Matrix, sqrt, I
+
 hbar_num = physical_constants["Planck constant over 2 pi"][0]
 e_num = physical_constants["elementary charge"][0]
 a0 = physical_constants["Bohr radius"][0]
@@ -409,10 +413,62 @@ E0 = [1.0]
 epsilonp = [[0.0, 0.0, 1.0]]
 detuning_knob = [0.0]
 
+
+def helicity_to_cartesian(vector, numeric=False):
+    r"""Transform a vector in the helicity basis to the cartesian basis.
+
+    >>> sigmam = [1, 0, 0]
+    >>> helicity_to_cartesian(sigmam)
+    Matrix([
+    [  sqrt(2)/2],
+    [sqrt(2)*I/2],
+    [          0]])
+
+    The input vector can be a list of matrices
+
+    >>> r = define_r_components(2, helicity=True)
+    >>> r[0][0, 1] = 0
+    >>> r[1][0, 1] = 0
+    >>> r[2][0, 1] = 0
+    >>> r
+    [Matrix([
+    [        0, 0],
+    [r_{-1;21}, 0]]), Matrix([
+    [       0, 0],
+    [r_{0;21}, 0]]), Matrix([
+    [        0, 0],
+    [r_{+1;21}, 0]])]
+
+    >>> helicity_to_cartesian(r)
+    [Matrix([
+    [                                 0, 0],
+    [sqrt(2)*(-r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
+    [                                  0, 0],
+    [sqrt(2)*I*(r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
+    [       0, 0],
+    [r_{0;21}, 0]])]
+
+    """
+    if numeric:
+        v = [(vector[0]-vector[2])/npsqrt(2),
+             1j*(vector[0]+vector[2])/npsqrt(2),
+             vector[1]]
+        v = nparray(v)
+    else:
+        v = [(vector[0]-vector[2])/sqrt(2),
+             I*(vector[0]+vector[2])/sqrt(2),
+             vector[1]]
+
+    if type(vector[0]) in [type(Matrix([1, 0])), type(nparray([1, 0]))]:
+        return v
+    else:
+        return Matrix(v)
+
+
 r = fast.calculate_matrices(magnetic_states)
 # r = [np.array(r[i]) for i in range(3)]
 print r[0][0][0], type(r[0][0][0])
-r = fast.helicity_to_cartesian(r, numeric=True)
+r = helicity_to_cartesian(r, numeric=True)
 # print len(r), r[0].shape
 print r[0].shape
 # print r[0][0, 0], type(r[0][0, 0])
