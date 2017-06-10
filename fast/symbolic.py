@@ -310,8 +310,30 @@ def cartesian_to_helicity(vector, numeric=False):
     [a0],
     [ap]])
 
+    We can also convert a numeric array
+    >>> r =[[[0.0, 1.0],
+    ...      [1.0, 0.0]],
+    ...     [[0.0, -1j],
+    ...      [ 1j, 0.0]],
+    ...     [[1.0, 0.0],
+    ...      [0.0,-1.0]]]
+
+    >>> cartesian_to_helicity(r, numeric=True)
+    array([[[ 0.00000000+0.j,  0.00000000+0.j],
+            [ 1.41421356+0.j,  0.00000000+0.j]],
+    <BLANKLINE>
+           [[ 1.00000000+0.j,  0.00000000+0.j],
+            [ 0.00000000+0.j, -1.00000000+0.j]],
+    <BLANKLINE>
+           [[-0.00000000+0.j, -1.41421356+0.j],
+            [-0.00000000+0.j, -0.00000000+0.j]]])
+
     """
     if numeric:
+        vector[0] = nparray(vector[0])
+        vector[1] = nparray(vector[1])
+        vector[2] = nparray(vector[2])
+
         v = [(vector[0]-1j*vector[1])/npsqrt(2),
              vector[2],
              -(vector[0]+1j*vector[1])/npsqrt(2)]
@@ -361,8 +383,30 @@ def helicity_to_cartesian(vector, numeric=False):
     [       0, 0],
     [r_{0;21}, 0]])]
 
+    We can also convert a numeric array
+    >>> r =[[[0.0        ,        0.0 ],
+    ...      [npsqrt(2.0),        0.0 ]],
+    ...     [[1.0        ,        0.0 ],
+    ...      [0.0        ,       -1.0 ]],
+    ...     [[0.0        ,-npsqrt(2.0)],
+    ...      [0.0        ,        0.0 ]]]
+
+    >>> helicity_to_cartesian(r, numeric=True)
+    array([[[ 0.+0.j,  1.+0.j],
+            [ 1.+0.j,  0.+0.j]],
+    <BLANKLINE>
+           [[ 0.+0.j, -0.-1.j],
+            [ 0.+1.j,  0.+0.j]],
+    <BLANKLINE>
+           [[ 1.+0.j,  0.+0.j],
+            [ 0.+0.j, -1.+0.j]]])
+
     """
     if numeric:
+        vector[0] = nparray(vector[0])
+        vector[1] = nparray(vector[1])
+        vector[2] = nparray(vector[2])
+
         v = [(vector[0]-vector[2])/npsqrt(2),
              1j*(vector[0]+vector[2])/npsqrt(2),
              vector[1]]
