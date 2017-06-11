@@ -321,7 +321,8 @@ class Atom(Basic):
         >>> omega_min=2*pi*c/wavelength_max
         >>> omega_max=2*pi*c/wavelength_min
 
-        >>> easy_transitions=atom.transitions(omega_min=omega_min,omega_max=omega_max)
+        >>> easy_transitions=atom.transitions(omega_min=omega_min,
+        ...                                   omega_max=omega_max)
         >>> for ti in easy_transitions:
         ...     print abs(ti.wavelength)*1e9, ti
         780.241476935 85Rb 5S_1/2 -----> 85Rb 5P_3/2
@@ -510,78 +511,77 @@ class State(Basic):
         D = 2
         F = 3
         G = 4
-        H = 5
-        I = 6
+
         from scipy.constants import c
         # All tables are given in (cm^-1).
         i = atom.nuclear_spin
         if element == "Rb":
             if isotope == 85:
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)    C (cm^-1)
-                nivfin=[[ 5, S, 1/Integer(2), 0.0000000  , 0.033753721     , 0.0       , 0.0],
-                        [ 5, P, 1/Integer(2), 12578.950  , 0.004026        , 0.0       , 0.0],
-                        [ 5, P, 3/Integer(2), 12816.545  , 0.0008352       , 0.0008676 , 0.0],
+                nivfin = [[ 5, S, 1/Integer(2), 0.0000000  , 0.033753721     , 0.0       , 0.0],
+                         [ 5, P, 1/Integer(2), 12578.950  , 0.004026        , 0.0       , 0.0],
+                         [ 5, P, 3/Integer(2), 12816.545  , 0.0008352       , 0.0008676 , 0.0],
 
-                        [ 4, D, 5/Integer(2), 19355.203  , 0.000168        , 0.0       , 0.0],
-                        [ 4, D, 3/Integer(2), 19355.649  , 0.000244        , 0.0       , 0.0],
+                         [ 4, D, 5/Integer(2), 19355.203  , 0.000168        , 0.0       , 0.0],
+                         [ 4, D, 3/Integer(2), 19355.649  , 0.000244        , 0.0       , 0.0],
 
-                        [ 6, S, 1/Integer(2), 20132.460  , 239.18e6/(c*100), 0.0       , 0.0],
+                         [ 6, S, 1/Integer(2), 20132.460  , 239.18e6/(c*100), 0.0       , 0.0],
 
-                        [ 6, P, 1/Integer(2), 23715.081  , 0.001305        , 0.0       , 0.0],
-                        [ 6, P, 3/Integer(2), 23792.591  , 0.0002723       , 0.0002732 , 0.0],
+                         [ 6, P, 1/Integer(2), 23715.081  , 0.001305        , 0.0       , 0.0],
+                         [ 6, P, 3/Integer(2), 23792.591  , 0.0002723       , 0.0002732 , 0.0],
 
-                        [ 5, D, 3/Integer(2), 25700.536  , 0.000140834     , 0.00006373, 0.0],
-                        [ 5, D, 5/Integer(2), 25703.498  ,-0.00007309      , 0.0000894 , 0.0],
+                         [ 5, D, 3/Integer(2), 25700.536  , 0.000140834     , 0.00006373, 0.0],
+                         [ 5, D, 5/Integer(2), 25703.498  ,-0.00007309      , 0.0000894 , 0.0],
 
-                        [ 7, S, 1/Integer(2), 26311.437  , 0.003159        , 0.0       , 0.0],
+                         [ 7, S, 1/Integer(2), 26311.437  , 0.003159        , 0.0       , 0.0],
 
-                        [ 7, P, 1/Integer(2), 27835.02   , 0.000590        , 0.0       , 0.0],
-                        [ 7, P, 3/Integer(2), 27870.11   , 0.0001238       , 0.000123  , 0.0],
+                         [ 7, P, 1/Integer(2), 27835.02   , 0.000590        , 0.0       , 0.0],
+                         [ 7, P, 3/Integer(2), 27870.11   , 0.0001238       , 0.000123  , 0.0],
 
-                        [ 6, D, 3/Integer(2), 28687.127  , 0.000077        , 0.000054  , 0.0],
-                        [ 7, D, 3/Integer(2), 30280.113  , 0.0000472       , 0.000010  , 0.0],
-                        [14, S, 1/Integer(2), 32761.60069, 0.0             , 0.0       , 0.0],
+                         [ 6, D, 3/Integer(2), 28687.127  , 0.000077        , 0.000054  , 0.0],
+                         [ 7, D, 3/Integer(2), 30280.113  , 0.0000472       , 0.000010  , 0.0],
+                         [14, S, 1/Integer(2), 32761.60069, 0.0             , 0.0       , 0.0],
 
-                        [15, S, 1/Integer(2), 32911.63322, 0.0             , 0.0       , 0.0],
-                        [16, S, 1/Integer(2), 33028.05246, 0.0             , 0.0       , 0.0],
-                        [17, S, 1/Integer(2), 33120.19975, 0.0             , 0.0       , 0.0],
-                        [18, S, 1/Integer(2), 33194.38247, 0.0             , 0.0       , 0.0],
-                        [19, S, 1/Integer(2), 33254.98464, 0.0             , 0.0       , 0.0],
-                        [20, S, 1/Integer(2), 33305.12986, 0.0             , 0.0       , 0.0],
-                        [21, S, 1/Integer(2), 33347.09244, 0.0             , 0.0       , 0.0],
-                        [22, S, 1/Integer(2), 33382.56103, 0.0             , 0.0       , 0.0],
-                        [23, S, 1/Integer(2), 33412.80991, 0.0             , 0.0       , 0.0],
-                        [24, S, 1/Integer(2), 33438.81426, 0.0             , 0.0       , 0.0],
-                        [25, S, 1/Integer(2), 33461.33387, 0.0             , 0.0       , 0.0],
+                         [15, S, 1/Integer(2), 32911.63322, 0.0             , 0.0       , 0.0],
+                         [16, S, 1/Integer(2), 33028.05246, 0.0             , 0.0       , 0.0],
+                         [17, S, 1/Integer(2), 33120.19975, 0.0             , 0.0       , 0.0],
+                         [18, S, 1/Integer(2), 33194.38247, 0.0             , 0.0       , 0.0],
+                         [19, S, 1/Integer(2), 33254.98464, 0.0             , 0.0       , 0.0],
+                         [20, S, 1/Integer(2), 33305.12986, 0.0             , 0.0       , 0.0],
+                         [21, S, 1/Integer(2), 33347.09244, 0.0             , 0.0       , 0.0],
+                         [22, S, 1/Integer(2), 33382.56103, 0.0             , 0.0       , 0.0],
+                         [23, S, 1/Integer(2), 33412.80991, 0.0             , 0.0       , 0.0],
+                         [24, S, 1/Integer(2), 33438.81426, 0.0             , 0.0       , 0.0],
+                         [25, S, 1/Integer(2), 33461.33387, 0.0             , 0.0       , 0.0],
 
-                        [26, S, 1/Integer(2), 33480.96379, 0.0             , 0.0       , 0.0],
-                        [27, S, 1/Integer(2), 33498.17857, 0.0             , 0.0       , 0.0],
-                        [28, S, 1/Integer(2), 33513.35849, 0.0             , 0.0       , 0.0],
-                        [29, S, 1/Integer(2), 33526.81233, 0.0             , 0.0       , 0.0],
-                        [30, S, 1/Integer(2), 33538.79178, 0.0             , 0.0       , 0.0],
-                        [31, S, 1/Integer(2), 33549.50518, 0.0             , 0.0       , 0.0],
-                        [32, S, 1/Integer(2), 33559.12441, 0.0             , 0.0       , 0.0],
-                        [33, S, 1/Integer(2), 33567.79401, 0.0             , 0.0       , 0.0],
-                        [34, S, 1/Integer(2), 33575.63464, 0.0             , 0.0       , 0.0],
-                        [35, S, 1/Integer(2), 33582.74865, 0.0             , 0.0       , 0.0],
+                         [26, S, 1/Integer(2), 33480.96379, 0.0             , 0.0       , 0.0],
+                         [27, S, 1/Integer(2), 33498.17857, 0.0             , 0.0       , 0.0],
+                         [28, S, 1/Integer(2), 33513.35849, 0.0             , 0.0       , 0.0],
+                         [29, S, 1/Integer(2), 33526.81233, 0.0             , 0.0       , 0.0],
+                         [30, S, 1/Integer(2), 33538.79178, 0.0             , 0.0       , 0.0],
+                         [31, S, 1/Integer(2), 33549.50518, 0.0             , 0.0       , 0.0],
+                         [32, S, 1/Integer(2), 33559.12441, 0.0             , 0.0       , 0.0],
+                         [33, S, 1/Integer(2), 33567.79401, 0.0             , 0.0       , 0.0],
+                         [34, S, 1/Integer(2), 33575.63464, 0.0             , 0.0       , 0.0],
+                         [35, S, 1/Integer(2), 33582.74865, 0.0             , 0.0       , 0.0],
 
-                        [36, S, 1/Integer(2), 33589.22335, 0.0             , 0.0       , 0.0],
-                        [37, S, 1/Integer(2), 33595.13297, 0.0             , 0.0       , 0.0],
-                        [38, S, 1/Integer(2), 33600.54153, 0.0             , 0.0       , 0.0],
-                        [39, S, 1/Integer(2), 33605.50403, 0.0             , 0.0       , 0.0],
-                        [40, S, 1/Integer(2), 33610.06832, 0.0             , 0.0       , 0.0],
-                        [41, S, 1/Integer(2), 33614.27566, 0.0             , 0.0       , 0.0],
-                        [42, S, 1/Integer(2), 33618.16244, 0.0             , 0.0       , 0.0],
-                        [43, S, 1/Integer(2), 33621.76072, 0.0             , 0.0       , 0.0],
-                        [44, S, 1/Integer(2), 33625.09801, 0.0             , 0.0       , 0.0],
-                        [45, S, 1/Integer(2), 33628.19886, 0.0             , 0.0       , 0.0],
+                         [36, S, 1/Integer(2), 33589.22335, 0.0             , 0.0       , 0.0],
+                         [37, S, 1/Integer(2), 33595.13297, 0.0             , 0.0       , 0.0],
+                         [38, S, 1/Integer(2), 33600.54153, 0.0             , 0.0       , 0.0],
+                         [39, S, 1/Integer(2), 33605.50403, 0.0             , 0.0       , 0.0],
+                         [40, S, 1/Integer(2), 33610.06832, 0.0             , 0.0       , 0.0],
+                         [41, S, 1/Integer(2), 33614.27566, 0.0             , 0.0       , 0.0],
+                         [42, S, 1/Integer(2), 33618.16244, 0.0             , 0.0       , 0.0],
+                         [43, S, 1/Integer(2), 33621.76072, 0.0             , 0.0       , 0.0],
+                         [44, S, 1/Integer(2), 33625.09801, 0.0             , 0.0       , 0.0],
+                         [45, S, 1/Integer(2), 33628.19886, 0.0             , 0.0       , 0.0],
 
-                        [46, S, 1/Integer(2), 33631.08524, 0.0             , 0.0       , 0.0],
-                        [47, S, 1/Integer(2), 33633.77664, 0.0             , 0.0       , 0.0],
-                        [48, S, 1/Integer(2), 33636.29016, 0.0             , 0.0       , 0.0],
-                        [49, S, 1/Integer(2), 33638.64086, 0.0             , 0.0       , 0.0],
-                        [50, S, 1/Integer(2), 33640.84283, 0.0             , 0.0       , 0.0],
-                        ]
+                         [46, S, 1/Integer(2), 33631.08524, 0.0             , 0.0       , 0.0],
+                         [47, S, 1/Integer(2), 33633.77664, 0.0             , 0.0       , 0.0],
+                         [48, S, 1/Integer(2), 33636.29016, 0.0             , 0.0       , 0.0],
+                         [49, S, 1/Integer(2), 33638.64086, 0.0             , 0.0       , 0.0],
+                         [50, S, 1/Integer(2), 33640.84283, 0.0             , 0.0       , 0.0],
+                         ]
 
             elif isotope == 87:
                 #        N, L,     K       , E (cm^-1),      A (cm^-1)      B (cm^-1)      C (cm^-1)
@@ -607,18 +607,20 @@ class State(Basic):
                         ]
 
             else:
-                s = "The isotope "+str(isotope)+str(element)+" is not in the database."
-                raise ValueError, s
+                s = "The isotope "+str(isotope)+str(element)
+                s += " is not in the database."
+                raise ValueError(s)
             # We rewrite the table in Hz
-            nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*c*100 ] +[nivfin[ii][5]*c*100 ]
-                                    + [nivfin[ii][6]*c*100 ] for ii in range(len(nivfin)) ]
+            nivfin = [nivfin[ii][:3] + [nivfin[ii][3]*c*100] +
+                      [nivfin[ii][4]*c*100] + [nivfin[ii][5]*c*100] +
+                      [nivfin[ii][6]*c*100] for ii in range(len(nivfin))]
 
         elif element == "Cs":
             if isotope == 133:
                 # Reference [1], others not used yet [2]:
                 #        N, L,     K       , E (cm^-1),       A (MHz)      B (MHz)   C (MHz)
 
-                nivfin=[[ 6, S, 1/Integer(2),     0         , 2298.1579425, 0     , 1.0     ],# This is exact.
+                nivfin = [[ 6, S, 1/Integer(2),     0         , 2298.1579425, 0     , 1.0     ],# This is exact.
 
                         [ 6, P, 1/Integer(2), 11178.26815870,  291.9309   , 0.0   , 0.0     ],
                         [ 6, P, 3/Integer(2), 11732.3071041 ,  50.28825   ,-0.4940, 0.000560],# C: 0.000560 Steck
@@ -816,14 +818,15 @@ class State(Basic):
             else:
                 s = "The isotope "+str(isotope)+str(element)
                 s += " is not in the database."
-                raise ValueError, s
+                raise ValueError(s)
             # We rewrite the table in Hz
-            nivfin=[ nivfin[ii][:3] + [nivfin[ii][3]*c*100 ] +[nivfin[ii][4]*1e6 ]
-                                    + [nivfin[ii][5]*1e6   ] +[nivfin[ii][6]*1e6 ] for ii in range(len(nivfin)) ]
+            nivfin = [nivfin[ii][:3] + [nivfin[ii][3]*c*100] +
+                      [nivfin[ii][4]*1e6] + [nivfin[ii][5]*1e6] +
+                      [nivfin[ii][6]*1e6] for ii in range(len(nivfin))]
 
         else:
             s = "The element "+str(element)+" is not in the database."
-            raise ValueError, s
+            raise ValueError(s)
 
         self.i = i
 
@@ -841,7 +844,7 @@ class State(Basic):
         if not in_database:
             s = "The values of n,l,k: "+str(n)+", "+str(l)+", "+str(j)
             s += " are not in the database for "+str(isotope)+str(element)+"."
-            raise ValueError, s
+            raise ValueError(s)
 
         # We check the value of f.
         fmin = int(abs(j-i)); nf = int(2*min(j, i)+1)
@@ -854,11 +857,11 @@ class State(Basic):
                     if m in mperm:
                         self.quantum_numbers.append(m)
                     else:
-                        raise ValueError, 'm = '+str(m)+' is not allowed.'
+                        raise ValueError('m = '+str(m)+' is not allowed.')
                 else:
                     self.mperm = mperm
             else:
-                raise ValueError, 'f = '+str(f)+' is not allowed.'
+                raise ValueError('f = '+str(f)+' is not allowed.')
         else:
             self.fperm = fperm
 
@@ -1078,9 +1081,9 @@ class Transition(Basic):
         verbose = 0
 
         if e1.element != e2.element:
-            raise NotImplementedError, 'Transition between different elements.'
+            raise NotImplementedError('Transition between different elements.')
         if e1.isotope != e2.isotope:
-            raise NotImplementedError, 'Transition between different isotopes.'
+            raise NotImplementedError('Transition between different isotopes.')
 
         self.e1 = e1; self.e2 = e2
 
@@ -1199,7 +1202,6 @@ class Transition(Basic):
         '133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3'
 
         """
-
         if self.allowed:
             return self.e1.__repr__()+' -----> '+self.e2.__repr__()
         elif not self.allowed:
@@ -1274,7 +1276,7 @@ def split_fine_to_hyperfine(state):
 
     if len(state.quantum_numbers) != 4:
         s = str(state)+' no es un estado fino.'
-        raise ValueError, s
+        raise ValueError(s)
 
     return [State(state.element, state.isotope,
             state.n, state.l, state.j, f) for f in state.fperm]
@@ -1287,7 +1289,7 @@ def split_hyperfine_to_magnetic(state):
         return mag
 
     if len(state.quantum_numbers) != 5:
-        raise ValueError, str(state)+' is not a hyperfine state.'
+        raise ValueError(str(state)+' is not a hyperfine state.')
 
     return [State(state.element, state.isotope,
             state.n, state.l, state.j, state.f, m) for m in state.mperm]
@@ -1300,7 +1302,7 @@ def split_fine_to_magnetic(state):
         return mag
 
     if len(state.quantum_numbers) != 4:
-        raise ValueError, str(state)+' is not a fine state.'
+        raise ValueError(str(state)+' is not a fine state.')
 
     hip = split_fine_to_hyperfine(state)
 
@@ -1313,7 +1315,7 @@ def order_by_energy(states):
     iso = states[0].isotope
     for ss in states:
         if ss.isotope != iso:
-            raise ValueError, 'We have a wrong isotope in this list: '+str(ss)
+            raise ValueError('We have a wrong isotope in this list: '+str(ss))
     aux = [(ee.nu, ee) for ee in states]
     aux.sort()
 
@@ -1376,7 +1378,7 @@ def get_einstein_A_matrix(fine_states,Omega=1):
                 s += ' and '+str(j)+' is unknown, '
                 s += 'please add it to the database in the code of the class '
                 s += '"Transition" to proceed.'
-                raise NotImplementedError, s
+                raise NotImplementedError(s)
             einsteinA[ii][jj] = Aij/Omega
             einsteinA[jj][ii] = -Aij/Omega
 
@@ -1457,7 +1459,7 @@ def calculate_gamma_matrix(magnetic_states, Omega=1):
 
 
 def calculate_reduced_matrix_elements(fine_states):
-    '''Calculate the reduced matrix elements for a list of fine states.
+    r"""Calculate the reduced matrix elements for a list of fine states.
 
     This function calculates the reduced matrix elments
                 <N,L,J||T^1(r)||N',L',J'>
@@ -1472,7 +1474,7 @@ def calculate_reduced_matrix_elements(fine_states):
     >>> print red[2][0]
     8.45396724128841
 
-    '''
+    """
     # We calculate the reduced matrix elements starting from the list of
     # fine_states. The factor composed of physical quantities.
     factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
@@ -1488,7 +1490,6 @@ def calculate_reduced_matrix_elements(fine_states):
         i = fine_states[ii]
         for jj in range(ii):
             j = fine_states[jj]
-            t = Transition(i, j)
             einsteinAij = einsteinA[ii][jj]
             omega0 = omega_fine[ii][jj]
 
@@ -1559,9 +1560,9 @@ def calculate_matrices(states, Omega=1):
     element = states[0].element
     for state in states[1:]:
         if state.element != element:
-            raise ValueError, 'All states must belong to the same element.'
+            raise ValueError('All states must belong to the same element.')
         if state.isotope != iso:
-            raise ValueError, 'All states must belong to the same isotope.'
+            raise ValueError('All states must belong to the same isotope.')
 
     # We find the fine states involved in the problem.
     fine_states = find_fine_states(states)
@@ -1636,12 +1637,12 @@ def calculate_boundaries(fine_states, full_magnetic_states):
             index_list_hyperfine += [(start_hyperfine, i+1)]
     return index_list_fine, index_list_hyperfine
 
-def fine_index(magnetic_index,index_list_fine):
-	""""""
-	N_fine=len(index_list_fine)
-	for i in range(N_fine):
-		if index_list_fine[i][0] <= magnetic_index < index_list_fine[i][1]:
-			return i
+
+def fine_index(magnetic_index, index_list_fine):
+    N_fine = len(index_list_fine)
+    for i in range(N_fine):
+        if index_list_fine[i][0] <= magnetic_index < index_list_fine[i][1]:
+            return i
 
 
 def quaver(isotope, p, J, F, M, Jp, Fp, Mp, numeric=False, verbose=False):
@@ -1652,10 +1653,6 @@ def quaver(isotope, p, J, F, M, Jp, Fp, Mp, numeric=False, verbose=False):
 
     qu = (-1)**(F-M+J+II+Fp+1)
     qu *= sqrt((2*F+1)*(2*Fp+1))
-    if not sage_included:
-        II = float(II)
-        J = float(J)
-        Jp = float(Jp)
     qu *= wigner_3j(F, 1, Fp, -M, p, Mp)*wigner_6j(II, J, F, 1, Fp, Jp)
 
     if numeric: return float(qu)
@@ -1708,173 +1705,164 @@ def exclude_states(omega, gamma, r, Lij, states, excluded_states):
 
 
 def calculate_reduced_matrix_elements_0(fine_states):
-	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.'''
-	#We calculate the reduced matrix elements starting from the list of fine_states
+    r"""Calculate the reduced matrix elments given a list of fine states.
 
-	#The factor composed of physical quantities.
-	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-	#We read the database to obtain the Einstein A coefficients in Hz.
-	einsteinA=get_einstein_A_matrix(fine_states)
-	#We read the database to obtain the transition frequencies in Hz.
-	omega_fine=calculate_omega_matrix(fine_states)
+    The matrix elements are defined through the Wigner-Eckart theorem
+        <g,J,M|T^1_p(r)|g',J',M'> = (J',M',1,p|J,M) / sqrt(2J+1)
+                                  x (N,L,J||T^1(r)||N',L',J')
 
-	reduced_matrix_elements=[[0.0 for jj in range(len(fine_states))] for ii in range(len(fine_states))]
+    Where (J',M',1,p|J,M) is a Clebsch-Gordan coefficient.
+    """
+    # We calculate the reduced matrix elements starting from the list of
+    # fine_states
 
-	for ii in range(len(fine_states)):
-		i=fine_states[ii]
-		for jj in range(ii):
-			j=fine_states[jj]
-			t=Transition(i,j)
-			einsteinAij=einsteinA[ii][jj]
-			omega0=omega_fine[ii][jj]
+    # The factor composed of physical quantities.
+    factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
+    # We read the database to obtain the Einstein A coefficients in Hz.
+    einsteinA = get_einstein_A_matrix(fine_states)
+    # We read the database to obtain the transition frequencies in Hz.
+    omega_fine = calculate_omega_matrix(fine_states)
 
-			#The formula is valid only for i =/= j so that omega0 =/= 0.
-			#Because fine states are asumed to be ordered by their energies we can asume that
-			# i decays in j.
-			Ji=i.j; Jj=j.j
+    reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
+                               for ii in range(len(fine_states))]
 
-			rij=sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
-			rij=factor*rij
+    for ii in range(len(fine_states)):
+        i = fine_states[ii]
+        for jj in range(ii):
+            j = fine_states[jj]
+            einsteinAij = einsteinA[ii][jj]
+            omega0 = omega_fine[ii][jj]
 
-			reduced_matrix_elements[ii][jj]=rij
-			#We add the matrix elements on the other side of the diagonal.
-			reduced_matrix_elements[jj][ii]=rij*(-1)**(Jj-Ji)
+            # The formula is valid only for i =/= j so that omega0 =/= 0.
+            # Because fine states are asumed to be ordered by their energies we
+            # can asume that i decays in j.
+            Ji = i.j; Jj = j.j
 
-	return reduced_matrix_elements
+            rij = sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
+            rij = factor*rij
+
+            reduced_matrix_elements[ii][jj] = rij
+            # We add the matrix elements on the other side of the diagonal.
+            reduced_matrix_elements[jj][ii] = rij*(-1)**(Jj-Ji)
+
+    return reduced_matrix_elements
+
 
 def calculate_reduced_matrix_elements_steck(fine_states):
-	'''This function calculates the reduced matrix elments <N,L,J||T^1(r)||N',L',J'> given a list of fine states.'''
-	#We calculate the reduced matrix elements starting from the list of fine_states
+    r"""Calculate the reduced matrix elments using Steck's convention.
 
-	#The factor composed of physical quantities.
-	factor=sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-	#We read the database to obtain the Einstein A coefficients in Hz.
-	einsteinA=get_einstein_A_matrix(fine_states)
-	#We read the database to obtain the transition frequencies in Hz.
-	omega_fine=calculate_omega_matrix(fine_states)
+    The matrix elements are defined through the Wigner-Eckart theorem
+        <g,J,M|T^1_p(r)|g',J',M'> = (J',M',1,p|J,M) <N,L,J||T^1(r)||N',L',J'>
 
-	reduced_matrix_elements=[[0.0 for jj in range(len(fine_states))] for ii in range(len(fine_states))]
+    Where (J',M',1,p|J,M) is a Clebsch-Gordan coefficient.
+    """
+    # We calculate the reduced matrix elements starting from the list of
+    # fine_states
 
-	for ii in range(len(fine_states)):
-		i=fine_states[ii]
-		for jj in range(ii):
-			j=fine_states[jj]
-			t=Transition(i,j)
-			einsteinAij=einsteinA[ii][jj]
-			omega0=omega_fine[ii][jj]
+    # The factor composed of physical quantities.
+    factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
+    # We read the database to obtain the Einstein A coefficients in Hz.
+    einsteinA = get_einstein_A_matrix(fine_states)
+    # We read the database to obtain the transition frequencies in Hz.
+    omega_fine = calculate_omega_matrix(fine_states)
 
-			#The formula is valid only for i =/= j so that omega0 =/= 0.
-			#Because fine states are asumed to be ordered by their energies we can asume that
-			# i decays in j.
-			Ji=i.j; Jj=j.j
+    reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
+                               for ii in range(len(fine_states))]
 
-			rij=sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
-			rij=factor*rij
+    for ii in range(len(fine_states)):
+        i = fine_states[ii]
+        for jj in range(ii):
+            j = fine_states[jj]
+            einsteinAij = einsteinA[ii][jj]
+            omega0 = omega_fine[ii][jj]
 
-			reduced_matrix_elements[ii][jj]=rij
-			#We add the matrix elements on the other side of the diagonal.
-			reduced_matrix_elements[jj][ii]=rij*(-1)**(Jj-Ji) * sqrt(2.0*Ji+1)/sqrt(2.0*Jj+1)
+            # The formula is valid only for i =/= j so that omega0 =/= 0.
+            # Because fine states are asumed to be ordered by their energies
+            # we can asume that
+            # i decays in j.
+            Ji = i.j; Jj = j.j
 
-	return reduced_matrix_elements
+            rij = sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
+            rij = factor*rij
+
+            reduced_matrix_elements[ii][jj] = rij
+            # We add the matrix elements on the other side of the diagonal.
+            reduced_matrix_elements[jj][ii] = rij*(-1)**(Jj-Ji) *\
+                sqrt(2.0*Ji+1)/sqrt(2.0*Jj+1)
+
+    return reduced_matrix_elements
+
 
 def calculate_r_matrices_0(fine_states, reduced_matrix_elements):
 
-	full_magnetic_states=make_list_of_states(fine_states,'magnetic',verbose=0)
-	index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, full_magnetic_states)
+    full_magnetic_states = make_list_of_states(fine_states,
+                                               'magnetic', verbose=0)
+    aux = calculate_boundaries(fine_states, full_magnetic_states)
+    index_list_fine, index_list_hyperfine = aux
 
-	N_magnetic=len(full_magnetic_states)
-	r=[]
-	for p in [-1,0,1]:
-		mat=[]
-		for i in range(N_magnetic):
-			row=[]
-			ISO,N,L,J,F,M=full_magnetic_states[i].quantum_numbers
-			ii=fine_index(i, index_list_fine)
-			for j in range(N_magnetic):
-				ISOp,Np,Lp,Jp,Fp,Mp=full_magnetic_states[j].quantum_numbers
-				jj=fine_index(j, index_list_fine)
+    N_magnetic = len(full_magnetic_states)
+    r = []
+    for p in [-1, 0, 1]:
+        mat = []
+        for i in range(N_magnetic):
+            row = []
+            ISO, N, L, J, F, M = full_magnetic_states[i].quantum_numbers
+            ii = fine_index(i, index_list_fine)
+            for j in range(N_magnetic):
+                aux = full_magnetic_states[j].quantum_numbers
+                ISOp, Np, Lp, Jp, Fp, Mp = aux
+                jj = fine_index(j, index_list_fine)
 
-				red=reduced_matrix_elements[ii][jj]
-				qu=quaver(ISO,p, J, F, M, Jp, Fp, Mp,numeric=True)
-				row+=[red*qu]
-			mat+=[row]
-		r+=[mat]
-	return r
+                red = reduced_matrix_elements[ii][jj]
+                qu = quaver(ISO, p, J, F, M, Jp, Fp, Mp, numeric=True)
+                row += [red*qu]
+            mat += [row]
+        r += [mat]
+    return r
+
 
 def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
+    magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
+    aux = calculate_boundaries(fine_states, magnetic_states)
+    index_list_fine, index_list_hyperfine = aux
 
-	magnetic_states=make_list_of_states(fine_states,'magnetic',verbose=0)
-	index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, magnetic_states)
+    Ne = len(magnetic_states)
 
-	Ne=len(magnetic_states)
+    r = [[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
 
-	r=[[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+    if fine_states[0].isotope == 85:
+        II = Integer(5)/Integer(2)
+    elif fine_states[0].isotope == 87:
+        II = Integer(3)/Integer(2)
 
-	if fine_states[0].isotope==85:
-		II=Integer(5)/Integer(2)
-	elif fine_states[0].isotope==87:
-		II=Integer(3)/Integer(2)
+    for p in [-1, 0, 1]:
+        for i in range(Ne):
+            ei = magnetic_states[i]
+            ii = fine_index(i, index_list_fine)
 
-	for p in [-1,0,1]:
-		for i in range(Ne):
-			ei=magnetic_states[i]
-			ii=fine_index(i, index_list_fine)
+            for j in range(Ne):
+                ej = magnetic_states[j]
+                jj = fine_index(j, index_list_fine)
 
-			for j in range(Ne):
-				ej=magnetic_states[j]
-				jj=fine_index(j, index_list_fine)
+                reduced_matrix_elementij = reduced_matrix_elements[ii][jj]
+                if reduced_matrix_elementij != 0:
+                    ji = ei.j; jj = ej.j
+                    fi = ei.f; fj = ej.f
+                    mi = ei.m; mj = ej.m
 
-				reduced_matrix_elementij=reduced_matrix_elements[ii][jj]
-				if reduced_matrix_elementij != 0:
+                    rpij = (-1)**(fj-1-mi)
+                    rpij *= sqrt(2*fi+1)
+                    rpij *= wigner_3j(fj, 1, fi, mj, p, -mi)
 
-					ji=ei.j; jj=ej.j
-					fi=ei.f; fj=ej.f
-					mi=ei.m; mj=ej.m
+                    rpij *= (-1)**(fj+ji+1+II)
+                    rpij *= sqrt(2*fj+1)
+                    rpij *= sqrt(2*ji+1)
+                    rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
 
-					rpij =(-1)**(fj-1-mi)
-					rpij*=sqrt(2*fi+1)
-					rpij*=wigner_3j(fj,1,fi,mj,p,-mi)
+                    rpij *= reduced_matrix_elementij
 
-					rpij*=(-1)**(fj+ji+1+II)
-					rpij*=sqrt(2*fj+1)
-					rpij*=sqrt(2*ji +1)
-					rpij*=wigner_6j(ji,jj,1,fj,fi,II)
-
-					rpij*=reduced_matrix_elementij
-
-					r[p+1][i][j]=float(rpij)
-	return r
-
-
-r"""
-    >>> print vapour_pressure(25.0 + 273.15,"Rb")
-    5.31769896107e-05
-    >>> print vapour_pressure(39.3 + 273.15,"Rb")
-    0.000244249795696
-    >>> print vapour_pressure(90.0 + 273.15,"Rb")
-    0.0155963687128
-    >>> print vapour_pressure(25.0 + 273.15,"Cs")
-    0.000201461144963
-    >>> print vapour_pressure(28.5 + 273.15,"Cs")
-    0.000297898928349
-    >>> print vapour_pressure(90.0 + 273.15,"Cs")
-    0.0421014384667
-
-    The element must be in the database.
-
-    >>> print vapour_pressure(90.0 + 273.15,"Ca")
-    Traceback (most recent call last):
-    ...
-    ValueError: Ca is not an element in the database for this function.
-
-    References:
-    [1] Daniel A. Steck, “Cesium D Line Data,” available online at
-    http://steck.us/alkalidata (revision 2.1.4, 23 December 2010).
-    [2] Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
-    http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
-    [3] Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
-    http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
-"""
+                    r[p+1][i][j] = float(rpij)
+    return r
 
 
 def vapour_pressure(Temperature, element):
@@ -1962,19 +1950,19 @@ def vapour_density(Temperature,element,isotope=None):
     1.83339788085e-09
 
     """
-
-    atom=Atom(element,isotope)
-    if atom.isotope==None:
-        rho=0.0
+    atom = Atom(element, isotope)
+    if atom.isotope is None:
+        rho = 0.0
         for iso in atom.isotopes:
-            atom=Atom(element,iso)
-            rho+=vapour_number_density(Temperature,element)*atom.mass*atom.abundance
+            atom = Atom(element, iso)
+            rho += vapour_number_density(Temperature, element) *\
+                atom.mass*atom.abundance
         return rho
     else:
-        return vapour_number_density(Temperature,element)*atom.mass
+        return vapour_number_density(Temperature, element)*atom.mass
 
 
-def speed_likely(Temperature,element,isotope):
+def speed_likely(Temperature, element, isotope):
     r"""This function calculates the most likely speed (in meters per second)
     of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
     This is simply
@@ -1994,7 +1982,7 @@ def speed_likely(Temperature,element,isotope):
     atom = Atom(element, isotope)
     return sqrt(2*Temperature*k_B/atom.mass)
 
-def speed_average(Temperature,element,isotope):
+def speed_average(Temperature, element, isotope):
     r"""This function calculates the average speed (in meters per second)
     of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
     This is simply
@@ -2015,7 +2003,7 @@ def speed_average(Temperature,element,isotope):
     return sqrt(8*k_B*Temperature/atom.mass/pi)
 
 
-def speed_rms(Temperature,element,isotope):
+def speed_rms(Temperature, element, isotope):
     r"""This function calculates the average speed (in meters per second)
     of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
     This is simply
@@ -2061,11 +2049,11 @@ def collision_rate(Temperature, element, isotope):
     10519.235289
 
     """
-    atom=Atom(element,isotope)
+    atom = Atom(element, isotope)
 
-    sigma=pi*(2*atom.radius)**2
-    v=speed_average(Temperature,element,isotope)
-    n=vapour_number_density(Temperature,element)
+    sigma = pi*(2*atom.radius)**2
+    v = speed_average(Temperature, element, isotope)
+    n = vapour_number_density(Temperature, element)
     return 2*pi*sigma*v*n
 
 
