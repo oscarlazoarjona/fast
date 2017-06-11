@@ -965,7 +965,10 @@ class State(Basic):
         elif self.l == 1: l = 'P'
         elif self.l == 2: l = 'D'
         elif self.l == 3: l = 'F'
-        else: l = str(self.l)
+        elif self.l == 4: l = 'G'
+        elif self.l == 5: l = 'H'
+        elif self.l == 6: l = 'I'
+        else: l = "(L="+str(self.l)+")"
 
         if self.f is None:
             s = '^{'+str(self.isotope)+'}\\mathrm{'+self.element+'}\\ '

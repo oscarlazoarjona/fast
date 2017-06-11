@@ -559,7 +559,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     >>> from sympy import symbols
     >>> detuning_knob = symbols("delta1 delta2")
     >>> H = fast_hamiltonian(Ep, epsilonp, detuning_knob, rm,
-    ...                      omega_level, xi, theta, "code.py")
+    ...                      omega_level, xi, theta)
 
     >>> detuning_knob = np.array([-1.0, 3.0])*1e6*2*np.pi
     >>> print H(detuning_knob)/hbar_num/2/np.pi*1e-6
@@ -753,9 +753,9 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         f.write(code)
         f.close()
 
-    hamiltonian = 0
+    hamiltonian = code
     # print code
-    exec code
+    exec hamiltonian
     return hamiltonian
 
 
