@@ -174,44 +174,44 @@ Here is an example with rubidum 87.
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-     0.00000000+0.j  495.81355542+0.j    0.00000000+0.j    0.00000000+0.j
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
  [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.56133265+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-     0.00000000+0.j    0.00000000+0.j  495.81355542+0.j    0.00000000+0.j
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
  [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      1.97494695+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j  495.81355542+0.j
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
  [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    2.09474757+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-   495.81355542+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
  [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    1.97494695+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-     0.00000000+0.j  495.81355542+0.j    0.00000000+0.j    0.00000000+0.j]
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
  [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.56133265+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-     0.00000000+0.j    0.00000000+0.j  495.81355542+0.j    0.00000000+0.j]
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]
  [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
-     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j  495.81355542+0.j]]
+     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]]
 
 """
 
@@ -510,6 +510,102 @@ def detunings_combinations(pairs):
     return combs
 
 
+def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
+                      omega_levelu, iu0, ju0):
+    r"""Rewrite a symbolic expression in terms of allowed transition detunings.
+
+    >>> Ne = 6
+    >>> Nl = 2
+    >>> omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+    >>> xi = np.zeros((Nl, Ne, Ne))
+    >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l, pair[0], pair[1]] = 1.0
+    ...         xi[l, pair[1], pair[0]] = 1.0
+
+    >>> aux = define_simplification(omega_level, xi, Nl)
+    >>> u, invu, omega_levelu, Neu, xiu = aux
+    >>> omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+    >>> pairs = detunings_indices(Neu, Nl, xiu)
+    >>> combs = detunings_combinations(pairs)
+    >>> symb_omega_levelu, omega, gamma = define_frequencies(Neu)
+    >>> E0, omega_laser = define_laser_variables(Nl)
+
+    Most times it is possible to express these combinations of optical
+    frequencies in terms of allowed transition detunings.
+    >>> expr = +(omega_laser[0]-(symb_omega_levelu[1]-symb_omega_levelu[0]))
+    >>> expr += -(omega_laser[1]-(symb_omega_levelu[3]-symb_omega_levelu[0]))
+    >>> expr
+    -omega_2 + omega_4 + varpi_1 - varpi_2
+    >>> detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
+    ...                   omega_levelu, iu0, ju0)
+    '+delta1_2_1-delta2_4_1'
+
+    But some times it is not possible:
+    >>> expr = +(omega_laser[1]-(symb_omega_levelu[1]-symb_omega_levelu[0]))
+    >>> expr += -(omega_laser[0]-(symb_omega_levelu[3]-symb_omega_levelu[0]))
+    >>> expr
+    -omega_2 + omega_4 - varpi_1 + varpi_2
+    >>> detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
+    ...                   omega_levelu, iu0, ju0)
+    '-detuning_knob[0]+detuning_knob[1]'
+
+    """
+    Nl = len(omega_laser)
+    Neu = len(symb_omega_levelu)
+    # We find the coefficients a_i of the field frequencies.
+    a = [diff(expr, omega_laser[l]) for l in range(Nl)]
+
+    # We look for a combination of the detunings obtained with the
+    # function detunings_code. For each combination we sum the
+    # detunings weighed by a_i.
+    success = False
+    for comb in combs:
+        expr_try = 0
+        for l in range(Nl):
+            expr_try += a[l]*(omega_laser[l] -
+                              symb_omega_levelu[comb[l][0]] +
+                              symb_omega_levelu[comb[l][1]])
+        if expr-expr_try == 0:
+            success = True
+            break
+
+    assign = ""
+    if success:
+        for l in range(Nl):
+            if a[l] != 0:
+                if a[l] == 1:
+                    assign += "+"
+                elif a[l] == -1:
+                    assign += "-"
+                assign += "delta"+str(l+1)
+                assign += "_"+str(comb[l][0]+1)
+                assign += "_"+str(comb[l][1]+1)
+    else:
+        # We get the code for Hii using detuning knobs.
+        # We find out the remainder terms.
+        _remainder = expr - sum([a[l]*omega_laser[l]
+                                 for l in range(Nl)])
+        # We find the coefficients of the remainder.
+        b = [diff(_remainder, symb_omega_levelu[j]) for j in range(Neu)]
+        # We calculate the remainder numerically.
+        remainder = sum([b[j]*omega_levelu[j] for j in range(Neu)])
+        # We add the contributions from the detuning knobs.
+        remainder += sum([a[l]*(omega_levelu[iu0[l]] -
+                                omega_levelu[ju0[l]])
+                          for l in range(Nl)])
+        # We get the code for Hii using detuning knobs.
+        for l in range(Nl):
+            if a[l] != 0:
+                if a[l] == 1:
+                    assign += "+"
+                elif a[l] == -1:
+                    assign += "-"
+                assign += "detuning_knob["+str(l)+"]"
+    return assign
+
+
 def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                      file_name=None):
     r"""Return a fast function that returns a Hamiltonian as a numerical array.
@@ -677,70 +773,16 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         _omega_level, omega, gamma = define_frequencies(Ne)
         _omega_levelu, omega, gamma = define_frequencies(Neu)
         E0, omega_laser = define_laser_variables(Nl)
-        # _omega_level, omega, gamma = define_frequencies(Ne)
         # So we build all combinations.
         combs = detunings_combinations(pairs)
         for i in range(Ne):
             _Hii = theta[i] + _omega_levelu[u(i)]
-            a = [diff(_Hii, omega_laser[l]) for l in range(Nl)]
+            assign = detunings_rewrite(_Hii, combs, omega_laser,
+                                       _omega_levelu, omega_levelu,
+                                       iu0, ju0)
 
-            # We look for a combination of the detunings obtained with the
-            # function detunings_code. For each combination we sum the
-            # detunings weighed by a_i.
-            success = False
-            for comb in combs:
-                _Hii_try = 0
-                for l in range(Nl):
-                    _Hii_try += a[l]*(omega_laser[l] -
-                                      _omega_levelu[comb[l][0]] +
-                                      _omega_levelu[comb[l][1]])
-                if _Hii-_Hii_try == 0:
-                    success = True
-                    break
-            line = ""
-            assign = ""
-
-            if success:
-                for l in range(Nl):
-                    if a[l] != 0:
-                        if a[l] == 1:
-                            assign += "+"
-                        elif a[l] == -1:
-                            assign += "-"
-                        assign += "delta"+str(l+1)
-                        assign += "_"+str(comb[l][0]+1)
-                        assign += "_"+str(comb[l][1]+1)
-                if assign != "":
-                    line = "    H["+str(i)+", "+str(i)+"] = "
-                    line += assign+"\n"
-            else:
-                # We get the code for Hii using detuning knobs.
-                # We find out the remainder terms.
-                _remainder = _Hii - sum([a[l]*omega_laser[l]
-                                         for l in range(Nl)])
-                # We find the coefficients of the remainder.
-                b = [diff(_remainder, _omega_level[j]) for j in range(Neu)]
-                # We calculate the remainder numerically.
-                remainder = sum([b[j]*omega_levelu[j] for j in range(Neu)])
-                # We add the contributions from the detuning knobs.
-                remainder += sum([a[l]*(omega_levelu[iu0[l]] -
-                                        omega_levelu[ju0[l]])
-                                  for l in range(Nl)])
-                # We get the code for Hii using detuning knobs.
-                for l in range(Nl):
-                    if a[l] != 0:
-                        if a[l] == 1:
-                            assign += "+"
-                        elif a[l] == -1:
-                            assign += "-"
-                        assign += "detuning_knob["+str(l)+"]"
-                if remainder != 0:
-                    assign += "+("+str(remainder)+")"
-                if assign != "":
-                    line = "    H["+str(i)+", "+str(i)+"] = "
-                    line += assign+"\n"
-
-            code += line
+            if assign != "":
+                code += "    H["+str(i)+", "+str(i)+"] = "+assign+"\n"
 
     code += "\n"
     code += """    for i in range("""+str(Ne)+"""):\n"""
@@ -759,49 +801,6 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     return hamiltonian
 
 
-###############################################################################
-# Ne = 2; Nl = 1
-# E0, omega_laser = fast.symbolic.define_laser_variables(Nl)
-# E0 = [np.sqrt(2.0)]
-#
-# epsilonp = fast.symbolic.polarization_vector(0, 0, 0, sympy.pi/8, 1)
-#
-# detuning_knob = [sympy.symbols("delta1")]
-#
-# # sympy.pprint(E0)
-# # sympy.pprint(epsilonp)
-# # sympy.pprint(detuning_knob)
-#
-# rm = fast.symbolic.define_r_components(Ne, explicitly_hermitian=True, p=-1)
-# rm[0][1, 0] = 1.0
-# rm[1][1, 0] = 1.0
-# rm[2][1, 0] = 1.0
-# # sympy.pprint(rm)
-#
-# omega_level = [100.0*i for i in range(Ne)]
-# # print omega_level
-# xi = np.zeros((Nl, Ne, Ne))
-# xi[0, 1, 0] = 1.0
-# xi[0, 0, 1] = 1.0
-#
-# phase = phase_transformation(Ne, Nl, rm, xi, return_equations=False)
-#
-# hamiltonian2 = fast_hamiltonian(E0, [epsilonp], detuning_knob, rm,
-#                                 omega_level, xi, phase, "code.py")
-#
-# detuning_knob = [1.0]
-# print hamiltonian2(detuning_knob)
-###############################################################################
-# A real example.
-
-###############################################################################
-
-# omega_level = [1.0, 1.0, 1.0, 2.0, 2.0, 3.0, 4.0, 4.0, 4.0]
-# print omega_level
-# simp = define_simplification(omega_level)
-#
-# for i in range(len(omega_level)):
-#     print i, simp(i)
 if __name__ == "__main__":
     import doctest
     doctest.testmod(verbose=False)
