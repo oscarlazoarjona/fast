@@ -31,7 +31,7 @@ Matrix([
 
 """
 
-from sympy import Symbol, Matrix
+from sympy import Symbol, Matrix, symbols
 from sympy import I, conjugate
 from sympy import sin, cos, sqrt, exp
 from sympy import KroneckerDelta
@@ -476,8 +476,8 @@ def cartesian_dot_product(v1, v2):
     return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2]
 
 
-def define_r_components(Ne, explicitly_hermitian=False, helicity=False,
-                        real=True, p=None):
+def define_r_components(Ne, xi=None, explicitly_hermitian=False,
+                        helicity=False, real=True, p=None):
     r"""Define the components of the position operators.
 
     In general, these are representations of the position operators x, y, z
@@ -622,6 +622,17 @@ def define_r_components(Ne, explicitly_hermitian=False, helicity=False,
                      for j in range(Ne)] for i in range(Ne)])
              for p in range(3)]
 
+    if xi is not None:
+        Nl = len(xi)
+        for p in range(3):
+            for i in range(Ne):
+                for j in range(Ne):
+                    zero = True
+                    for l in range(Nl):
+                        if xi[l][i, j] != 0:
+                            zero = False
+                    if zero:
+                        r[p][i, j] = 0
     return r
 
 
@@ -1174,6 +1185,83 @@ def density_matrix_rotation(J_values, alpha, beta, gamma):
         ind0 += sizeJ
 
     return D
+
+
+def hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser, xi,
+                RWA=True, RF=True):
+    r"""Return symbolic Hamiltonian.
+
+    >>> from sympy import zeros, pi, pprint, symbols
+    >>> Ne = 3
+    >>> Nl = 2
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonp = [polarization_vector(0, -pi/2, 0, 0, 1) for l in range(Nl)]
+    >>> detuning_knob = symbols("delta1 delta2", real=True)
+
+    >>> xi = [zeros(Ne, Ne) for l in range(Nl)]
+    >>> coup = [[(1, 0)], [(2, 0)]]
+    >>> for l in range(Nl):
+    ...     for pair in coup[l]:
+    ...         xi[l][pair[0], pair[1]] = 1
+    ...         xi[l][pair[1], pair[0]] = 1
+
+    >>> rm = define_r_components(Ne, xi, explicitly_hermitian=True,
+    ...                          helicity=True, p=-1)
+
+    >>> rm = helicity_to_cartesian(rm)
+    >>> omega_level, omega, gamma = define_frequencies(Ne, True)
+
+    >>> H = hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level,
+    ...                 omega_laser, xi, RWA=True, RF=False)
+
+    >>> print H[1, 0]
+    -E_0^1*e*r_{0;21}*exp(-I*t*varpi_1)/2
+    >>> print H[2, 0]
+    -E_0^2*e*r_{0;31}*exp(-I*t*varpi_2)/2
+    >>> print H[2, 2]
+    hbar*omega_3
+
+    """
+    if RF:
+        s = "We are still missing the code for the detuning knobs in the \
+            Hamiltonian."
+        raise NotImplementedError(s)
+    Ne = len(omega_level)
+    Nl = len(omega_laser)
+
+    H = zeros(Ne, Ne)
+    hbar, e = symbols("hbar e", positive=True)
+    t = symbols("t", real=True)
+
+    for i in range(Ne):
+        for j in range(Ne):
+            rmij = vector_element(rm, i, j)
+            rpij = vector_element(rm, j, i).conjugate()
+            for l in range(Nl):
+                epsilonpl = epsilonp[l]
+                epsilonml = epsilonpl.conjugate()
+
+                if RF:
+                    Epl = Ep[l]*xi[l][i, j]
+                else:
+                    Epl = Ep[l]*xi[l][i, j]*exp(-I*omega_laser[l]*t)
+                Eml = Epl.conjugate()
+
+                # The E^(+)r^(-) term
+                H[i, j] += -e*Epl/2*cartesian_dot_product(epsilonpl, rmij)
+                # The E^(-)r^(+) term
+                H[i, j] += -e*Eml/2*cartesian_dot_product(epsilonml, rpij)
+                if not RWA:
+                    # The E^(+)r^(+) term
+                    H[i, j] += -e*Epl/2*cartesian_dot_product(epsilonpl, rpij)
+                    # The E^(-)r^(-) term
+                    H[i, j] += -e*Eml/2*cartesian_dot_product(epsilonml, rmij)
+
+            if not RF:
+                if i == j:
+                    H[i, j] += hbar*omega_level[i]
+
+    return H
 
 
 if __name__ == "__main__":
