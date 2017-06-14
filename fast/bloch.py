@@ -609,9 +609,6 @@ def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
 def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                      file_name=None):
     r"""Return a fast function that returns a Hamiltonian as a numerical array.
-    lowest frequency transition. They can either be symbolic expressions or
-
-    All quantities should be in SI units.
 
     The arguments Ep, epsilonp, and detuning_knob represent the electric field
     amplitudes, field polarizations, and the detunings of each field from the
@@ -621,6 +618,8 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     these Ep, epsilonp, and detuning_knob as numerical arguments if symbolic
     expressions were used, or use the given numerical values by default. At the
     moment however, only variable detuning_knob is supported.
+
+    All quantities should be in SI units.
 
     The argument rm should be numerical values of the below-diagonal components
     of the position operator in the cartesian basis:
@@ -642,8 +641,8 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     ...         xi[l, pair[0], pair[1]] = 1.0
     ...         xi[l, pair[1], pair[0]] = 1.0
 
-    >>> Ep = [1e2, 1e2]
-    >>> epsilonp = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+    >>> Ep_vals = [1e2, 1e2]
+    >>> epsilonp_vals = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
     >>> rm = np.zeros((3, Ne, Ne))
     >>> for l in range(Nl):
     ...     for i in range(Ne):
@@ -654,11 +653,49 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     >>> theta = phase_transformation(Ne, Nl, rm, xi)
     >>> from sympy import symbols
     >>> detuning_knob = symbols("delta1 delta2")
-    >>> H = fast_hamiltonian(Ep, epsilonp, detuning_knob, rm,
+    >>> H = fast_hamiltonian(Ep_vals, epsilonp_vals, detuning_knob, rm,
     ...                      omega_level, xi, theta)
 
-    >>> detuning_knob = np.array([-1.0, 3.0])*1e6*2*np.pi
-    >>> print H(detuning_knob)/hbar_num/2/np.pi*1e-6
+    >>> detuning_knob_vals = np.array([-1.0, 3.0])*1e6*2*np.pi
+    >>> print H(detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+
+    We can also make the electric field amplitudes variable:
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> H = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob, rm,
+    ...                      omega_level, xi, theta)
+
+    >>> print H(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+    Or we can make only the electric field amplitudes variable:
+    >>> H = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob_vals, rm,
+    ...                      omega_level, xi, theta)
+
+    >>> print H(Ep_vals)/hbar_num/2/np.pi*1e-6
     [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
         2.55908963+0.j   3.19886203+0.j]
      [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
@@ -680,30 +717,26 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         # We determine which arguments are constants.
         try:
             Ep = np.array([complex(Ep[l]) for l in range(Nl)])
-            constant_Ep = True
+            variable_Ep = False
         except:
-            constant_Ep = False
+            variable_Ep = True
 
         try:
             epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
                         for l in range(Nl)]
-            constant_epsilonp = True
+            variable_epsilonp = False
         except:
-            constant_epsilonp = False
+            variable_epsilonp = True
 
         try:
             detuning_knob = np.array([float(detuning_knob[l])
                                       for l in range(Nl)])
-            constant_detuning_knob = True
+            variable_detuning_knob = False
         except:
-            constant_detuning_knob = False
+            variable_detuning_knob = True
 
-        if not constant_Ep:
-            raise NotImplementedError("Ep must be a constant.")
-        if not constant_epsilonp:
+        if variable_epsilonp:
             raise NotImplementedError("epsilonp must be constant.")
-        if constant_detuning_knob:
-            raise NotImplementedError("detuning_knob must be variable.")
 
         # We convert rm to a numpy array
         rm = np.array([[[complex(rm[k][i, j])
@@ -713,9 +746,9 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     if True:
         code = ""
         code += "def hamiltonian("
-        if not constant_Ep: code += "Ep, "
-        if not constant_epsilonp: code += "epsilonp, "
-        if not constant_detuning_knob: code += "detuning_knob, "
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        if variable_detuning_knob: code += "detuning_knob, "
         if code[-2:] == ", ":
             code = code[:-2] + "):\n"
 
@@ -731,18 +764,19 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                         # We get the below-diagonal terms.
                         code += "    H["+str(i)+", "+str(j)+"] = "
                         # We get the code for Ep.
-                        if constant_Ep:
-                            code += str(0.5*Ep[l])
-                        else:
+                        if variable_Ep:
                             code += "0.5*Ep["+str(l)+"]"
+
+                        else:
+                            code += str(0.5*Ep[l])
                         # We get the code for epsilonp dot rm
-                        if constant_epsilonp:
+                        if variable_epsilonp:
+                            code += "cartesian_dot_product(epsilonp[l], rm)"
+                        else:
                             rmij = rm[:, i, j]
                             dp = cartesian_dot_product(epsilonp[l], rmij)
                             dp = dp*e_num
                             code += "*("+str(dp)+")"
-                        else:
-                            code += "cartesian_dot_product(epsilonp[l], rm)"
 
                         code += "\n"
     # We get the code for the above-diagonal elements.
@@ -764,8 +798,15 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
         # We get the code to calculate the non degenerate detunings.
         pairs = detunings_indices(Neu, Nl, xiu)
+        if not variable_detuning_knob:
+            code += "    detuning_knob = np.zeros("+str(Nl)+")\n"
+            for l in range(Nl):
+                code += "    detuning_knob["+str(l)+"] = " +\
+                    str(detuning_knob[l])+"\n"
+
         code_det = detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
         code += code_det
+
         code += "\n"
         #####################################
         # We find the coefficients a_l that multiply omega_laser_l in
