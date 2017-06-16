@@ -977,16 +977,21 @@ def draw_arith(ax,p0,size=1,alpha=0,arith=None,format=None,fontsize=10,**kwds):
 ########################################################################
 
 
-def draw_state(ax,p,text='',l=0.5,alignment='left',label_displacement=1.0,fontsize=25,**kwds):
+def draw_state(ax, p, text='', l=0.5, alignment='left', label_displacement=1.0,
+               fontsize=25, **kwds):
+    r"""Draw a quantum state for energy level diagrams."""
 
-    plo=ax.plot([p[0]-l/2.0,p[0]+l/2.0],[p[1],p[1]],color='black',**kwds)
-    if text!='':
-		if alignment=='left':
-			ax.text(p[0] -l/2.0 - label_displacement,p[1],text,
-					horizontalalignment='right',verticalalignment='center',
-					color='black',fontsize=fontsize)
-		elif alignment=='right':
-			ax.text(p[0] +l/2.0 + label_displacement,p[1],text,horizontalalignment='left' ,color='black',fontsize=fontsize)
+    ax.plot([p[0]-l/2.0, p[0]+l/2.0], [p[1], p[1]],
+            color='black', **kwds)
+    if text != '':
+        if alignment == 'left':
+            ax.text(p[0] - l/2.0 - label_displacement, p[1], text,
+                    horizontalalignment='right', verticalalignment='center',
+                    color='black', fontsize=fontsize)
+        elif alignment == 'right':
+            ax.text(p[0] + l/2.0 + label_displacement, p[1], text,
+                    horizontalalignment='left', color='black',
+                    fontsize=fontsize)
 
 
 def draw_multiplet(ax,fine_state,p,hmin,w, fside='right',label_separation=1,label_fontsize=15,fsize=10,deltanu_fontsize=6,
