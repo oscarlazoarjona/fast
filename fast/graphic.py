@@ -27,7 +27,7 @@ from atomic_structure import (find_fine_states,
                               split_hyperfine_to_magnetic,
                               make_list_of_states,
                               calculate_boundaries)
-from misc import read_result
+from misc import read_result, Mu
 from colorsys import hls_to_rgb, hsv_to_rgb
 from matplotlib import pyplot
 import numpy as np
@@ -249,225 +249,253 @@ def fancy_matrix_plot(ax, mat, states=None, path='', name='default.png',
     pyplot.savefig(path+name, bbox_inches='tight')
 
 
-def plot_Lij(ax,Lij,Nl,states=None,path='',name='default.png',**kwds):
-	Ne=len(Lij)
+def plot_Lij(ax, Lij, Nl, states=None, path='', name='default.png', **kwds):
+    r"""Make a plot of the selection of couplings."""
+    Ne = len(Lij)
 
-	mats=[]
-	colors=[(0,0,1),(1,0,0),(0,1,0),(1,0.5,0)]
-	mat=[]
-	for i in range(Ne):
-		row=[]
-		for j in range(Ne):
-			band=False
-			for l in range(Nl):
-				if l+1 in Lij[i][j]:
-					row+=[colors[l]]
-					band=True
-					break
-			if not band:
-				row+=[(0,0,0)]
+    colors = [(0, 0, 1), (1, 0, 0), (0, 1, 0), (1, 0.5, 0)]
+    mat = []
+    for i in range(Ne):
+        row = []
+        for j in range(Ne):
+            band = False
+            for l in range(Nl):
+                if l+1 in Lij[i][j]:
+                    row += [colors[l]]
+                    band = True
+                    break
+            if not band:
+                row += [(0, 0, 0)]
 
-		mat+=[row]
+        mat += [row]
 
-	fancy_matrix_plot(ax,mat,states,path,name)
-
-
-def fancy_r_plot(r,states=None,path='',name='default.png',y_labels=True,
-		complex_matrix=False,take_abs=False,take_log=False,hyperfine_labels=False,**kwds):
-
-	nn=3
-	size=5
-	corr=0.95
-	Ne=len(r[0][0])
-	f, plot = pyplot.subplots(1, nn, sharey=True,figsize=[3*size,size*corr])
-	for p in range(nn):
-		mat=r[p]
-		rmat=[mat[i] for i in reversed(range(len(mat[0])))]
-		if take_abs:
-			rmat=[[abs(i) for i in row] for row in rmat]
-		if complex_matrix:
-			rmat=complex_matrix_plot(rmat,normalize=True,plot=False)
-
-		ax=plot[p]
-		ax.imshow(rmat,interpolation='none',**kwds)
-		ax.axis('off')
-
-		ax.set_xlim([-0.5,Ne])
-		ax.set_ylim([-0.5,Ne-0.5])
-		ax.text(Ne/2.0-1,-0.5,'$p='+str(p-1)+'$',verticalalignment='top')
-
-		if states != None:
-			fine_states=find_fine_states(states)
-			hyperfine_states=make_list_of_states(fine_states,'hyperfine',verbose=0)#split_fine_to_hyperfine(fine_states)
-			full_magnetic_states=make_list_of_states(fine_states,'magnetic',verbose=0)
-			index_list_fine,index_list_hyperfine=calculate_boundaries(fine_states,full_magnetic_states)
-
-			i_fine=[i[0] for i in index_list_fine[1:]]
-			i_hyperfine=[i[0] for i in index_list_hyperfine[1:] if i[0] not in i_fine]
-
-			for i in i_fine:
-				ax.plot([-0.5,Ne-0.5],[Ne-(i+0.5),Ne-(i+0.5)],'r-')
-				ax.plot([i-0.5,i-0.5],[-0.5,Ne-0.5],'r-')
-			for i in i_hyperfine:
-				ax.plot([-0.5,Ne-0.5],[Ne-(i+0.5),Ne-(i+0.5)],'b-')
-				ax.plot([i-0.5,i-0.5],[-0.5,Ne-0.5],'b-')
-
-			if hyperfine_labels:
-				for i in range(len(hyperfine_states)):
-					a=hyperfine_states[i]._latex_()
-					y=Ne- (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -1.2
-					x=    (index_list_hyperfine[i][1]+index_list_hyperfine[i][0])/2 -0.5
-					if p==0: ax.text(-0.75,y,'$'+a+'$',horizontalalignment='right')
-					ax.text( x,Ne-1,'$'+a+'$',rotation=45,verticalalignment='bottom')
-			else:
-				for i in range(len(fine_states)):
-					a=fine_states[i]._latex_()[18:]
-					y=Ne- (index_list_fine[i][1]+index_list_fine[i][0])/2 -1.2
-					x=    (index_list_fine[i][1]+index_list_fine[i][0])/2 -3.5
-					if p==0: ax.text(-0.75,y,'$'+a+'$',horizontalalignment='right')
-					ax.text( x,Ne-1,'$'+a+'$',rotation=45,verticalalignment='bottom')
-
-	f.subplots_adjust(wspace=0)
-	pyplot.savefig(path+name,bbox_inches='tight')
-	#pyplot.close()
+    fancy_matrix_plot(ax, mat, states, path, name)
 
 
-def make_video(path,name,Ne,states=None,duration=120,fps=6,digs=6,**kwds):
-	data=read_result(path,name)
-	Nt=len(data)
-	for t in range(Nt):
-		dati=data[t]
+def fancy_r_plot(r, states=None, path='', name='default.png', y_labels=True,
+                 complex_matrix=False, take_abs=False, take_log=False,
+                 hyperfine_labels=False, **kwds):
+    r"""Make a nice plot of a 3-dimensional vector of matrices."""
 
-		mati=[[0.0 for j in range(Ne)] for i in range(Ne)]
-		for i in range(2,Ne+1):
-			for j in range(1,i+1):
-				mu=Mu(i,j,1,Ne)
-				rho_mu=dati[mu]
-				mati[i-1][j-1]=rho_mu
-				mati[j-1][i-1]=rho_mu
-				if i!=j:
-					mu=Mu(i,j,-1,Ne)
-					rho_mu=dati[mu]
-					mati[i-1][j-1]=mati[i-1][j-1]+1j*rho_mu
-					mati[j-1][i-1]=mati[j-1][i-1]-1j*rho_mu
-		mati[0][0]=1-sum([mati[i][i] for i in range(1,Ne)])
-		n=str(t)
-		fancy_matrix_plot(mati,states=states,path=path,name=name+'0'*(digs-len(n))+n,complex_matrix=True,**kwds)
+    nn = 3
+    size = 5
+    corr = 0.95
+    Ne = len(r[0][0])
+    f, plot = pyplot.subplots(1, nn, sharey=True, figsize=[3*size, size*corr])
+    for p in range(nn):
+        mat = r[p]
+        rmat = [mat[i] for i in reversed(range(len(mat[0])))]
+        if take_abs:
+            rmat = [[abs(i) for i in row] for row in rmat]
+        if complex_matrix:
+            rmat = complex_matrix_plot(rmat, normalize=True, plot=False)
+
+        ax = plot[p]
+        ax.imshow(rmat, interpolation='none', **kwds)
+        ax.axis('off')
+
+        ax.set_xlim([-0.5, Ne])
+        ax.set_ylim([-0.5, Ne-0.5])
+        ax.text(Ne/2.0-1, -0.5, '$p='+str(p-1)+'$', verticalalignment='top')
+
+        if states is not None:
+            fine_states = find_fine_states(states)
+
+            # split_fine_to_hyperfine(fine_states)
+            hyperfine_states = make_list_of_states(fine_states, 'hyperfine',
+                                                   verbose=0)
+            full_magnetic_states = make_list_of_states(fine_states, 'magnetic',
+                                                       verbose=0)
+            aux = calculate_boundaries(fine_states, full_magnetic_states)
+            index_list_fine, index_list_hyperfine = aux
+
+            i_fine = [i[0] for i in index_list_fine[1:]]
+            i_hyperfine = [i[0] for i in index_list_hyperfine[1:]
+                           if i[0] not in i_fine]
+
+            for i in i_fine:
+                ax.plot([-0.5, Ne-0.5], [Ne-(i+0.5), Ne-(i+0.5)], 'r-')
+                ax.plot([i-0.5, i-0.5], [-0.5, Ne-0.5], 'r-')
+            for i in i_hyperfine:
+                ax.plot([-0.5, Ne-0.5], [Ne-(i+0.5), Ne-(i+0.5)], 'b-')
+                ax.plot([i-0.5, i-0.5], [-0.5, Ne-0.5], 'b-')
+
+            if hyperfine_labels:
+                for i in range(len(hyperfine_states)):
+                    a = hyperfine_states[i]._latex_()
+                    y = Ne-(index_list_hyperfine[i][1] +
+                            index_list_hyperfine[i][0])/2 - 1.2
+                    x = (index_list_hyperfine[i][1] +
+                         index_list_hyperfine[i][0])/2 - 0.5
+                    if p == 0:
+                        ax.text(-0.75, y, '$'+a+'$',
+                                horizontalalignment='right')
+                    ax.text(x, Ne-1, '$'+a+'$', rotation=45,
+                            verticalalignment='bottom')
+            else:
+                for i in range(len(fine_states)):
+                    a = fine_states[i]._latex_()[18:]
+                    y = Ne-(index_list_fine[i][1] +
+                            index_list_fine[i][0])/2 - 1.2
+                    x = (index_list_fine[i][1]+index_list_fine[i][0])/2 - 3.5
+                    if p == 0:
+                        ax.text(-0.75, y, '$'+a+'$',
+                                horizontalalignment='right')
+                    ax.text(x, Ne-1, '$'+a+'$', rotation=45,
+                            verticalalignment='bottom')
+
+    f.subplots_adjust(wspace=0)
+    pyplot.savefig(path+name, bbox_inches='tight')
 
 
-	try:
-		os.system('rm '+path+name+'.mp4')
-	except:
-		pass
+def make_video(path, name, Ne, states=None, duration=120,
+               fps=6, digs=6, **kwds):
+    r"""Make a video (to be deperecated)."""
+    data = read_result(path, name)
+    Nt = len(data)
+    for t in range(Nt):
+        dati = data[t]
 
-	com='avconv -r '+str(fps)+' -i '+path+name+'%0'+str(digs)+'d.png -b:v 1000k '+path+name+'.mp4'
-	print com
-	os.system(com)
+        mati = [[0.0 for j in range(Ne)] for i in range(Ne)]
+        for i in range(2, Ne+1):
+            for j in range(1, i+1):
+                mu = Mu(i, j, 1, Ne)
+                rho_mu = dati[mu]
+                mati[i-1][j-1] = rho_mu
+                mati[j-1][i-1] = rho_mu
+                if i != j:
+                    mu = Mu(i, j, -1, Ne)
+                    rho_mu = dati[mu]
+                    mati[i-1][j-1] = mati[i-1][j-1]+1j*rho_mu
+                    mati[j-1][i-1] = mati[j-1][i-1]-1j*rho_mu
+        mati[0][0] = 1-sum([mati[i][i] for i in range(1, Ne)])
+        n = str(t)
+        fancy_matrix_plot(mati, states=states, path=path,
+                          name=name+'0'*(digs-len(n))+n, complex_matrix=True,
+                          **kwds)
+
+    try:
+        os.system('rm '+path+name+'.mp4')
+    except:
+        pass
+
+    com = 'avconv -r '+str(fps)+' -i '+path+name+'%0'+str(digs) +\
+        'd.png -b:v 1000k '+path+name+'.mp4'
+    os.system(com)
 
 
-def fit_lorentizan(curve,p0=None,N_points=1000):
-	'''Fits a lorentzian curve using p0=[x0,A,gamma] as an initial guess.
-	It returns a curve with N_points.'''
-	def lorentzian(x,x0,A,gamma): return A*gamma**2/((x-x0)**2+gamma**2)
-	N=len(curve)
-	x=[curve[i][0] for i in range(N)]
-	y=[curve[i][1] for i in range(N)]
+def fit_lorentizan(curve, p0=None, N_points=1000):
+    r"""Fits a lorentzian curve using p0=[x0,A,gamma] as an initial guess.
+    It returns a curve with N_points.
+    """
+    def lorentzian(x, x0, A, gamma):
+        return A*gamma**2/((x-x0)**2+gamma**2)
+    N = len(curve)
+    x = [curve[i][0] for i in range(N)]
+    y = [curve[i][1] for i in range(N)]
 
-	from scipy.optimize import curve_fit
-	popt,pcov = curve_fit(lorentzian,x,y,p0=p0)
-	x0=popt[0]; A=popt[1]; gamma=popt[2]
+    from scipy.optimize import curve_fit
+    popt, pcov = curve_fit(lorentzian, x, y, p0=p0)
+    x0 = popt[0]; A = popt[1]; gamma = popt[2]
 
-	a=x[0]; b=x[-1]
-	x_step=(b-a)/(N_points-1)
-	x_fit=[a+i*x_step for i in range(N_points)]
-	fited_curve=[(xi,lorentzian(xi,x0,A,gamma)) for xi in x_fit]
-	return fited_curve,A,x0,gamma
+    a = x[0]; b = x[-1]
+    x_step = (b-a)/(N_points-1)
+    x_fit = [a+i*x_step for i in range(N_points)]
+    fited_curve = [(xi, lorentzian(xi, x0, A, gamma)) for xi in x_fit]
+    return fited_curve, A, x0, gamma
 
 
-def fit_lorentizan_with_background(curve,p0=None,N_points=1000):
-	'''Fits a lorentzian curve using p0=[x0,A,gamma] as an initial guess.
-	It returns a curve with N_points.'''
-	def lorentzian(x,x0,A,gamma,B): return A*gamma**2/((x-x0)**2+gamma**2)+B
-	N=len(curve)
-	x=[curve[i][0] for i in range(N)]
-	y=[curve[i][1] for i in range(N)]
+def fit_lorentizan_with_background(curve, p0=None, N_points=1000):
+    r"""Fits a lorentzian curve using p0=[x0,A,gamma] as an initial guess.
+    It returns a curve with N_points.
+    """
+    def lorentzian(x, x0, A, gamma, B):
+        return A*gamma**2/((x-x0)**2+gamma**2)+B
+    N = len(curve)
+    x = [curve[i][0] for i in range(N)]
+    y = [curve[i][1] for i in range(N)]
 
-	from scipy.optimize import curve_fit
-	popt,pcov = curve_fit(lorentzian,x,y,p0=p0)
-	x0=popt[0]; A=popt[1]; gamma=popt[2]; B=popt[3]
+    from scipy.optimize import curve_fit
+    popt, pcov = curve_fit(lorentzian, x, y, p0=p0)
+    x0 = popt[0]; A = popt[1]; gamma = popt[2]; B = popt[3]
 
-	a=x[0]; b=x[-1]
-	x_step=(b-a)/(N_points-1)
-	x_fit=[a+i*x_step for i in range(N_points)]
-	fited_curve=[(xi,lorentzian(xi,x0,A,gamma,B)) for xi in x_fit]
-	return fited_curve,A,x0,gamma,B
+    a = x[0]; b = x[-1]
+    x_step = (b-a)/(N_points-1)
+    x_fit = [a+i*x_step for i in range(N_points)]
+    fited_curve = [(xi, lorentzian(xi, x0, A, gamma, B)) for xi in x_fit]
+    return fited_curve, A, x0, gamma, B
 
 
 ########################################################################
 # Drawing 3D beam diagrams.
 ########################################################################
 
+
 class Arrow3D(FancyArrowPatch):
+    r"""Draw a 3d arrow."""
+
     def __init__(self, xs, ys, zs, *args, **kwargs):
-        FancyArrowPatch.__init__(self, (0,0), (0,0), *args, **kwargs)
+        r"""Draw a 3d arrow."""
+        FancyArrowPatch.__init__(self, (0, 0), (0, 0), *args, **kwargs)
         self._verts3d = xs, ys, zs
 
     def draw(self, renderer):
+        r"""Draw a 3d arrow."""
         xs3d, ys3d, zs3d = self._verts3d
         xs, ys, zs = proj3d.proj_transform(xs3d, ys3d, zs3d, renderer.M)
-        self.set_positions((xs[0],ys[0]),(xs[1],ys[1]))
+        self.set_positions((xs[0], ys[0]), (xs[1], ys[1]))
         FancyArrowPatch.draw(self, renderer)
 
 
-def bar_chart_mf(data,path_name):
-	N=len(data)
+def bar_chart_mf(data, path_name):
+    N = len(data)
 
-	ind = np.arange(N)  # the x locations for the groups
-	width = 0.8       # the width of the bars
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.8       # the width of the bars
 
-	fig, ax = pyplot.subplots()
-	rects1 = ax.bar(ind, data, width, color='g')
+    fig, ax = pyplot.subplots()
+    rects1 = ax.bar(ind, data, width, color='g')
 
-	# add some text for labels, title and axes ticks
-	ax.set_ylabel('Population')
-	ax.set_xticks(ind+width/2)
-	labs=['m='+str(i) for i in range(-N/2+1,N/2+1)]
-	ax.set_xticklabels( labs )
+    # add some text for labels, title and axes ticks
+    ax.set_ylabel('Population')
+    ax.set_xticks(ind+width/2)
+    labs = ['m='+str(i) for i in range(-N/2+1, N/2+1)]
+    ax.set_xticklabels(labs)
 
-	def autolabel(rects):
-		# attach some text labels
-		for rect in rects:
-			height = rect.get_height()
+    def autolabel(rects):
+        # attach some text labels
+        for rect in rects:
+            height = rect.get_height()
 
-	autolabel(rects1)
-	pyplot.savefig(path_name)
-	pyplot.close()
+    autolabel(rects1)
+    pyplot.savefig(path_name)
+    pyplot.close()
 
 
 def draw_atom3d(ax):
-	#fig = pyplot.figure()
-	#ax = fig.gca(projection='3d')
+    r"""Draw an atom in 3d."""
+    # fig = pyplot.figure()
+    # ax = fig.gca(projection='3d')
 
-	ax.plot([0],[0],[0],'k.')
-	Nt=100
-	s_step=2*pi/(Nt-1)
-	v1=[[],[],[]]; v2=[[],[],[]]; v3=[[],[],[]]
-	for i in range(Nt):
-		s=i*s_step
-		v1[0]+=[0.250000000000000*cos(s)]
-		v1[1]+=[0.250000000000000*sin(s)]
-		v1[2]+=[0]
-		v2[0]+=[0.176776695296637*cos(s) - 0.125000000000000*sin(s)]
-		v2[1]+=[ -0.176776695296637*cos(s) - 0.125000000000000*sin(s)]
-		v2[2]+=[-0.176776695296637*sin(s)]
-		v3[0]+=[-0.176776695296637*cos(s) + 0.125000000000000*sin(s)]
-		v3[1]+=[ 0.176776695296637*cos(s) + 0.125000000000000*sin(s)]
-		v3[2]+=[-0.176776695296637*sin(s)]
+    ax.plot([0], [0], [0], 'k.')
+    Nt = 100
+    s_step = 2*pi/(Nt-1)
+    v1 = [[], [], []]; v2 = [[], [], []]; v3 = [[], [], []]
+    for i in range(Nt):
+        s = i*s_step
+        v1[0] += [0.250000000000000*cos(s)]
+        v1[1] += [0.250000000000000*sin(s)]
+        v1[2] += [0]
+        v2[0] += [0.176776695296637*cos(s) - 0.125000000000000*sin(s)]
+        v2[1] += [-0.176776695296637*cos(s) - 0.125000000000000*sin(s)]
+        v2[2] += [-0.176776695296637*sin(s)]
+        v3[0] += [-0.176776695296637*cos(s) + 0.125000000000000*sin(s)]
+        v3[1] += [0.176776695296637*cos(s) + 0.125000000000000*sin(s)]
+        v3[2] += [-0.176776695296637*sin(s)]
 
-
-	ax.plot(v1[0],v1[1],v1[2],'k-')
-	ax.plot(v2[0],v2[1],v2[2],'k-')
-	ax.plot(v3[0],v3[1],v3[2],'k-')
+    ax.plot(v1[0], v1[1], v1[2], 'k-')
+    ax.plot(v2[0], v2[1], v2[2], 'k-')
+    ax.plot(v3[0], v3[1], v3[2], 'k-')
 
 
 def draw_plane_wave_3d(ax,beam,dist_to_center=0):

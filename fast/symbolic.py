@@ -32,7 +32,7 @@ Matrix([
 """
 
 from sympy import Symbol, Matrix, symbols
-from sympy import I, conjugate
+from sympy import I, conjugate, diff
 from sympy import sin, cos, sqrt, exp
 from sympy import KroneckerDelta
 from sympy import Function, Derivative
@@ -879,7 +879,7 @@ def define_psi_coefficients(Ne):
     c = Matrix([Function("c"+str(i+1))(t) for i in range(Ne)])
     ctilde = Matrix([Function(r"\tilde{c}_{"+str(i+1)+"}")(t)
                      for i in range(Ne)])
-    phase = Matrix([Symbol("theta"+str(i+1)) for i in range(Ne)])
+    phase = Matrix([Symbol("theta"+str(i+1), real=True) for i in range(Ne)])
     return c, ctilde, phase
 
 
@@ -1023,7 +1023,7 @@ def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
     >>> E0, omega_laser = define_laser_variables(Nl)
     >>> c, ctilde, phase = define_psi_coefficients(Ne)
     >>> print phase_transformation(Ne, Nl, r, Lij, omega_laser, phase)
-    {theta3: 0, theta1: varpi_1 + varpi_2, theta2: varpi_2}
+    {theta2: varpi_2, theta3: 0, theta1: varpi_1 + varpi_2}
 
     """
     ph = find_phase_transformation(Ne, Nl, r, Lij)
@@ -1222,10 +1222,24 @@ def hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser, xi,
     hbar*omega_3
 
     """
-    if RF:
-        s = "We are still missing the code for the detuning knobs in the \
-            Hamiltonian."
-        raise NotImplementedError(s)
+    # We check what RF is.
+    if type(RF) == list:
+        theta = RF[:]
+        RF = True
+    elif type(RF) == Matrix:
+        theta = [RF[i, 0] for i in range(RF.shape[0])]
+        RF = True
+    elif RF:
+        # theta should be calculate here!
+        s = "We are still missing automatic calculation of phase "
+        s += "transformations."
+        raise ValueError(s)
+
+    if not RWA and RF:
+        s = "The rotating frame does not exist without the rotating wave \
+approximation, as far as I know."
+        raise ValueError(s)
+
     Ne = len(omega_level)
     Nl = len(omega_laser)
 
@@ -1243,6 +1257,7 @@ def hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser, xi,
 
                 if RF:
                     Epl = Ep[l]*xi[l][i, j]
+                    Epl *= exp(-I*(t*omega_laser[l]+theta[i]-theta[j]))
                 else:
                     Epl = Ep[l]*xi[l][i, j]*exp(-I*omega_laser[l]*t)
                 Eml = Epl.conjugate()
@@ -1257,11 +1272,46 @@ def hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser, xi,
                     # The E^(-)r^(-) term
                     H[i, j] += -e*Eml/2*cartesian_dot_product(epsilonml, rmij)
 
-            if not RF:
-                if i == j:
+            if i == j:
+                if RF:
+                    H[i, j] += hbar*(omega_level[i]+diff(theta[i], t))
+                else:
                     H[i, j] += hbar*omega_level[i]
 
     return H
+
+# from fast import *
+# from sympy import zeros, pi, pprint, symbols
+# from fast.bloch import phase_transformation
+#
+# Ne = 3
+# Nl = 2
+# Ep, omega_laser = define_laser_variables(Nl)
+# epsilonp = [polarization_vector(0, -pi/2, 0, 0, 1) for l in range(Nl)]
+# detuning_knob = symbols("delta1 delta2", real=True)
+#
+# xi = [zeros(Ne, Ne) for l in range(Nl)]
+# coup = [[(1, 0), (2, 0)], [(1, 0), (2, 0)]]
+# coup = [[(1, 0)], [(2, 0)]]
+#
+# for l in range(Nl):
+#     for pair in coup[l]:
+#         xi[l][pair[0], pair[1]] = 1
+#         xi[l][pair[1], pair[0]] = 1
+#
+# rm = define_r_components(Ne, xi, explicitly_hermitian=True,
+#                          helicity=True, p=-1)
+# rm = helicity_to_cartesian(rm)
+#
+# theta = phase_transformation(Ne, Nl, rm, xi)
+# c, ct, theta = define_psi_coefficients(Ne)
+# print theta
+# omega_level, omega, gamma = define_frequencies(Ne, True)
+#
+# H = hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser,
+#                 xi, RWA=True, RF=theta)
+#
+# pprint(H)
 
 
 if __name__ == "__main__":
