@@ -215,7 +215,7 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff
+from sympy import Symbol, diff, symbols
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables
 from scipy.constants import physical_constants
@@ -249,8 +249,15 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
     E0, omega_laser = define_laser_variables(Nl)
     theta = [Symbol('theta'+str(i+1)) for i in range(Ne)]
 
+    # We check for the case of xi being a list of matrices.
+    if type(xi) == list:
+        xi = np.array([[[xi[l][i, j]
+                       for j in range(Ne)] for i in range(Ne)]
+                       for l in range(Nl)])
+
     # We find all the equations that the specified problem has to fulfil.
     eqs = []
+    t = symbols("t", real=True)
     for i in range(Ne):
         for j in range(0, i):
             if (rm[0][i, j] != 0) or \
@@ -258,7 +265,7 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
                (rm[2][i, j] != 0):
                 for l in range(Nl):
                     if xi[l, i, j] == 1:
-                        eqs += [-omega_laser[l] + theta[j] - theta[i]]
+                        eqs += [-omega_laser[l]*t + theta[j] - theta[i]]
 
     if return_equations:
         return eqs
