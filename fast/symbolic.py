@@ -1256,11 +1256,13 @@ approximation, as far as I know."
                 epsilonml = epsilonpl.conjugate()
 
                 if RF:
-                    Epl = Ep[l]*xi[l][i, j]
-                    Epl *= exp(-I*(t*omega_laser[l]+theta[i]-theta[j]))
+                    Epl = xi[l][i, j]*Ep[l]
+                    Epl *= exp(-I*(theta[i]-theta[j]-t*omega_laser[l]))
+                    Eml = xi[l][i, j]*Ep[l].conjugate()
+                    Eml *= exp(-I*(theta[i]-theta[j]+t*omega_laser[l]))
                 else:
                     Epl = Ep[l]*xi[l][i, j]*exp(-I*omega_laser[l]*t)
-                Eml = Epl.conjugate()
+                    Eml = Epl.conjugate()
 
                 # The E^(+)r^(-) term
                 H[i, j] += -e*Epl/2*cartesian_dot_product(epsilonpl, rmij)
@@ -1279,39 +1281,6 @@ approximation, as far as I know."
                     H[i, j] += hbar*omega_level[i]
 
     return H
-
-# from fast import *
-# from sympy import zeros, pi, pprint, symbols
-# from fast.bloch import phase_transformation
-#
-# Ne = 3
-# Nl = 2
-# Ep, omega_laser = define_laser_variables(Nl)
-# epsilonp = [polarization_vector(0, -pi/2, 0, 0, 1) for l in range(Nl)]
-# detuning_knob = symbols("delta1 delta2", real=True)
-#
-# xi = [zeros(Ne, Ne) for l in range(Nl)]
-# coup = [[(1, 0), (2, 0)], [(1, 0), (2, 0)]]
-# coup = [[(1, 0)], [(2, 0)]]
-#
-# for l in range(Nl):
-#     for pair in coup[l]:
-#         xi[l][pair[0], pair[1]] = 1
-#         xi[l][pair[1], pair[0]] = 1
-#
-# rm = define_r_components(Ne, xi, explicitly_hermitian=True,
-#                          helicity=True, p=-1)
-# rm = helicity_to_cartesian(rm)
-#
-# theta = phase_transformation(Ne, Nl, rm, xi)
-# c, ct, theta = define_psi_coefficients(Ne)
-# print theta
-# omega_level, omega, gamma = define_frequencies(Ne, True)
-#
-# H = hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser,
-#                 xi, RWA=True, RF=theta)
-#
-# pprint(H)
 
 
 if __name__ == "__main__":
