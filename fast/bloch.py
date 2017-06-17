@@ -215,7 +215,7 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff, symbols
+from sympy import Symbol, diff
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables
 from scipy.constants import physical_constants
@@ -257,7 +257,6 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
 
     # We find all the equations that the specified problem has to fulfil.
     eqs = []
-    t = symbols("t", real=True)
     for i in range(Ne):
         for j in range(0, i):
             if (rm[0][i, j] != 0) or \
@@ -265,7 +264,7 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
                (rm[2][i, j] != 0):
                 for l in range(Nl):
                     if xi[l, i, j] == 1:
-                        eqs += [-omega_laser[l]*t + theta[j] - theta[i]]
+                        eqs += [-omega_laser[l] + theta[j] - theta[i]]
 
     if return_equations:
         return eqs
@@ -847,6 +846,218 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     # print code
     exec hamiltonian
     return hamiltonian
+
+
+def vectorization(Ne, real=False, lower_triangular=True, normalized=False):
+    r"""Return functions to map matrix element indices to vectorized indices.
+
+    This function returns a function Mu that takes a pair of indices i, j
+    spanning Ne states, and returns an index mu spanning the elements of the
+    vectorized density matrix. If complex=True.
+
+    >>> def test_vectorization(Ne, real=False,
+    ...                        lower_triangular=True, normalized=False):
+    ...
+    ...     Mu, IJ = vectorization(Ne, real, lower_triangular, normalized)
+    ...     if normalized:
+    ...         j0 = 1
+    ...     else:
+    ...         j0 = 0
+    ...     for j in range(j0, Ne):
+    ...         if real:
+    ...             muu = Mu(j, j, 1)
+    ...             ii, jj, ss = IJ(muu)
+    ...             print j, j, muu, j-ii, j-jj, ss
+    ...         else:
+    ...             muu = Mu(j, j)
+    ...             ii, jj = IJ(muu)
+    ...             print j, j, muu, j-ii, j-jj
+    ...     for j in range(Ne):
+    ...         for i in range(j+1, Ne):
+    ...             if real:
+    ...                 muu = Mu(i, j, 1)
+    ...                 ii, jj, ss = IJ(muu)
+    ...                 print i, j, muu, i-ii, j-jj, ss
+    ...                 muu = Mu(i, j, -1)
+    ...                 ii, jj, ss = IJ(muu)
+    ...                 print i, j, muu, i-ii, j-jj, ss
+    ...             else:
+    ...                 muu = Mu(i, j)
+    ...                 ii, jj = IJ(muu)
+    ...                 print i, j, muu, i-ii, j-jj
+    ...             if not lower_triangular:
+    ...                 if real:
+    ...                     muu = Mu(j, i, 1)
+    ...                     ii, jj, ss = IJ(muu)
+    ...                     print j, i, muu, j-ii, i-jj, ss
+    ...                     muu = Mu(j, i, -1)
+    ...                     ii, jj, ss = IJ(muu)
+    ...                     print j, i, muu, j-ii, i-jj, ss
+    ...                 else:
+    ...                     muu = Mu(j, i)
+    ...                     ii, jj = IJ(muu)
+    ...                     print i, j, muu, j-ii, i-jj
+    ...
+
+    >>> Ne = 3
+    >>> test_vectorization(Ne, False, False, False)
+    0 0 0 0 0
+    1 1 1 0 0
+    2 2 2 0 0
+    1 0 3 0 0
+    1 0 4 0 0
+    2 0 5 0 0
+    2 0 6 0 0
+    2 1 7 0 0
+    2 1 8 0 0
+
+    >>> test_vectorization(Ne, False, False, True)
+    1 1 0 0 0
+    2 2 1 0 0
+    1 0 2 0 0
+    1 0 3 0 0
+    2 0 4 0 0
+    2 0 5 0 0
+    2 1 6 0 0
+    2 1 7 0 0
+
+    >>> test_vectorization(Ne, False, True, False)
+    0 0 0 0 0
+    1 1 1 0 0
+    2 2 2 0 0
+    1 0 3 0 0
+    2 0 4 0 0
+    2 1 5 0 0
+
+    >>> test_vectorization(Ne, False, True, True)
+    1 1 0 0 0
+    2 2 1 0 0
+    1 0 2 0 0
+    2 0 3 0 0
+    2 1 4 0 0
+
+    >>> test_vectorization(Ne, True, False, False)
+    0 0 0 0 0 1
+    1 1 1 0 0 1
+    2 2 2 0 0 1
+    1 0 3 0 0 1
+    1 0 4 0 0 -1
+    0 1 5 0 0 1
+    0 1 6 0 0 -1
+    2 0 7 0 0 1
+    2 0 8 0 0 -1
+    0 2 9 0 0 1
+    0 2 10 0 0 -1
+    2 1 11 0 0 1
+    2 1 12 0 0 -1
+    1 2 13 0 0 1
+    1 2 14 0 0 -1
+
+    >>> test_vectorization(Ne, True, False, True)
+    1 1 0 0 0 1
+    2 2 1 0 0 1
+    1 0 2 0 0 1
+    1 0 3 0 0 -1
+    0 1 4 0 0 1
+    0 1 5 0 0 -1
+    2 0 6 0 0 1
+    2 0 7 0 0 -1
+    0 2 8 0 0 1
+    0 2 9 0 0 -1
+    2 1 10 0 0 1
+    2 1 11 0 0 -1
+    1 2 12 0 0 1
+    1 2 13 0 0 -1
+
+    >>> test_vectorization(Ne, True, True, False)
+    0 0 0 0 0 1
+    1 1 1 0 0 1
+    2 2 2 0 0 1
+    1 0 3 0 0 1
+    1 0 4 0 0 -1
+    2 0 5 0 0 1
+    2 0 6 0 0 -1
+    2 1 7 0 0 1
+    2 1 8 0 0 -1
+
+    >>> test_vectorization(Ne, True, True, True)
+    1 1 0 0 0 1
+    2 2 1 0 0 1
+    1 0 2 0 0 1
+    1 0 3 0 0 -1
+    2 0 4 0 0 1
+    2 0 5 0 0 -1
+    2 1 6 0 0 1
+    2 1 7 0 0 -1
+
+    """
+    three = {}; three_inv = {}
+    four = {}; four_inv = {}
+    mu3 = 0
+    mu4 = 0
+    # We get the mappings of populations.
+    for i in range(Ne):
+        three.update({(i, i): mu3})
+        three_inv.update({mu3: (i, i)})
+        mu3 += 1
+        four.update({(i, i, 1): mu4})
+        four_inv.update({mu4: (i, i, 1)})
+        mu4 += 1
+
+    for j in range(Ne):
+        for i in range(j+1, Ne):
+            three.update({(i, j): mu3})
+            three_inv.update({mu3: (i, j)})
+            mu3 += 1
+            for s in [1, -1]:
+                four.update({(i, j, s): mu4})
+                four_inv.update({mu4: (i, j, s)})
+                mu4 += 1
+
+            if not lower_triangular:
+                three.update({(j, i): mu3})
+                three_inv.update({mu3: (j, i)})
+                mu3 += 1
+                for s in [1, -1]:
+                    four.update({(j, i, s): mu4})
+                    four_inv.update({mu4: (j, i, s)})
+                    mu4 += 1
+
+    if normalized:
+        three.pop((0, 0))
+        four.pop((0, 0, 1))
+
+        three_inv.pop(0)
+        four_inv.pop(0)
+
+    def Mu3(i, j):
+        if normalized:
+            return three[(i, j)]-1
+        else:
+            return three[(i, j)]
+
+    def Mu4(i, j, s):
+        if normalized:
+            return four[(i, j, s)]-1
+        else:
+            return four[(i, j, s)]
+
+    def IJ3(mu):
+        if normalized:
+            return three_inv[mu+1]
+        else:
+            return three_inv[mu]
+
+    def IJ4(mu):
+        if normalized:
+            return four_inv[mu+1]
+        else:
+            return four_inv[mu]
+
+    if real:
+        return Mu4, IJ4
+    else:
+        return Mu3, IJ3
 
 
 if __name__ == "__main__":

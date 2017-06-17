@@ -1066,28 +1066,31 @@ def draw_multiplet(ax,fine_state,p,hmin,w, fside='right',label_separation=1,labe
 	return [[p[0],i] for i in h_list]
 
 
-def excitation(ax,p1,p2,**kwargs):
-	x1,y1=p1
-	x2,y2=p2
-	dx=p2[0]-x1
-	dy=p2[1]-y1
+def excitation(ax, p1, p2, **kwargs):
+    r"""Draw an atomic excitation as an arrow."""
+    x1, y1 = p1
+    x2, y2 = p2
+    dx = p2[0]-x1
+    dy = p2[1]-y1
 
-	ax.arrow( x1, y1, dx, dy,length_includes_head=True,**kwargs)
-	#ax.arrow( x2, y2,-dx,-dy,length_includes_head=True,**kwargs)
+    ax.arrow(x1, y1, dx, dy, length_includes_head=True, **kwargs)
+    # ax.arrow( x2, y2,-dx,-dy,length_includes_head=True,**kwargs)
 
 
-def decay(ax,p0,pf,A,n,format=None,**kwds):
-	if format==None: format='k-'
-	T=sqrt((p0[0]-pf[0])**2+(p0[1]-pf[1])**2)
-	alpha=atan2(pf[1]-p0[1],pf[0]-p0[0])
+def decay(ax, p0, pf, A, n, format=None, **kwds):
+    r"""Draw a spontaneous decay as a wavy line."""
+    if format is None: format = 'k-'
+    T = sqrt((p0[0]-pf[0])**2+(p0[1]-pf[1])**2)
+    alpha = atan2(pf[1]-p0[1], pf[0]-p0[0])
 
-	x=[ i*T/400.0 for i in range(401)]
-	y=[A*sin(xi * 2*pi*n/T) for xi in x]
+    x = [i*T/400.0 for i in range(401)]
+    y = [A*sin(xi * 2*pi*n/T) for xi in x]
 
-	cur_list=[(x,y)]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
+    cur_list = [(x, y)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
 
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+    for curi in cur_list:
+        ax.plot(curi[0], curi[1], format, **kwds)
 
 
 aaa = 0.15
