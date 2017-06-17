@@ -978,7 +978,7 @@ def draw_arith(ax,p0,size=1,alpha=0,arith=None,format=None,fontsize=10,**kwds):
 
 
 def draw_state(ax, p, text='', l=0.5, alignment='left', label_displacement=1.0,
-               fontsize=25, **kwds):
+               fontsize=25, atoms=None, atoms_h=0.125, atoms_size=5, **kwds):
     r"""Draw a quantum state for energy level diagrams."""
 
     ax.plot([p[0]-l/2.0, p[0]+l/2.0], [p[1], p[1]],
@@ -992,6 +992,13 @@ def draw_state(ax, p, text='', l=0.5, alignment='left', label_displacement=1.0,
             ax.text(p[0] + l/2.0 + label_displacement, p[1], text,
                     horizontalalignment='left', color='black',
                     fontsize=fontsize)
+
+    # We draw atoms.
+    if atoms is not None:
+        atoms_x = np.linspace(p[0]-l*0.5, p[0]+l*0.5, atoms)
+        atoms_y = [p[1] + atoms_h for i in range(atoms)]
+        # print l, atoms_x
+        ax.plot(atoms_x, atoms_y, "ko", ms=atoms_size)
 
 
 def draw_multiplet(ax,fine_state,p,hmin,w, fside='right',label_separation=1,label_fontsize=15,fsize=10,deltanu_fontsize=6,
