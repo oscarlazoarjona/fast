@@ -1039,6 +1039,7 @@ def wigner_d_small(J, beta):
 
     Some examples form [1]:
 
+    >>> from fast.symbolic import wigner_d_small
     >>> from sympy import Integer, symbols, pi
     >>> half = 1/Integer(2)
     >>> beta = symbols("beta", real=True)
@@ -1131,6 +1132,7 @@ def wigner_d(J, alpha, beta, gamma):
     We use the general formula from [1], equation 4.1.12.
 
     The simplest possible example:
+    >>> from fast.symbolic import wigner_d
     >>> from sympy import Integer, symbols, pprint
     >>> half = 1/Integer(2)
     >>> alpha, beta, gamma = symbols("alpha, beta, gamma", real=True)
