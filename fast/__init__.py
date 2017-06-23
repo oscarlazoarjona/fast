@@ -14,8 +14,6 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 [85Rb, 87Rb, 133Cs]
 
 """
-# This allows plots to be made remotely via ssh.
-from matplotlib import use; use('Agg')
 
 from electric_field import PlaneWave, MotField
 from electric_field import electric_field_amplitude_gaussian
