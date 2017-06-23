@@ -1259,9 +1259,9 @@ approximation, as far as I know."
 
                 if RF:
                     Epl = xi[l][i, j]*Ep[l]
-                    Epl *= exp(-I*(theta[i]-theta[j]-t*omega_laser[l]))
+                    Epl *= exp(-I*(theta[j]-theta[i]-t*omega_laser[l]))
                     Eml = xi[l][i, j]*Ep[l].conjugate()
-                    Eml *= exp(-I*(theta[i]-theta[j]+t*omega_laser[l]))
+                    Eml *= exp(-I*(theta[j]-theta[i]+t*omega_laser[l]))
                 else:
                     Epl = Ep[l]*xi[l][i, j]*exp(-I*omega_laser[l]*t)
                     Eml = Epl.conjugate()
