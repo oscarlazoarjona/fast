@@ -584,24 +584,28 @@ def dot_product(laserl, sign, r, i, j):
         return dp
 
 
-def find_omega_min(omega,Nl,detuningsij,i_d,I_nd):
-	"""This function returns a list of length Nl containing the mininmal frequency
-	that each laser excites."""
-	omega_min=[]
-	omega_min_indices=[]
-	for l in range(Nl):
-		omegas=sorted([ (omega[i_d(p[0]+1)-1][i_d(p[1]+1)-1],p) for p in detuningsij[l]])
-		omega_min+=[omegas[0][0]]
-		omega_min_indices+=[omegas[0][1]]
-	return omega_min,omega_min_indices
+def find_omega_min(omega, Nl, detuningsij, i_d, I_nd):
+    r"""This function returns a list of length Nl containing the mininmal frequency
+    that each laser excites.
+    """
+    omega_min = []
+    omega_min_indices = []
+    for l in range(Nl):
+        omegas = sorted([(omega[i_d(p[0]+1)-1][i_d(p[1]+1)-1], p)
+                         for p in detuningsij[l]])
+        omega_min += [omegas[0][0]]
+        omega_min_indices += [omegas[0][1]]
+    return omega_min, omega_min_indices
 
-def write_equations_code(path,name,laser,omega,gamma,r,Lij,
-				states=None,excluded_mu=[],verbose=1):
-	Ne=len(omega[0])
-	Nl=len(laser)
-	N_excluded_mu=len(excluded_mu)
 
-	if states==None: states=range(1,Ne+1)
+def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
+                         excluded_mu=[], verbose=1):
+    r"""Write code for the equations."""
+    Ne = len(omega[0])
+    Nl = len(laser)
+    N_excluded_mu = len(excluded_mu)
+
+    if states is None: states = range(1, Ne+1)
 
 	omega_rescaled=omega[:]
 
