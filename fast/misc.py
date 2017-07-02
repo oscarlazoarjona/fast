@@ -22,27 +22,23 @@
 # ***********************************************************************
 r"""A general module for functions that are needed in more than one module."""
 
-from colorsys import hls_to_rgb,hsv_to_rgb
-from scipy.optimize import curve_fit
-from matplotlib import pyplot
+# from colorsys import hls_to_rgb, hsv_to_rgb
+# from scipy.optimize import curve_fit
+# from matplotlib import pyplot
 import numpy as np
 from time import time
 import os
+from math import sqrt, exp
+from sympy import solve, Symbol, diff, pprint
 
 use_netcdf = False
 if use_netcdf:
     from netCDF4 import Dataset
-from numpy import arange
-
 
 sage_included = 'sage' in globals().keys()
 
-from math import atan2,sqrt,pi,cos,sin,exp
-from sympy import solve,Symbol,diff,pprint
-from atomic_structure import find_fine_states, split_hyperfine_to_magnetic, make_list_of_states
-from atomic_structure import calculate_boundaries
 
-def fprint(expr,print_ascii=False):
+def fprint(expr, print_ascii=False):
     r"""This function chooses whether to use ascii characters to represent
     a symbolic expression in the notebook or to use sympy's pprint.
 
@@ -53,497 +49,540 @@ def fprint(expr,print_ascii=False):
 
 
     """
-
     if print_ascii:
-        pprint(expr,use_unicode=False,num_columns=120)
+        pprint(expr, use_unicode=False, num_columns=120)
     else:
         return expr
 
+
 def format_double(num):
-	num=str(num)
-	if 'e' in num:
-		return num.replace('e','d')
-	else:
-		return num+'d0'
+    r"""Format a Python float into a Fortran double."""
+    num = str(num)
+    if 'e' in num:
+        return num.replace('e', 'd')
+    else:
+        return num+'d0'
 
-def Mu(i,j,s,N,excluded_mu=[]):
-	'''This function calculates the global index mu for the element i,j. It returns the index for the
-	real part if s=0 and the one for the imaginary part if s=1'''
-	if i==j:
-		if s==-1:
-			if i==1:
-				return 0
-			else:
-				raise ValueError,'There is no population rhoii with i='+str(i)+'.'
-		mu= i-1
-	elif i>j and s==1:
-		mu= i - j + sum([N-k for k in range(1,j)])+N-1
-	elif i>j and s==-1:
-		mu= i - j + sum([N-k for k in range(1,j)])+N-1 + N*(N-1)/2
-	else:
-		raise ValueError,'i='+str(i)+', j='+str(j)+' Equations for i<j are not calculated.'+str(s)
 
-	if excluded_mu !=[]:
-		#if mu in excluded_mu:
-		#	print i,j,s
-		#	raise ValueError,'mu = '+str(mu)+' appeared among the excluded mu.'
-		mu=mu-len([i for i in excluded_mu if i<mu])
-	return mu
+def Mu(i, j, s, N, excluded_mu=[]):
+    """This function calculates the global index mu for the element i, j.
 
-def IJ(mu,N):
-	"""This function returns i,j,s for any given mu."""
-	if mu==0: return 1,1,1
+    It returns the index for the real part if s=0 and the one for the
+    imaginary part if s=1.
+    """
+    if i == j:
+        if s == -1:
+            if i == 1:
+                return 0
+            else:
+                mes = 'There is no population rhoii with i='+str(i)+'.'
+                raise ValueError(mes)
+        mu = i-1
+    elif i > j and s == 1:
+        mu = i - j + sum([N-k for k in range(1, j)])+N-1
+    elif i > j and s == -1:
+        mu = i - j + sum([N-k for k in range(1, j)])+N-1 + N*(N-1)/2
+    else:
+        mes = 'i='+str(i)+', j='+str(j)
+        mes += ' Equations for i<j are not calculated.'+str(s)
+        raise ValueError(mes)
 
-	if mu not in range(0,N**2): raise ValueError,'mu has an invalid value mu='+str(mu)+'.'
+    if excluded_mu != []:
+        # if mu in excluded_mu:
+        # print i,j,s
+        # raise ValueError,'mu = '+str(mu)+' appeared among the excluded mu.'
+        mu = mu-len([ii for ii in excluded_mu if ii < mu])
+    return mu
 
-	if 1 <= mu <=N-1:
-		return mu+1,mu+1,1
-	else:
-		m=N-1
-		M=N*(N-1)/2
-		for jj in range(1,N):
-			for ii in range(jj+1,N+1):
-				m+=1
-				if m==mu or m+M==mu:
-					if mu>N*(N+1)/2 -1:
-						return ii,jj,-1
-					else:
-						return ii,jj,1
 
-def read_result(path,name,i=None,j=None,s=0,N=None,excluded_mu=[],use_netcdf=True,clone=None):
-	r"""This function reads the results stored in path under file name.dat returning them as a list
-	of N^2 lists of the form [frequency, rho22, rho33, ... rho_N,N-1]. Alternatively it can return only
-	two lists [frequency, rho_i,j,s] where s must be 1 for the real part and -1 for the imaginary part."""
+def IJ(mu, N):
+    """Return i, j, s for any given mu."""
+    if mu == 0: return 1, 1, 1
 
-	if clone!=None:
-		clone='_'+str(clone)
-	else:
-		clone=''
+    if mu not in range(0, N**2):
+        raise ValueError('mu has an invalid value mu='+str(mu)+'.')
 
-	if use_netcdf:
-		#print 'reading from',path+name+clone+'.nc'
-		ncfile = Dataset(path+name+clone+'.nc','r')
-		matrix = ncfile.variables['matrix'][:]
-		vector = ncfile.variables['vector'][:]
-		Nrho,n_points=len(matrix),len(matrix[0])
-		ncfile.close()
+    if 1 <= mu <= N-1:
+        return mu+1, mu+1, 1
+    else:
+        m = N-1
+        M = N*(N-1)/2
+        for jj in range(1, N):
+            for ii in range(jj+1, N+1):
+                m += 1
+                if m == mu or m+M == mu:
+                    if mu > N*(N+1)/2 - 1:
+                        return ii, jj, -1
+                    else:
+                        return ii, jj, 1
 
-		if i!=None:
-			mu=Mu(i,j,s,N,excluded_mu)
-			if sage_included:
-				return [ (vector[k],matrix[mu-1][k]) for k in range(n_points)]
-			else:
-				return vector,matrix[mu-1]
-		else:
-			return [vector] + [ matrix[k] for k in range(Nrho)]
-		#ln=[for i in range(m)]
-	else:
-		r=file(path+name+clone+'.dat','r')
-		l=r.readlines()
-		r.close()
 
-		try:
-			ln=[[float(num) for num in li.split()] for li in l]
-		except:
-			print num
-			print [l[0]]
-			print [l[-2]]
-			print [l[-1]]
-			raise ValueError
+def read_result(path, name, i=None, j=None, s=0, N=None,
+                excluded_mu=[], use_netcdf=True, clone=None):
+    r"""This function reads the results stored in path under file name.dat
+    returning them as a list of N^2 lists of the form
+    [frequency, rho22, rho33, ... rho_N,N-1]. Alternatively it can return only
+    two lists [frequency, rho_i,j,s] where s must be 1 for the real part and
+    -1 for the imaginary part.
+    """
 
-		if i!=None:
-			mu=Mu(i,j,s,N,excluded_mu)
-			if sage_included:
-				return [(li[0],li[mu]) for li in ln]
-			else:
-				x=[li[0] for li in ln]
-				y=[li[mu] for li in ln]
-				return x,y
-		else:
-			return [[ ln[i][0] for i in range(len(ln))]] + [[ ln[i][mu+1] for i in range(len(ln))] for mu in range(N**2-1)]
+    if clone is not None:
+        clone = '_'+str(clone)
+    else:
+        clone = ''
 
-def dft(s,max_freq=False):
-    f=[i[1] for i in s]
-    T=s[-1][0]
-    Om=1/T
+    if use_netcdf:
+        # print 'reading from',path+name+clone+'.nc'
+        ncfile = Dataset(path+name+clone+'.nc', 'r')
+        matrix = ncfile.variables['matrix'][:]
+        vector = ncfile.variables['vector'][:]
+        Nrho, n_points = len(matrix), len(matrix[0])
+        ncfile.close()
 
-    fn=fft.fft(f)
-    fn=[sqrt(real(i)**2+imag(i)**2) for i in fn]
-    m=int(len(fn)/2)
-    fn=fn[m:]+fn[:m]
+        if i is not None:
+            mu = Mu(i, j, s, N, excluded_mu)
+            if sage_included:
+                return [(vector[k], matrix[mu-1][k]) for k in range(n_points)]
+            else:
+                return vector, matrix[mu-1]
+        else:
+            return [vector] + [matrix[k] for k in range(Nrho)]
+        # ln=[for i in range(m)]
+    else:
+        r = file(path+name+clone+'.dat', 'r')
+        l = r.readlines()
+        r.close()
 
-    omm=Om*m
+        try:
+            ln = [[float(num) for num in li.split()] for li in l]
+        except:
+            print num
+            print [l[0]]
+            print [l[-2]]
+            print [l[-1]]
+            raise ValueError
 
-    sf=[(i*Om-omm,fn[i]) for i in range(len(s))]
+        if i is not None:
+            mu = Mu(i, j, s, N, excluded_mu)
+            if sage_included:
+                return [(li[0], li[mu]) for li in ln]
+            else:
+                x = [li[0] for li in ln]
+                y = [li[mu] for li in ln]
+                return x, y
+        else:
+            dat = [[ln[ii][0] for ii in range(len(ln))]]
+            dat += [[ln[ii][mu+1] for ii in range(len(ln))]
+                    for mu in range(N**2-1)]
+            return dat
+
+
+def dft(s, max_freq=False):
+    r"""Calculate a discrete Fourier transform."""
+    f = [i[1] for i in s]
+    T = s[-1][0]
+    Om = 1/T
+
+    fn = np.fft.fft(f)
+    fn = [sqrt(np.real(i)**2 + np.imag(i)**2) for i in fn]
+    m = int(len(fn)/2)
+    fn = fn[m:]+fn[:m]
+
+    omm = Om*m
+
+    sf = [(i*Om-omm, fn[i]) for i in range(len(s))]
     if max_freq:
-        m=max(fn)
-        im=fn.index(m)
+        m = max(fn)
+        im = fn.index(m)
         return sf[im][0]
     return sf
 
-def formatLij(Lij0,Ne):
-	"""This function transforms a list of laser conections of the form
-	[i,j,[l1,l2,...]] between states i and j by lasers l1,l2,... into a
-	Ne x Ne matrix whose elements are the lasers connecting the corresponding
-	indices."""
-	#We create Lij as a matrix of lists of laser indices
-	global Lij
-	Lij=[]
-	for i in range(Ne):
-		fila=[]
-		for j in range(Ne):
-			band=False
-			for tri in Lij0:
-				if [i+1,j+1] == tri[:2]:
-					band=True
-					break
-				elif [j+1,i+1] == tri[:2]:
-					band=True
-					break
-			if band:
-				fila+=[tri[2]]
-			else:
-				fila+=[[]]
-		Lij+=[fila]
-	return Lij
 
-def find_phase_transformation(Ne,Nl,r,Lij,verbose=0,return_equations=False,**kwds):
-	"""This function returns a phase transformation specified as a list of lenght Ne
-	whose elements correspond to each theta_i. Each element is a list of length Nl
-	which specifies the coefficients multiplying each optical frequency omega^l. So
-	for instance [[1,1],[1,0],[0,0]] means
-
-	theta_1=omega^1+omega^2
-	theta_2=omega^1
-	theta_3=0."""
-
-	#We first define the needed variables
-	_omega_laser=[Symbol('omega_laser'+str(l+1)) for l in range(Nl)]
-	_theta=[Symbol('theta'+str(i+1)) for i in range(Ne)]
-
-	#We find all the equations that the specified problem has to fulfil.
-	eqs=[]
-	for i in range(Ne):
-		for j in range(i+1,Ne):
-			if type(r[0])==list:
-				if (r[0][i][j] != 0) or (r[1][i][j] != 0) or (r[2][i][j] != 0):
-					for l in range(Nl):
-						if l+1 in Lij[i][j]:
-							eqs+=[_omega_laser[l] + _theta[j] - _theta[i] ]
-			else:
-				if (r[0][i,j] != 0) or (r[1][i,j] != 0) or (r[2][i,j] != 0):
-					for l in range(Nl):
-						if l+1 in Lij[i][j]:
-							eqs+=[_omega_laser[l] + _theta[j] - _theta[i] ]
+def formatLij(Lij0, Ne):
+    """This function transforms a list of laser conections of the form
+    [i,j,[l1,l2,...]] between states i and j by lasers l1,l2,... into a
+    Ne x Ne matrix whose elements are the lasers connecting the corresponding
+    indices.
+    """
+    # We create Lij as a matrix of lists of laser indices
+    global Lij
+    Lij = []
+    for i in range(Ne):
+        fila = []
+        for j in range(Ne):
+            band = False
+            for tri in Lij0:
+                if [i+1, j+1] == tri[:2]:
+                    band = True
+                    break
+                elif [j+1, i+1] == tri[:2]:
+                    band = True
+                    break
+            if band:
+                fila += [tri[2]]
+            else:
+                fila += [[]]
+        Lij += [fila]
+    return Lij
 
 
-	if return_equations:
-		return eqs
+def find_phase_transformation(Ne, Nl, r, Lij, verbose=0,
+                              return_equations=False, **kwds):
+    """This function returns a phase transformation specified as a list of
+    lenght Ne whose elements correspond to each theta_i. Each element is a
+    list of length Nl which specifies the coefficients multiplying each
+    optical frequency omega^l. So for instance [[1,1],[1,0],[0,0]] means
 
-	#~ print _theta
-	sol=solve(eqs,_theta,dict=True)[0]
-	for i in range(Ne):
-		if _theta[i] not in sol.keys():
-			sol.update({_theta[i]:_theta[i]})
-	#~ print sol.keys()
-	#~ print len(sol)
-	#~ print sol[_theta[23]]
-	sol_simple={_theta[i]:sol[_theta[i]]-sol[_theta[-1]] for i in range(Ne)}
-	#~ print sol
-	#~ for i in range(Ne):
-		#~ print i+1,sol_simple[_theta[i]]
+    theta_1=omega^1+omega^2
+    theta_2=omega^1
+    theta_3=0.
+    """
+    # We first define the needed variables
+    _omega_laser = [Symbol('omega_laser'+str(l+1)) for l in range(Nl)]
+    _theta = [Symbol('theta'+str(i+1)) for i in range(Ne)]
 
-	sol=[]
-	for i in range(Ne):
-		soli=[]
-		for l in range(Nl):
-			soli+=[diff(sol_simple[_theta[i]] ,_omega_laser[l])]
-		sol+=[soli]
+    # We find all the equations that the specified problem has to fulfil.
+    eqs = []
+    for i in range(Ne):
+        for j in range(i+1, Ne):
+            if type(r[0]) == list:
+                if (r[0][i][j] != 0) or (r[1][i][j] != 0) or (r[2][i][j] != 0):
+                    for l in range(Nl):
+                        if l+1 in Lij[i][j]:
+                            eqs += [_omega_laser[l] + _theta[j] - _theta[i]]
+            else:
+                if (r[0][i, j] != 0) or (r[1][i, j] != 0) or (r[2][i, j] != 0):
+                    for l in range(Nl):
+                        if l+1 in Lij[i][j]:
+                            eqs += [_omega_laser[l] + _theta[j] - _theta[i]]
 
-	return sol
+    if return_equations:
+        return eqs
+
+    # print _theta
+    sol = solve(eqs, _theta, dict=True)[0]
+    for i in range(Ne):
+        if _theta[i] not in sol.keys():
+            sol.update({_theta[i]: _theta[i]})
+    # print sol.keys()
+    # print len(sol)
+    # print sol[_theta[23]]
+    sol_simple = {_theta[i]: sol[_theta[i]]-sol[_theta[-1]] for i in range(Ne)}
+    # print sol
+    # for i in range(Ne):
+    #     print i+1,sol_simple[_theta[i]]
+
+    sol = []
+    for i in range(Ne):
+        soli = []
+        for l in range(Nl):
+            soli += [diff(sol_simple[_theta[i]], _omega_laser[l])]
+        sol += [soli]
+
+    return sol
+
 
 def calculate_iI_correspondence(omega):
-	Ne=len(omega[0])
-	om=omega[0][0]
-	correspondence=[]
-	I=0
-	for i in range(Ne):
-		if omega[i][0] != om:
-			om=omega[i][0]
-			I+=1
-		correspondence+=[(i+1,I+1)]
-	Nnd=I+1
+    r"""Get the correspondance between degenerate and nondegenerate schemes."""
+    Ne = len(omega[0])
+    om = omega[0][0]
+    correspondence = []
+    I = 0
+    for i in range(Ne):
+        if omega[i][0] != om:
+            om = omega[i][0]
+            I += 1
+        correspondence += [(i+1, I+1)]
+    Nnd = I+1
 
-	I_nd=lambda i : correspondence[i-1][1]
-	def i_d(I):
-		for i in range(Ne):
-			if correspondence[i][1]==I:
-				return correspondence[i][0]
+    def I_nd(i):
+        return correspondence[i-1][1]
 
-	return i_d,I_nd,Nnd
+    def i_d(I):
+        for i in range(Ne):
+            if correspondence[i][1] == I:
+                return correspondence[i][0]
 
-def part(z,s):
-	if sage_included:
-		if s==1: return real(z)
-		elif s==-1:	return imag(z)
-	else:
-		if s==1: return z.real
-		elif s==-1: return z.imag
+    return i_d, I_nd, Nnd
+
+
+def part(z, s):
+    r"""Get the real or imaginary part of a complex number."""
+    if sage_included:
+        if s == 1: return np.real(z)
+        elif s == -1: return np.imag(z)
+    else:
+        if s == 1: return z.real
+        elif s == -1: return z.imag
+
 
 def detuning_combinations(lists):
-	"""This function recieves a list of length Nl with the number of transitions
-	each laser induces. It returns the cartesian product of all these posibilities as
-	a list of all possible combinations."""
-	Nl=len(lists)
-	comb=[[i] for i in range(lists[0])]
-	for l in range(1,Nl):
-		combn=[]
-		for c0 in comb:
-			for cl in range(lists[l]):
-				combn+=[ c0[:]+[cl] ]
-		comb=combn[:]
-	return comb
-
-def laser_detunings(Lij,Nl,i_d,I_nd,Nnd):
-	'''This function returns the list of transitions i,j that each laser produces
-	as lists of length Ne, whose elements are all zero except for the ith element =1
-	and the jth element = -1.
-
-	Also, it returns detuningsij, which contains the same information
-	but as pairs if ij. The indices in it start from 0.
-	'''
-	Ne=len(Lij)
-	detunings=[[] for i in range(Nl)]
-	detuningsij=[[] for i in range(Nl)]
-	detuning=[0 for i in range(Nnd)]
-	for i in range(1,Ne):
-		for j in range(i):
-			for l in Lij[i][j]:
-				det=detuning[:]
-				det[I_nd(i+1)-1]+=1;det[I_nd(j+1)-1]-=1
-				if det not in detunings[l-1]:
-					detunings[l-1]+=[det]
-					detuningsij[l-1]+=[(I_nd(i+1)-1,I_nd(j+1)-1)]
-
-	return detunings,detuningsij
-
-def Theta(i,j,theta,omega_rescaled,omega_min,
-			detunings,detuningsij,combinations,detuning_indices,
-			Lij,i_d,I_nd,Nnd,
-			states=None,verbose=1,other_the=None):
-	"""This function returns code for Theta_i j as defined in the equation labeled Theta. in terms
-	of detunings. It recieves indexes i,j starting from 1."""
-
-	if i==j:
-		return ''
-	elif j>i:
-		raise ValueError,'i should never be less than j.'
-
-	Ne=len(omega_rescaled[0]); Nl=len(theta[0])
-	if other_the!=None:
-		the=other_the[:]
-	else:
-		the=[theta[j-1][l]-theta[i-1][l] for l in range(Nl)]
-
-	###########################################################################################
-	#This part is about finding detunings that reduce to -omega_ij
-	if the==[0 for l in range(Nl)]:
-		if omega_rescaled[i-1][j-1]==0:
-			return ''
-		#We need a combination of detunings that yields -omega_i,j.
-		#According to equation labeled "detuning-exception1"
-		#-omega_ij= delta^l_ik - delta^l_jk
-		#so we seek a k that is lower than i and j
-		#and an l such that l is in L_ik and in L_jk
-
-		ii=min(i,j)
-		band1=False
-		band2=False
-		for k in range(1,ii):
-			for l in range(1,Nl+1):
-				if l in Lij[i-1][k-1] and l in Lij[j-1][k-1]:
-					s   ='I found that -omega_'+str(i)+','+str(j)
-					s+='= delta^'+str(l)+'_'+str(i)+','+str(k)
-					s+= '-delta^'+str(l)+'_'+str(j)+','+str(k)
-					s+='\n and also l='+str(l)
-					s+=' is in  L'+str(i)+','+str(k)+'='+str(Lij[i-1][k-1])
-					s+=' and in  L'+str(j)+','+str(k)+'='+str(Lij[j-1][k-1])+'\n'
-
-					#print s
-					band1=True
-					break
-			if band1:
-				break
-
-		if not band1:
-			#If no such a k exists then we follow te equation labeled "detuning-exception2"
-			#-omega_ij= delta^l_kj - delta^l_ki
-			#to look for a k greater than i and j
-			#and an l such that l is in L_ik and in L_jk
-			for k in range(ii+1,Ne+1):
-				for l in range(1,Nl+1):
-					if l in Lij[i-1][k-1] and l in Lij[j-1][k-1]:
-						s   ='I found that -omega_'+str(i)+','+str(j)
-						s+='= delta^'+str(l)+'_'+str(k)+','+str(j)
-						s+='-delta^'+str(l)+'_'+str(k)+','+str(i)
-						s+='\n and also l='+str(l)
-						s+=' is in  L'+str(i)+','+str(k)+'='+str(Lij[i-1][k-1])
-						s+=' and in  L'+str(j)+','+str(k)+'='+str(Lij[j-1][k-1])+'\n'
-						#print s
-						band2=True
-						break
-
-				if band2:
-					break
-
-		if band1:
-			The=''
-			#We need to find which detunings are delta^l_i,k and delta^l_j,k.
-			#Since they are detunings of laser l, they must have a number greater
-			#than those with smaller l:
-			acum=sum([detuning_indices[ll] for ll in range(l-1)])
-			#We test the indices of all detunings of laser l to find the ones we need.
-			for kk in range(detuning_indices[l-1]):
-				if detuningsij[l-1][kk][0]+1==I_nd(i) and detuningsij[l-1][kk][1]+1==I_nd(k):
-					The+='+detuning('+str(acum+kk+1)+')'
-				if detuningsij[l-1][kk][0]+1==I_nd(j) and detuningsij[l-1][kk][1]+1==I_nd(k):
-					The+='-detuning('+str(acum+kk+1)+')'
-			return The
-		elif band2:
-			The=''
-			#We need to find which detunings are delta^l_k,j and delta^l_k,i.
-			#Since they are detunings of laser l, they must have a number greater
-			#than those with smaller l:
-			acum=sum([detuning_indices[ll] for ll in range(l-1)])
-			#We test the indices of all detunings of laser l to find the ones we need.
-			for kk in range(detuning_indices[l-1]):
-				if detuningsij[l-1][kk][0]+1==I_nd(k) and detuningsij[l-1][kk][1]+1==I_nd(j):
-					The+='+detuning('+str(acum+kk+1)+')'
-				if detuningsij[l-1][kk][0]+1==I_nd(k) and detuningsij[l-1][kk][1]+1==I_nd(i):
-					The+='-detuning('+str(acum+kk+1)+')'
-			return The
-		else:
-			if verbose>1: print 'WARNING: Optical frequencies will be used instead for -omega_',i,j,'=',omega_rescaled[i-1][j-1],'\n'
-			return format_double(-omega_rescaled[i-1][j-1])
-	###########################################################################################
-	#This part is about finding detunings that reduce to (theta_j -theta_i -omega_ij)
-
-	#We establish to which omegaij the detunings should reduce to
-	omegaij=[0 for k in range(Nnd)]
-	omegaij[I_nd(i)-1]=1;omegaij[I_nd(j)-1]=-1
-
-	#We search for a combination of detunings that reduces to omegaij
-	#That is a linear combination of detunings with coefficients the
-	#that reduces to omegaij. Here
-	detuning_failure=True
-	for comb in combinations:
-		suma=[sum([the[l]*detunings[l][comb[l]][ii] for l in range(Nl)])  for ii in range(Nnd)]
-		if suma==omegaij:
-			detuning_failure=False
-			break
-
-	#We stop if no combination reduces to the needed expression.
-	if detuning_failure:
-
-		if verbose>1: print 'We will see if it is possible to express Theta_'+str(i)+','+str(j)+'=theta_'+str(j)+'-theta_'+str(i)+'-omega_'+str(i)+','+str(j)
-		if verbose>1: print 'in terms of other indices a,b such that omega_ab=omega_ij and transition i -> j is allowed by Lij.'
-
-		band3=False
-		for a in range(Ne):
-			for b in range(a):
-				if omega_rescaled[a][b]==omega_rescaled[i-1][j-1] and Lij[a][b]!=[]:
-					band3=True
-					break
-			if band3: break
-		if verbose>1: print band3,a,b,i,j
-
-		a=a+1; b=b+1
-		if band3 and (i!=a or j!=b):
-			if verbose>1: print omega_rescaled[i-1][j-1],omega_rescaled[a-1][b-1]
-			if verbose>1: print the
-			if verbose>1: print 'This was possible for omega_'+str(a)+','+str(b)
-			return Theta(a,b,theta,omega_rescaled,omega_min,
-					detunings,detuningsij,combinations,detuning_indices
-					,Lij,other_the=the,verbose=verbose,states=states)
-		else:
-			#verbose=2
-			#print 111
-			#qi=states[i-1].quantum_numbers
-			#qj=states[j-1].quantum_numbers
-			#print verbose
-			if verbose>0: print 'WARNING: It was impossible to express laser frequencies',the
-			if verbose>0: print 'and atomic transition -omega_',i,j,'=',-omega_rescaled[i-1][j-1]
-			if verbose>0: print 'in terms of detunings from the transitions given by Lij'
-			#for i in range(Ne):
-			#	print i+1,Lij[i]
-			#print
-			if verbose>0: print 'I Will use optical frequencies instead.'
-			The=''
-			#We give the optical frequencies
-			for l in range(Nl):
-				a=the[l]
-				if a==1:
-					The+='+'+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+')'
-				elif a==-1:
-					The+='-('+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+'))'
-				elif a==0:
-					The+=''
-				elif a>0:
-					The+='+'+str(a)+'*'+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+')'
-				else:
-					The+=    str(a)+'*('+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+'))'
-
-			#We substract omega_ij
-			The+=format_double(-omega_rescaled[i-1][j-1])
-			if verbose>1: print The
-			if verbose>1: print
-			return The
-
-	#For each optical frequency in the, we write the corresponding detuning.
-	#This way of assigining a global index ll to the detunings ammounts to
-	#   ll=   number_of_previous_detunings
-	#       + number_of_detuning_ordered_by_row_and_from_left_to_right_column
-	The=''
-	acum=0
-	####################################################################
-	#print 'comb',comb,'the',the,'i,j',i,j
-	for l in range(Nl):
-		if the[l]==1:
-			The+='+detuning('+str(acum+comb[l]+1)+')'
-		elif the[l]==-1:
-			The+='-detuning('+str(acum+comb[l]+1)+')'
-		elif the[l]==0:
-			pass
-		elif the[l]>0:
-			The+='+'+str(the[l])+'*detuning('+str(acum+comb[l]+1)+')'
-		else:
-			The+= str(the[l])+'*detuning('+str(acum+comb[l]+1)+')'
-		acum+=detuning_indices[l]
-
-	if The[:1]=='+':
-		The=The[1:]
-
-	####################################################################
-	#print 'The',The
-	return The
-
-def dot_product(laserl,sign,r,i,j):
-	"This function calculates the dot product epsilon^(l(+-)) . vec(r_ij)."
-	if sign==1:
-		dp=sum([laserl.Yp[1-p]*r[p+1][i-1][j-1]*(-1)**p for p in range(-1,2)])
-	elif sign==-1:
-		dp=sum([laserl.Ym[1-p]*r[p+1][i-1][j-1]*(-1)**p for p in range(-1,2)])
-
-	#~ if i==2 and j==9 and sign==-1:
-		#~ print 222
-		#~ print dp
-		#~ print [(laserl.Yp[1-p],r[p+1][i-1][j-1]) for p in range(-1,2)]
+    r"""This function recieves a list of length Nl with the number of
+    transitions each laser induces. It returns the cartesian product of all
+    these posibilities as a list of all possible combinations.
+    """
+    Nl = len(lists)
+    comb = [[i] for i in range(lists[0])]
+    for l in range(1, Nl):
+        combn = []
+        for c0 in comb:
+            for cl in range(lists[l]):
+                combn += [c0[:]+[cl]]
+        comb = combn[:]
+    return comb
 
 
-	if not sage_included:
-		return complex(dp)
-	else:
-		return dp
+def laser_detunings(Lij, Nl, i_d, I_nd, Nnd):
+    r"""This function returns the list of transitions i,j that each laser
+    produces as lists of length Ne, whose elements are all zero except for the
+    ith element =1 and the jth element = -1.
+
+    Also, it returns detuningsij, which contains the same information
+    but as pairs if ij. The indices in it start from 0.
+    """
+    Ne = len(Lij)
+    detunings = [[] for i in range(Nl)]
+    detuningsij = [[] for i in range(Nl)]
+    detuning = [0 for i in range(Nnd)]
+    for i in range(1, Ne):
+        for j in range(i):
+            for l in Lij[i][j]:
+                det = detuning[:]
+                det[I_nd(i+1)-1] += 1; det[I_nd(j+1)-1] -= 1
+                if det not in detunings[l-1]:
+                    detunings[l-1] += [det]
+                    detuningsij[l-1] += [(I_nd(i+1)-1, I_nd(j+1)-1)]
+
+    return detunings, detuningsij
+
+
+def Theta(i, j, theta, omega_rescaled, omega_min,
+          detunings, detuningsij, combinations, detuning_indices,
+          Lij, i_d, I_nd, Nnd,
+          states=None, verbose=1, other_the=None):
+    r"""This function returns code for Theta_i j as defined in the equation
+    labeled Theta. in terms of detunings. It recieves indexes i,j starting
+    from 1.
+    """
+    if i == j:
+        return ''
+    elif j > i:
+        raise ValueError('i should never be less than j.')
+
+    Ne = len(omega_rescaled[0]); Nl = len(theta[0])
+    if other_the is not None:
+        the = other_the[:]
+    else:
+        the = [theta[j-1][l]-theta[i-1][l] for l in range(Nl)]
+
+    ##########################################################################
+    # This part is about finding detunings that reduce to -omega_ij
+    if the == [0 for l in range(Nl)]:
+        if omega_rescaled[i-1][j-1] == 0:
+            return ''
+        # We need a combination of detunings that yields -omega_i,j.
+        # According to equation labeled "detuning-exception1"
+        # -omega_ij= delta^l_ik - delta^l_jk
+        # so we seek a k that is lower than i and j
+        # and an l such that l is in L_ik and in L_jk
+
+        ii = min(i, j)
+        band1 = False
+        band2 = False
+        for k in range(1, ii):
+            for l in range(1, Nl+1):
+                if l in Lij[i-1][k-1] and l in Lij[j-1][k-1]:
+                    s = 'I found that -omega_'+str(i)+','+str(j)
+                    s += '= delta^'+str(l)+'_'+str(i)+','+str(k)
+                    s += '-delta^'+str(l)+'_'+str(j)+','+str(k)
+                    s += '\n and also l='+str(l)
+                    s += ' is in  L'+str(i)+','+str(k)+'='+str(Lij[i-1][k-1])
+                    s += ' and in  L'+str(j)+','+str(k)+'='+str(Lij[j-1][k-1])
+                    s += '\n'
+
+                    # print s
+                    band1 = True
+                    break
+            if band1:
+                break
+
+        if not band1:
+            # If no such a k exists then we follow te equation labeled
+            # "detuning-exception2"
+            # -omega_ij= delta^l_kj - delta^l_ki
+            # to look for a k greater than i and j
+            # and an l such that l is in L_ik and in L_jk
+            for k in range(ii+1, Ne+1):
+                for l in range(1, Nl+1):
+                    if l in Lij[i-1][k-1] and l in Lij[j-1][k-1]:
+                        s = 'I found that -omega_'+str(i)+','+str(j)
+                        s += '= delta^'+str(l)+'_'+str(k)+','+str(j)
+                        s += '-delta^'+str(l)+'_'+str(k)+','+str(i)
+                        s += '\n and also l='+str(l)
+                        s += ' is in  L'+str(i)+','+str(k)+'='+str(Lij[i-1][k-1])
+                        s += ' and in  L'+str(j)+','+str(k)+'='+str(Lij[j-1][k-1])+'\n'
+                        # print s
+                        band2 = True
+                        break
+
+                if band2:
+                    break
+
+        if band1:
+            The = ''
+            # We need to find which detunings are delta^l_i,k and delta^l_j,k.
+            # Since they are detunings of laser l, they must have a number
+            # greater than those with smaller l:
+            acum = sum([detuning_indices[ll] for ll in range(l-1)])
+            # We test the indices of all detunings of laser l to find the ones
+            # we need.
+            for kk in range(detuning_indices[l-1]):
+                if detuningsij[l-1][kk][0]+1 == I_nd(i) and detuningsij[l-1][kk][1]+1 == I_nd(k):
+                    The += '+detuning('+str(acum+kk+1)+')'
+                if detuningsij[l-1][kk][0]+1 == I_nd(j) and detuningsij[l-1][kk][1]+1 == I_nd(k):
+                    The += '-detuning('+str(acum+kk+1)+')'
+            return The
+        elif band2:
+            The = ''
+            # We need to find which detunings are delta^l_k,j and delta^l_k,i.
+            # Since they are detunings of laser l, they must have a number
+            # greater than those with smaller l:
+            acum = sum([detuning_indices[ll] for ll in range(l-1)])
+            # We test the indices of all detunings of laser l to find the ones
+            # we need.
+            for kk in range(detuning_indices[l-1]):
+                if detuningsij[l-1][kk][0]+1 == I_nd(k) and detuningsij[l-1][kk][1]+1 == I_nd(j):
+                    The += '+detuning('+str(acum+kk+1)+')'
+                if detuningsij[l-1][kk][0]+1 == I_nd(k) and detuningsij[l-1][kk][1]+1 == I_nd(i):
+                    The += '-detuning('+str(acum+kk+1)+')'
+            return The
+        else:
+            if verbose > 1:
+                print 'WARNING: Optical frequencies will be used instead for -omega_', i, j, '=', omega_rescaled[i-1][j-1], '\n'
+            return format_double(-omega_rescaled[i-1][j-1])
+    ###########################################################################
+    # This part is about finding detunings that reduce to
+    # (theta_j -theta_i -omega_ij)
+
+    # We establish to which omegaij the detunings should reduce to
+    omegaij = [0 for k in range(Nnd)]
+    omegaij[I_nd(i)-1] = 1; omegaij[I_nd(j)-1] = -1
+
+    # We search for a combination of detunings that reduces to omegaij
+    # That is a linear combination of detunings with coefficients the
+    # that reduces to omegaij. Here
+    detuning_failure = True
+    for comb in combinations:
+        suma = [sum([the[l]*detunings[l][comb[l]][ii] for l in range(Nl)]) for ii in range(Nnd)]
+        if suma == omegaij:
+            detuning_failure = False
+            break
+
+    # We stop if no combination reduces to the needed expression.
+    if detuning_failure:
+        if verbose > 1:
+            print 'We will see if it is possible to express Theta_'+str(i)+','+str(j)+'=theta_'+str(j)+'-theta_'+str(i)+'-omega_'+str(i)+','+str(j)
+        if verbose > 1:
+            print 'in terms of other indices a,b such that omega_ab=omega_ij and transition i -> j is allowed by Lij.'
+
+        band3 = False
+        for a in range(Ne):
+            for b in range(a):
+                if omega_rescaled[a][b] == omega_rescaled[i-1][j-1] and Lij[a][b] != []:
+                    band3 = True
+                    break
+            if band3: break
+        if verbose > 1:
+            print band3, a, b, i, j
+
+        a = a+1; b = b+1
+        if band3 and (i != a or j != b):
+            if verbose > 1:
+                print omega_rescaled[i-1][j-1], omega_rescaled[a-1][b-1]
+                print the
+                print 'This was possible for omega_'+str(a)+','+str(b)
+
+            return Theta(a, b, theta, omega_rescaled, omega_min, detunings,
+                         detuningsij, combinations, detuning_indices, Lij,
+                         other_the=the, verbose=verbose, states=states)
+        else:
+            # verbose=2
+            # print 111
+            # qi=states[i-1].quantum_numbers
+            # qj=states[j-1].quantum_numbers
+            # print verbose
+            if verbose > 0:
+                print 'WARNING: It was impossible to express laser frequencies',the
+                print 'and atomic transition -omega_',i,j,'=',-omega_rescaled[i-1][j-1]
+                print 'in terms of detunings from the transitions given by Lij'
+            # for i in range(Ne):
+            #	print i+1,Lij[i]
+            # print
+            if verbose > 0: print 'I Will use optical frequencies instead.'
+            The = ''
+            # We give the optical frequencies
+            for l in range(Nl):
+                a = the[l]
+                if a == 1:
+                    The += '+'+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+')'
+                elif a == -1:
+                    The += '-('+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+'))'
+                elif a == 0:
+                    The += ''
+                elif a > 0:
+                    The += '+'+str(a)+'*'+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+')'
+                else:
+                    The += str(a)+'*('+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+'))'
+
+            # We substract omega_ij
+            The += format_double(-omega_rescaled[i-1][j-1])
+            if verbose > 1: print The
+            if verbose > 1: print
+            return The
+
+    # For each optical frequency in the, we write the corresponding detuning.
+    # This way of assigining a global index ll to the detunings ammounts to
+    #   ll=   number_of_previous_detunings
+    #       + number_of_detuning_ordered_by_row_and_from_left_to_right_column
+    The = ''
+    acum = 0
+    ###########################################################################
+    # print 'comb',comb,'the',the,'i,j',i,j
+    for l in range(Nl):
+        if the[l] == 1:
+            The += '+detuning('+str(acum+comb[l]+1)+')'
+        elif the[l] == -1:
+            The += '-detuning('+str(acum+comb[l]+1)+')'
+        elif the[l] == 0:
+            pass
+        elif the[l] > 0:
+            The += '+'+str(the[l])+'*detuning('+str(acum+comb[l]+1)+')'
+        else:
+            The += str(the[l])+'*detuning('+str(acum+comb[l]+1)+')'
+        acum += detuning_indices[l]
+
+    if The[:1] == '+':
+        The = The[1:]
+
+    ###########################################################################
+    # print 'The',The
+    return The
+
+
+def dot_product(laserl, sign, r, i, j):
+    """This function calculates the dot product epsilon^(l(+-)) . vec(r_ij)."""
+    if sign == 1:
+        dp = sum([laserl.Yp[1-p]*r[p+1][i-1][j-1]*(-1)**p
+                  for p in range(-1, 2)])
+    elif sign == -1:
+        dp = sum([laserl.Ym[1-p]*r[p+1][i-1][j-1]*(-1)**p
+                  for p in range(-1, 2)])
+
+    if not sage_included:
+        return complex(dp)
+    else:
+        return dp
+
 
 def find_omega_min(omega,Nl,detuningsij,i_d,I_nd):
 	"""This function returns a list of length Nl containing the mininmal frequency
@@ -900,19 +939,6 @@ def write_equations_code(path,name,laser,omega,gamma,r,Lij,
 					code+='-('+format_double(gams)+')\n'
 					row_check[mu-1]=True; col_check[mu-1]=True
 
-
-#	for i in range(2,Ne+1):
-#		for j in range(1,i):
-#			gams=gamma[i-1][j-1]/2
-#			if gams!=0:
-#				mu=Mu(i,j,+1,Ne,excluded_mu)
-#				code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-#				code+='-('+format_double(gams)+')\n'
-#				row_check[mu-1]=True; col_check[mu-1]=True
-#				mu=Mu(i,j,-1,Ne,excluded_mu)
-#				code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-#				code+='-('+format_double(gams)+')\n'
-#				row_check[mu-1]=True; col_check[mu-1]=True
 
 
 	code+='\n'
