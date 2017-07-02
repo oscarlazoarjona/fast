@@ -125,7 +125,6 @@ def read_result(path, name, i=None, j=None, s=0, N=None,
     two lists [frequency, rho_i,j,s] where s must be 1 for the real part and
     -1 for the imaginary part.
     """
-
     if clone is not None:
         clone = '_'+str(clone)
     else:
@@ -419,8 +418,10 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
                         s += '= delta^'+str(l)+'_'+str(k)+','+str(j)
                         s += '-delta^'+str(l)+'_'+str(k)+','+str(i)
                         s += '\n and also l='+str(l)
-                        s += ' is in  L'+str(i)+','+str(k)+'='+str(Lij[i-1][k-1])
-                        s += ' and in  L'+str(j)+','+str(k)+'='+str(Lij[j-1][k-1])+'\n'
+                        s += ' is in  L'+str(i)+','+str(k)+'='
+                        s += str(Lij[i-1][k-1])
+                        s += ' and in  L'+str(j)+','+str(k)+'='
+                        s += str(Lij[j-1][k-1])+'\n'
                         # print s
                         band2 = True
                         break
@@ -437,9 +438,11 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
             # We test the indices of all detunings of laser l to find the ones
             # we need.
             for kk in range(detuning_indices[l-1]):
-                if detuningsij[l-1][kk][0]+1 == I_nd(i) and detuningsij[l-1][kk][1]+1 == I_nd(k):
+                if detuningsij[l-1][kk][0]+1 == I_nd(i) and \
+                   detuningsij[l-1][kk][1]+1 == I_nd(k):
                     The += '+detuning('+str(acum+kk+1)+')'
-                if detuningsij[l-1][kk][0]+1 == I_nd(j) and detuningsij[l-1][kk][1]+1 == I_nd(k):
+                if detuningsij[l-1][kk][0]+1 == I_nd(j) and \
+                   detuningsij[l-1][kk][1]+1 == I_nd(k):
                     The += '-detuning('+str(acum+kk+1)+')'
             return The
         elif band2:
@@ -451,14 +454,19 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
             # We test the indices of all detunings of laser l to find the ones
             # we need.
             for kk in range(detuning_indices[l-1]):
-                if detuningsij[l-1][kk][0]+1 == I_nd(k) and detuningsij[l-1][kk][1]+1 == I_nd(j):
+                if detuningsij[l-1][kk][0]+1 == I_nd(k) and \
+                   detuningsij[l-1][kk][1]+1 == I_nd(j):
                     The += '+detuning('+str(acum+kk+1)+')'
-                if detuningsij[l-1][kk][0]+1 == I_nd(k) and detuningsij[l-1][kk][1]+1 == I_nd(i):
+                if detuningsij[l-1][kk][0]+1 == I_nd(k) and \
+                   detuningsij[l-1][kk][1]+1 == I_nd(i):
                     The += '-detuning('+str(acum+kk+1)+')'
             return The
         else:
             if verbose > 1:
-                print 'WARNING: Optical frequencies will be used instead for -omega_', i, j, '=', omega_rescaled[i-1][j-1], '\n'
+                s = 'WARNING: Optical frequencies will be used '
+                s += 'instead for -omega_'+str(i)+","+str(j)
+                s += '=' + str(omega_rescaled[i-1][j-1]) + '\n'
+                print s
             return format_double(-omega_rescaled[i-1][j-1])
     ###########################################################################
     # This part is about finding detunings that reduce to
@@ -473,7 +481,8 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
     # that reduces to omegaij. Here
     detuning_failure = True
     for comb in combinations:
-        suma = [sum([the[l]*detunings[l][comb[l]][ii] for l in range(Nl)]) for ii in range(Nnd)]
+        suma = [sum([the[l]*detunings[l][comb[l]][iii] for l in range(Nl)])
+                for iii in range(Nnd)]
         if suma == omegaij:
             detuning_failure = False
             break
@@ -481,14 +490,19 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
     # We stop if no combination reduces to the needed expression.
     if detuning_failure:
         if verbose > 1:
-            print 'We will see if it is possible to express Theta_'+str(i)+','+str(j)+'=theta_'+str(j)+'-theta_'+str(i)+'-omega_'+str(i)+','+str(j)
-        if verbose > 1:
-            print 'in terms of other indices a,b such that omega_ab=omega_ij and transition i -> j is allowed by Lij.'
+            s = 'We will see if it is possible to express Theta_'+str(i)
+            s += ','+str(j)+'=theta_'+str(j)+'-theta_'+str(i)+'-omega_'
+            s += str(i)+','+str(j)
+            print s
+            s = 'in terms of other indices a,b such that omega_ab=omega_ij'
+            s += ' and transition i -> j is allowed by Lij.'
+            print s
 
         band3 = False
         for a in range(Ne):
             for b in range(a):
-                if omega_rescaled[a][b] == omega_rescaled[i-1][j-1] and Lij[a][b] != []:
+                if omega_rescaled[a][b] == omega_rescaled[i-1][j-1] and \
+                   Lij[a][b] != []:
                     band3 = True
                     break
             if band3: break
@@ -512,11 +526,12 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
             # qj=states[j-1].quantum_numbers
             # print verbose
             if verbose > 0:
-                print 'WARNING: It was impossible to express laser frequencies',the
-                print 'and atomic transition -omega_',i,j,'=',-omega_rescaled[i-1][j-1]
+                print 'WARNING: It was impossible to express frequencies',
+                print 'the and atomic transition -omega_', i, j, '=',
+                print -omega_rescaled[i-1][j-1],
                 print 'in terms of detunings from the transitions given by Lij'
             # for i in range(Ne):
-            #	print i+1,Lij[i]
+            # 	print i+1,Lij[i]
             # print
             if verbose > 0: print 'I Will use optical frequencies instead.'
             The = ''
@@ -524,15 +539,19 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
             for l in range(Nl):
                 a = the[l]
                 if a == 1:
-                    The += '+'+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+')'
+                    The += '+'+format_double(omega_min[l])
+                    The += '+detuning_knob('+str(l+1)+')'
                 elif a == -1:
-                    The += '-('+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+'))'
+                    The += '-('+format_double(omega_min[l])
+                    The += '+detuning_knob('+str(l+1)+'))'
                 elif a == 0:
                     The += ''
                 elif a > 0:
-                    The += '+'+str(a)+'*'+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+')'
+                    The += '+'+str(a)+'*'+format_double(omega_min[l])
+                    The += '+detuning_knob('+str(l+1)+')'
                 else:
-                    The += str(a)+'*('+format_double(omega_min[l])+'+detuning_knob('+str(l+1)+'))'
+                    The += str(a)+'*('+format_double(omega_min[l])
+                    The += '+detuning_knob('+str(l+1)+'))'
 
             # We substract omega_ij
             The += format_double(-omega_rescaled[i-1][j-1])
@@ -607,410 +626,474 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
 
     if states is None: states = range(1, Ne+1)
 
-	omega_rescaled=omega[:]
+    omega_rescaled = omega[:]
 
-	#We determine whether it is possible to eliminate explicit time-dependance
-	theta=find_phase_transformation(Ne,Nl,r,Lij)
+    # We determine whether it is possible to eliminate explicit time-dependance
+    theta = find_phase_transformation(Ne, Nl, r, Lij)
 
-	#We construct the correspondence i <-> I between degenerate and non-degenerate indices.
-	i_d,I_nd,Nnd=calculate_iI_correspondence(omega)
-	#We find the non-degenerate detunings
-	detunings,detuningsij=laser_detunings(Lij,Nl,i_d,I_nd,Nnd)
-	omega_min,omega_min_indices=find_omega_min(omega_rescaled,Nl,detuningsij,i_d,I_nd)
+    # We construct the correspondence i <-> I between degenerate and
+    # non-degenerate indices.
+    i_d, I_nd, Nnd = calculate_iI_correspondence(omega)
+    # We find the non-degenerate detunings
+    detunings, detuningsij = laser_detunings(Lij, Nl, i_d, I_nd, Nnd)
+    aux = find_omega_min(omega_rescaled, Nl, detuningsij, i_d, I_nd)
+    omega_min, omega_min_indices = aux
 
-	detuning_indices=[len(detunings[i]) for i in range(Nl)]
-	Nd=sum([len(detunings[l]) for l in range(Nl)])
-	combinations=detuning_combinations(detuning_indices)
+    detuning_indices = [len(detunings[i]) for i in range(Nl)]
+    Nd = sum([len(detunings[l]) for l in range(Nl)])
+    combinations = detuning_combinations(detuning_indices)
 
-	####################################################################
+    ##########################################################################
 
-	#We add the code to caculate the detunings for each laser.
-	code0=''
-	code0+='	!We calculate the detunings.\n'
-	#We find the minimal frequency corresponding to each laser.
-	code0+='	!The list of detunings has the following meaning:\n'
-	conta=0
-	for ll in range(Nl):
-		for kk in range(len(detuningsij[ll])):
-			conta+=1
-			ii,jj=detuningsij[ll][kk]
+    # We add the code to caculate the detunings for each laser.
+    code0 = ''
+    code0 += '	!We calculate the detunings.\n'
+    # We find the minimal frequency corresponding to each laser.
+    code0 += '	!The list of detunings has the following meaning:\n'
+    conta = 0
+    for ll in range(Nl):
+        for kk in range(len(detuningsij[ll])):
+            conta += 1
+            ii, jj = detuningsij[ll][kk]
 
-			if states==None:
-				code0+='	!detuning('+str(conta)+')= delta^'+str(ll+1)+'_'+str(i_d(ii+1))+','+str(i_d(jj+1))+'\n'
-			else:
-				state_i=str(states[i_d(ii+1)-1])[5:]
-				state_j=str(states[i_d(jj+1)-1])[5:]
-				code0+='	!detuning('+str(conta)+')= delta^'+str(ll+1)+'_'+state_i+','+state_j+'\n'
+            if states is None:
+                code0 += '	!detuning('+str(conta)+')= delta^'+str(ll+1)+'_'
+                code0 += str(i_d(ii+1))+','+str(i_d(jj+1))+'\n'
+            else:
+                state_i = str(states[i_d(ii+1)-1])[5:]
+                state_j = str(states[i_d(jj+1)-1])[5:]
+                code0 += '	!detuning('+str(conta)+')= delta^'+str(ll+1)+'_'
+                code0 += state_i+','+state_j+'\n'
 
-	det_index=1
-	for l in range(Nl):
-		omega0=omega_min[l]
-		i_min,j_min=omega_min_indices[l]
-		for ii,jj in detuningsij[l]:
-			code0+='	detuning('+str(det_index)+')='
-			#code0+=format_double(omega0-omega_rescaled[ii][jj])+'+(detuning_knob('+str(l+1)+'))\n'
-			code0+='detuning_knob('+str(l+1)+') '
-			code0+='-('+format_double(omega_rescaled[i_d(ii+1)-1][i_d(i_min+1)-1])+')'
-			code0+='-('+format_double(omega_rescaled[i_d(j_min+1)-1][i_d(jj+1)-1])+')\n'
-			det_index+=1
-	code0+='\n'
+    det_index = 1
+    for l in range(Nl):
+        # omega0 = omega_min[l]
+        i_min, j_min = omega_min_indices[l]
+        for ii, jj in detuningsij[l]:
+            code0 += '	detuning('+str(det_index)+')='
+            # code0+=format_double(omega0-omega_rescaled[ii][jj])+'+(detuning_knob('+str(l+1)+'))\n'
+            code0 += 'detuning_knob('+str(l+1)+') '
+            code0 += '-('+format_double(
+                omega_rescaled[i_d(ii+1)-1][i_d(i_min+1)-1])+')'
+            code0 += '-('+format_double(
+                omega_rescaled[i_d(j_min+1)-1][i_d(jj+1)-1])+')\n'
+            det_index += 1
+    code0 += '\n'
 
-	####################################################################
-	# We add here the code for the equations
-	####################################################################
-	code=''
-	####################################################################
-	#We need to check that the resulting matrix A doesn't have any
-	#row or column made of zeroes. If there is such a row or column
-	#it means that for that particular i(mu),j(mu) or i(nu),j(nu)
-	#neither the hamiltonian part of the correspondin equation nor the
-	#phase transformation part nor the decay part were nonzero
-	#(at least for the given light polarizations).
-	#In this cases it is necessary to re-calculate all of the problem
-	#without the corresponding mu components of A.
-	#Also the right hand side will be checked for non zero elements.
-	#Now we start the check for these exceptions.
+    ###########################################################################
+    # We add here the code for the equations
+    ###########################################################################
+    code = ''
+    ###########################################################################
+    # We need to check that the resulting matrix A doesn't have any
+    # row or column made of zeroes. If there is such a row or column
+    # it means that for that particular i(mu),j(mu) or i(nu),j(nu)
+    # neither the hamiltonian part of the correspondin equation nor the
+    # phase transformation part nor the decay part were nonzero
+    # (at least for the given light polarizations).
+    # In this cases it is necessary to re-calculate all of the problem
+    # without the corresponding mu components of A.
+    # Also the right hand side will be checked for non zero elements.
+    # Now we start the check for these exceptions.
 
-	row_check=[False for mu in range(Ne**2-1-N_excluded_mu)]
-	col_check=[False for nu in range(Ne**2-1-N_excluded_mu)]
-	rhs_check=[False for nu in range(Ne**2-1-N_excluded_mu)]
-	####################################################################
-	#We give the code to calculate the independent vector.
-	code+='	!We calculate the independent vector.\n'
-	for i in range(2,Ne+1-N_excluded_mu):
-		for s in [1,-1]:
-			nu=Mu(i,1,s,Ne,excluded_mu)
-			#print 'There is an independent term with nu=',nu
-			rhs_check[nu-1]=True
+    row_check = [False for mu in range(Ne**2-1-N_excluded_mu)]
+    col_check = [False for nu in range(Ne**2-1-N_excluded_mu)]
+    rhs_check = [False for nu in range(Ne**2-1-N_excluded_mu)]
+    ##########################################################################
+    # We give the code to calculate the independent vector.
+    code += '	!We calculate the independent vector.\n'
+    for i in range(2, Ne+1-N_excluded_mu):
+        for s in [1, -1]:
+            nu = Mu(i, 1, s, Ne, excluded_mu)
+            # print 'There is an independent term with nu=',nu
+            rhs_check[nu-1] = True
 
-			for l in Lij[i-1][0]:
-				dp=dot_product(laser[l-1],1,r,i,1)
-				dp= s*part(dp,-s)
-				if dp!=0:
-					code+='	B('+str(nu)+',1)=B('+str(nu)+',1) +E0('+str(l)+')*('+format_double(dp)+')\n'
+            for l in Lij[i-1][0]:
+                dp = dot_product(laser[l-1], 1, r, i, 1)
+                dp = s*part(dp, -s)
+                if dp != 0:
+                    code += '	B('+str(nu)+',1)=B('+str(nu)+',1) +E0('+str(l)
+                    code += ')*('+format_double(dp)+')\n'
 
-	code+='\n'
-	code+='	B=B/2.0d0\n\n'#+str(1/sqrt(2.0))+'d0\n\n'
+    code += '\n'
+    code += '	B=B/2.0d0\n\n'  # +str(1/sqrt(2.0))+'d0\n\n'
 
-	####################################################################
-	#We give the code to calculate the equations for populations.
-	code+='	!We calculate the equations for populations.\n'
-	for i in range(2,Ne+1):
-		mu=Mu(i,i,1,Ne,excluded_mu)
+    ###########################################################################
+    # We give the code to calculate the equations for populations.
+    code += '	!We calculate the equations for populations.\n'
+    for i in range(2, Ne+1):
+        mu = Mu(i, i, 1, Ne, excluded_mu)
+        for k in range(1, Ne+1):
+            if k < i:
+                for l in Lij[k-1][i-1]:
+                    dp1 = dot_product(laser[l-1], -1, r, k, i)
+                    dp2 = dot_product(laser[l-1], 1, r, i, k)
 
-		for k in range(1,Ne+1):
-			if k<i:
-				for l in Lij[k-1][i-1]:
-					dp1=dot_product(laser[l-1],-1,r,k,i)
-					dp2=dot_product(laser[l-1], 1,r,i,k)
+                    real_coef = part(dp1-dp2, -1)
+                    imag_coef = part(dp1+dp2, 1)
 
-					real_coef= part(dp1-dp2,-1)
-					imag_coef= part(dp1+dp2, 1)
+                    if real_coef != 0:
+                        nu = Mu(i, k, 1, Ne, excluded_mu)
+                        code += '	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','
+                        code += str(nu)+')'
+                        code += '+E0('+str(l)+')*('+format_double(real_coef)
+                        code += ')\n'
+                        row_check[mu-1] = True; col_check[nu-1] = True
 
-					if real_coef!=0:
-						nu=Mu(i,k, 1,Ne,excluded_mu)
-						code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-						code+='+E0('+str(l)+')*('+format_double(real_coef)+')\n'
-						row_check[mu-1]=True; col_check[nu-1]=True
+                    if imag_coef != 0:
+                        nu = Mu(i, k, -1, Ne, excluded_mu)
+                        code += '	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','
+                        code += str(nu)+')'
+                        code += '+E0('+str(l)+')*('+format_double(imag_coef)
+                        code += ')\n'
+                        row_check[mu-1] = True; col_check[nu-1] = True
 
-					if imag_coef!=0:
-						nu=Mu(i,k,-1,Ne,excluded_mu)
-						code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-						code+='+E0('+str(l)+')*('+format_double(imag_coef)+')\n'
-						row_check[mu-1]=True; col_check[nu-1]=True
+            if k > i:
+                for l in Lij[k-1][i-1]:
+                    dp1 = dot_product(laser[l-1], -1, r, i, k)
+                    dp2 = dot_product(laser[l-1], 1, r, k, i)
 
-			if k>i:
+                    real_coef = -part(dp1-dp2, -1)
+                    imag_coef = -part(dp1+dp2, 1)
 
-				for l in Lij[k-1][i-1]:
-					dp1=dot_product(laser[l-1],-1,r,i,k)
-					dp2=dot_product(laser[l-1], 1,r,k,i)
+                    if real_coef != 0:
+                        nu = Mu(k, i, 1, Ne, excluded_mu)
+                        code += '	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','
+                        code += str(nu)+')'
+                        code += '+E0('+str(l)+')*('+format_double(real_coef)
+                        code += ')\n'
+                        row_check[mu-1] = True; col_check[nu-1] = True
 
-					real_coef=-part(dp1-dp2,-1)
-					imag_coef=-part(dp1+dp2, 1)
+                    if imag_coef != 0:
+                        nu = Mu(k, i, -1, Ne, excluded_mu)
+                        code += '	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','
+                        code += str(nu)+')'
+                        code += '+E0('+str(l)+')*('+format_double(imag_coef)
+                        code += ')\n'
+                        row_check[mu-1] = True; col_check[nu-1] = True
 
-					if real_coef!=0:
-						nu=Mu(k,i, 1,Ne,excluded_mu)
-						code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-						code+='+E0('+str(l)+')*('+format_double(real_coef)+')\n'
-						row_check[mu-1]=True; col_check[nu-1]=True
+    code += '\n'
+    ###########################################################################
+    # We give the code to calculate the equations for coherences
+    # given in equations with label "stationary-coherences"
 
-					if imag_coef!=0:
-						nu=Mu(k,i,-1,Ne,excluded_mu)
-						code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-						code+='+E0('+str(l)+')*('+format_double(imag_coef)+')\n'
-						row_check[mu-1]=True; col_check[nu-1]=True
+    code += '	!The code to calculate the equations for coherences.\n'
 
-	code+='\n'
-	####################################################################
-	#We give the code to calculate the equations for coherences
-	#given in equations with label "stationary-coherences"
+    for i in range(2, Ne+1):
+        for j in range(1, i):
+            for s in [1, -1]:
+                mu = Mu(i, j, s, Ne, excluded_mu)
+                # print '................ mu=',mu
+                for k in range(1, Ne+1):
+                    for l in Lij[k-1][j-1]:
+                        if k < i:
+                            if k < j:
+                                # print 111#Row 1
+                                dp = s*dot_product(laser[l-1], -1, r, k, j)
+                                dp1 = part(dp, -s)
+                                dp2 = part(s*dp, +s)
+                                nu = Mu(i, k, 1, Ne, excluded_mu)
+                                if dp1 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)+')=A('
+                                    code += str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp1)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                                nu = Mu(i, k, -1, Ne, excluded_mu)
+                                if dp2 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)+')=A('
+                                    code += str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp2)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                            elif k > j:
+                                # print 222#Row 2
+                                dp = s*dot_product(laser[l-1], +1, r, k, j)
+                                dp1 = part(dp, -s)
+                                dp2 = part(s*dp, s)
+                                nu = Mu(i, k, 1, Ne, excluded_mu)
+                                if dp1 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)+')=A('
+                                    code += str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp1)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                                nu = Mu(i, k, -1, Ne, excluded_mu)
+                                if dp2 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)+')=A('
+                                    code += str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp2)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                        elif k > i:
+                            # print 333#Row 3
+                            dp = s*dot_product(laser[l-1], 1, r, k, j)
+                            dp1 = part(dp, -s)
+                            dp2 = part(-s*dp, s)
+                            nu = Mu(k, i, 1, Ne, excluded_mu)
+                            if dp1 != 0:
+                                code += '	A('+str(mu)+','+str(nu)
+                                code += ')=A('+str(mu)+','+str(nu)+')'
+                                code += '+E0('+str(l)+')*('
+                                code += format_double(dp1)+')\n'
+                                row_check[mu-1] = True; col_check[nu-1] = True
+                            nu = Mu(k, i, -1, Ne, excluded_mu)
+                            if dp2 != 0:
+                                code += '	A('+str(mu)+','+str(nu)+')=A('
+                                code += str(mu)+','+str(nu)+')'
+                                code += '+E0('+str(l)+')*('+format_double(dp2)
+                                code += ')\n'
+                                row_check[mu-1] = True; col_check[nu-1] = True
+                    for l in Lij[i-1][k-1]:
+                        if k > j:
+                            if k > i:
+                                # print 444#Row 4
+                                dp = -s*dot_product(laser[l-1], -1, r, i, k)
+                                dp1 = part(dp, -s)
+                                dp2 = part(s*dp, s)
+                                nu = Mu(k, j, 1, Ne, excluded_mu)
+                                if dp1 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)
+                                    code += ')=A('+str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp1)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                                nu = Mu(k, j, -1, Ne, excluded_mu)
+                                if dp2 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)
+                                    code += ')=A('+str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp2)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                            elif k < i:
+                                # print 555#Row 5
+                                dp = -s*dot_product(laser[l-1], 1, r, i, k)
+                                dp1 = part(dp, -s)
+                                dp2 = part(s*dp, s)
+                                nu = Mu(k, j, 1, Ne, excluded_mu)
+                                if dp1 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)
+                                    code += ')=A('+str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp1)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                                nu = Mu(k, j, -1, Ne, excluded_mu)
+                                if dp2 != 0:
+                                    code += '	A('+str(mu)+','+str(nu)
+                                    code += ')=A('+str(mu)+','+str(nu)+')'
+                                    code += '+E0('+str(l)+')*('
+                                    code += format_double(dp2)+')\n'
+                                    row_check[mu-1] = True
+                                    col_check[nu-1] = True
+                        elif k < j:
+                            # print 666#Row 6
+                            dp = -s*dot_product(laser[l-1], 1, r, i, k)
+                            dp1 = part(dp, -s)
+                            dp2 = part(-s*dp, s)
+                            nu = Mu(j, k, 1, Ne, excluded_mu)
+                            if dp1 != 0:
+                                code += '	A('+str(mu)+','+str(nu)+')=A('
+                                code += str(mu)+','+str(nu)+')'
+                                code += '+E0('+str(l)+')*('
+                                code += format_double(dp1)+')\n'
+                                row_check[mu-1] = True; col_check[nu-1] = True
+                            nu = Mu(j, k, -1, Ne, excluded_mu)
+                            if dp2 != 0:
+                                code += '	A('+str(mu)+','+str(nu)+')=A('
+                                code += str(mu)+','+str(nu)+')'
+                                code += '+E0('+str(l)+')*('+format_double(dp2)
+                                code += ')\n'
+                                row_check[mu-1] = True; col_check[nu-1] = True
+                for l in Lij[i-1][j-1]:
+                    # print 777#Row 7
+                    dp = s*part(dot_product(laser[l-1], 1, r, i, j), -s)
+                    nu = Mu(i, i, 1, Ne, excluded_mu)
+                    if dp != 0:
+                        code += '	A('+str(mu)+','+str(nu)+')=A('
+                        code += str(mu)+','+str(nu)+')'
+                        code += '+E0('+str(l)+')*('+format_double(dp)+')\n'
+                        row_check[mu-1] = True; col_check[nu-1] = True
+                        nu = Mu(j, j, 1, Ne, excluded_mu)
+                        if nu == 0:
+                            for n in range(1, Ne):
+                                code += '	A('+str(mu)+','+str(n)+')=A('
+                                code += str(mu)+','+str(n)+')'
+                                code += '+E0('+str(l)+')*('+format_double(dp)
+                                code += ')\n'
+                                row_check[mu-1] = True; col_check[n-1] = True
+                        else:
+                            code += '	A('+str(mu)+','+str(nu)+')=A('
+                            code += str(mu)+','+str(nu)+')'
+                            code += '+E0('+str(l)+')*('+format_double(-dp)
+                            code += ')\n'
+                            row_check[mu-1] = True; col_check[nu-1] = True
 
-	code+='	!The code to calculate the equations for coherences.\n'
+    code += '\n'
+    code += '	A=A/2.0d0\n\n'  # +str(1/sqrt(2.0))+'d0\n\n'
+    ###########################################################################
+    # We add the terms associated with the phase transformation.
+    code += '	!We calculate the terms associated with the phase '
+    code += 'transformation.\n'
 
-	for i in range(2,Ne+1):
-		for j in range(1,i):
+    # for i in range(2,10):
+    for i in range(2, Ne+1):
+        for j in range(1, i):
+            extra = Theta(i, j, theta, omega_rescaled, omega_min, detunings,
+                          detuningsij, combinations, detuning_indices, Lij,
+                          i_d, I_nd, Nnd, verbose=verbose, states=states)
 
-			for s in [1,-1]:
-				mu=Mu(i,j,s,Ne,excluded_mu)
-				#print '................ mu=',mu
-				for k in range(1,Ne+1):
-					for l in Lij[k-1][j-1]:
-						if k<i:
-							if k<j:
-								#print 111#Row 1
-								dp=s*dot_product(laser[l-1],-1,r,k,j)
-								dp1=part(  dp,-s)
-								dp2=part(s*dp,+s)
-								nu=Mu(i,k,+1,Ne,excluded_mu)
-								if dp1!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp1)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-								nu=Mu(i,k,-1,Ne,excluded_mu)
-								if dp2!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp2)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-							elif k>j:
-								#print 222#Row 2
-								dp=s*dot_product(laser[l-1],+1,r,k,j)
-								dp1=part(  dp,-s)
-								dp2=part(s*dp,+s)
-								nu=Mu(i,k,+1,Ne,excluded_mu)
-								if dp1!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp1)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-								nu=Mu(i,k,-1,Ne,excluded_mu)
-								if dp2!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp2)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-						elif k>i:
-							#print 333#Row 3
-							dp=s*dot_product(laser[l-1],+1,r,k,j)
-							dp1=part(   dp,-s)
-							dp2=part(-s*dp,+s)
-							nu=Mu(k,i,+1,Ne,excluded_mu)
-							if dp1!=0:
-								code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-								code+='+E0('+str(l)+')*('+format_double(dp1)+')\n'
-								row_check[mu-1]=True; col_check[nu-1]=True
-							nu=Mu(k,i,-1,Ne,excluded_mu)
-							if dp2!=0:
-								code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-								code+='+E0('+str(l)+')*('+format_double(dp2)+')\n'
-								row_check[mu-1]=True; col_check[nu-1]=True
-					for l in Lij[i-1][k-1]:
-						if k>j:
-							if k>i:
-								#print 444#Row 4
-								dp=-s*dot_product(laser[l-1],-1,r,i,k)
-								dp1=part(  dp,-s)
-								dp2=part(s*dp,+s)
-								nu=Mu(k,j,+1,Ne,excluded_mu)
-								if dp1!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp1)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-								nu=Mu(k,j,-1,Ne,excluded_mu)
-								if dp2!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp2)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-							elif k<i:
-								#print 555#Row 5
-								dp=-s*dot_product(laser[l-1],+1,r,i,k)
-								dp1=part(  dp,-s)
-								dp2=part(s*dp,+s)
-								nu=Mu(k,j,+1,Ne,excluded_mu)
-								if dp1!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp1)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-								nu=Mu(k,j,-1,Ne,excluded_mu)
-								if dp2!=0:
-									code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-									code+='+E0('+str(l)+')*('+format_double(dp2)+')\n'
-									row_check[mu-1]=True; col_check[nu-1]=True
-						elif k<j:
-							#print 666#Row 6
-							dp=-s*dot_product(laser[l-1],+1,r,i,k)
-							dp1=part(   dp,-s)
-							dp2=part(-s*dp,+s)
-							nu=Mu(j,k,+1,Ne,excluded_mu)
-							if dp1!=0:
-								code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-								code+='+E0('+str(l)+')*('+format_double(dp1)+')\n'
-								row_check[mu-1]=True; col_check[nu-1]=True
-							nu=Mu(j,k,-1,Ne,excluded_mu)
-							if dp2!=0:
-								code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-								code+='+E0('+str(l)+')*('+format_double(dp2)+')\n'
-								row_check[mu-1]=True; col_check[nu-1]=True
-				for l in Lij[i-1][j-1]:
-					#print 777#Row 7
-					dp=s*part(dot_product(laser[l-1],+1,r,i,j),-s)
-					nu=Mu(i,i,+1,Ne,excluded_mu)
-					if dp!=0:
-						code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-						code+='+E0('+str(l)+')*('+format_double( dp )+')\n'
-						row_check[mu-1]=True; col_check[nu-1]=True
-						nu=Mu(j,j,+1,Ne,excluded_mu)
-						if nu==0:
-							for n in range(1,Ne):
-								code+='	A('+str(mu)+','+str(n)+')=A('+str(mu)+','+str(n)+')'
-								code+='+E0('+str(l)+')*('+format_double( +dp )+')\n'
-								row_check[mu-1]=True; col_check[n-1]=True
-						else:
-							code+='	A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-							code+='+E0('+str(l)+')*('+format_double(-dp )+')\n'
-							row_check[mu-1]=True; col_check[nu-1]=True
+            # print i, j, [extra]
 
-	code+='\n'
-	code+='	A=A/2.0d0\n\n'#+str(1/sqrt(2.0))+'d0\n\n'
-	####################################################################
-	#We add the terms associated with the phase transformation.
-	code+='	!We calculate the terms associated with the phase transformation.\n'
+            if extra != '':
+                for s in [1, -1]:
+                    mu = Mu(i, j, s, Ne, excluded_mu)
+                    nu = Mu(i, j, -s, Ne, excluded_mu)
 
-	for i in range(2,Ne+1):
-	#for i in range(2,10):
-		for j in range(1,i):
-			extra=Theta(i,j,theta,omega_rescaled,omega_min,detunings,detuningsij,
-			combinations,detuning_indices,Lij,i_d,I_nd,Nnd,
-			verbose=verbose,states=states)
+                    code += '    A('+str(mu)+','+str(nu)+')=A('+str(mu)+','
+                    code += str(nu)+')'
+                    if s == 1:
+                        code += '-('+str(extra)+')\n'
+                    elif s == -1:
+                        code += '+('+str(extra)+')\n'
 
-			#print i,j,[extra]
+                    row_check[mu-1] = True; col_check[nu-1] = True
 
-			if extra!='':
-				for s in [1,-1]:
-					mu=Mu(i,j, s,Ne,excluded_mu)
-					nu=Mu(i,j,-s,Ne,excluded_mu)
+    code += '\n'
+    ###########################################################################
+    # We add the terms associated with spontaneous decay.
+    code += '	!We calculate the terms associated with spontaneous decay.\n'
+    # First for populations.
+    for i in range(2, Ne+1):
+        mu = Mu(i, i, 1, Ne, excluded_mu)
+        for k in range(1, Ne+1):
+            gams = 0
+            if k < i:
+                gams += gamma[i-1][k-1]
+            elif k > i:
+                nu = Mu(k, k, 1, Ne, excluded_mu)
+                ga = gamma[i-1][k-1]
+                if ga != 0:
+                    code += '    A('+str(mu)+','+str(nu)+')=A('+str(mu)+','
+                    code += str(nu)+')'
+                    code += '-('+format_double(ga)+')\n'
+                    row_check[mu-1] = True; col_check[nu-1] = True
+            if gams != 0:
+                code += '    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','
+                code += str(mu)+')'
+                code += '-('+format_double(gams)+')\n'
+                row_check[mu-1] = True; col_check[mu-1] = True
 
-					code+='    A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-					if s==1:
-						code+='-('+str(extra)+')\n'
-					elif s==-1:
-						code+='+('+str(extra)+')\n'
+    # And now for coherences
+    for i in range(1, Ne+1):
+        for j in range(1, i):
+            gams = gamma[i-1][j-1]/2
+            if gams != 0:
+                for a in range(i+1, Ne+1):
+                    mu = Mu(a, i, 1, Ne, excluded_mu)
+                    code += '    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','
+                    code += str(mu)+')'
+                    code += '-('+format_double(gams)+')\n'
+                    row_check[mu-1] = True; col_check[mu-1] = True
+                    mu = Mu(a, i, -1, Ne, excluded_mu)
+                    code += '    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','
+                    code += str(mu)+')'
+                    code += '-('+format_double(gams)+')\n'
+                    row_check[mu-1] = True; col_check[mu-1] = True
 
-					row_check[mu-1]=True; col_check[nu-1]=True
+                for b in range(1, i):
+                    mu = Mu(i, b, 1, Ne, excluded_mu)
+                    code += '    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','
+                    code += str(mu)+')'
+                    code += '-('+format_double(gams)+')\n'
+                    row_check[mu-1] = True; col_check[mu-1] = True
+                    mu = Mu(i, b, -1, Ne, excluded_mu)
+                    code += '    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','
+                    code += str(mu)+')'
+                    code += '-('+format_double(gams)+')\n'
+                    row_check[mu-1] = True; col_check[mu-1] = True
 
-	code+='\n'
-	####################################################################
-	#We add the terms associated with spontaneous decay.
-	code+='	!We calculate the terms associated with spontaneous decay.\n'
-	#First for populations.
-	for i in range(2,Ne+1):
-		mu=Mu(i,i,1,Ne,excluded_mu)
-		for k in range(1,Ne+1):
-			gams=0
-			if k<i:
-				gams+=gamma[i-1][k-1]
-			elif k>i:
-				nu=Mu(k,k,1,Ne,excluded_mu)
-				ga=gamma[i-1][k-1]
-				if ga != 0:
-					code+='    A('+str(mu)+','+str(nu)+')=A('+str(mu)+','+str(nu)+')'
-					code+='-('+format_double(ga)+')\n'
-					row_check[mu-1]=True; col_check[nu-1]=True
-			if gams!=0:
-				code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-				code+='-('+format_double(gams)+')\n'
-				row_check[mu-1]=True; col_check[mu-1]=True
-
-	#And now for coherences
-	for i in range(1,Ne+1):
-		for j in range(1,i):
-			gams=gamma[i-1][j-1]/2
-			if gams!=0:
-				for a in range(i+1,Ne+1):
-					mu=Mu(a,i,+1,Ne,excluded_mu)
-					code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-					code+='-('+format_double(gams)+')\n'
-					row_check[mu-1]=True; col_check[mu-1]=True
-					mu=Mu(a,i,-1,Ne,excluded_mu)
-					code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-					code+='-('+format_double(gams)+')\n'
-					row_check[mu-1]=True; col_check[mu-1]=True
-
-				for b in range(1,i):
-					mu=Mu(i,b,+1,Ne,excluded_mu)
-					code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-					code+='-('+format_double(gams)+')\n'
-					row_check[mu-1]=True; col_check[mu-1]=True
-					mu=Mu(i,b,-1,Ne,excluded_mu)
-					code+='    A('+str(mu)+','+str(mu)+')=A('+str(mu)+','+str(mu)+')'
-					code+='-('+format_double(gams)+')\n'
-					row_check[mu-1]=True; col_check[mu-1]=True
+    code += '\n'
+    code = code0+code
+    Nd = sum([len(detunings[l]) for l in range(Nl)])
+    res = [code, Nd, row_check, col_check, rhs_check, Ne, N_excluded_mu,
+           states, omega_min, detuningsij, omega_rescaled]
+    return res
 
 
+def compile_code(path, name, optimization_flag=' -O3',
+                 lapack=False, parallel=True, clone=None):
+    r"""Compile fortran code."""
+    from config import use_netcdf
+    t0 = time()
+    parallel_flag = ''; end_flags = ''
+    if lapack: end_flags += ' -llapack'
+    if use_netcdf: end_flags += ' -lnetcdff -lnetcdf'
+    if parallel: parallel_flag += ' -fopenmp'
 
-	code+='\n'
-	code=code0+code
-	Nd=sum([len(detunings[l]) for l in range(Nl)])
-	return code,Nd,row_check,col_check,rhs_check,Ne,N_excluded_mu,states,omega_min,detuningsij,omega_rescaled
+    # We establish the name of the clone.
+    if clone is not None:
+        clone = '_'+str(clone)
+    else:
+        clone = ''
 
-def compile_code(path,name,optimization_flag=' -O3',lapack=False,parallel=True,clone=None):
-	from config import use_netcdf
-	t0=time()
-	parallel_flag=''; end_flags=''
-	if lapack: end_flags+=' -llapack'
-	if use_netcdf: end_flags+=' -lnetcdff -lnetcdf'
-	if parallel: parallel_flag+=' -fopenmp'
+    # We read the code and add the "clone" to every file name.
+    f = file(path+name+'.f90', 'r')
+    code = f.read()
+    f.close()
+    code = code.replace('.dat', clone+'.dat')
+    code = code.replace('.nc', clone+'.nc')
 
-	#We establish the name of the clone.
-	if clone!=None:
-		clone='_'+str(clone)
-	else:
-		clone=''
+    # We save the code in a clone file.
+    f = file(path+name+clone+'.f90', 'w')
+    f.write(code)
+    f.close()
 
-	#We read the code and add the "clone" to every file name.
-	f=file(path+name+'.f90','r')
-	code=f.read()
-	f.close()
-	code=code.replace('.dat',clone+'.dat')
-	code=code.replace('.nc' ,clone+'.nc' )
+    from fast.config import fast_path
+    # com='gfortran -I '+fast_path+' '+parallel_flag+optimization_flag+
+    # ' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
+    com = 'gfortran -I '
+    com += fast_path+" "
+    com += parallel_flag
+    com += optimization_flag+' '
+    com += path+name+clone+'.f90 -o '+path+name+clone
+    com += end_flags
+    # print com
+    exit_code = os.system(com)
+    if exit_code != 0:
+        s = 'command: '+com+' returned exit_code '+str(exit_code)
+        raise RuntimeError(s)
 
-	#We save the code in a clone file.
-	f=file(path+name+clone+'.f90','w')
-	f.write(code)
-	f.close()
+    if clone != '':
+        os.system('rm '+path+name+clone+'.f90')
+    return time()-t0
 
 
-	from fast.config import fast_path
-	#com='gfortran -I '+fast_path+' '+parallel_flag+optimization_flag+' '+path+name+clone+'.f90 -o '+path+name+clone+end_flags
-	com ='gfortran -I '
-	com+=fast_path+" "
-	com+=parallel_flag
-	com+=optimization_flag+' '
-	com+=path+name+clone+'.f90 -o '+path+name+clone
-	com+=end_flags
-	#print com
-	exit_code=os.system(com)
-	if exit_code != 0:
-		s='command: '+com+' returned exit_code '+str(exit_code)
-		raise RuntimeError,s
+def convolve_with_gaussian(x, f, sigma):
+    r"""Return the convolution of an array with a gaussian of width sigma."""
+    # We will calculate with data from a zero-centered normalized gaussian
+    # distribution such that the steps between data are the same as the
+    # original signal.
+    N = len(f); step = (x[1]-x[0])
+    a = (x[-1]-x[0])/2.0
 
-	if clone !='':
-		os.system('rm '+path+name+clone+'.f90')
-	return time()-t0
+    x_gaussian = [-a + i*step for i in range(N)]
+    gaussian = [0.398942280401433*exp(-xi**2/(2*sigma**2))/sigma
+                for xi in x_gaussian]
 
-def convolve_with_gaussian(x,f,sigma):
-    #We will calculate with data from a zero-centered normalized gaussian distribution
-    #such that the steps between data are the same as the original signal.
-    N=len(f); step=(x[1]-x[0])
-    a=(x[-1]-x[0])/2.0
+    # We calculate N points of the convolution.
+    fg = np.convolve(f, gaussian, mode='same')
 
-    x_gaussian=[-a +i*step for i in range(N)]
-    gaussian=[0.398942280401433*exp(-xi**2/(2*sigma**2))/sigma for xi in x_gaussian]
+    # We correct for border effects.
+    stepcor = step*float(N)/float(N+1)
+    xfg = [x[0] + i*stepcor for i in range(len(fg))]
 
-    #We calculate N points of the convolution.
-    fg=np.convolve(f,gaussian,mode='same')
-
-    #We correct for border effects.
-    stepcor=step*float(N)/float(N+1)
-    xfg=[x[0] +i*stepcor for i in range(len(fg))]
-
-    #We give the convolution it's correct units.
-    fg=[fg[i]*step for i in range(len(fg))]
-    return xfg,fg
+    # We give the convolution it's correct units.
+    fg = [fg[i]*step for i in range(len(fg))]
+    return xfg, fg
