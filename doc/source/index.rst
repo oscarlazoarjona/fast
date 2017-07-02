@@ -11,6 +11,7 @@ Welcome to FAST's documentation!
    :caption: Contents:
 
    modules/atomic_structure.rst
+   modules/bloch.rst
    modules/symbolic.rst
 
 Indices and tables

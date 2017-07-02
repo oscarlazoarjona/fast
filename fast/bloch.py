@@ -20,7 +20,7 @@
 #                                                                       *
 # ***********************************************************************
 
-r"""This file contains all the fast routines for optical Bloch equations.
+r"""This module contains all the fast routines for optical Bloch equations.
 
 Here is an example with rubidum 87.
 
@@ -407,10 +407,10 @@ def find_omega_min(omega_levelu, Neu, Nl, xiu):
 
 
 def detunings_indices(Neu, Nl, xiu):
-    r"""Get the indices of the detunings of all fields.
+    r"""Get the indices of the transitions of all fields.
 
     They are returned in the form
-        [[(i1, j1), (i2, j2)], ...,[(i1, j1)]].
+    [[(i1, j1), (i2, j2)], ...,[(i1, j1)]].
     that is, one list of pairs of indices for each field.
 
     >>> Ne = 6
@@ -540,6 +540,7 @@ def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
 
     Most times it is possible to express these combinations of optical
     frequencies in terms of allowed transition detunings.
+
     >>> expr = +(omega_laser[0]-(symb_omega_levelu[1]-symb_omega_levelu[0]))
     >>> expr += -(omega_laser[1]-(symb_omega_levelu[3]-symb_omega_levelu[0]))
     >>> expr
@@ -549,6 +550,7 @@ def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
     '+delta1_2_1-delta2_4_1'
 
     But some times it is not possible:
+
     >>> expr = +(omega_laser[1]-(symb_omega_levelu[1]-symb_omega_levelu[0]))
     >>> expr += -(omega_laser[0]-(symb_omega_levelu[3]-symb_omega_levelu[0]))
     >>> expr
@@ -629,12 +631,16 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
 
     The argument rm should be numerical values of the below-diagonal components
     of the position operator in the cartesian basis:
-        rm = [ x_ij, y_ij, z_ij ] for 0 < j < i
+
+    .. math::
+        \vec{r}^{(-)}_{i j} = [ x_{ij}, y_{ij}, z_{ij} ]
+        \hspace{1cm} \forall \hspace{1cm} 0 < j < i
 
     The argument omega_level should be numerical values of the energy levels.
     theta should be a phase transformation returned by the phase_transformation
-    function. xi should be an array of ones and zeros such that xi[l, i, j]
-    represents whether the |i> -> |j> transition is driven by field l.
+    function. xi should be an array of ones and zeros such that ``xi[l, i, j]``
+    represents whether the :math:`|i\rangle \rightarrow |j\rangle` transition
+    is driven by field l.
 
     >>> Ne = 6
     >>> Nl = 2
