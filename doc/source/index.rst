@@ -10,9 +10,8 @@ Welcome to FAST's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   modules/atomic_structure.rst
    modules/symbolic.rst
-
-
 
 Indices and tables
 ==================

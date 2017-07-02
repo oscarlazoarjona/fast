@@ -21,13 +21,25 @@
 #                                                                       *
 # ***********************************************************************
 
-r"""This file contains all the information about the atoms.
+"""This module contains all the information about the atoms.
 
-This inclures routines to calculate the necessary matrices.
+This includes classes to describe atomic states, transitions, and the atoms\
+ themselves. Routines to calculate hyperfine decay rates, and electric dipole\
+ matrix elements are included.
 
->>> g=State("Cs", 133, 6, 0, 1/Integer(2))
->>> make_list_of_states([g], "hyperfine")
-[133Cs 6S_1/2^3, 133Cs 6S_1/2^4]
+Here is the ground state of Cesium.
+
+>>> State("Cs", 133, 6, 0, 1/Integer(2))
+133Cs 6S_1/2
+
+References
+~~~~~~~~~~
+.. [SteckRb85] Daniel A. Steck, "Rubidium 85 D Line Data," available online at
+  http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
+.. [SteckRb87] Daniel A. Steck, "Rubidium 87 D Line Data," available online at
+  http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
+.. [SteckCs] Daniel A. Steck, "Cesium D Line Data," available online at
+  http://steck.us/alkalidata (revision 2.1.4, 23 December 2010).
 
 """
 
@@ -398,52 +410,64 @@ class State(Basic):
     The states must be identified by element, isotope and quantum numbers
     in one of these forms:
 
-    1 .- |n, l, j>
+    1 .- :math:`|n, l, j\rangle`
+
     >>> State("Rb",85,5,0,1/Integer(2))
     85Rb 5S_1/2
 
-    2 .- |n, l, j, f>
+    2 .- :math:`|n, l, j, f>`
+
     >>> State("Cs", 133, 6, 0, 1/Integer(2), 3)
     133Cs 6S_1/2^3
 
-    3 .- |n, l, j, f, m>
+    3 .- :math:`|n, l, j, f, m>`
+
     >>> State("Rb", 87, 5, 0, 1/Integer(2), 2, -1)
     87Rb 5S_1/2^2,-1
 
     States have many useful properties:
+
     >>> g2=State("Cs", 133, 6, 0, 1/Integer(2), 4, 4)
     >>> e =State("Cs", 133, 6, 1, 3/Integer(2), 5, 5)
 
     The defining properties of the state:
+
     >>> g2.element, g2.isotope, g2.n, g2.l, g2.j, g2.f, g2.m
     ('Cs', 133, 6, 0, 1/2, 4, 4)
 
     The atomic number of the element:
+
     >>> g2.Z
     55
 
     The number of neutrons:
+
     >>> g2.neutrons
     78
 
     The mass of the atom (in kilograms):
+
     >>> print g2.mass
     2.2069469161e-25
 
     The absolute frequency of the state relative to the groundstate energy
     (in Hz):
+
     >>> print g2.nu
     4021776399.38
 
     The angular frequency of the state (in rad/s):
+
     >>> print g2.omega
     25269566381.3
 
     The hyperfine constants Ahfs, Bhfs, Chfs:
+
     >>> print e.Ahfs, e.Bhfs, e.Chfs
     50288250.0 -494000.0 560.0
 
     A latex representation:
+
     >>> print g2._latex_()
     ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
     """
@@ -1388,23 +1412,27 @@ def get_einstein_A_matrix(fine_states,Omega=1):
 def calculate_gamma_matrix(magnetic_states, Omega=1):
     r"""Calculate the matrix of decay between states.
 
-    This function calculates the matrix $\gamma_{ij}$ of decay rates between
-    states |i> and |j> (in the units specified by the Omega argument).
+    This function calculates the matrix :math:`\gamma_{ij}` of decay rates
+    between states :math:`|i\rangle` and :math:`|j\rangle` (in the units
+    specified by the Omega argument).
 
     >>> g=State("Rb",87,5,0,1/Integer(2))
     >>> e=State("Rb",87,5,1,3/Integer(2))
     >>> magnetic_states=make_list_of_states([g,e],"magnetic")
 
     To return the rates in rad/s:
+
     >>> print calculate_gamma_matrix(magnetic_states)
     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12702506.296014734, -15878132.870018415, -15878132.870018415, -0.0, -19053759.4440221, -9526879.72201105, -3175626.5740036834, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12702506.296014734, -15878132.870018415, -0.0, -15878132.870018415, -0.0, -9526879.72201105, -12702506.296014734, -9526879.72201105, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12702506.296014734, -0.0, -15878132.870018415, -15878132.870018415, -0.0, -0.0, -3175626.5740036834, -9526879.72201105, -19053759.4440221, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -3810751.8888044204, -0.0, -0.0, -12702506.296014734, -6351253.148007367, -0.0, -0.0, -0.0, -38107518.8880442, -12702506.296014734, -2540501.2592029474, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1905375.9444022102, -1905375.9444022102, -0.0, -6351253.148007367, -3175626.5740036834, -9526879.72201105, -0.0, -0.0, -0.0, -25405012.592029467, -20324010.07362358, -7621503.77760884, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -635125.3148007367, -2540501.259202947, -635125.3148007367, -0.0, -9526879.72201105, -0.0, -9526879.72201105, -0.0, -0.0, -0.0, -15243007.55521768, -22864511.33282652, -15243007.55521768, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1905375.9444022102, -1905375.9444022102, -0.0, -0.0, -9526879.72201105, -3175626.5740036834, -6351253.148007367, -0.0, -0.0, -0.0, -7621503.77760884, -20324010.07362358, -25405012.592029467, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -3810751.8888044204, -0.0, -0.0, -0.0, -6351253.148007367, -12702506.296014734, -0.0, -0.0, -0.0, -0.0, -2540501.2592029474, -12702506.296014734, -38107518.8880442], [12702506.296014734, 12702506.296014734, 12702506.296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15878132.870018415, 15878132.870018415, 0.0, 3810751.8888044204, 1905375.9444022102, 635125.3148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15878132.870018415, 0.0, 15878132.870018415, 0.0, 1905375.9444022102, 2540501.259202947, 1905375.9444022102, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 15878132.870018415, 15878132.870018415, 0.0, 0.0, 635125.3148007367, 1905375.9444022102, 3810751.8888044204, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [19053759.4440221, 0.0, 0.0, 12702506.296014734, 6351253.148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [9526879.72201105, 9526879.72201105, 0.0, 6351253.148007367, 3175626.5740036834, 9526879.72201105, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [3175626.5740036834, 12702506.296014734, 3175626.5740036834, 0.0, 9526879.72201105, 0.0, 9526879.72201105, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 9526879.72201105, 9526879.72201105, 0.0, 0.0, 9526879.72201105, 3175626.5740036834, 6351253.148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 19053759.4440221, 0.0, 0.0, 0.0, 6351253.148007367, 12702506.296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 38107518.8880442, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 12702506.296014734, 25405012.592029467, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 2540501.2592029474, 20324010.07362358, 15243007.55521768, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 7621503.77760884, 22864511.33282652, 7621503.77760884, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 15243007.55521768, 20324010.07362358, 2540501.2592029474, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25405012.592029467, 12702506.296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38107518.8880442, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
 
     To return the rates in 10^6 rad /s:
+
     >>> gamma = calculate_gamma_matrix(magnetic_states,Omega=1e6)
     >>> gamma
     [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12.702506296014734, -15.878132870018417, -15.878132870018417, -0.0, -19.053759444022102, -9.526879722011051, -3.1756265740036835, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12.702506296014734, -15.878132870018417, -0.0, -15.878132870018417, -0.0, -9.526879722011051, -12.702506296014734, -9.526879722011051, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12.702506296014734, -0.0, -15.878132870018417, -15.878132870018417, -0.0, -0.0, -3.1756265740036835, -9.526879722011051, -19.053759444022102, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -3.8107518888044205, -0.0, -0.0, -12.702506296014734, -6.351253148007367, -0.0, -0.0, -0.0, -38.107518888044204, -12.702506296014734, -2.5405012592029474, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.9053759444022103, -1.9053759444022103, -0.0, -6.351253148007367, -3.1756265740036835, -9.526879722011051, -0.0, -0.0, -0.0, -25.40501259202947, -20.32401007362358, -7.62150377760884, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.6351253148007368, -2.540501259202947, -0.6351253148007368, -0.0, -9.526879722011051, -0.0, -9.526879722011051, -0.0, -0.0, -0.0, -15.24300755521768, -22.86451133282652, -15.24300755521768, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1.9053759444022103, -1.9053759444022103, -0.0, -0.0, -9.526879722011051, -3.1756265740036835, -6.351253148007367, -0.0, -0.0, -0.0, -7.62150377760884, -20.32401007362358, -25.40501259202947, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -3.8107518888044205, -0.0, -0.0, -0.0, -6.351253148007367, -12.702506296014734, -0.0, -0.0, -0.0, -0.0, -2.5405012592029474, -12.702506296014734, -38.107518888044204], [12.702506296014734, 12.702506296014734, 12.702506296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15.878132870018417, 15.878132870018417, 0.0, 3.8107518888044205, 1.9053759444022103, 0.6351253148007368, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15.878132870018417, 0.0, 15.878132870018417, 0.0, 1.9053759444022103, 2.540501259202947, 1.9053759444022103, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 15.878132870018417, 15.878132870018417, 0.0, 0.0, 0.6351253148007368, 1.9053759444022103, 3.8107518888044205, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [19.053759444022102, 0.0, 0.0, 12.702506296014734, 6.351253148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [9.526879722011051, 9.526879722011051, 0.0, 6.351253148007367, 3.1756265740036835, 9.526879722011051, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [3.1756265740036835, 12.702506296014734, 3.1756265740036835, 0.0, 9.526879722011051, 0.0, 9.526879722011051, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 9.526879722011051, 9.526879722011051, 0.0, 0.0, 9.526879722011051, 3.1756265740036835, 6.351253148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 19.053759444022102, 0.0, 0.0, 0.0, 6.351253148007367, 12.702506296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 38.107518888044204, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 12.702506296014734, 25.40501259202947, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 2.5405012592029474, 20.32401007362358, 15.24300755521768, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 7.62150377760884, 22.86451133282652, 7.62150377760884, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 15.24300755521768, 20.32401007362358, 2.5405012592029474, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.40501259202947, 12.702506296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38.107518888044204, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
 
     Let us test if all D2 lines decay at the expected rate (6.065 MHz):
+
     >>> Gamma =[ sum([ gamma[i][j] for j in range(i)])/2/pi for i in range(len(magnetic_states))][8:]
     >>> for Gammai in Gamma: print Gammai
     6.065
@@ -1462,7 +1490,10 @@ def calculate_reduced_matrix_elements(fine_states):
     r"""Calculate the reduced matrix elements for a list of fine states.
 
     This function calculates the reduced matrix elments
-                <N,L,J||T^1(r)||N',L',J'>
+
+    .. math::
+        \langle N,L,J||T^1(r)||N',L',J'\rangle
+
     given a list of fine states.
 
     >>> g=State("Rb",87,5,0,1/Integer(2))
@@ -1668,201 +1699,201 @@ def find_fine_states(magnetic_states):
     return fine_states
 
 
-def exclude_states(omega, gamma, r, Lij, states, excluded_states):
-    """Exclude states from matrices.
-
-    This function takes the matrices and excludes the states listed in
-    excluded_states.
-    """
-    Ne = len(omega)
-    excluded_indices = [i for i in range(Ne) if states[i] in excluded_states]
-
-    omega_new = []; gamma_new = []; r_new = [[], [], []]; Lij_new = []
-    for i in range(Ne):
-        row_om = []; row_ga = []; row_L = []
-        for j in range(Ne):
-            if j not in excluded_indices:
-                row_om += [omega[i][j]]
-                row_ga += [gamma[i][j]]
-                row_L += [Lij[i][j]]
-        if i not in excluded_indices:
-            omega_new += [row_om]
-            gamma_new += [row_ga]
-            Lij_new += [row_L]
-
-    for p in range(3):
-        for i in range(Ne):
-            row_r = []
-            for j in range(Ne):
-                if j not in excluded_indices:
-                    row_r += [r[p][i][j]]
-            if i not in excluded_indices:
-                r_new[p] += [row_r]
-
-    states_new = [states[i] for i in range(Ne) if i not in excluded_indices]
-
-    return omega_new, gamma_new, r_new, Lij_new, states_new
-
-
-def calculate_reduced_matrix_elements_0(fine_states):
-    r"""Calculate the reduced matrix elments given a list of fine states.
-
-    The matrix elements are defined through the Wigner-Eckart theorem
-        <g,J,M|T^1_p(r)|g',J',M'> = (J',M',1,p|J,M) / sqrt(2J+1)
-                                  x (N,L,J||T^1(r)||N',L',J')
-
-    Where (J',M',1,p|J,M) is a Clebsch-Gordan coefficient.
-    """
-    # We calculate the reduced matrix elements starting from the list of
-    # fine_states
-
-    # The factor composed of physical quantities.
-    factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-    # We read the database to obtain the Einstein A coefficients in Hz.
-    einsteinA = get_einstein_A_matrix(fine_states)
-    # We read the database to obtain the transition frequencies in Hz.
-    omega_fine = calculate_omega_matrix(fine_states)
-
-    reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
-                               for ii in range(len(fine_states))]
-
-    for ii in range(len(fine_states)):
-        i = fine_states[ii]
-        for jj in range(ii):
-            j = fine_states[jj]
-            einsteinAij = einsteinA[ii][jj]
-            omega0 = omega_fine[ii][jj]
-
-            # The formula is valid only for i =/= j so that omega0 =/= 0.
-            # Because fine states are asumed to be ordered by their energies we
-            # can asume that i decays in j.
-            Ji = i.j; Jj = j.j
-
-            rij = sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
-            rij = factor*rij
-
-            reduced_matrix_elements[ii][jj] = rij
-            # We add the matrix elements on the other side of the diagonal.
-            reduced_matrix_elements[jj][ii] = rij*(-1)**(Jj-Ji)
-
-    return reduced_matrix_elements
+# def exclude_states(omega, gamma, r, Lij, states, excluded_states):
+#     """Exclude states from matrices.
+#
+#     This function takes the matrices and excludes the states listed in
+#     excluded_states.
+#     """
+#     Ne = len(omega)
+#     excluded_indices = [i for i in range(Ne) if states[i] in excluded_states]
+#
+#     omega_new = []; gamma_new = []; r_new = [[], [], []]; Lij_new = []
+#     for i in range(Ne):
+#         row_om = []; row_ga = []; row_L = []
+#         for j in range(Ne):
+#             if j not in excluded_indices:
+#                 row_om += [omega[i][j]]
+#                 row_ga += [gamma[i][j]]
+#                 row_L += [Lij[i][j]]
+#         if i not in excluded_indices:
+#             omega_new += [row_om]
+#             gamma_new += [row_ga]
+#             Lij_new += [row_L]
+#
+#     for p in range(3):
+#         for i in range(Ne):
+#             row_r = []
+#             for j in range(Ne):
+#                 if j not in excluded_indices:
+#                     row_r += [r[p][i][j]]
+#             if i not in excluded_indices:
+#                 r_new[p] += [row_r]
+#
+#     states_new = [states[i] for i in range(Ne) if i not in excluded_indices]
+#
+#     return omega_new, gamma_new, r_new, Lij_new, states_new
 
 
-def calculate_reduced_matrix_elements_steck(fine_states):
-    r"""Calculate the reduced matrix elments using Steck's convention.
+# def calculate_reduced_matrix_elements_0(fine_states):
+#     r"""Calculate the reduced matrix elments given a list of fine states.
+#
+#     The matrix elements are defined through the Wigner-Eckart theorem
+#         <g,J,M|T^1_p(r)|g',J',M'> = (J',M',1,p|J,M) / sqrt(2J+1)
+#                                   x (N,L,J||T^1(r)||N',L',J')
+#
+#     Where (J',M',1,p|J,M) is a Clebsch-Gordan coefficient.
+#     """
+#     # We calculate the reduced matrix elements starting from the list of
+#     # fine_states
+#
+#     # The factor composed of physical quantities.
+#     factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
+#     # We read the database to obtain the Einstein A coefficients in Hz.
+#     einsteinA = get_einstein_A_matrix(fine_states)
+#     # We read the database to obtain the transition frequencies in Hz.
+#     omega_fine = calculate_omega_matrix(fine_states)
+#
+#     reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
+#                                for ii in range(len(fine_states))]
+#
+#     for ii in range(len(fine_states)):
+#         i = fine_states[ii]
+#         for jj in range(ii):
+#             j = fine_states[jj]
+#             einsteinAij = einsteinA[ii][jj]
+#             omega0 = omega_fine[ii][jj]
+#
+#             # The formula is valid only for i =/= j so that omega0 =/= 0.
+#             # Because fine states are asumed to be ordered by their energies we
+#             # can asume that i decays in j.
+#             Ji = i.j; Jj = j.j
+#
+#             rij = sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
+#             rij = factor*rij
+#
+#             reduced_matrix_elements[ii][jj] = rij
+#             # We add the matrix elements on the other side of the diagonal.
+#             reduced_matrix_elements[jj][ii] = rij*(-1)**(Jj-Ji)
+#
+#     return reduced_matrix_elements
+#
+#
+# def calculate_reduced_matrix_elements_steck(fine_states):
+#     r"""Calculate the reduced matrix elments using Steck's convention.
+#
+#     The matrix elements are defined through the Wigner-Eckart theorem
+#         <g,J,M|T^1_p(r)|g',J',M'> = (J',M',1,p|J,M) <N,L,J||T^1(r)||N',L',J'>
+#
+#     Where (J',M',1,p|J,M) is a Clebsch-Gordan coefficient.
+#     """
+#     # We calculate the reduced matrix elements starting from the list of
+#     # fine_states
+#
+#     # The factor composed of physical quantities.
+#     factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
+#     # We read the database to obtain the Einstein A coefficients in Hz.
+#     einsteinA = get_einstein_A_matrix(fine_states)
+#     # We read the database to obtain the transition frequencies in Hz.
+#     omega_fine = calculate_omega_matrix(fine_states)
+#
+#     reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
+#                                for ii in range(len(fine_states))]
+#
+#     for ii in range(len(fine_states)):
+#         i = fine_states[ii]
+#         for jj in range(ii):
+#             j = fine_states[jj]
+#             einsteinAij = einsteinA[ii][jj]
+#             omega0 = omega_fine[ii][jj]
+#
+#             # The formula is valid only for i =/= j so that omega0 =/= 0.
+#             # Because fine states are asumed to be ordered by their energies
+#             # we can asume that
+#             # i decays in j.
+#             Ji = i.j; Jj = j.j
+#
+#             rij = sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
+#             rij = factor*rij
+#
+#             reduced_matrix_elements[ii][jj] = rij
+#             # We add the matrix elements on the other side of the diagonal.
+#             reduced_matrix_elements[jj][ii] = rij*(-1)**(Jj-Ji) *\
+#                 sqrt(2.0*Ji+1)/sqrt(2.0*Jj+1)
+#
+#     return reduced_matrix_elements
 
-    The matrix elements are defined through the Wigner-Eckart theorem
-        <g,J,M|T^1_p(r)|g',J',M'> = (J',M',1,p|J,M) <N,L,J||T^1(r)||N',L',J'>
 
-    Where (J',M',1,p|J,M) is a Clebsch-Gordan coefficient.
-    """
-    # We calculate the reduced matrix elements starting from the list of
-    # fine_states
-
-    # The factor composed of physical quantities.
-    factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-    # We read the database to obtain the Einstein A coefficients in Hz.
-    einsteinA = get_einstein_A_matrix(fine_states)
-    # We read the database to obtain the transition frequencies in Hz.
-    omega_fine = calculate_omega_matrix(fine_states)
-
-    reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
-                               for ii in range(len(fine_states))]
-
-    for ii in range(len(fine_states)):
-        i = fine_states[ii]
-        for jj in range(ii):
-            j = fine_states[jj]
-            einsteinAij = einsteinA[ii][jj]
-            omega0 = omega_fine[ii][jj]
-
-            # The formula is valid only for i =/= j so that omega0 =/= 0.
-            # Because fine states are asumed to be ordered by their energies
-            # we can asume that
-            # i decays in j.
-            Ji = i.j; Jj = j.j
-
-            rij = sqrt((2.0*Ji+1)/(2*Jj+1))*sqrt(einsteinAij/omega0**3)
-            rij = factor*rij
-
-            reduced_matrix_elements[ii][jj] = rij
-            # We add the matrix elements on the other side of the diagonal.
-            reduced_matrix_elements[jj][ii] = rij*(-1)**(Jj-Ji) *\
-                sqrt(2.0*Ji+1)/sqrt(2.0*Jj+1)
-
-    return reduced_matrix_elements
+# def calculate_r_matrices_0(fine_states, reduced_matrix_elements):
+#
+#     full_magnetic_states = make_list_of_states(fine_states,
+#                                                'magnetic', verbose=0)
+#     aux = calculate_boundaries(fine_states, full_magnetic_states)
+#     index_list_fine, index_list_hyperfine = aux
+#
+#     N_magnetic = len(full_magnetic_states)
+#     r = []
+#     for p in [-1, 0, 1]:
+#         mat = []
+#         for i in range(N_magnetic):
+#             row = []
+#             ISO, N, L, J, F, M = full_magnetic_states[i].quantum_numbers
+#             ii = fine_index(i, index_list_fine)
+#             for j in range(N_magnetic):
+#                 aux = full_magnetic_states[j].quantum_numbers
+#                 ISOp, Np, Lp, Jp, Fp, Mp = aux
+#                 jj = fine_index(j, index_list_fine)
+#
+#                 red = reduced_matrix_elements[ii][jj]
+#                 qu = quaver(ISO, p, J, F, M, Jp, Fp, Mp, numeric=True)
+#                 row += [red*qu]
+#             mat += [row]
+#         r += [mat]
+#     return r
 
 
-def calculate_r_matrices_0(fine_states, reduced_matrix_elements):
-
-    full_magnetic_states = make_list_of_states(fine_states,
-                                               'magnetic', verbose=0)
-    aux = calculate_boundaries(fine_states, full_magnetic_states)
-    index_list_fine, index_list_hyperfine = aux
-
-    N_magnetic = len(full_magnetic_states)
-    r = []
-    for p in [-1, 0, 1]:
-        mat = []
-        for i in range(N_magnetic):
-            row = []
-            ISO, N, L, J, F, M = full_magnetic_states[i].quantum_numbers
-            ii = fine_index(i, index_list_fine)
-            for j in range(N_magnetic):
-                aux = full_magnetic_states[j].quantum_numbers
-                ISOp, Np, Lp, Jp, Fp, Mp = aux
-                jj = fine_index(j, index_list_fine)
-
-                red = reduced_matrix_elements[ii][jj]
-                qu = quaver(ISO, p, J, F, M, Jp, Fp, Mp, numeric=True)
-                row += [red*qu]
-            mat += [row]
-        r += [mat]
-    return r
-
-
-def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
-    magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
-    aux = calculate_boundaries(fine_states, magnetic_states)
-    index_list_fine, index_list_hyperfine = aux
-
-    Ne = len(magnetic_states)
-
-    r = [[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
-
-    if fine_states[0].isotope == 85:
-        II = Integer(5)/Integer(2)
-    elif fine_states[0].isotope == 87:
-        II = Integer(3)/Integer(2)
-
-    for p in [-1, 0, 1]:
-        for i in range(Ne):
-            ei = magnetic_states[i]
-            ii = fine_index(i, index_list_fine)
-
-            for j in range(Ne):
-                ej = magnetic_states[j]
-                jj = fine_index(j, index_list_fine)
-
-                reduced_matrix_elementij = reduced_matrix_elements[ii][jj]
-                if reduced_matrix_elementij != 0:
-                    ji = ei.j; jj = ej.j
-                    fi = ei.f; fj = ej.f
-                    mi = ei.m; mj = ej.m
-
-                    rpij = (-1)**(fj-1-mi)
-                    rpij *= sqrt(2*fi+1)
-                    rpij *= wigner_3j(fj, 1, fi, mj, p, -mi)
-
-                    rpij *= (-1)**(fj+ji+1+II)
-                    rpij *= sqrt(2*fj+1)
-                    rpij *= sqrt(2*ji+1)
-                    rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
-
-                    rpij *= reduced_matrix_elementij
-
-                    r[p+1][i][j] = float(rpij)
-    return r
+# def calculate_r_matrices_steck(fine_states, reduced_matrix_elements):
+#     magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
+#     aux = calculate_boundaries(fine_states, magnetic_states)
+#     index_list_fine, index_list_hyperfine = aux
+#
+#     Ne = len(magnetic_states)
+#
+#     r = [[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+#
+#     if fine_states[0].isotope == 85:
+#         II = Integer(5)/Integer(2)
+#     elif fine_states[0].isotope == 87:
+#         II = Integer(3)/Integer(2)
+#
+#     for p in [-1, 0, 1]:
+#         for i in range(Ne):
+#             ei = magnetic_states[i]
+#             ii = fine_index(i, index_list_fine)
+#
+#             for j in range(Ne):
+#                 ej = magnetic_states[j]
+#                 jj = fine_index(j, index_list_fine)
+#
+#                 reduced_matrix_elementij = reduced_matrix_elements[ii][jj]
+#                 if reduced_matrix_elementij != 0:
+#                     ji = ei.j; jj = ej.j
+#                     fi = ei.f; fj = ej.f
+#                     mi = ei.m; mj = ej.m
+#
+#                     rpij = (-1)**(fj-1-mi)
+#                     rpij *= sqrt(2*fi+1)
+#                     rpij *= wigner_3j(fj, 1, fi, mj, p, -mi)
+#
+#                     rpij *= (-1)**(fj+ji+1+II)
+#                     rpij *= sqrt(2*fj+1)
+#                     rpij *= sqrt(2*ji+1)
+#                     rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
+#
+#                     rpij *= reduced_matrix_elementij
+#
+#                     r[p+1][i][j] = float(rpij)
+#     return r
 
 
 def vapour_pressure(Temperature, element):
@@ -1870,6 +1901,9 @@ def vapour_pressure(Temperature, element):
 
     This function receives as input the temperature in Kelvins and the
     name of the element.
+
+    This is calculated using the formulas in [SteckRb85]_, [SteckRb87]_,
+    [SteckCs]_.
 
     >>> print vapour_pressure(25.0 + 273.15,"Rb")
     5.31769896107e-05
@@ -1891,13 +1925,6 @@ def vapour_pressure(Temperature, element):
     ...
     ValueError: Ca is not an element in the database for this function.
 
-    References:
-    [1] Daniel A. Steck, "Cesium D Line Data," available online at
-        http://steck.us/alkalidata (revision 2.1.4, 23 December 2010).
-    [2] Daniel A. Steck, "Rubidium 85 D Line Data," available online at
-        http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
-    [3] Daniel A. Steck, "Rubidium 87 D Line Data," available online at
-        http://steck.us/alkalidata (revision 2.1.5, 19 September 2012).
     """
     if element == "Rb":
         Tmelt = 39.30+273.15  # K.
@@ -1926,6 +1953,9 @@ def vapour_number_density(Temperature, element):
     It receives as input the temperature in Kelvins and the
     name of the element.
 
+    This is calculated using the formulas in [SteckRb85]_, [SteckRb87]_,
+    [SteckCs]_.
+
     >>> print vapour_number_density(90.0 + 273.15,"Cs")
     8.39706962725e+18
 
@@ -1933,12 +1963,15 @@ def vapour_number_density(Temperature, element):
     return vapour_pressure(Temperature, element)/k_B/Temperature
 
 
-def vapour_density(Temperature,element,isotope=None):
+def vapour_density(Temperature, element, isotope=None):
     r"""This function returns the density in a rubidium or cesium
     vapour in kg/m^-3. It receives as input the temperature in Kelvins, the
     name of the element, and optionally the isotope. If no isotope is
     specified, the density of a vapour with the natural abundances will
     be returned.
+
+    This is calculated using the formulas in [SteckRb85]_, [SteckRb87]_,
+    [SteckCs]_.
 
     >>> print vapour_density(90.0 + 273.15,"Cs",133)
     1.85318869181e-06
@@ -1965,12 +1998,10 @@ def vapour_density(Temperature,element,isotope=None):
 def speed_likely(Temperature, element, isotope):
     r"""This function calculates the most likely speed (in meters per second)
     of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
-    This is simply
+    This is simply :math:`\sqrt{2 k_B T/m}`
 
-    sqrt(2*k_B*T/m)
-
-    where k_B is Boltzmann's constant, T is the temperature (in Kelvins) and
-    m is the mass of the atom (in kilograms).
+    where :math:`k_B` is Boltzmann's constant, T is the temperature
+    (in Kelvins) and m is the mass of the atom (in kilograms).
 
     >>> print speed_likely(25+273.15,"Rb",85)
     241.638108688
@@ -1982,15 +2013,14 @@ def speed_likely(Temperature, element, isotope):
     atom = Atom(element, isotope)
     return sqrt(2*Temperature*k_B/atom.mass)
 
+
 def speed_average(Temperature, element, isotope):
     r"""This function calculates the average speed (in meters per second)
     of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
-    This is simply
+    This is simply :math:`\sqrt{8 k_B T/m/\pi}`
 
-    sqrt(8*k_B*T/m/pi)
-
-    where k_B is Boltzmann's constant, T is the temperature (in Kelvins) and
-    m is the mass of the atom (in kilograms).
+    where :math:`k_B` is Boltzmann's constant, T is the temperature
+    (in Kelvins) and m is the mass of the atom (in kilograms).
 
     >>> print speed_average(25+273.15,"Rb",85)
     272.65940782
@@ -2004,14 +2034,12 @@ def speed_average(Temperature, element, isotope):
 
 
 def speed_rms(Temperature, element, isotope):
-    r"""This function calculates the average speed (in meters per second)
-    of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
-    This is simply
+    r"""This function calculates the root mean squared speed (in meters per
+    second) of an atom in a vapour assuming a Maxwell-Boltzmann velocity
+    distribution. This is simply :math:`\sqrt{8k_B T/m/\pi}`
 
-    sqrt(8*k_B*T/m/pi)
-
-    where k_B is Boltzmann's constant, T is the temperature (in Kelvins) and
-    m is the mass of the atom (in kilograms).
+    where :math:`k_B` is Boltzmann's constant, T is the temperature
+    (in Kelvins) and m is the mass of the atom (in kilograms).
 
     >>> print speed_rms(25+273.15,"Rb",85)
     295.945034349
@@ -2031,20 +2059,24 @@ def collision_rate(Temperature, element, isotope):
     Maxwell-Boltzmann velocity distribution, and taking the cross section
     of the collision to be
 
-        sigma=pi*(2*r)**2
+    .. math::
+        \sigma = \pi (2r)^2
 
     where r is the atomic radius. colission rate returned is
 
-        gamma_col=2*pi* ( sigma * v * n )
+    .. math::
+        \gamma_{col}=2 \pi ( \sigma v n )
 
     where v is the average velocity of the distribution, and n is the
     number density of the vapour.
 
     A few examples (in Hz):
+
     >>> print collision_rate(25 + 273.15, "Cs", 133)/2/pi
     9.0607260277
 
     For cesium collisions become important for temperatures above 120 Celsius.
+
     >>> print collision_rate(120 + 273.15, "Cs", 133)/2/pi
     10519.235289
 
