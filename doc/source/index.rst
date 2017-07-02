@@ -12,6 +12,7 @@ Welcome to FAST's documentation!
 
    modules/atomic_structure.rst
    modules/bloch.rst
+   modules/electric_field.rst
    modules/symbolic.rst
 
 Indices and tables
