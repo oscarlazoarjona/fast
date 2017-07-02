@@ -29,6 +29,12 @@ Matrix([
 [rho11, rho12],
 [rho21, rho22]])
 
+References
+~~~~~~~~~~
+.. [Edmonds74] A. R. Edmonds. Angular momentum in quantum mechanics.
+  Investigations in physics, 4.; Investigations in physics, no. 4.
+  Princeton, N.J., Princeton University Press, 1957.
+
 """
 
 from sympy import Symbol, Matrix, symbols
@@ -71,36 +77,39 @@ def define_symbol(name, open_brace, comma, i, j,
 
 def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
                           variables=None):
-    r"""Return a symbolic density matrix.
+    """Return a symbolic density matrix.
 
-    The arguments are
+    INPUT:
 
-    Ne (integer):
-        The number of atomic states.
-    explicitly_hermitian (boolean):
-        Whether to make $\rho_{ij}=\bar{\rho}_{ij}$ for $i<j$
-    normalized (boolean):
-        Whether to make $\rho_{11}=1-\sum_{i>1} \rho_{ii}$
+    - ``Ne`` - The number of atomic states.
+    - ``explicitly_hermitian`` - (boolean) whether to make\
+ :math:`\\rho_{ij}=\\bar{\\rho}_{ij}` for i<j.
+    - ``normalized`` - (boolean): Whether to make\
+ :math:`\\rho_{11}=1-\\sum_{i>1} \\rho_{ii}`
 
     A very simple example:
+
     >>> define_density_matrix(2)
     Matrix([
     [rho11, rho12],
     [rho21, rho22]])
 
     The density matrix can be made explicitly hermitian
+
     >>> define_density_matrix(2, explicitly_hermitian=True)
     Matrix([
     [rho11, conjugate(rho21)],
     [rho21,            rho22]])
 
     or normalized
+
     >>> define_density_matrix(2, normalized=True)
     Matrix([
     [-rho22 + 1, rho12],
     [     rho21, rho22]])
 
     or it can be made an explicit function of given variables
+
     >>> from sympy import symbols
     >>> t, z = symbols("t, z", positive=True)
     >>> define_density_matrix(2, variables=[t, z])
@@ -158,15 +167,18 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
     ([E_0^1, E_0^2], [varpi_1, varpi_2])
 
     The amplitudes are complex by default:
+
     >>> conjugate(E0[0])
     conjugate(E_0^1)
 
     But they can optionally be made real:
+
     >>> E0, omega_laser = define_laser_variables(2, real_amplitudes=True)
     >>> conjugate(E0[0])
     E_0^1
 
     They can also be made explicit functions of given variables:
+
     >>> from sympy import symbols
     >>> t, z = symbols("t, z", real=True)
     >>> E0, omega_laser = define_laser_variables(2, variables=[t, z])
@@ -187,20 +199,25 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
 
 
 def polarization_vector(phi, theta, alpha, beta, p):
-    r"""This function returns a unitary vector describing the polarization
-    of plane waves. It recieves as arguments:
+    """
+    This function returns a unitary vector describing the polarization
+    of plane waves.:
 
-    phi   .- The spherical coordinates azimuthal angle of the wave vector k.
-    theta .- The spherical coordinates polar angle of the wave vector k.
-    alpha .- The rotation of a half-wave plate.
-    beta  .- The rotation of a quarter-wave plate.
-    p     .- either 1 or -1 to indicate whether to return epsilon^(+) or
-             epsilon^(-) respectively.
+    INPUT:
+
+    -  ``phi`` - The spherical coordinates azimuthal angle of the wave vector\
+ k.
+    -  ``theta`` - The spherical coordinates polar angle of the wave vector k.
+    -  ``alpha`` - The rotation of a half-wave plate.
+    -  ``beta`` - The rotation of a quarter-wave plate.
+    -  ``p`` - either 1 or -1 to indicate whether to return epsilon^(+) or\
+ epsilon^(-) respectively.
 
     If alpha and beta are zero, the result will be linearly polarized light
     along some fast axis. alpha and beta are measured from that fast axis.
 
     Propagation towards y, linear polarization (for pi transitions):
+
     >>> from sympy import pi
     >>> polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta= 0,p=1)
     Matrix([
@@ -209,6 +226,7 @@ def polarization_vector(phi, theta, alpha, beta, p):
     [1]])
 
     Propagation towards +z, circular polarization (for sigma + transitions):
+
     >>> polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p=1)
     Matrix([
     [  -sqrt(2)/2],
@@ -216,6 +234,7 @@ def polarization_vector(phi, theta, alpha, beta, p):
     [           0]])
 
     Propagation towards -z, circular polarization for sigma + transitions:
+
     >>> polarization_vector(phi=0, theta=pi, alpha=   0, beta=-pi/8,p=1)
     Matrix([
     [  -sqrt(2)/2],
@@ -223,6 +242,7 @@ def polarization_vector(phi, theta, alpha, beta, p):
     [           0]])
 
     Components + and - are complex conjugates of each other
+
     >>> from sympy import symbols
     >>> phi, theta, alpha, beta = symbols("phi theta alpha beta", real=True)
     >>> ep = polarization_vector(phi,theta,alpha,beta, 1)
@@ -294,7 +314,10 @@ def cartesian_to_helicity(vector, numeric=False):
 
     Note that vectors in the helicity basis are built in a weird way by
     convention:
-                a = -ap*em +a0*e0 -am*ep
+
+    .. math::
+
+        \vec{a} = -a_{+1}\vec{e}_{-1} +a_0\vec{e}_0 -a_{-1}\vec{e}_{+1}
 
     >>> from sympy import symbols
     >>> am,a0,ap = symbols("am a0 ap")
@@ -311,6 +334,7 @@ def cartesian_to_helicity(vector, numeric=False):
     [ap]])
 
     We can also convert a numeric array
+
     >>> r =[[[0.0, 1.0],
     ...      [1.0, 0.0]],
     ...     [[0.0, -1j],
@@ -385,6 +409,7 @@ def helicity_to_cartesian(vector, numeric=False):
     [r_{0;21}, 0]])]
 
     We can also convert a numeric array
+
     >>> r =[[[0.0        ,        0.0 ],
     ...      [npsqrt(2.0),        0.0 ]],
     ...     [[1.0        ,        0.0 ],
@@ -660,6 +685,7 @@ def define_frequencies(Ne, explicitly_antisymmetric=False):
     ⎝          ⎣ω₂₁   0 ⎦  ⎣γ₂₁   0 ⎦⎠
 
     We can make these matrices explicitly antisymmetric.
+
     >>> pprint(define_frequencies(2, explicitly_antisymmetric=True),
     ...                           use_unicode=True)
     ⎛[ω₁, ω₂], ⎡ 0   -ω₂₁⎤, ⎡ 0   -γ₂₁⎤⎞
@@ -753,6 +779,7 @@ def bra(i, Ne):
     Matrix([[0, 1, 0, 0]])
 
     This will return an error if i is not in [1 .. Ne]:
+
     >>> bra(5,3)
     Traceback (most recent call last):
     ...
@@ -776,6 +803,7 @@ def ket(i, Ne):
     [0]])
 
     This will return an error if i is not in [1 .. Ne]:
+
     >>> ket(5,3)
     Traceback (most recent call last):
     ...
@@ -788,11 +816,11 @@ def ket(i, Ne):
 
 
 def ketbra(i, j, Ne):
-    r"""This function returns the outer product |i><j| where |i> and |j>
-    are elements of the canonical basis of an Ne-dimensional Hilbert space
-    (in matrix form).
+    """This function returns the outer product :math:`|i><j|` where\
+ :math:`|i>` and :math:`|j>` are elements of the canonical basis of an\
+ Ne-dimensional Hilbert space (in matrix form).
 
-    >>> ketbra(2,3,3)
+    >>> ketbra(2, 3, 3)
     Matrix([
     [0, 0, 0],
     [0, 0, 1],
@@ -803,10 +831,12 @@ def ketbra(i, j, Ne):
 
 
 def lindblad_operator(A, rho):
-    r"""This function returns the action of a Lindblad operator A on a density
-    matrix rho. This is defined as :
-        L(A,rho) = A*rho*A.adjoint()
-                 - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2.
+    r"""This function returns the action of a Lindblad operator A on a density\
+ matrix rho. This is defined as :
+
+    .. math::
+        \mathcal{L}(A, \rho) = A \rho A^\dagger -
+        (A^\dagger A \rho + \rho A^\dagger A)/2.
 
     >>> rho=define_density_matrix(3)
     >>> lindblad_operator( ketbra(1,2,3) ,rho )
@@ -1035,9 +1065,9 @@ def calculate_boundaries(Ne, Nl, r, Lij, omega_laser, phase):
 def wigner_d_small(J, beta):
     u"""Return the small Wigner d matrix for angular momentum J.
 
-    We use the general formula from [1], equation 4.1.15.
+    We use the general formula from [Edmonds74]_, equation 4.1.15.
 
-    Some examples form [1]:
+    Some examples form [Edmonds74]_:
 
     >>> from fast.symbolic import wigner_d_small
     >>> from sympy import Integer, symbols, pi
@@ -1062,7 +1092,8 @@ def wigner_d_small(J, beta):
     ⎢     sin ⎜─⎟        -√2⋅sin⎜─⎟⋅cos⎜─⎟       cos ⎜─⎟     ⎥
     ⎣         ⎝2⎠               ⎝2⎠    ⎝2⎠           ⎝2⎠     ⎦
 
-    From table 4 in [1]
+    From table 4 in [Edmonds74]_
+
     >>> wigner_d_small(half, beta).subs({beta:pi/2})
     Matrix([
     [ sqrt(2)/2, sqrt(2)/2],
@@ -1089,9 +1120,6 @@ def wigner_d_small(J, beta):
     [     -1/2,  1/2,         0, -1/2,       1/2],
     [      1/4, -1/2, sqrt(6)/4, -1/2,       1/4]])
 
-    [1] A. R. Edmonds. Angular momentum in quantum mechanics. Investigations
-        in physics, 4.; Investigations in physics, no. 4. Princeton, N.J.,
-        Princeton University Press, 1957.
     """
     def prod(x):
         p = 1
@@ -1129,9 +1157,10 @@ def wigner_d_small(J, beta):
 def wigner_d(J, alpha, beta, gamma):
     u"""Return the Wigner D matrix for angular momentum J.
 
-    We use the general formula from [1], equation 4.1.12.
+    We use the general formula from [Edmonds74]_, equation 4.1.12.
 
     The simplest possible example:
+
     >>> from fast.symbolic import wigner_d
     >>> from sympy import Integer, symbols, pprint
     >>> half = 1/Integer(2)
@@ -1149,9 +1178,6 @@ def wigner_d(J, alpha, beta, gamma):
     ⎢-ℯ     ⋅ℯ   ⋅sin⎜─⎟  ℯ     ⋅ℯ     ⋅cos⎜─⎟⎥
     ⎣                ⎝2⎠                   ⎝2⎠⎦
 
-    [1] A. R. Edmonds. Angular momentum in quantum mechanics. Investigations
-        in physics, 4.; Investigations in physics, no. 4. Princeton, N.J.,
-        Princeton University Press, 1957.
     """
     d = wigner_d_small(J, beta)
     M = [J-i for i in range(2*J+1)]
