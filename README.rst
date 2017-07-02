@@ -66,4 +66,10 @@ And they can be ran using
 
     $ jupyter notebook
 
+Documentation
+-------------
+The current documentation can be found in
+
+https://oscarlazoarjona.github.io/fast
+
 Enjoy!
