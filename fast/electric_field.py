@@ -36,15 +36,17 @@ mu0 = physical_constants["mag. constant"][0]               # N / A^2
 
 
 class PlaneWave(object):
-    r"""This class implements plane waves propagating in an arbitrary direction
+    """This class implements plane waves propagating in an arbitrary direction
     and with an arbitrary (and well-defined) polarization. It takes as input:
 
-    phi .- The azimutal angle in spherical coordinates of the wave vector.
-    theta .- The polar angle in spherical coordinates of the wave vector.
-    alpha .- The angle between the fast axis of a half-wave plate and
-             an incident linearly polarized beam.
-    beta .- The angle between the fast axis of a quarter-wave plate and
-             an incident linearly polarized beam.
+    INPUT:
+
+    - ``phi`` - The azimutal angle in spherical coordinates of the wave vector.
+    - ``theta`` - The polar angle in spherical coordinates of the wave vector.
+    - ``alpha`` - The angle between the fast axis of a half-wave plate and an\
+ incident linearly polarized beam.
+    - ``beta`` - The angle between the fast axis of a quarter-wave plate and\
+ an incident linearly polarized beam.
 
     The easiest way to understand what this means is to use the function
     draw_lasers to get a 3d view of the direction and polarization of the
@@ -215,7 +217,7 @@ class PlaneWave(object):
 
 
 class MotField(object):
-    r"""A the optical field of a MOT scheme."""
+    r"""The optical field of a MOT scheme."""
 
     def __init__(self, relative_intensities, parity=1, color='blue'):
         r"""A MOT field.
@@ -296,11 +298,15 @@ class MotField(object):
 def electric_field_amplitude_gaussian(P, sigmax, sigmay=None, Omega=1.0e6):
     """Return the amplitude of the electric field for a Gaussian beam.
 
-    This the amplitude at the center of a laser beam of power P (in Watts) and
-    a Gaussian intensity distribution of standard deviations sigmax, sigmay
-    (in meters). The value of E0 is given in rescaled units according to the
-    frequency scale  Omega (in Hertz) understood as absolute frequency
-    (as opposed to angular frequency).
+    This the amplitude at the center of a laser beam of power P (in Watts) and\
+ a Gaussian intensity distribution of standard deviations sigmax, sigmay\
+ (in meters). The value of E0 is given in rescaled units according to the\
+ frequency scale  Omega (in Hertz) understood as absolute frequency\
+ (as opposed to angular frequency).
+
+    >>> print electric_field_amplitude_gaussian(0.001, 0.001)
+    19.6861467587
+
     """
     e0 = hbar*Omega/(e*a0)  # This is the electric field scale.
 
@@ -311,10 +317,14 @@ def electric_field_amplitude_gaussian(P, sigmax, sigmay=None, Omega=1.0e6):
 def electric_field_amplitude_top(P, a, Omega=1e6):
     """Return the amplitude of the electric field for a top hat beam.
 
-    This is the amplitude of a laser beam of power P (in Watts) and a top-hat
-    intensity distribution of radius a (in meters). The value of E0 is given in
-    rescaled units according to the frequency scale  Omega (in Hertz)
-    understood as absolute frequency (as opposed to angular frequency).
+    This is the amplitude of a laser beam of power P (in Watts) and a top-hat\
+ intensity distribution of radius a (in meters). The value of E0 is given in\
+ rescaled units according to the frequency scale  Omega (in Hertz)\
+ understood as absolute frequency (as opposed to angular frequency).
+
+    >>> print electric_field_amplitude_top(0.001, 0.001)
+    27.8404157371
+
     """
     e0 = hbar*Omega/(e*a0)  # This is the electric field scale.
 
@@ -324,9 +334,13 @@ def electric_field_amplitude_top(P, a, Omega=1e6):
 def electric_field_amplitude_intensity(s0, Omega=1e6):
     """Return the amplitude of the electric field for a given intensity.
 
-    This is at a given saturation parameter s0=I/I0, where I0=2.50399 mW/cm^2
-    is the saturation intensity of the D2 line of rubidium for linearly
-    polarized light.
+    This is at a given saturation parameter s0=I/I0, where I0=2.50399 mW/cm^2\
+ is the saturation intensity of the D2 line of rubidium for linearly\
+ polarized light.
+
+    >>> print electric_field_amplitude_intensity(1.0)
+    6.37477867488
+
     """
     e0 = hbar*Omega/(e*a0)  # This is the electric field scale.
 

@@ -1049,6 +1049,11 @@ class Transition(Basic):
     >>> clock
     133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3
 
+    By this definition, the exact frequency of this transition is
+
+    >>> clock.nu
+    9192631770.0
+
     """
 
     def __init__(self, e1, e2):
