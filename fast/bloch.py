@@ -618,34 +618,60 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                      file_name=None):
     r"""Return a fast function that returns a Hamiltonian as a numerical array.
 
-    The arguments Ep, epsilonp, and detuning_knob represent the electric field
-    amplitudes, field polarizations, and the detunings of each field from the
-    numerical values.
+    INPUT:
 
-    Eventually, the way this will work is that the returned function will take
-    these Ep, epsilonp, and detuning_knob as numerical arguments if symbolic
-    expressions were used, or use the given numerical values by default. At the
-    moment however, only variable detuning_knob is supported.
+    -  ``Ep`` - A list with the electric field amplitudes (real or complex).
+    -  ``epsilonp`` - A list of the polarization vectors of the fields \
+    (real or complex).
+    -  ``detuning_knob`` - A list of the detunings of each field (relative \
+    to the transition of lowest energy).
+    -  ``rm`` -     The below-diagonal components
+        of the position operator in the cartesian basis:
+
+        .. math::
+            \vec{r}^{(-)}_{i j} = [ x_{ij}, y_{ij}, z_{ij} ]
+            \hspace{1cm} \forall \hspace{1cm} 0 < j < i
+    -  ``omega_level`` - The angular frequencies of each state.
+    -  ``xi`` - An array whose ``xi[l, i, j]`` element is 1 if the \
+     transition :math:`|i\rangle \rightarrow |j\rangle`\ is driven by field \
+     ``l`` and 0 otherwise.
+    -  ``theta`` - A list of symbolic expressions representing a phase \
+    transformation.
+    -  ``file_name`` - A string indicating a file to save the function's \
+    code.
+
+    If the arguments Ep, epsilonp, and detuning_knob are symbolic amounts, \
+    the returned function will accept numeric values of Ep, epsilonp, and \
+    detuning_knob as arguments.
 
     All quantities should be in SI units.
 
-    The argument rm should be numerical values of the below-diagonal components
-    of the position operator in the cartesian basis:
+    EXAMPLES:
 
-    .. math::
-        \vec{r}^{(-)}_{i j} = [ x_{ij}, y_{ij}, z_{ij} ]
-        \hspace{1cm} \forall \hspace{1cm} 0 < j < i
+    We build an example using states coupled like this:
 
-    The argument omega_level should be numerical values of the energy levels.
-    theta should be a phase transformation returned by the phase_transformation
-    function. xi should be an array of ones and zeros such that ``xi[l, i, j]``
-    represents whether the :math:`|i\rangle \rightarrow |j\rangle` transition
-    is driven by field l.
+     --- |4>        --- |5>          --- |6>
+      ^              ^                ^
+      |              |                |
+      |    --- |2>   |     --- |3>    |
+    2 |     ^      2 |      ^         | 2
+      |   1 |        |    1 |         |
+      |     |        |      |         |
+    ------------------------------------- |1>
 
+    With the numbers on kets labeling states and the plain numbers labeling
+    fields.
+
+    The number of states and fields:
     >>> Ne = 6
     >>> Nl = 2
+
+    We invent some energy levels:
     >>> omega_level = np.array([0.0, 100.0, 100.0, 200.0, 200.0, 300.0])
     >>> omega_level = omega_level*1e6*2*np.pi
+
+    We build the symbol xi, that chooses which laser couples which
+    transition.
     >>> xi = np.zeros((Nl, Ne, Ne))
     >>> coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
     >>> for l in range(Nl):
@@ -653,8 +679,9 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     ...         xi[l, pair[0], pair[1]] = 1.0
     ...         xi[l, pair[1], pair[0]] = 1.0
 
-    >>> Ep_vals = [1e2, 1e2]
-    >>> epsilonp_vals = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+    We invent some electric dipole matrix elements:
+    >>> from scipy.constants import physical_constants
+    >>> a0 = physical_constants["Bohr radius"][0]
     >>> rm = np.zeros((3, Ne, Ne))
     >>> for l in range(Nl):
     ...     for i in range(Ne):
@@ -662,34 +689,61 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     ...             if xi[l, i, j] != 0:
     ...                 rm[2, i, j] = float(i)*a0
 
+    The phase transformation:
     >>> theta = phase_transformation(Ne, Nl, rm, xi)
-    >>> from sympy import symbols
+
+    We define the possible arguments:
+    >>> from sympy import symbols, pi
+    >>> from fast.symbolic import polarization_vector
     >>> detuning_knob = symbols("delta1 delta2")
-    >>> H = fast_hamiltonian(Ep_vals, epsilonp_vals, detuning_knob, rm,
-    ...                      omega_level, xi, theta)
-
     >>> detuning_knob_vals = np.array([-1.0, 3.0])*1e6*2*np.pi
-    >>> print H(detuning_knob_vals)/hbar_num/2/np.pi*1e-6
-    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
-        2.55908963+0.j   3.19886203+0.j]
-     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
-        0.00000000+0.j   0.00000000+0.j]
-     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
-        0.00000000+0.j   0.00000000+0.j]
-     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
-        0.00000000+0.j   0.00000000+0.j]
-     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
-       -3.00000000+0.j   0.00000000+0.j]
-     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
-        0.00000000+0.j  97.00000000+0.j]]
 
-
-    We can also make the electric field amplitudes variable:
     >>> Ep, omega_laser = define_laser_variables(Nl)
-    >>> H = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob, rm,
-    ...                      omega_level, xi, theta)
+    >>> Ep_vals = [1e2, 1e2]
 
-    >>> print H(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    >>> alpha = symbols("alpha")
+    >>> epsilon = polarization_vector(0, pi/2, alpha, 0, 1)
+    >>> epsilonp = [epsilon, epsilon]
+    >>> epsilonp_vals = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+
+    There are 8 ways to call fast_hamiltonian:
+
+    1 .- Get a function of detunings, field amplitudes, polarizations:
+    >>> H1 = fast_hamiltonian(Ep, epsilonp, detuning_knob, rm,
+    ...                       omega_level, xi, theta)
+
+    2 .- Get a function of field amplitudes, polarizations:
+    >>> H2 = fast_hamiltonian(Ep, epsilonp, detuning_knob_vals, rm,
+    ...                       omega_level, xi, theta)
+
+    3 .- Get a function of detunings, polarizations:
+    >>> H3 = fast_hamiltonian(Ep_vals, epsilonp, detuning_knob, rm,
+    ...                       omega_level, xi, theta)
+
+    4 .- Get a function of detunings, field amplitudes:
+    >>> H4 = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob, rm,
+    ...                       omega_level, xi, theta)
+
+    5 .- Get a function of detunings:
+    >>> H5 = fast_hamiltonian(Ep_vals, epsilonp_vals, detuning_knob, rm,
+    ...                       omega_level, xi, theta)
+
+    6 .- Get a function of field amplitudes:
+    >>> H6 = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob_vals, rm,
+    ...                       omega_level, xi, theta)
+
+    7 .- Get a function of polarizations:
+    >>> H7 = fast_hamiltonian(Ep_vals, epsilonp, detuning_knob_vals, rm,
+    ...                       omega_level, xi, theta)
+
+    8 .- Get a function of nothing:
+    >>> H8 = fast_hamiltonian(Ep_vals, epsilonp_vals, detuning_knob_vals, rm,
+    ...                       omega_level, xi, theta)
+
+
+    We test all of these combinations.
+    >>> print H1(Ep_vals, epsilonp_vals, detuning_knob_vals) \
+    ...     /hbar_num/2/np.pi*1e-6
     [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
         2.55908963+0.j   3.19886203+0.j]
      [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
@@ -703,11 +757,91 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
         0.00000000+0.j  97.00000000+0.j]]
 
-    Or we can make only the electric field amplitudes variable:
-    >>> H = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob_vals, rm,
-    ...                      omega_level, xi, theta)
+    >>> print H2(Ep_vals, epsilonp_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
 
-    >>> print H(Ep_vals)/hbar_num/2/np.pi*1e-6
+    >>> print H3(epsilonp_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+    >>> print H4(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+    >>> print H5(detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+    >>> print H6(Ep_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+    >>> print H7(epsilonp_vals)/hbar_num/2/np.pi*1e-6
+    [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
+        2.55908963+0.j   3.19886203+0.j]
+     [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j
+        0.00000000+0.j   0.00000000+0.j]
+     [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+       -3.00000000+0.j   0.00000000+0.j]
+     [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j
+        0.00000000+0.j  97.00000000+0.j]]
+
+    >>> print H8()/hbar_num/2/np.pi*1e-6
     [[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j
         2.55908963+0.j   3.19886203+0.j]
      [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j
@@ -747,14 +881,11 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         except:
             variable_detuning_knob = True
 
-        if variable_epsilonp:
-            raise NotImplementedError("epsilonp must be constant.")
-
         # We convert rm to a numpy array
         rm = np.array([[[complex(rm[k][i, j])
                        for j in range(Ne)] for i in range(Ne)]
                        for k in range(3)])
-    # We establish the arguments.
+    # We establish the arguments of the output function.
     if True:
         code = ""
         code += "def hamiltonian("
@@ -762,7 +893,8 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         if variable_epsilonp: code += "epsilonp, "
         if variable_detuning_knob: code += "detuning_knob, "
         if code[-2:] == ", ":
-            code = code[:-2] + "):\n"
+            code = code[:-2]
+        code += "):\n"
 
         code += '    r"""A fast calculation of the hamiltonian."""\n'
         code += "    H = np.zeros(("+str(Ne)+", "+str(Ne)+"), complex)\n\n"
@@ -782,10 +914,12 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                         else:
                             code += str(0.5*Ep[l])
                         # We get the code for epsilonp dot rm
+                        rmij = rm[:, i, j]
                         if variable_epsilonp:
-                            code += "cartesian_dot_product(epsilonp[l], rm)"
+                            code += "*cartesian_dot_product("
+                            code += "epsilonp["+str(l)+"],"
+                            code += str(list(rmij*e_num))+" )"
                         else:
-                            rmij = rm[:, i, j]
                             dp = cartesian_dot_product(epsilonp[l], rmij)
                             dp = dp*e_num
                             code += "*("+str(dp)+")"
