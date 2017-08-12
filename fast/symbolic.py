@@ -696,10 +696,12 @@ def define_frequencies(Ne, explicitly_antisymmetric=False):
     omega_level = [Symbol('omega_'+str(i+1), real=True) for i in range(Ne)]
 
     if Ne > 9:
+        opening = "\\"
         comma = ","
         open_brace = "{"
         close_brace = "}"
     else:
+        opening = r""
         comma = ""
         open_brace = ""
         close_brace = ""
@@ -711,24 +713,24 @@ def define_frequencies(Ne, explicitly_antisymmetric=False):
             if i == j:
                 om = 0; ga = 0
             elif i > j:
-                om = Symbol(r"omega_" +
+                om = Symbol(opening+r"omega_" +
                             open_brace+str(i+1)+comma+str(j+1) +
                             close_brace, real=True)
-                ga = Symbol(r"gamma_" +
+                ga = Symbol(opening+r"gamma_" +
                             open_brace+str(i+1)+comma+str(j+1) +
                             close_brace, real=True)
             elif explicitly_antisymmetric:
-                om = -Symbol(r"omega_" +
+                om = -Symbol(opening+r"omega_" +
                              open_brace+str(j+1)+comma+str(i+1) +
                              close_brace, real=True)
-                ga = -Symbol(r"gamma_" +
+                ga = -Symbol(opening+r"gamma_" +
                              open_brace+str(j+1)+comma+str(i+1) +
                              close_brace, real=True)
             else:
-                om = Symbol(r"omega_" +
+                om = Symbol(opening+r"omega_" +
                             open_brace+str(i+1)+comma+str(j+1) +
                             close_brace, real=True)
-                ga = Symbol(r"gamma_" +
+                ga = Symbol(opening+r"gamma_" +
                             open_brace+str(i+1)+comma+str(j+1) +
                             close_brace, real=True)
 
