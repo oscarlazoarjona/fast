@@ -158,13 +158,13 @@ class Atom(Basic):
         #          Tmelt  , Tboil  , radius (m) , nuclear spin,
         #          ionization frequencies
 
-        database = [["Rb",      85,         37,  m_Rb85, abundance_Rb85,
+        database = [["Rb", 85, 37, m_Rb85, abundance_Rb85,
                     TmeltRb, TboilRb, 2.35e-10, 5/Integer(2),
                     c*33690.79890],
-                    ["Rb",      87,         37,  m_Rb87, abundance_Rb87,
+                    ["Rb", 87, 37, m_Rb87, abundance_Rb87,
                     TmeltRb, TboilRb, 2.35e-10, 3/Integer(2),
                     c*33690.80480],
-                    ["Cs",     133,         55, m_Cs133, abundance_Cs133,
+                    ["Cs", 133, 55, m_Cs133, abundance_Cs133,
                     TmeltCs, TboilCs, 2.60e-10, 7/Integer(2),
                     c*31406.46766]]
 
@@ -1546,7 +1546,8 @@ def calculate_reduced_matrix_elements(fine_states):
 
 def calculate_r_matrices(fine_states, reduced_matrix_elements):
     magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
-    index_list_fine, index_list_hyperfine = calculate_boundaries(fine_states, magnetic_states)
+    aux = calculate_boundaries(fine_states, magnetic_states)
+    index_list_fine, index_list_hyperfine = aux
 
     Ne = len(magnetic_states)
 
