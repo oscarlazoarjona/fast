@@ -12,8 +12,8 @@ from tables of measured quantities. For instance, the saturation of the
 Rubidium D2 line
 
 .. image:: https://raw.githubusercontent.com/oscarlazoarjona/fast/master/examples/folder_03___Rb87_one_photon/suite_levels.png
- 
- is calculated from first principles
+
+is calculated from first principles
 
 .. image:: https://raw.githubusercontent.com/oscarlazoarjona/fast/master/examples/folder_03___Rb87_one_photon/suite_3power.png
 
