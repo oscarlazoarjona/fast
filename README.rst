@@ -8,7 +8,14 @@ equations are used primarily to produce theoretical spectra.
 
 A library of properties of alkali atoms (currently rubidium and cesium) is
 included to produce physically accurate equations from first principles or
-from tables of measured quantities.
+from tables of measured quantities. For instance, the saturation of the
+Rubidium D2 line
+
+.. image:: https://raw.githubusercontent.com/oscarlazoarjona/fast/master/examples/folder_03___Rb87_one_photon/suite_levels.png
+ 
+ is calculated from first principles
+
+.. image:: https://raw.githubusercontent.com/oscarlazoarjona/fast/master/examples/folder_03___Rb87_one_photon/suite_3power.png
 
 Symbolic derivations of the equations are also implemented.
 
