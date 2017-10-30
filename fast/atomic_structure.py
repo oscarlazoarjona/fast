@@ -1200,6 +1200,8 @@ class Transition(Basic):
             # 5D_5/2 -> 5P_3/2 and 5D_5/2 -> 6P_3/2 in rubidium, then
             gam1 = gam*0.74
             gam2 = gam*0.26
+            safronova = 0.736188110026875
+            safronova2 = 2*pi*2.6149401689e6
             ###################################################################
             pairs = [[6, 1, Integer(1)/Integer(2), 6, 0, Integer(1)/Integer(2), 2*pi*4.575e6],#[1]
                      [6, 1, Integer(3)/Integer(2), 6, 0, Integer(1)/Integer(2), 2*pi*5.234e6],#[1]
@@ -1514,9 +1516,10 @@ def calculate_reduced_matrix_elements(fine_states):
     # We calculate the reduced matrix elements starting from the list of
     # fine_states. The factor composed of physical quantities.
     factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-    # We read the database to obtain the Einstein A coefficients in Hz.
+    # factor = 3*pi*hbar*c**3*epsilon0/e**2
+    # We read the database to obtain the Einstein A coefficients in rad/s.
     einsteinA = get_einstein_A_matrix(fine_states)
-    # We read the database to obtain the transition frequencies in Hz.
+    # We read the database to obtain the transition frequencies in rad/s.
     omega_fine = calculate_omega_matrix(fine_states)
 
     reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
@@ -1536,6 +1539,8 @@ def calculate_reduced_matrix_elements(fine_states):
 
             rij = (2.0*Ji+1)/sqrt(2.0*Jj+1)*sqrt(einsteinAij/omega0**3)
             rij = factor*rij
+            # print 333, Ji, Jj, einsteinAij/2/pi*1e-6
+            # rij = sqrt(factor*(2.0*Ji+1)*einsteinAij/omega0**3)/a0
 
             reduced_matrix_elements[ii][jj] = rij
             # We add the matrix elements on the other side of the diagonal.
@@ -1544,7 +1549,20 @@ def calculate_reduced_matrix_elements(fine_states):
     return reduced_matrix_elements
 
 
-def calculate_r_matrices(fine_states, reduced_matrix_elements):
+def matrix_element(ji, fi, mi, jj, fj, mj, q, II, reduced_matrix_element):
+    r"""Calculate a matrix element of the electric dipole."""
+    rpij = (-1)**(fi-mi)
+    rpij *= wigner_3j(fi, 1, fj, -mi, q, mj)
+
+    rpij *= (-1)**(fj+ji+1+II)
+    rpij *= sqrt(2*fj+1)
+    rpij *= sqrt(2*fi+1)
+    rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
+    rpij *= reduced_matrix_element
+    return rpij
+
+
+def calculate_r_matrices(fine_states, reduced_matrix_elements, numeric=True):
     magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
     aux = calculate_boundaries(fine_states, magnetic_states)
     index_list_fine, index_list_hyperfine = aux
@@ -1571,17 +1589,13 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements):
                     fi = ei.f; fj = ej.f
                     mi = ei.m; mj = ej.m
 
-                    rpij = (-1)**(fi-mi)
-                    rpij *= wigner_3j(fi, 1, fj, -mi, p, mj)
+                    rpij = matrix_element(ji, fi, mi, jj, fj, mj,
+                                          p, II, reduced_matrix_elementij)
 
-                    rpij *= (-1)**(fj+ji+1+II)
-                    rpij *= sqrt(2*fj+1)
-                    rpij *= sqrt(2*fi+1)
-                    rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
+                    if numeric:
+                        rpij = float(rpij)
+                    r[p+1][i][j] = rpij
 
-                    rpij *= reduced_matrix_elementij
-
-                    r[p+1][i][j] = float(rpij)
     return r
 
 

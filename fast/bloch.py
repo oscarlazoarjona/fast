@@ -1350,4 +1350,4 @@ def vectorization(Ne, Nv=1, real=False, lower_triangular=True,
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=False)
+    print doctest.testmod(verbose=False)
