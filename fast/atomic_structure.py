@@ -1549,8 +1549,12 @@ def calculate_reduced_matrix_elements(fine_states):
     return reduced_matrix_elements
 
 
-def matrix_element(ji, fi, mi, jj, fj, mj, q, II, reduced_matrix_element):
+def matrix_element(ji, fi, mi, jj, fj, mj,
+                   q, II, reduced_matrix_element, numeric=True):
     r"""Calculate a matrix element of the electric dipole."""
+    if not numeric:
+        from sympy import sqrt as symsqrt
+        sqrt = symsqrt
     rpij = (-1)**(fi-mi)
     rpij *= wigner_3j(fi, 1, fj, -mi, q, mj)
 
@@ -1590,7 +1594,8 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements, numeric=True):
                     mi = ei.m; mj = ej.m
 
                     rpij = matrix_element(ji, fi, mi, jj, fj, mj,
-                                          p, II, reduced_matrix_elementij)
+                                          p, II, reduced_matrix_elementij,
+                                          numeric=numeric)
 
                     if numeric:
                         rpij = float(rpij)
