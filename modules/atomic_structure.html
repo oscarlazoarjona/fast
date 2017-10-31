@@ -55,21 +55,21 @@
 <table class="docutils citation" frame="void" id="steckrb85" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[SteckRb85]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>, <a class="fn-backref" href="#id7">3</a>)</em> Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
+<tr><td class="label">[SteckRb85]</td><td><em>(<a class="fn-backref" href="#id4">1</a>, <a class="fn-backref" href="#id7">2</a>, <a class="fn-backref" href="#id10">3</a>)</em> Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
 <a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a> (revision 2.1.5, 19 September 2012).</td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="steckrb87" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[SteckRb87]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>, <a class="fn-backref" href="#id8">3</a>)</em> Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
+<tr><td class="label">[SteckRb87]</td><td><em>(<a class="fn-backref" href="#id5">1</a>, <a class="fn-backref" href="#id8">2</a>, <a class="fn-backref" href="#id11">3</a>)</em> Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
 <a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a> (revision 2.1.5, 19 September 2012).</td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="steckcs" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[SteckCs]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>, <a class="fn-backref" href="#id9">3</a>)</em> Daniel A. Steck, “Cesium D Line Data,” available online at
+<tr><td class="label">[SteckCs]</td><td><em>(<a class="fn-backref" href="#id6">1</a>, <a class="fn-backref" href="#id9">2</a>, <a class="fn-backref" href="#id12">3</a>)</em> Daniel A. Steck, “Cesium D Line Data,” available online at
 <a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a> (revision 2.1.4, 23 December 2010).</td></tr>
 </tbody>
 </table>
@@ -339,7 +339,7 @@ absolute frequencies (as opposed angular frequencies).</p>
 
 <dl class="function">
 <dt id="fast.atomic_structure.calculate_reduced_matrix_elements">
-<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_reduced_matrix_elements</code><span class="sig-paren">(</span><em>fine_states</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_reduced_matrix_elements" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_reduced_matrix_elements</code><span class="sig-paren">(</span><em>fine_states</em>, <em>convention=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_reduced_matrix_elements" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate the reduced matrix elements for a list of fine states.</p>
 <p>This function calculates the reduced matrix elments</p>
 <div class="math">
@@ -349,10 +349,10 @@ absolute frequencies (as opposed angular frequencies).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">e1</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">e2</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">red</span><span class="o">=</span><span class="n">calculate_reduced_matrix_elements</span><span class="p">([</span><span class="n">g</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">e2</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">red</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">4.23143658816481</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">red</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-<span class="go">8.45396724128841</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">red</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">4.2314365862</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">red</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">5.97785756147</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -388,6 +388,77 @@ number density of the vapour.</p>
 <dt id="fast.atomic_structure.matrix_element">
 <code class="descclassname">fast.atomic_structure.</code><code class="descname">matrix_element</code><span class="sig-paren">(</span><em>ji</em>, <em>fi</em>, <em>mi</em>, <em>jj</em>, <em>fj</em>, <em>mj</em>, <em>q</em>, <em>II</em>, <em>reduced_matrix_element</em>, <em>numeric=True</em>, <em>convention=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.matrix_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate a matrix element of the electric dipole.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.reduced_matrix_element">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">reduced_matrix_element</code><span class="sig-paren">(</span><em>fine_statei</em>, <em>fine_statej</em>, <em>convention=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.reduced_matrix_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the reduced matrix element of the position operator in Bohrradii.</p>
+<p>We have two available conventions for this</p>
+<p>1.- <a class="reference internal" href="#racah" id="id1">[Racah]</a> and <a class="reference internal" href="#edmonds" id="id2">[Edmonds]</a></p>
+<div class="math">
+\[\begin{split}\langle \gamma_i, J_i, M_i| \hat{T}^k_q| \gamma_j, J_j, M_j\rangle \
+= (-1)^{J_i-M_i} \
+\left(\begin{matrix}J_i &amp; k &amp; J_j\\-M_i &amp; q &amp; M_j\end{matrix}\right) \
+\langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j \
+\rangle_\mathrm{Racah}\end{split}\]</div>
+<p>2.- <a class="reference internal" href="#brink-satchler" id="id3">[Brink_Satchler]</a></p>
+<div class="math">
+\[\begin{split}\langle \gamma_i, J_i, M_i| \hat{T}^k_q| \gamma_j, J_j, M_j\rangle \
+= (-1)^{J_i-M_i} \sqrt{2J_i+1} \
+\left(\begin{matrix}J_i &amp; k &amp; J_j\\-M_i &amp; q &amp; M_j\end{matrix}\right) \
+\langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+_\mathrm{Brink}\end{split}\]</div>
+<p>These two definitions of the reduced matrix element are related by</p>
+<div class="math">
+\[\langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j \
+\rangle_\mathrm{Racah} = \sqrt{2J_i+1} \
+\langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+_\mathrm{Brink}\]</div>
+<p>With the Racah element being symetric under argument exchange apart from asign:</p>
+<div class="math">
+\[\langle \gamma_j, J_j|| (\hat{T}^k)^\dagger|| \gamma_i, J_i\rangle \
+_\mathrm{Racah} = (-1)^{J_j-J_i}\
+\langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+_\mathrm{Racah}\]</div>
+<p>And the Brink element being asymetric under argument exchange:</p>
+<div class="math">
+\[\langle \gamma_j, J_j|| \hat{T}^k|| \gamma_i, J_i\rangle \
+_\mathrm{Brink} = (-1)^{J_j-J_i}\
+\frac{\sqrt{2J_i +1}}{\sqrt{2J_j +1}}\
+\langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+_\mathrm{Brink}\]</div>
+<p>References:</p>
+<table class="docutils citation" frame="void" id="brink-satchler" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[Brink_Satchler]</a></td><td>Brink, D. M. and G. R.  Satchler: 1994. “AngularMomentum”. Oxford: Oxford University Press, 3rd edn., 182 pages.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="racah" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Racah]</a></td><td>Racah, G.: 1942. “Theory of complex spectra II”. Phys. Rev., 62 438-462.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="edmonds" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Edmonds]</a></td><td>Racah, G.: 1942. “Theory of complex spectra II”. Phys. Rev., 62 438-462.</td></tr>
+</tbody>
+</table>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">reduced_matrix_element</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+<span class="go">5.97785756147</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">reduced_matrix_element</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">g</span><span class="p">)</span>
+<span class="go">-5.97785756146761</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">reduced_matrix_element</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">convention</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">4.22698361868</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">reduced_matrix_element</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">convention</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">-2.11349180934051</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
@@ -452,8 +523,8 @@ vapour in kg/m^-3. It receives as input the temperature in Kelvins, the
 name of the element, and optionally the isotope. If no isotope is
 specified, the density of a vapour with the natural abundances will
 be returned.</p>
-<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id1">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id2">[SteckRb87]</a>,
-<a class="reference internal" href="#steckcs" id="id3">[SteckCs]</a>.</p>
+<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id4">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id5">[SteckRb87]</a>,
+<a class="reference internal" href="#steckcs" id="id6">[SteckCs]</a>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_density</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">)</span>
 <span class="go">1.85318869181e-06</span>
 </pre></div>
@@ -472,8 +543,8 @@ the density.</p>
 <dd><p>Return the number of atoms in a rubidium or cesium vapour in m^-3.</p>
 <p>It receives as input the temperature in Kelvins and the
 name of the element.</p>
-<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id4">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id5">[SteckRb87]</a>,
-<a class="reference internal" href="#steckcs" id="id6">[SteckCs]</a>.</p>
+<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id7">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id8">[SteckRb87]</a>,
+<a class="reference internal" href="#steckcs" id="id9">[SteckCs]</a>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_number_density</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">)</span>
 <span class="go">8.39706962725e+18</span>
 </pre></div>
@@ -486,8 +557,8 @@ name of the element.</p>
 <dd><p>Return the vapour pressure of rubidium or cesium in Pascals.</p>
 <p>This function receives as input the temperature in Kelvins and the
 name of the element.</p>
-<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id7">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id8">[SteckRb87]</a>,
-<a class="reference internal" href="#steckcs" id="id9">[SteckCs]</a>.</p>
+<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id10">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id11">[SteckRb87]</a>,
+<a class="reference internal" href="#steckcs" id="id12">[SteckCs]</a>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">25.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
 <span class="go">5.31769896107e-05</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">39.3</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
@@ -539,6 +610,7 @@ name of the element.</p>
 <li class="toctree-l1"><a class="reference internal" href="bloch.html">Optical Bloch Equations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="electric_field.html">Optical Fields</a></li>
 <li class="toctree-l1"><a class="reference internal" href="symbolic.html">Symbolic Routines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="test.html">Test me</a></li>
 </ul>
 
 <div class="relations">
