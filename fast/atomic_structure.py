@@ -1499,6 +1499,18 @@ def calculate_gamma_matrix(magnetic_states, Omega=1):
     return gamma
 
 
+def reduced_matrix_element(fine_statei, fine_statej, convantion=1):
+    r"""Calculate the reduced matrix element.
+
+    >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
+    >>> e = State("Rb", 87, 5, 0, 1/Integer(2))
+    >>> reduced_matrix_element(e, g)
+    3
+
+    """
+    return 2
+
+
 def calculate_reduced_matrix_elements(fine_states):
     r"""Calculate the reduced matrix elements for a list of fine states.
 
