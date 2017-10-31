@@ -1,0 +1,583 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Atomic Structure &#8212; FAST 1.2 documentation</title>
+    <link rel="stylesheet" href="../static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/underscore.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Optical Bloch Equations" href="bloch.html" />
+    <link rel="prev" title="Welcome to FAST’s documentation!" href="../index.html" />
+   
+  <link rel="stylesheet" href="../static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fast.atomic_structure">
+<span id="atomic-structure"></span><h1>Atomic Structure<a class="headerlink" href="#module-fast.atomic_structure" title="Permalink to this headline">¶</a></h1>
+<p>This module contains all the information about the atoms.</p>
+<p>This includes classes to describe atomic states, transitions, and the atoms themselves. Routines to calculate hyperfine decay rates, and electric dipole matrix elements are included.</p>
+<p>Here is the ground state of Cesium.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">133Cs 6S_1/2</span>
+</pre></div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils citation" frame="void" id="steckrb85" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SteckRb85]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id4">2</a>, <a class="fn-backref" href="#id7">3</a>)</em> Daniel A. Steck, “Rubidium 85 D Line Data,” available online at
+<a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a> (revision 2.1.5, 19 September 2012).</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="steckrb87" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SteckRb87]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id5">2</a>, <a class="fn-backref" href="#id8">3</a>)</em> Daniel A. Steck, “Rubidium 87 D Line Data,” available online at
+<a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a> (revision 2.1.5, 19 September 2012).</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="steckcs" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[SteckCs]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id6">2</a>, <a class="fn-backref" href="#id9">3</a>)</em> Daniel A. Steck, “Cesium D Line Data,” available online at
+<a class="reference external" href="http://steck.us/alkalidata">http://steck.us/alkalidata</a> (revision 2.1.4, 23 December 2010).</td></tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="fast.atomic_structure.Atom">
+<em class="property">class </em><code class="descclassname">fast.atomic_structure.</code><code class="descname">Atom</code><span class="sig-paren">(</span><em>element</em>, <em>isotope=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.Atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class implements specific atoms and their properties.</p>
+<p>The atoms can be identified by element and optionally by isotope.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">=</span><span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">atom</span>
+<span class="go">Rb</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="fast.atomic_structure.Atom.find_decays">
+<code class="descname">find_decays</code><span class="sig-paren">(</span><em>fine_state</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.Atom.find_decays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all possible decays from a given fine state.</p>
+<p>This function finds all the states to which a given fine structure
+state can decay (through electric dipole selection rules).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">=</span><span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="s2">&quot;P&quot;</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">.</span><span class="n">find_decays</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="go">[133Cs 6P_3/2, 133Cs 6S_1/2]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="s2">&quot;D&quot;</span><span class="p">,</span><span class="mi">5</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">.</span><span class="n">find_decays</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">[133Cs 6D_5/2, 133Cs 6P_3/2, 133Cs 7P_3/2, 133Cs 6S_1/2, 133Cs 5D_3/2, 133Cs 5D_5/2, 133Cs 7S_1/2, 133Cs 6P_1/2]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="fast.atomic_structure.Atom.states">
+<code class="descname">states</code><span class="sig-paren">(</span><em>Nmax=50</em>, <em>omega_min=None</em>, <em>omega_max=None</em>, <em>return_missing=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.Atom.states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all states of available in an atom.</p>
+<p>This function returns all available states up to the fine structure
+(ordered by energy) such that the principal quantum number is N&lt;=Nmax.
+Nmax is 50 by default.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">=</span><span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">85</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">states</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">states</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">states</span>
+<span class="go">[85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 6S_1/2, 85Rb 6P_1/2, 85Rb 6P_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2, 85Rb 7S_1/2, 85Rb 7P_1/2, 85Rb 7P_3/2, 85Rb 6D_3/2, 85Rb 7D_3/2, 85Rb 14S_1/2, 85Rb 15S_1/2, 85Rb 16S_1/2, 85Rb 17S_1/2, 85Rb 18S_1/2, 85Rb 19S_1/2, 85Rb 20S_1/2, 85Rb 21S_1/2, 85Rb 22S_1/2, 85Rb 23S_1/2, 85Rb 24S_1/2, 85Rb 25S_1/2, 85Rb 26S_1/2, 85Rb 27S_1/2, 85Rb 28S_1/2, 85Rb 29S_1/2, 85Rb 30S_1/2, 85Rb 31S_1/2, 85Rb 32S_1/2, 85Rb 33S_1/2, 85Rb 34S_1/2, 85Rb 35S_1/2, 85Rb 36S_1/2, 85Rb 37S_1/2, 85Rb 38S_1/2, 85Rb 39S_1/2, 85Rb 40S_1/2, 85Rb 41S_1/2, 85Rb 42S_1/2, 85Rb 43S_1/2, 85Rb 44S_1/2, 85Rb 45S_1/2, 85Rb 46S_1/2, 85Rb 47S_1/2, 85Rb 48S_1/2, 85Rb 49S_1/2, 85Rb 50S_1/2]</span>
+</pre></div>
+</div>
+<p>If an omega_max is provided any state with an energy higher than
+hbar*omega will not be returned. If an omega_min is provided any state
+with an energy lower than hbar*omega will not be returned.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">.</span><span class="n">states</span><span class="p">(</span><span class="n">omega_min</span><span class="o">=</span><span class="mf">1.00845e15</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">omega_max</span><span class="o">=</span><span class="mf">1.0086e+15</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="p">)</span>
+<span class="go">[85Rb 49S_1/2, 85Rb 50S_1/2]</span>
+</pre></div>
+</div>
+<p>If return_missing=True then the function will return a 2-tuple composed
+by a list of the states available, and a list of the valid states not
+available.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">available</span><span class="p">,</span><span class="n">not_available</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">states</span><span class="p">(</span><span class="n">Nmax</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">return_missing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">available</span>
+<span class="go">[85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">not_available</span>
+<span class="go">[(&#39;Rb&#39;, 85, 1, 0, 1/2), (&#39;Rb&#39;, 85, 2, 0, 1/2), (&#39;Rb&#39;, 85, 2, 1, 1/2), (&#39;Rb&#39;, 85, 2, 1, 3/2), (&#39;Rb&#39;, 85, 3, 0, 1/2), (&#39;Rb&#39;, 85, 3, 1, 1/2), (&#39;Rb&#39;, 85, 3, 1, 3/2), (&#39;Rb&#39;, 85, 3, 2, 3/2), (&#39;Rb&#39;, 85, 3, 2, 5/2), (&#39;Rb&#39;, 85, 4, 0, 1/2), (&#39;Rb&#39;, 85, 4, 1, 1/2), (&#39;Rb&#39;, 85, 4, 1, 3/2), (&#39;Rb&#39;, 85, 4, 3, 5/2), (&#39;Rb&#39;, 85, 4, 3, 7/2), (&#39;Rb&#39;, 85, 5, 3, 5/2), (&#39;Rb&#39;, 85, 5, 3, 7/2), (&#39;Rb&#39;, 85, 5, 4, 7/2), (&#39;Rb&#39;, 85, 5, 4, 9/2)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="fast.atomic_structure.Atom.transitions">
+<code class="descname">transitions</code><span class="sig-paren">(</span><em>omega_min=None</em>, <em>omega_max=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.Atom.transitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all allowed transitions.</p>
+<p>This function finds all allowed transitions (by electric-dipole
+selection rules) in the atom.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">=</span><span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">85</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transitions</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">transitions</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="nb">len</span><span class="p">(</span><span class="n">transitions</span><span class="p">)</span>
+<span class="go">270</span>
+</pre></div>
+</div>
+<p>Arguments omega_min and omega_max can be used to make filter out the
+results.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="k">import</span> <span class="n">c</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wavelength_min</span><span class="o">=</span><span class="mf">770e-9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wavelength_max</span><span class="o">=</span><span class="mf">790e-9</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_min</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">c</span><span class="o">/</span><span class="n">wavelength_max</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_max</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">pi</span><span class="o">*</span><span class="n">c</span><span class="o">/</span><span class="n">wavelength_min</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">easy_transitions</span><span class="o">=</span><span class="n">atom</span><span class="o">.</span><span class="n">transitions</span><span class="p">(</span><span class="n">omega_min</span><span class="o">=</span><span class="n">omega_min</span><span class="p">,</span>
+<span class="gp">... </span>                                  <span class="n">omega_max</span><span class="o">=</span><span class="n">omega_max</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">ti</span> <span class="ow">in</span> <span class="n">easy_transitions</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ti</span><span class="o">.</span><span class="n">wavelength</span><span class="p">)</span><span class="o">*</span><span class="mf">1e9</span><span class="p">,</span> <span class="n">ti</span>
+<span class="go">780.241476935 85Rb 5S_1/2 -----&gt; 85Rb 5P_3/2</span>
+<span class="go">776.157015322 85Rb 5P_3/2 -----&gt; 85Rb 5D_3/2</span>
+<span class="go">775.978619616 85Rb 5P_3/2 -----&gt; 85Rb 5D_5/2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="fast.atomic_structure.State">
+<em class="property">class </em><code class="descclassname">fast.atomic_structure.</code><code class="descname">State</code><span class="sig-paren">(</span><em>element</em>, <em>isotope</em>, <em>n</em>, <em>l=None</em>, <em>j=None</em>, <em>f=None</em>, <em>m=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.State" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class implements specific eigenstates of the atomic hamiltonian.</p>
+<p>The states must be identified by element, isotope and quantum numbers
+in one of these forms:</p>
+<p>1 .- <span class="math">\(|n, l, j\rangle\)</span></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">85</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">85Rb 5S_1/2</span>
+</pre></div>
+</div>
+<p>2 .- <span class="math">\(|n, l, j, f&gt;\)</span></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">133Cs 6S_1/2^3</span>
+</pre></div>
+</div>
+<p>3 .- <span class="math">\(|n, l, j, f, m&gt;\)</span></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">87Rb 5S_1/2^2,-1</span>
+</pre></div>
+</div>
+<p>States have many useful properties:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g2</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span> <span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The defining properties of the state:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g2</span><span class="o">.</span><span class="n">element</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">isotope</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">l</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">f</span><span class="p">,</span> <span class="n">g2</span><span class="o">.</span><span class="n">m</span>
+<span class="go">(&#39;Cs&#39;, 133, 6, 0, 1/2, 4, 4)</span>
+</pre></div>
+</div>
+<p>The atomic number of the element:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g2</span><span class="o">.</span><span class="n">Z</span>
+<span class="go">55</span>
+</pre></div>
+</div>
+<p>The number of neutrons:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g2</span><span class="o">.</span><span class="n">neutrons</span>
+<span class="go">78</span>
+</pre></div>
+</div>
+<p>The mass of the atom (in kilograms):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">g2</span><span class="o">.</span><span class="n">mass</span>
+<span class="go">2.2069469161e-25</span>
+</pre></div>
+</div>
+<p>The absolute frequency of the state relative to the groundstate energy
+(in Hz):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">g2</span><span class="o">.</span><span class="n">nu</span>
+<span class="go">4021776399.38</span>
+</pre></div>
+</div>
+<p>The angular frequency of the state (in rad/s):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">g2</span><span class="o">.</span><span class="n">omega</span>
+<span class="go">25269566381.3</span>
+</pre></div>
+</div>
+<p>The hyperfine constants Ahfs, Bhfs, Chfs:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">e</span><span class="o">.</span><span class="n">Ahfs</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">Bhfs</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">Chfs</span>
+<span class="go">50288250.0 -494000.0 560.0</span>
+</pre></div>
+</div>
+<p>A latex representation:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">g2</span><span class="o">.</span><span class="n">_latex_</span><span class="p">()</span>
+<span class="go">^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="class">
+<dt id="fast.atomic_structure.Transition">
+<em class="property">class </em><code class="descclassname">fast.atomic_structure.</code><code class="descname">Transition</code><span class="sig-paren">(</span><em>e1</em>, <em>e2</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.Transition" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class describes a transition between different atomic states.</p>
+<p>For instance, the transition between the hyperfine ground states of cesium
+used in the definition of the second.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g1</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g2</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span> <span class="o">=</span><span class="n">Transition</span><span class="p">(</span><span class="n">g2</span><span class="p">,</span><span class="n">g1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span>
+<span class="go">133Cs 6S_1/2^4 --/--&gt; 133Cs 6S_1/2^3</span>
+</pre></div>
+</div>
+<p>By this definition, the exact frequency of this transition is</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clock</span><span class="o">.</span><span class="n">nu</span>
+<span class="go">9192631770.0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.calculate_boundaries">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_boundaries</code><span class="sig-paren">(</span><em>fine_states</em>, <em>full_magnetic_states</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the boundary indices within a list of magnetic states.</p>
+<p>This function calculates the boundary indices of each fine state
+and each hyperfine state within a list of magnetic states. The output
+is a list of tuples (a,b) with a the starting index of a state and
+b it’s ending index.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span> <span class="mi">87</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">full_magnetic_states</span><span class="o">=</span><span class="n">make_list_of_states</span><span class="p">([</span><span class="n">g</span><span class="p">],</span><span class="s2">&quot;magnetic&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">calculate_boundaries</span><span class="p">([</span><span class="n">g</span><span class="p">],</span> <span class="n">full_magnetic_states</span><span class="p">)</span>
+<span class="go">([(0, 8)], [(0, 3), (3, 8)])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.calculate_gamma_matrix">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_gamma_matrix</code><span class="sig-paren">(</span><em>magnetic_states</em>, <em>Omega=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_gamma_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the matrix of decay between states.</p>
+<p>This function calculates the matrix <span class="math">\(\gamma_{ij}\)</span> of decay rates
+between states <span class="math">\(|i\rangle\)</span> and <span class="math">\(|j\rangle\)</span> (in the units
+specified by the Omega argument).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">magnetic_states</span><span class="o">=</span><span class="n">make_list_of_states</span><span class="p">([</span><span class="n">g</span><span class="p">,</span><span class="n">e</span><span class="p">],</span><span class="s2">&quot;magnetic&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To return the rates in rad/s:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">calculate_gamma_matrix</span><span class="p">(</span><span class="n">magnetic_states</span><span class="p">)</span>
+<span class="go">[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12702506.296014734, -15878132.870018415, -15878132.870018415, -0.0, -19053759.4440221, -9526879.72201105, -3175626.5740036834, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12702506.296014734, -15878132.870018415, -0.0, -15878132.870018415, -0.0, -9526879.72201105, -12702506.296014734, -9526879.72201105, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12702506.296014734, -0.0, -15878132.870018415, -15878132.870018415, -0.0, -0.0, -3175626.5740036834, -9526879.72201105, -19053759.4440221, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -3810751.8888044204, -0.0, -0.0, -12702506.296014734, -6351253.148007367, -0.0, -0.0, -0.0, -38107518.8880442, -12702506.296014734, -2540501.2592029474, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1905375.9444022102, -1905375.9444022102, -0.0, -6351253.148007367, -3175626.5740036834, -9526879.72201105, -0.0, -0.0, -0.0, -25405012.592029467, -20324010.07362358, -7621503.77760884, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -635125.3148007367, -2540501.259202947, -635125.3148007367, -0.0, -9526879.72201105, -0.0, -9526879.72201105, -0.0, -0.0, -0.0, -15243007.55521768, -22864511.33282652, -15243007.55521768, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1905375.9444022102, -1905375.9444022102, -0.0, -0.0, -9526879.72201105, -3175626.5740036834, -6351253.148007367, -0.0, -0.0, -0.0, -7621503.77760884, -20324010.07362358, -25405012.592029467, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -3810751.8888044204, -0.0, -0.0, -0.0, -6351253.148007367, -12702506.296014734, -0.0, -0.0, -0.0, -0.0, -2540501.2592029474, -12702506.296014734, -38107518.8880442], [12702506.296014734, 12702506.296014734, 12702506.296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15878132.870018415, 15878132.870018415, 0.0, 3810751.8888044204, 1905375.9444022102, 635125.3148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15878132.870018415, 0.0, 15878132.870018415, 0.0, 1905375.9444022102, 2540501.259202947, 1905375.9444022102, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 15878132.870018415, 15878132.870018415, 0.0, 0.0, 635125.3148007367, 1905375.9444022102, 3810751.8888044204, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [19053759.4440221, 0.0, 0.0, 12702506.296014734, 6351253.148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [9526879.72201105, 9526879.72201105, 0.0, 6351253.148007367, 3175626.5740036834, 9526879.72201105, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [3175626.5740036834, 12702506.296014734, 3175626.5740036834, 0.0, 9526879.72201105, 0.0, 9526879.72201105, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 9526879.72201105, 9526879.72201105, 0.0, 0.0, 9526879.72201105, 3175626.5740036834, 6351253.148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 19053759.4440221, 0.0, 0.0, 0.0, 6351253.148007367, 12702506.296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 38107518.8880442, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 12702506.296014734, 25405012.592029467, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 2540501.2592029474, 20324010.07362358, 15243007.55521768, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 7621503.77760884, 22864511.33282652, 7621503.77760884, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 15243007.55521768, 20324010.07362358, 2540501.2592029474, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25405012.592029467, 12702506.296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38107518.8880442, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]</span>
+</pre></div>
+</div>
+<p>To return the rates in 10^6 rad /s:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gamma</span> <span class="o">=</span> <span class="n">calculate_gamma_matrix</span><span class="p">(</span><span class="n">magnetic_states</span><span class="p">,</span><span class="n">Omega</span><span class="o">=</span><span class="mf">1e6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gamma</span>
+<span class="go">[[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12.702506296014734, -15.878132870018417, -15.878132870018417, -0.0, -19.053759444022102, -9.526879722011051, -3.1756265740036835, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12.702506296014734, -15.878132870018417, -0.0, -15.878132870018417, -0.0, -9.526879722011051, -12.702506296014734, -9.526879722011051, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -12.702506296014734, -0.0, -15.878132870018417, -15.878132870018417, -0.0, -0.0, -3.1756265740036835, -9.526879722011051, -19.053759444022102, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -3.8107518888044205, -0.0, -0.0, -12.702506296014734, -6.351253148007367, -0.0, -0.0, -0.0, -38.107518888044204, -12.702506296014734, -2.5405012592029474, -0.0, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.9053759444022103, -1.9053759444022103, -0.0, -6.351253148007367, -3.1756265740036835, -9.526879722011051, -0.0, -0.0, -0.0, -25.40501259202947, -20.32401007362358, -7.62150377760884, -0.0, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.6351253148007368, -2.540501259202947, -0.6351253148007368, -0.0, -9.526879722011051, -0.0, -9.526879722011051, -0.0, -0.0, -0.0, -15.24300755521768, -22.86451133282652, -15.24300755521768, -0.0, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -1.9053759444022103, -1.9053759444022103, -0.0, -0.0, -9.526879722011051, -3.1756265740036835, -6.351253148007367, -0.0, -0.0, -0.0, -7.62150377760884, -20.32401007362358, -25.40501259202947, -0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.0, -0.0, -0.0, -3.8107518888044205, -0.0, -0.0, -0.0, -6.351253148007367, -12.702506296014734, -0.0, -0.0, -0.0, -0.0, -2.5405012592029474, -12.702506296014734, -38.107518888044204], [12.702506296014734, 12.702506296014734, 12.702506296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15.878132870018417, 15.878132870018417, 0.0, 3.8107518888044205, 1.9053759444022103, 0.6351253148007368, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [15.878132870018417, 0.0, 15.878132870018417, 0.0, 1.9053759444022103, 2.540501259202947, 1.9053759444022103, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 15.878132870018417, 15.878132870018417, 0.0, 0.0, 0.6351253148007368, 1.9053759444022103, 3.8107518888044205, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [19.053759444022102, 0.0, 0.0, 12.702506296014734, 6.351253148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [9.526879722011051, 9.526879722011051, 0.0, 6.351253148007367, 3.1756265740036835, 9.526879722011051, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [3.1756265740036835, 12.702506296014734, 3.1756265740036835, 0.0, 9.526879722011051, 0.0, 9.526879722011051, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 9.526879722011051, 9.526879722011051, 0.0, 0.0, 9.526879722011051, 3.1756265740036835, 6.351253148007367, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 19.053759444022102, 0.0, 0.0, 0.0, 6.351253148007367, 12.702506296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 38.107518888044204, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 12.702506296014734, 25.40501259202947, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 2.5405012592029474, 20.32401007362358, 15.24300755521768, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 7.62150377760884, 22.86451133282652, 7.62150377760884, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 15.24300755521768, 20.32401007362358, 2.5405012592029474, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 25.40501259202947, 12.702506296014734, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 38.107518888044204, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]</span>
+</pre></div>
+</div>
+<p>Let us test if all D2 lines decay at the expected rate (6.065 MHz):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Gamma</span> <span class="o">=</span><span class="p">[</span> <span class="nb">sum</span><span class="p">([</span> <span class="n">gamma</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">)])</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">pi</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">magnetic_states</span><span class="p">))][</span><span class="mi">8</span><span class="p">:]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">Gammai</span> <span class="ow">in</span> <span class="n">Gamma</span><span class="p">:</span> <span class="nb">print</span> <span class="n">Gammai</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+<span class="go">6.065</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.calculate_matrices">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_matrices</code><span class="sig-paren">(</span><em>states</em>, <em>Omega=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the matrices omega_ij, gamma_ij, r_pij.</p>
+<p>This function calculates the matrices omega_ij, gamma_ij and r_pij given a
+list of atomic states. The states can be arbitrarily in their fine,
+hyperfine or magnetic detail.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.calculate_omega_matrix">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_omega_matrix</code><span class="sig-paren">(</span><em>states</em>, <em>Omega=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_omega_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the matrix of transition frequencies.</p>
+<p>This function recieves a list of states and returns the corresponding
+omega_ij matrix, rescaled to units of Omega. These are understood to be
+absolute frequencies (as opposed angular frequencies).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.calculate_reduced_matrix_elements">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">calculate_reduced_matrix_elements</code><span class="sig-paren">(</span><em>fine_states</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.calculate_reduced_matrix_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the reduced matrix elements for a list of fine states.</p>
+<p>This function calculates the reduced matrix elments</p>
+<div class="math">
+\[\langle N,L,J||T^1(r)||N',L',J'\rangle\]</div>
+<p>given a list of fine states.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e1</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e2</span><span class="o">=</span><span class="n">State</span><span class="p">(</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">87</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">red</span><span class="o">=</span><span class="n">calculate_reduced_matrix_elements</span><span class="p">([</span><span class="n">g</span><span class="p">,</span><span class="n">e1</span><span class="p">,</span><span class="n">e2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">red</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">4.23143658816481</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">red</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">8.45396724128841</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.collision_rate">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">collision_rate</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em>, <em>isotope</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.collision_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function recieves the temperature of an atomic vapour (in Kelvin),
+the element, and the isotope of the atoms, and returns the angular
+frequency rate of collisions (in rad/s) in a vapour assuming a
+Maxwell-Boltzmann velocity distribution, and taking the cross section
+of the collision to be</p>
+<div class="math">
+\[\sigma = \pi (2r)^2\]</div>
+<p>where r is the atomic radius. colission rate returned is</p>
+<div class="math">
+\[\gamma_{col}=2 \pi ( \sigma v n )\]</div>
+<p>where v is the average velocity of the distribution, and n is the
+number density of the vapour.</p>
+<p>A few examples (in Hz):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">collision_rate</span><span class="p">(</span><span class="mi">25</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span> <span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">pi</span>
+<span class="go">9.0607260277</span>
+</pre></div>
+</div>
+<p>For cesium collisions become important for temperatures above 120 Celsius.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">collision_rate</span><span class="p">(</span><span class="mi">120</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span> <span class="s2">&quot;Cs&quot;</span><span class="p">,</span> <span class="mi">133</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">pi</span>
+<span class="go">10519.235289</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.matrix_element">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">matrix_element</code><span class="sig-paren">(</span><em>ji</em>, <em>fi</em>, <em>mi</em>, <em>jj</em>, <em>fj</em>, <em>mj</em>, <em>q</em>, <em>II</em>, <em>reduced_matrix_element</em>, <em>numeric=True</em>, <em>convention=1</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.matrix_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a matrix element of the electric dipole.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.speed_average">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">speed_average</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em>, <em>isotope</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.speed_average" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the average speed (in meters per second)
+of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
+This is simply <span class="math">\(\sqrt{8 k_B T/m/\pi}\)</span></p>
+<p>where <span class="math">\(k_B\)</span> is Boltzmann’s constant, T is the temperature
+(in Kelvins) and m is the mass of the atom (in kilograms).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">speed_average</span><span class="p">(</span><span class="mi">25</span><span class="o">+</span><span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">85</span><span class="p">)</span>
+<span class="go">272.65940782</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">speed_average</span><span class="p">(</span><span class="mi">25</span><span class="o">+</span><span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">)</span>
+<span class="go">217.938062809</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.speed_likely">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">speed_likely</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em>, <em>isotope</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.speed_likely" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the most likely speed (in meters per second)
+of an atom in a vapour assuming a Maxwell-Boltzmann velocity distribution.
+This is simply <span class="math">\(\sqrt{2 k_B T/m}\)</span></p>
+<p>where <span class="math">\(k_B\)</span> is Boltzmann’s constant, T is the temperature
+(in Kelvins) and m is the mass of the atom (in kilograms).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">speed_likely</span><span class="p">(</span><span class="mi">25</span><span class="o">+</span><span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">85</span><span class="p">)</span>
+<span class="go">241.638108688</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">speed_likely</span><span class="p">(</span><span class="mi">25</span><span class="o">+</span><span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">)</span>
+<span class="go">193.142579342</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.speed_rms">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">speed_rms</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em>, <em>isotope</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.speed_rms" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the root mean squared speed (in meters per
+second) of an atom in a vapour assuming a Maxwell-Boltzmann velocity
+distribution. This is simply <span class="math">\(\sqrt{8k_B T/m/\pi}\)</span></p>
+<p>where <span class="math">\(k_B\)</span> is Boltzmann’s constant, T is the temperature
+(in Kelvins) and m is the mass of the atom (in kilograms).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">speed_rms</span><span class="p">(</span><span class="mi">25</span><span class="o">+</span><span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">,</span><span class="mi">85</span><span class="p">)</span>
+<span class="go">295.945034349</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">speed_rms</span><span class="p">(</span><span class="mi">25</span><span class="o">+</span><span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">)</span>
+<span class="go">236.550383496</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.vapour_density">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">vapour_density</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em>, <em>isotope=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.vapour_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the density in a rubidium or cesium
+vapour in kg/m^-3. It receives as input the temperature in Kelvins, the
+name of the element, and optionally the isotope. If no isotope is
+specified, the density of a vapour with the natural abundances will
+be returned.</p>
+<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id1">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id2">[SteckRb87]</a>,
+<a class="reference internal" href="#steckcs" id="id3">[SteckCs]</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_density</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">,</span><span class="mi">133</span><span class="p">)</span>
+<span class="go">1.85318869181e-06</span>
+</pre></div>
+</div>
+<p>If no isotope is specified, the natural abundances are used to calculate
+the density.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_density</span><span class="p">(</span><span class="mf">25.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
+<span class="go">1.83339788085e-09</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.vapour_number_density">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">vapour_number_density</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.vapour_number_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of atoms in a rubidium or cesium vapour in m^-3.</p>
+<p>It receives as input the temperature in Kelvins and the
+name of the element.</p>
+<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id4">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id5">[SteckRb87]</a>,
+<a class="reference internal" href="#steckcs" id="id6">[SteckCs]</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_number_density</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">)</span>
+<span class="go">8.39706962725e+18</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.atomic_structure.vapour_pressure">
+<code class="descclassname">fast.atomic_structure.</code><code class="descname">vapour_pressure</code><span class="sig-paren">(</span><em>Temperature</em>, <em>element</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.atomic_structure.vapour_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the vapour pressure of rubidium or cesium in Pascals.</p>
+<p>This function receives as input the temperature in Kelvins and the
+name of the element.</p>
+<p>This is calculated using the formulas in <a class="reference internal" href="#steckrb85" id="id7">[SteckRb85]</a>, <a class="reference internal" href="#steckrb87" id="id8">[SteckRb87]</a>,
+<a class="reference internal" href="#steckcs" id="id9">[SteckCs]</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">25.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
+<span class="go">5.31769896107e-05</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">39.3</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
+<span class="go">0.000244249795696</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Rb&quot;</span><span class="p">)</span>
+<span class="go">0.0155963687128</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">25.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">)</span>
+<span class="go">0.000201461144963</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">28.5</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">)</span>
+<span class="go">0.000297898928349</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Cs&quot;</span><span class="p">)</span>
+<span class="go">0.0421014384667</span>
+</pre></div>
+</div>
+<p>The element must be in the database.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">vapour_pressure</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">273.15</span><span class="p">,</span><span class="s2">&quot;Ca&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">Ca is not an element in the database for this function.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">FAST</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Atomic Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bloch.html">Optical Bloch Equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="electric_field.html">Optical Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="symbolic.html">Symbolic Routines</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="../index.html" title="previous chapter">Welcome to FAST’s documentation!</a></li>
+      <li>Next: <a href="bloch.html" title="next chapter">Optical Bloch Equations</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014-2017, Oscar Gerardo Lazo Arjona.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../sources/modules/atomic_structure.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

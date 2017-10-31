@@ -1,0 +1,1021 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Symbolic Routines &#8212; FAST 1.2 documentation</title>
+    <link rel="stylesheet" href="../static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/underscore.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Optical Fields" href="electric_field.html" />
+   
+  <link rel="stylesheet" href="../static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fast.symbolic">
+<span id="symbolic-routines"></span><h1>Symbolic Routines<a class="headerlink" href="#module-fast.symbolic" title="Permalink to this headline">¶</a></h1>
+<p>This module contains all the routines to produce symbolic equations.</p>
+<p>A simple example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[rho11, rho12],</span>
+<span class="go">[rho21, rho22]])</span>
+</pre></div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<table class="docutils citation" frame="void" id="edmonds74" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[Edmonds74]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>, <a class="fn-backref" href="#id3">3</a>, <a class="fn-backref" href="#id4">4</a>)</em> A. R. Edmonds. Angular momentum in quantum mechanics.
+Investigations in physics, 4.; Investigations in physics, no. 4.
+Princeton, N.J., Princeton University Press, 1957.</td></tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="fast.symbolic.bra">
+<code class="descclassname">fast.symbolic.</code><code class="descname">bra</code><span class="sig-paren">(</span><em>i</em>, <em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.bra" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the transpose of the i-th element of the
+canonical basis of a Hilbert space of dimension Ne (in the form of a
+row vector).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bra</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">Matrix([[0, 1, 0, 0]])</span>
+</pre></div>
+</div>
+<p>This will return an error if i is not in [1 .. Ne]:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bra</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">i must be in [1 .. Ne].</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.calculate_A_b">
+<code class="descclassname">fast.symbolic.</code><code class="descname">calculate_A_b</code><span class="sig-paren">(</span><em>eqs</em>, <em>rho</em>, <em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.calculate_A_b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the equations in vector form.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">pprint</span><span class="p">,</span> <span class="n">I</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span> <span class="o">=</span> <span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>                            <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Omega</span><span class="p">,</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;Omega delta&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hbar</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;hbar&quot;</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="n">Omega</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()],</span> <span class="p">[</span><span class="n">Omega</span><span class="p">,</span> <span class="o">-</span><span class="n">delta</span><span class="p">]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_frequencies</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">explicitly_antisymmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">aux</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">eqs</span> <span class="o">=</span> <span class="n">I</span><span class="o">/</span><span class="n">hbar</span><span class="o">*</span><span class="p">(</span><span class="n">rho</span><span class="o">*</span><span class="n">H</span><span class="o">-</span><span class="n">H</span><span class="o">*</span><span class="n">rho</span><span class="p">)</span> <span class="o">+</span> <span class="n">lindblad_terms</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">calculate_A_b</span><span class="p">(</span><span class="n">eqs</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡              2⋅im(Ω)       -2⋅re(Ω)   ⎤</span>
+<span class="go">⎢  -γ₂₁        ───────       ─────────  ⎥</span>
+<span class="go">⎢                 h̅             h̅     ⎥</span>
+<span class="go">⎢                                       ⎥</span>
+<span class="go">⎢-2⋅im(Ω)     γ₂₁   im(δ)     -re(δ)    ⎥</span>
+<span class="go">⎢─────────  - ─── - ─────     ───────   ⎥</span>
+<span class="go">⎢    h̅        2      h̅         h̅     ⎥</span>
+<span class="go">⎢                                       ⎥</span>
+<span class="go">⎢ 2⋅re(Ω)       re(δ)        γ₂₁   im(δ)⎥</span>
+<span class="go">⎢ ───────       ─────      - ─── - ─────⎥</span>
+<span class="go">⎣    h̅           h̅          2      h̅ ⎦</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡   0   ⎤</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢-im(Ω) ⎥</span>
+<span class="go">⎢───────⎥</span>
+<span class="go">⎢   h̅  ⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢ re(Ω) ⎥</span>
+<span class="go">⎢ ───── ⎥</span>
+<span class="go">⎣   h̅  ⎦</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.calculate_boundaries">
+<code class="descclassname">fast.symbolic.</code><code class="descname">calculate_boundaries</code><span class="sig-paren">(</span><em>Ne</em>, <em>Nl</em>, <em>r</em>, <em>Lij</em>, <em>omega_laser</em>, <em>phase</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.calculate_boundaries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain a phase transformation to eliminate explicit time dependence.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="n">ri</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span><span class="mi">0</span><span class="p">,</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span><span class="mi">0</span><span class="p">,</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span><span class="mi">0</span><span class="p">})</span> <span class="k">for</span> <span class="n">ri</span> <span class="ow">in</span> <span class="n">r</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Lij</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,[</span><span class="mi">1</span><span class="p">]],[</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,[</span><span class="mi">2</span><span class="p">]]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fast.misc</span> <span class="k">import</span> <span class="n">formatLij</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Lij</span> <span class="o">=</span> <span class="n">formatLij</span><span class="p">(</span><span class="n">Lij</span><span class="p">,</span><span class="n">Ne</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="p">,</span> <span class="n">omega_laser</span> <span class="o">=</span> <span class="n">define_laser_variables</span><span class="p">(</span><span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="p">,</span> <span class="n">ctilde</span><span class="p">,</span> <span class="n">phase</span> <span class="o">=</span> <span class="n">define_psi_coefficients</span><span class="p">(</span><span class="n">Ne</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">phase_transformation</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">Lij</span><span class="p">,</span> <span class="n">omega_laser</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
+<span class="go">{theta2: varpi_2, theta3: 0, theta1: varpi_1 + varpi_2}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.cartesian_dot_product">
+<code class="descclassname">fast.symbolic.</code><code class="descname">cartesian_dot_product</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.cartesian_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dot product of two vectors in the cartesian basis.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;u_x, u_y, u_z&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;v_x, v_y, v_z&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian_dot_product</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="go">u_x*v_x + u_y*v_y + u_z*v_z</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.cartesian_to_helicity">
+<code class="descclassname">fast.symbolic.</code><code class="descname">cartesian_to_helicity</code><span class="sig-paren">(</span><em>vector</em>, <em>numeric=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.cartesian_to_helicity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function takes vectors from the cartesian basis to the helicity basis.
+For instance, we can check what are the vectors of the helicity basis.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">em</span><span class="o">=</span><span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="o">=-</span><span class="n">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span><span class="n">p</span><span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">em</span>
+<span class="go">Matrix([</span>
+<span class="go">[   sqrt(2)/2],</span>
+<span class="go">[-sqrt(2)*I/2],</span>
+<span class="go">[           0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">em</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[ 0],</span>
+<span class="go">[ 0],</span>
+<span class="go">[-1]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">e0</span><span class="o">=</span><span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">e0</span>
+<span class="go">Matrix([</span>
+<span class="go">[0],</span>
+<span class="go">[0],</span>
+<span class="go">[1]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">e0</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[0],</span>
+<span class="go">[1],</span>
+<span class="go">[0]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span><span class="o">=</span><span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span><span class="n">p</span><span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span>
+<span class="go">Matrix([</span>
+<span class="go">[  -sqrt(2)/2],</span>
+<span class="go">[-sqrt(2)*I/2],</span>
+<span class="go">[           0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">ep</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[-1],</span>
+<span class="go">[ 0],</span>
+<span class="go">[ 0]])</span>
+</pre></div>
+</div>
+<p>Note that vectors in the helicity basis are built in a weird way by
+convention:</p>
+<div class="math">
+\[\vec{a} = -a_{+1}\vec{e}_{-1} +a_0\vec{e}_0 -a_{-1}\vec{e}_{+1}\]</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">am</span><span class="p">,</span><span class="n">a0</span><span class="p">,</span><span class="n">ap</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;am a0 ap&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">=-</span><span class="n">ap</span><span class="o">*</span><span class="n">em</span> <span class="o">+</span><span class="n">a0</span><span class="o">*</span><span class="n">e0</span> <span class="o">-</span><span class="n">am</span><span class="o">*</span><span class="n">ep</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span>
+<span class="go">Matrix([</span>
+<span class="go">[    sqrt(2)*am/2 - sqrt(2)*ap/2],</span>
+<span class="go">[sqrt(2)*I*am/2 + sqrt(2)*I*ap/2],</span>
+<span class="go">[                             a0]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span>
+<span class="go">Matrix([</span>
+<span class="go">[am],</span>
+<span class="go">[a0],</span>
+<span class="go">[ap]])</span>
+</pre></div>
+</div>
+<p>We can also convert a numeric array</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span><span class="p">[[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]],</span>
+<span class="gp">... </span>    <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="n">j</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span> <span class="mi">1</span><span class="n">j</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]],</span>
+<span class="gp">... </span>    <span class="p">[[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="o">-</span><span class="mf">1.0</span><span class="p">]]]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">array([[[ 0.00000000+0.j,  0.00000000+0.j],</span>
+<span class="go">        [ 1.41421356+0.j,  0.00000000+0.j]],</span>
+
+<span class="go">       [[ 1.00000000+0.j,  0.00000000+0.j],</span>
+<span class="go">        [ 0.00000000+0.j, -1.00000000+0.j]],</span>
+
+<span class="go">       [[-0.00000000+0.j, -1.41421356+0.j],</span>
+<span class="go">        [-0.00000000+0.j, -0.00000000+0.j]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_density_matrix">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_density_matrix</code><span class="sig-paren">(</span><em>Ne</em>, <em>explicitly_hermitian=False</em>, <em>normalized=False</em>, <em>variables=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_density_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a symbolic density matrix.</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">Ne</span></code> - The number of atomic states.</li>
+<li><code class="docutils literal"><span class="pre">explicitly_hermitian</span></code> - (boolean) whether to make <span class="math">\(\rho_{ij}=\bar{\rho}_{ij}\)</span> for i&lt;j.</li>
+<li><code class="docutils literal"><span class="pre">normalized</span></code> - (boolean): Whether to make <span class="math">\(\rho_{11}=1-\sum_{i&gt;1} \rho_{ii}\)</span></li>
+</ul>
+<p>A very simple example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[rho11, rho12],</span>
+<span class="go">[rho21, rho22]])</span>
+</pre></div>
+</div>
+<p>The density matrix can be made explicitly hermitian</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[rho11, conjugate(rho21)],</span>
+<span class="go">[rho21,            rho22]])</span>
+</pre></div>
+</div>
+<p>or normalized</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[-rho22 + 1, rho12],</span>
+<span class="go">[     rho21, rho22]])</span>
+</pre></div>
+</div>
+<p>or it can be made an explicit function of given variables</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;t, z&quot;</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+<span class="go">Matrix([</span>
+<span class="go">[rho11(t, z), rho12(t, z)],</span>
+<span class="go">[rho21(t, z), rho22(t, z)]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_frequencies">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_frequencies</code><span class="sig-paren">(</span><em>Ne</em>, <em>explicitly_antisymmetric=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_frequencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define all frequencies omega_level, omega, gamma.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">define_frequencies</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎛[ω₁, ω₂], ⎡ 0   ω₁₂⎤, ⎡ 0   γ₁₂⎤⎞</span>
+<span class="go">⎜          ⎢        ⎥  ⎢        ⎥⎟</span>
+<span class="go">⎝          ⎣ω₂₁   0 ⎦  ⎣γ₂₁   0 ⎦⎠</span>
+</pre></div>
+</div>
+<p>We can make these matrices explicitly antisymmetric.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">define_frequencies</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">explicitly_antisymmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="gp">... </span>                          <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎛[ω₁, ω₂], ⎡ 0   -ω₂₁⎤, ⎡ 0   -γ₂₁⎤⎞</span>
+<span class="go">⎜          ⎢         ⎥  ⎢         ⎥⎟</span>
+<span class="go">⎝          ⎣ω₂₁   0  ⎦  ⎣γ₂₁   0  ⎦⎠</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_laser_variables">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_laser_variables</code><span class="sig-paren">(</span><em>Nl</em>, <em>real_amplitudes=False</em>, <em>variables=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_laser_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amplitudes and frequencies of Nl fields.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="p">,</span> <span class="n">omega_laser</span> <span class="o">=</span> <span class="n">define_laser_variables</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="p">,</span> <span class="n">omega_laser</span>
+<span class="go">([E_0^1, E_0^2], [varpi_1, varpi_2])</span>
+</pre></div>
+</div>
+<p>The amplitudes are complex by default:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">conjugate</span><span class="p">(</span><span class="n">E0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">conjugate(E_0^1)</span>
+</pre></div>
+</div>
+<p>But they can optionally be made real:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="p">,</span> <span class="n">omega_laser</span> <span class="o">=</span> <span class="n">define_laser_variables</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">real_amplitudes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">conjugate</span><span class="p">(</span><span class="n">E0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">E_0^1</span>
+</pre></div>
+</div>
+<p>They can also be made explicit functions of given variables:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;t, z&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="p">,</span> <span class="n">omega_laser</span> <span class="o">=</span> <span class="n">define_laser_variables</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">variables</span><span class="o">=</span><span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span>
+<span class="go">[E_0^1(t, z), E_0^2(t, z)]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_psi_coefficients">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_psi_coefficients</code><span class="sig-paren">(</span><em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_psi_coefficients" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the components of an arbitrary state vector.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">define_psi_coefficients</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎛⎡c₁(t)⎤, ⎡\tilde{c}_{1}(t)⎤, ⎡θ₁⎤⎞</span>
+<span class="go">⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟</span>
+<span class="go">⎜⎢c₂(t)⎥  ⎢\tilde{c}_{2}(t)⎥  ⎢θ₂⎥⎟</span>
+<span class="go">⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟</span>
+<span class="go">⎝⎣c₃(t)⎦  ⎣\tilde{c}_{3}(t)⎦  ⎣θ₃⎦⎠</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_r_components">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_r_components</code><span class="sig-paren">(</span><em>Ne</em>, <em>xi=None</em>, <em>explicitly_hermitian=False</em>, <em>helicity=False</em>, <em>real=True</em>, <em>p=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_r_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the components of the position operators.</p>
+<p>In general, these are representations of the position operators x, y, z</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">[Matrix([</span>
+<span class="go">[     0, x_{12}],</span>
+<span class="go">[x_{21},      0]]), Matrix([</span>
+<span class="go">[     0, y_{12}],</span>
+<span class="go">[y_{21},      0]]), Matrix([</span>
+<span class="go">[     0, z_{12}],</span>
+<span class="go">[z_{21},      0]])]</span>
+</pre></div>
+</div>
+<p>We can make these operators explicitly hermitian</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[Matrix([</span>
+<span class="go">[     0, x_{21}],</span>
+<span class="go">[x_{21},      0]]), Matrix([</span>
+<span class="go">[     0, y_{21}],</span>
+<span class="go">[y_{21},      0]]), Matrix([</span>
+<span class="go">[     0, z_{21}],</span>
+<span class="go">[z_{21},      0]])]</span>
+</pre></div>
+</div>
+<p>Make them real</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">-</span><span class="n">r</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="go">[Matrix([</span>
+<span class="go">[0, 0],</span>
+<span class="go">[0, 0]]), Matrix([</span>
+<span class="go">[0, 0],</span>
+<span class="go">[0, 0]]), Matrix([</span>
+<span class="go">[0, 0],</span>
+<span class="go">[0, 0]])]</span>
+</pre></div>
+</div>
+<p>We can get the components of the operator in the helicity basis</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[Matrix([</span>
+<span class="go">[        0, r_{-1;12}],</span>
+<span class="go">[r_{-1;21},         0]]), Matrix([</span>
+<span class="go">[       0, r_{0;12}],</span>
+<span class="go">[r_{0;21},        0]]), Matrix([</span>
+<span class="go">[        0, r_{+1;12}],</span>
+<span class="go">[r_{+1;21},         0]])]</span>
+</pre></div>
+</div>
+<p>And combinations thereof. For instance, let us check that the components
+in the helicity basis produce hermitian operators in the cartesian basis.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r_helicity</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>                                 <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>[Matrix([
+[        0, -r_{+1;21}],
+[r_{-1;21},          0]]), Matrix([
+[       0, r_{0;21}],
+[r_{0;21},        0]]), Matrix([
+[        0, -r_{-1;21}],
+[r_{+1;21},          0]])]</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r_cartesian</span> <span class="o">=</span> <span class="n">helicity_to_cartesian</span><span class="p">(</span><span class="n">r_helicity</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r_cartesian</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">Matrix([</span>
+<span class="go">[                                 0, sqrt(2)*(-r_{+1;21} + r_{-1;21})/2],</span>
+<span class="go">[sqrt(2)*(-r_{+1;21} + r_{-1;21})/2,                                  0]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="p">[(</span><span class="n">r_cartesian</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">-</span><span class="n">r_cartesian</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">adjoint</span><span class="p">())</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)]</span>
+<span class="go">[Matrix([</span>
+<span class="go">[0, 0],</span>
+<span class="go">[0, 0]]), Matrix([</span>
+<span class="go">[0, 0],</span>
+<span class="go">[0, 0]]), Matrix([</span>
+<span class="go">[0, 0],</span>
+<span class="go">[0, 0]])]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_rho_vector">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_rho_vector</code><span class="sig-paren">(</span><em>rho</em>, <em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_rho_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define the vectorized density matrix.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span> <span class="o">=</span> <span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">define_rho_vector</span><span class="p">(</span><span class="n">rho</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡  ρ₂₂  ⎤</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢  ρ₃₃  ⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢re(ρ₂₁)⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢re(ρ₃₁)⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢re(ρ₃₂)⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢im(ρ₂₁)⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎢im(ρ₃₁)⎥</span>
+<span class="go">⎢       ⎥</span>
+<span class="go">⎣im(ρ₃₂)⎦</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.define_symbol">
+<code class="descclassname">fast.symbolic.</code><code class="descname">define_symbol</code><span class="sig-paren">(</span><em>name</em>, <em>open_brace</em>, <em>comma</em>, <em>i</em>, <em>j</em>, <em>close_brace</em>, <em>variables</em>, <em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.define_symbol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a nice symbol with matrix indices.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;rho&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;t, x, y, z&quot;</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">open_brace</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">comma</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">close_brace</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">j</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">f</span> <span class="o">=</span> <span class="n">define_symbol</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">open_brace</span><span class="p">,</span> <span class="n">comma</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">close_brace</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">variables</span><span class="p">,</span> <span class="n">positive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">f</span>
+<span class="go">rho12(t, x, y, z)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.delta_greater">
+<code class="descclassname">fast.symbolic.</code><code class="descname">delta_greater</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.delta_greater" title="Permalink to this definition">¶</a></dt>
+<dd><p>A symbol that 1 if i &gt; j and zero otherwise.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">delta_greater</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">delta_greater</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.delta_lesser">
+<code class="descclassname">fast.symbolic.</code><code class="descname">delta_lesser</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.delta_lesser" title="Permalink to this definition">¶</a></dt>
+<dd><p>A symbol that 1 if i &lt; j and zero otherwise.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">delta_lesser</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">delta_lesser</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.density_matrix_rotation">
+<code class="descclassname">fast.symbolic.</code><code class="descname">density_matrix_rotation</code><span class="sig-paren">(</span><em>J_values</em>, <em>alpha</em>, <em>beta</em>, <em>gamma</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.density_matrix_rotation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a block-wise diagonal Wigner D matrix for that rotates
+a density matrix of an ensemble of particles in definite total
+angular momentum states given by J_values.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">half</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">J_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">half</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">density_matrix_rotation</span><span class="p">(</span><span class="n">J_values</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[       1/2,  sqrt(2)/2,       1/2, 0],</span>
+<span class="go">[-sqrt(2)/2,          0, sqrt(2)/2, 0],</span>
+<span class="go">[       1/2, -sqrt(2)/2,       1/2, 0],</span>
+<span class="go">[         0,          0,         0, 1]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.hamiltonian">
+<code class="descclassname">fast.symbolic.</code><code class="descname">hamiltonian</code><span class="sig-paren">(</span><em>Ep</em>, <em>epsilonp</em>, <em>detuning_knob</em>, <em>rm</em>, <em>omega_level</em>, <em>omega_laser</em>, <em>xi</em>, <em>RWA=True</em>, <em>RF=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return symbolic Hamiltonian.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">pprint</span><span class="p">,</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ep</span><span class="p">,</span> <span class="n">omega_laser</span> <span class="o">=</span> <span class="n">define_laser_variables</span><span class="p">(</span><span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epsilonp</span> <span class="o">=</span> <span class="p">[</span><span class="n">polarization_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detuning_knob</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;delta1 delta2&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="p">[</span><span class="n">zeros</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">][</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span> <span class="o">=</span> <span class="n">helicity_to_cartesian</span><span class="p">(</span><span class="n">rm</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">define_frequencies</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">hamiltonian</span><span class="p">(</span><span class="n">Ep</span><span class="p">,</span> <span class="n">epsilonp</span><span class="p">,</span> <span class="n">detuning_knob</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">omega_level</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="n">omega_laser</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">RWA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">RF</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">H</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">-E_0^1*e*r_{0;21}*exp(-I*t*varpi_1)/2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">H</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="go">-E_0^2*e*r_{0;31}*exp(-I*t*varpi_2)/2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">H</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<span class="go">hbar*omega_3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.helicity_dot_product">
+<code class="descclassname">fast.symbolic.</code><code class="descname">helicity_dot_product</code><span class="sig-paren">(</span><em>v1</em>, <em>v2</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.helicity_dot_product" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the dot product of two vectors in the helicity basis.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;u_{-1}, u_0, u_{+1}&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;v_{-1}, v_0, v_{+1}&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">helicity_dot_product</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="go">u_0*v_0 - u_{+1}*v_{-1} - u_{-1}*v_{+1}</span>
+</pre></div>
+</div>
+<p>We can check that this is in deed the same thing as the usual cartesian
+dot product:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;u_x, u_y, u_z&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;v_x, v_y, v_z&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u_helicity</span> <span class="o">=</span> <span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v_helicity</span> <span class="o">=</span> <span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">helicity_dot_product</span><span class="p">(</span><span class="n">u_helicity</span><span class="p">,</span> <span class="n">v_helicity</span><span class="p">)</span><span class="o">.</span><span class="n">expand</span><span class="p">()</span>
+<span class="go">u_x*v_x + u_y*v_y + u_z*v_z</span>
+</pre></div>
+</div>
+<p>The inputs vectors can be a list of matrices representing operators.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rp</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">explicitly_hermitian</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">em</span> <span class="o">=</span> <span class="n">polarization_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span> <span class="o">=</span> <span class="n">polarization_vector</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span> <span class="o">=</span> <span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">ep</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">em</span> <span class="o">=</span> <span class="n">cartesian_to_helicity</span><span class="p">(</span><span class="n">em</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">helicity_dot_product</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">rm</span><span class="p">)</span> <span class="o">+</span> <span class="n">helicity_dot_product</span><span class="p">(</span><span class="n">em</span><span class="p">,</span> <span class="n">rp</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span>
+<span class="go">Matrix([</span>
+<span class="go">[         0, -r_{+1;21}],</span>
+<span class="go">[-r_{+1;21},          0]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.helicity_to_cartesian">
+<code class="descclassname">fast.symbolic.</code><code class="descname">helicity_to_cartesian</code><span class="sig-paren">(</span><em>vector</em>, <em>numeric=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.helicity_to_cartesian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform a vector in the helicity basis to the cartesian basis.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sigmam</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">helicity_to_cartesian</span><span class="p">(</span><span class="n">sigmam</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[  sqrt(2)/2],</span>
+<span class="go">[sqrt(2)*I/2],</span>
+<span class="go">[          0]])</span>
+</pre></div>
+</div>
+<p>The input vector can be a list of matrices</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">helicity</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span>
+<span class="go">[Matrix([</span>
+<span class="go">[        0, 0],</span>
+<span class="go">[r_{-1;21}, 0]]), Matrix([</span>
+<span class="go">[       0, 0],</span>
+<span class="go">[r_{0;21}, 0]]), Matrix([</span>
+<span class="go">[        0, 0],</span>
+<span class="go">[r_{+1;21}, 0]])]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">helicity_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="go">[Matrix([</span>
+<span class="go">[                                 0, 0],</span>
+<span class="go">[sqrt(2)*(-r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([</span>
+<span class="go">[                                  0, 0],</span>
+<span class="go">[sqrt(2)*I*(r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([</span>
+<span class="go">[       0, 0],</span>
+<span class="go">[r_{0;21}, 0]])]</span>
+</pre></div>
+</div>
+<p>We can also convert a numeric array</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span><span class="p">[[[</span><span class="mf">0.0</span>        <span class="p">,</span>        <span class="mf">0.0</span> <span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="n">npsqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">),</span>        <span class="mf">0.0</span> <span class="p">]],</span>
+<span class="gp">... </span>    <span class="p">[[</span><span class="mf">1.0</span>        <span class="p">,</span>        <span class="mf">0.0</span> <span class="p">],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">0.0</span>        <span class="p">,</span>       <span class="o">-</span><span class="mf">1.0</span> <span class="p">]],</span>
+<span class="gp">... </span>    <span class="p">[[</span><span class="mf">0.0</span>        <span class="p">,</span><span class="o">-</span><span class="n">npsqrt</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)],</span>
+<span class="gp">... </span>     <span class="p">[</span><span class="mf">0.0</span>        <span class="p">,</span>        <span class="mf">0.0</span> <span class="p">]]]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">helicity_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">array([[[ 0.+0.j,  1.+0.j],</span>
+<span class="go">        [ 1.+0.j,  0.+0.j]],</span>
+
+<span class="go">       [[ 0.+0.j, -0.-1.j],</span>
+<span class="go">        [ 0.+1.j,  0.+0.j]],</span>
+
+<span class="go">       [[ 1.+0.j,  0.+0.j],</span>
+<span class="go">        [ 0.+0.j, -1.+0.j]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.ket">
+<code class="descclassname">fast.symbolic.</code><code class="descname">ket</code><span class="sig-paren">(</span><em>i</em>, <em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.ket" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the i-th element of the canonical basis
+of a Hilbert space of dimension Ne (in the form of a column vector).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ket</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[0],</span>
+<span class="go">[1],</span>
+<span class="go">[0],</span>
+<span class="go">[0]])</span>
+</pre></div>
+</div>
+<p>This will return an error if i is not in [1 .. Ne]:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ket</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">i must be in [1 .. Ne].</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.ketbra">
+<code class="descclassname">fast.symbolic.</code><code class="descname">ketbra</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.ketbra" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the outer product <span class="math">\(|i&gt;&lt;j|\)</span> where <span class="math">\(|i&gt;\)</span> and <span class="math">\(|j&gt;\)</span> are elements of the canonical basis of an Ne-dimensional Hilbert space (in matrix form).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ketbra</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[0, 0, 0],</span>
+<span class="go">[0, 0, 1],</span>
+<span class="go">[0, 0, 0]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.lindblad_operator">
+<code class="descclassname">fast.symbolic.</code><code class="descname">lindblad_operator</code><span class="sig-paren">(</span><em>A</em>, <em>rho</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.lindblad_operator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the action of a Lindblad operator A on a densitymatrix rho. This is defined as :</p>
+<blockquote>
+<div><div class="math">
+\[\mathcal{L}(A, \rho) = A \rho A^\dagger -
+(A^\dagger A \rho + \rho A^\dagger A)/2.\]</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span><span class="o">=</span><span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lindblad_operator</span><span class="p">(</span> <span class="n">ketbra</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span> <span class="p">,</span><span class="n">rho</span> <span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[   rho22, -rho12/2,        0],</span>
+<span class="go">[-rho21/2,   -rho22, -rho23/2],</span>
+<span class="go">[       0, -rho32/2,        0]])</span>
+</pre></div>
+</div>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.lindblad_terms">
+<code class="descclassname">fast.symbolic.</code><code class="descname">lindblad_terms</code><span class="sig-paren">(</span><em>gamma</em>, <em>rho</em>, <em>Ne</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.lindblad_terms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Lindblad terms for decays gamma in matrix form.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_frequencies</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">explicitly_antisymmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">gamma</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span><span class="mi">0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span><span class="mi">0</span><span class="p">,</span> <span class="n">gamma</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span><span class="mi">0</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡ 0   -γ₂₁   0     0  ⎤</span>
+<span class="go">⎢                     ⎥</span>
+<span class="go">⎢γ₂₁   0    -γ₃₂   0  ⎥</span>
+<span class="go">⎢                     ⎥</span>
+<span class="go">⎢ 0   γ₃₂    0    -γ₄₃⎥</span>
+<span class="go">⎢                     ⎥</span>
+<span class="go">⎣ 0    0    γ₄₃    0  ⎦</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span> <span class="o">=</span> <span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">lindblad_terms</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡                -γ₂₁⋅ρ₁₂             -γ₃₂⋅ρ₁₃             -γ₄₃⋅ρ₁₄      ⎤</span>
+<span class="go">⎢ γ₂₁⋅ρ₂₂        ─────────            ─────────            ─────────     ⎥</span>
+<span class="go">⎢                    2                    2                    2         ⎥</span>
+<span class="go">⎢                                                                        ⎥</span>
+<span class="go">⎢-γ₂₁⋅ρ₂₁                          γ₂₁⋅ρ₂₃   γ₃₂⋅ρ₂₃    γ₂₁⋅ρ₂₄   γ₄₃⋅ρ₂₄⎥</span>
+<span class="go">⎢─────────  -γ₂₁⋅ρ₂₂ + γ₃₂⋅ρ₃₃   - ─────── - ───────  - ─────── - ───────⎥</span>
+<span class="go">⎢    2                                2         2          2         2   ⎥</span>
+<span class="go">⎢                                                                        ⎥</span>
+<span class="go">⎢-γ₃₂⋅ρ₃₁     γ₂₁⋅ρ₃₂   γ₃₂⋅ρ₃₂                         γ₃₂⋅ρ₃₄   γ₄₃⋅ρ₃₄⎥</span>
+<span class="go">⎢─────────  - ─────── - ───────  -γ₃₂⋅ρ₃₃ + γ₄₃⋅ρ₄₄   - ─────── - ───────⎥</span>
+<span class="go">⎢    2           2         2                               2         2   ⎥</span>
+<span class="go">⎢                                                                        ⎥</span>
+<span class="go">⎢-γ₄₃⋅ρ₄₁     γ₂₁⋅ρ₄₂   γ₄₃⋅ρ₄₂    γ₃₂⋅ρ₄₃   γ₄₃⋅ρ₄₃                     ⎥</span>
+<span class="go">⎢─────────  - ─────── - ───────  - ─────── - ───────       -γ₄₃⋅ρ₄₄      ⎥</span>
+<span class="go">⎣    2           2         2          2         2                        ⎦</span>
+</pre></div>
+</div>
+<p>Notice that there are more terms than simply adding a decay
+gamma_ij*rho_ij/2 for each coherence.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.part_symbolic">
+<code class="descclassname">fast.symbolic.</code><code class="descname">part_symbolic</code><span class="sig-paren">(</span><em>z</em>, <em>s</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.part_symbolic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the real or imaginary part of an expression.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rho</span> <span class="o">=</span> <span class="n">define_density_matrix</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">part_symbolic</span><span class="p">(</span><span class="n">rho</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">part_symbolic</span><span class="p">(</span><span class="n">rho</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">re(rho21)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.phase_transformation">
+<code class="descclassname">fast.symbolic.</code><code class="descname">phase_transformation</code><span class="sig-paren">(</span><em>Ne</em>, <em>Nl</em>, <em>r</em>, <em>Lij</em>, <em>omega_laser</em>, <em>phase</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.phase_transformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain a phase transformation to eliminate explicit time dependence.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.polarization_vector">
+<code class="descclassname">fast.symbolic.</code><code class="descname">polarization_vector</code><span class="sig-paren">(</span><em>phi</em>, <em>theta</em>, <em>alpha</em>, <em>beta</em>, <em>p</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.polarization_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a unitary vector describing the polarization
+of plane waves.:</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">phi</span></code> - The spherical coordinates azimuthal angle of the wave vector k.</li>
+<li><code class="docutils literal"><span class="pre">theta</span></code> - The spherical coordinates polar angle of the wave vector k.</li>
+<li><code class="docutils literal"><span class="pre">alpha</span></code> - The rotation of a half-wave plate.</li>
+<li><code class="docutils literal"><span class="pre">beta</span></code> - The rotation of a quarter-wave plate.</li>
+<li><code class="docutils literal"><span class="pre">p</span></code> - either 1 or -1 to indicate whether to return epsilon^(+) or epsilon^(-) respectively.</li>
+</ul>
+<p>If alpha and beta are zero, the result will be linearly polarized light
+along some fast axis. alpha and beta are measured from that fast axis.</p>
+<p>Propagation towards y, linear polarization (for pi transitions):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[0],</span>
+<span class="go">[0],</span>
+<span class="go">[1]])</span>
+</pre></div>
+</div>
+<p>Propagation towards +z, circular polarization (for sigma + transitions):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[  -sqrt(2)/2],</span>
+<span class="go">[-sqrt(2)*I/2],</span>
+<span class="go">[           0]])</span>
+</pre></div>
+</div>
+<p>Propagation towards -z, circular polarization for sigma + transitions:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">theta</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span>   <span class="mi">0</span><span class="p">,</span> <span class="n">beta</span><span class="o">=-</span><span class="n">pi</span><span class="o">/</span><span class="mi">8</span><span class="p">,</span><span class="n">p</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[  -sqrt(2)/2],</span>
+<span class="go">[-sqrt(2)*I/2],</span>
+<span class="go">[           0]])</span>
+</pre></div>
+</div>
+<p>Components + and - are complex conjugates of each other</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;phi theta alpha beta&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span> <span class="o">=</span> <span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">theta</span><span class="p">,</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">em</span> <span class="o">=</span> <span class="n">polarization_vector</span><span class="p">(</span><span class="n">phi</span><span class="p">,</span><span class="n">theta</span><span class="p">,</span><span class="n">alpha</span><span class="p">,</span><span class="n">beta</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span><span class="o">-</span><span class="n">em</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span>
+<span class="go">Matrix([</span>
+<span class="go">[0],</span>
+<span class="go">[0],</span>
+<span class="go">[0]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.vector_element">
+<code class="descclassname">fast.symbolic.</code><code class="descname">vector_element</code><span class="sig-paren">(</span><em>r</em>, <em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.vector_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract an matrix element of a vector operator.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">define_r_components</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector_element</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[x_{21}],</span>
+<span class="go">[y_{21}],</span>
+<span class="go">[z_{21}]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.wigner_d">
+<code class="descclassname">fast.symbolic.</code><code class="descname">wigner_d</code><span class="sig-paren">(</span><em>J</em>, <em>alpha</em>, <em>beta</em>, <em>gamma</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.wigner_d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the Wigner D matrix for angular momentum J.</p>
+<p>We use the general formula from <a class="reference internal" href="#edmonds74" id="id1">[Edmonds74]</a>, equation 4.1.12.</p>
+<p>The simplest possible example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fast.symbolic</span> <span class="k">import</span> <span class="n">wigner_d</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">half</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;alpha, beta, gamma&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">wigner_d</span><span class="p">(</span><span class="n">half</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">),</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡  ⅈ⋅α  ⅈ⋅γ             ⅈ⋅α  -ⅈ⋅γ         ⎤</span>
+<span class="go">⎢  ───  ───             ───  ─────        ⎥</span>
+<span class="go">⎢   2    2     ⎛β⎞       2     2      ⎛β⎞ ⎥</span>
+<span class="go">⎢ ℯ   ⋅ℯ   ⋅cos⎜─⎟     ℯ   ⋅ℯ     ⋅sin⎜─⎟ ⎥</span>
+<span class="go">⎢              ⎝2⎠                    ⎝2⎠ ⎥</span>
+<span class="go">⎢                                         ⎥</span>
+<span class="go">⎢  -ⅈ⋅α   ⅈ⋅γ          -ⅈ⋅α   -ⅈ⋅γ        ⎥</span>
+<span class="go">⎢  ─────  ───          ─────  ─────       ⎥</span>
+<span class="go">⎢    2     2     ⎛β⎞     2      2      ⎛β⎞⎥</span>
+<span class="go">⎢-ℯ     ⋅ℯ   ⋅sin⎜─⎟  ℯ     ⋅ℯ     ⋅cos⎜─⎟⎥</span>
+<span class="go">⎣                ⎝2⎠                   ⎝2⎠⎦</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.symbolic.wigner_d_small">
+<code class="descclassname">fast.symbolic.</code><code class="descname">wigner_d_small</code><span class="sig-paren">(</span><em>J</em>, <em>beta</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.symbolic.wigner_d_small" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the small Wigner d matrix for angular momentum J.</p>
+<p>We use the general formula from <a class="reference internal" href="#edmonds74" id="id2">[Edmonds74]</a>, equation 4.1.15.</p>
+<p>Some examples form <a class="reference internal" href="#edmonds74" id="id3">[Edmonds74]</a>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">fast.symbolic</span> <span class="k">import</span> <span class="n">wigner_d_small</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">half</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">beta</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wigner_d_small</span><span class="p">(</span><span class="n">half</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
+<span class="go">Matrix([</span>
+<span class="go">[ cos(beta/2), sin(beta/2)],</span>
+<span class="go">[-sin(beta/2), cos(beta/2)]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">wigner_d_small</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">half</span><span class="p">,</span> <span class="n">beta</span><span class="p">),</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">⎡        2⎛β⎞              ⎛β⎞    ⎛β⎞           2⎛β⎞     ⎤</span>
+<span class="go">⎢     cos ⎜─⎟        √2⋅sin⎜─⎟⋅cos⎜─⎟        sin ⎜─⎟     ⎥</span>
+<span class="go">⎢         ⎝2⎠              ⎝2⎠    ⎝2⎠            ⎝2⎠     ⎥</span>
+<span class="go">⎢                                                        ⎥</span>
+<span class="go">⎢       ⎛β⎞    ⎛β⎞       2⎛β⎞      2⎛β⎞        ⎛β⎞    ⎛β⎞⎥</span>
+<span class="go">⎢-√2⋅sin⎜─⎟⋅cos⎜─⎟  - sin ⎜─⎟ + cos ⎜─⎟  √2⋅sin⎜─⎟⋅cos⎜─⎟⎥</span>
+<span class="go">⎢       ⎝2⎠    ⎝2⎠        ⎝2⎠       ⎝2⎠        ⎝2⎠    ⎝2⎠⎥</span>
+<span class="go">⎢                                                        ⎥</span>
+<span class="go">⎢        2⎛β⎞               ⎛β⎞    ⎛β⎞          2⎛β⎞     ⎥</span>
+<span class="go">⎢     sin ⎜─⎟        -√2⋅sin⎜─⎟⋅cos⎜─⎟       cos ⎜─⎟     ⎥</span>
+<span class="go">⎣         ⎝2⎠               ⎝2⎠    ⎝2⎠           ⎝2⎠     ⎦</span>
+</pre></div>
+</div>
+<p>From table 4 in <a class="reference internal" href="#edmonds74" id="id4">[Edmonds74]</a></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wigner_d_small</span><span class="p">(</span><span class="n">half</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">beta</span><span class="p">:</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">})</span>
+<span class="go">Matrix([</span>
+<span class="go">[ sqrt(2)/2, sqrt(2)/2],</span>
+<span class="go">[-sqrt(2)/2, sqrt(2)/2]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wigner_d_small</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">half</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">beta</span><span class="p">:</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">})</span>
+<span class="go">Matrix([</span>
+<span class="go">[       1/2,  sqrt(2)/2,       1/2],</span>
+<span class="go">[-sqrt(2)/2,          0, sqrt(2)/2],</span>
+<span class="go">[       1/2, -sqrt(2)/2,       1/2]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wigner_d_small</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="n">half</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">beta</span><span class="p">:</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">})</span>
+<span class="go">Matrix([</span>
+<span class="go">[ sqrt(2)/4,  sqrt(6)/4,  sqrt(6)/4, sqrt(2)/4],</span>
+<span class="go">[-sqrt(6)/4, -sqrt(2)/4,  sqrt(2)/4, sqrt(6)/4],</span>
+<span class="go">[ sqrt(6)/4, -sqrt(2)/4, -sqrt(2)/4, sqrt(6)/4],</span>
+<span class="go">[-sqrt(2)/4,  sqrt(6)/4, -sqrt(6)/4, sqrt(2)/4]])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wigner_d_small</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">half</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">({</span><span class="n">beta</span><span class="p">:</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">})</span>
+<span class="go">Matrix([</span>
+<span class="go">[      1/4,  1/2, sqrt(6)/4,  1/2,       1/4],</span>
+<span class="go">[     -1/2, -1/2,         0,  1/2,       1/2],</span>
+<span class="go">[sqrt(6)/4,    0,      -1/2,    0, sqrt(6)/4],</span>
+<span class="go">[     -1/2,  1/2,         0, -1/2,       1/2],</span>
+<span class="go">[      1/4, -1/2, sqrt(6)/4, -1/2,       1/4]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">FAST</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atomic_structure.html">Atomic Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bloch.html">Optical Bloch Equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="electric_field.html">Optical Fields</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Symbolic Routines</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="electric_field.html" title="previous chapter">Optical Fields</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014-2017, Oscar Gerardo Lazo Arjona.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../sources/modules/symbolic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

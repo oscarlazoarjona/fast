@@ -1,0 +1,233 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Optical Fields &#8212; FAST 1.2 documentation</title>
+    <link rel="stylesheet" href="../static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../static/jquery.js"></script>
+    <script type="text/javascript" src="../static/underscore.js"></script>
+    <script type="text/javascript" src="../static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Symbolic Routines" href="symbolic.html" />
+    <link rel="prev" title="Optical Bloch Equations" href="bloch.html" />
+   
+  <link rel="stylesheet" href="../static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fast.electric_field">
+<span id="optical-fields"></span><h1>Optical Fields<a class="headerlink" href="#module-fast.electric_field" title="Permalink to this headline">¶</a></h1>
+<p>This module contains all routines related to the optical fields.</p>
+<dl class="class">
+<dt id="fast.electric_field.MotField">
+<em class="property">class </em><code class="descclassname">fast.electric_field.</code><code class="descname">MotField</code><span class="sig-paren">(</span><em>relative_intensities</em>, <em>parity=1</em>, <em>color='blue'</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.electric_field.MotField" title="Permalink to this definition">¶</a></dt>
+<dd><p>The optical field of a MOT scheme.</p>
+<dl class="method">
+<dt id="fast.electric_field.MotField.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>**kwds</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.electric_field.MotField.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>The plotting function for MOT fields.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="fast.electric_field.PlaneWave">
+<em class="property">class </em><code class="descclassname">fast.electric_field.</code><code class="descname">PlaneWave</code><span class="sig-paren">(</span><em>phi</em>, <em>theta</em>, <em>alpha</em>, <em>beta</em>, <em>omega=1</em>, <em>E0=1</em>, <em>color='blue'</em>, <em>symbolical=True</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.electric_field.PlaneWave" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class implements plane waves propagating in an arbitrary direction
+and with an arbitrary (and well-defined) polarization. It takes as input:</p>
+<p>INPUT:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">phi</span></code> - The azimutal angle in spherical coordinates of the wave vector.</li>
+<li><code class="docutils literal"><span class="pre">theta</span></code> - The polar angle in spherical coordinates of the wave vector.</li>
+<li><code class="docutils literal"><span class="pre">alpha</span></code> - The angle between the fast axis of a half-wave plate and an incident linearly polarized beam.</li>
+<li><code class="docutils literal"><span class="pre">beta</span></code> - The angle between the fast axis of a quarter-wave plate and an incident linearly polarized beam.</li>
+</ul>
+<p>The easiest way to understand what this means is to use the function
+draw_lasers to get a 3d view of the direction and polarization of the
+wave.</p>
+<p>An explicit way to understand what alpha and beta are is to see how the
+overall form of the electric field is contructed. We begin with a
+polarization vector for a plane wave propagating towards z:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">Matrix</span><span class="p">,</span> <span class="n">I</span><span class="p">,</span> <span class="n">exp</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">pprint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="o">=</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;E0&quot;</span><span class="p">,</span><span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">omega</span><span class="p">,</span><span class="n">kx</span><span class="p">,</span><span class="n">ky</span><span class="p">,</span><span class="n">kz</span><span class="o">=</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;t,x,y,z,omega,kx,ky,kz&quot;</span><span class="p">,</span><span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phi</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;phi, theta, alpha, beta&quot;</span><span class="p">,</span><span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ep</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">),</span><span class="n">I</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">beta</span><span class="p">),</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span><span class="n">use_unicode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">[ cos(2*beta) ]</span>
+<span class="go">[             ]</span>
+<span class="go">[I*sin(2*beta)]</span>
+<span class="go">[             ]</span>
+<span class="go">[      0      ]</span>
+</pre></div>
+</div>
+<p>Where beta specifies the circularity of the polarization. We define
+the following rotation matrices</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">R1</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([[</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">alpha</span><span class="p">),</span> <span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">alpha</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">... </span>           <span class="p">[</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">alpha</span><span class="p">),</span> <span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">alpha</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">R1</span><span class="p">,</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">[cos(2*alpha)  -sin(2*alpha)  0]</span>
+<span class="go">[                              ]</span>
+<span class="go">[sin(2*alpha)  cos(2*alpha)   0]</span>
+<span class="go">[                              ]</span>
+<span class="go">[     0              0        1]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">R2</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([[</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)],</span>
+<span class="gp">... </span>          <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span><span class="mi">0</span><span class="p">,</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">R2</span><span class="p">,</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">[cos(theta)   0  sin(theta)]</span>
+<span class="go">[                          ]</span>
+<span class="go">[     0       1      0     ]</span>
+<span class="go">[                          ]</span>
+<span class="go">[-sin(theta)  0  cos(theta)]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">R3</span><span class="o">=</span><span class="n">Matrix</span><span class="p">([[</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">),</span> <span class="o">-</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">... </span>          <span class="p">[</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="p">(</span><span class="n">R3</span><span class="p">,</span> <span class="n">use_unicode</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="go">[ cos(phi)   -sin(theta)  0]</span>
+<span class="go">[                          ]</span>
+<span class="go">[sin(theta)  cos(theta)   0]</span>
+<span class="go">[                          ]</span>
+<span class="go">[    0            0       1]</span>
+</pre></div>
+</div>
+<p>Then we create a general polarization vector applying this rotation to ep</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">epsilonp</span><span class="o">=</span><span class="n">R3</span><span class="o">*</span><span class="n">R2</span><span class="o">*</span><span class="n">R1</span><span class="o">*</span><span class="n">ep</span>
+</pre></div>
+</div>
+<p>And we build the plane wave in the following way</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">plane_wave</span><span class="o">=</span><span class="n">E0</span><span class="o">/</span><span class="mi">2</span> <span class="o">*</span> <span class="n">exp</span><span class="p">(</span><span class="n">I</span><span class="o">*</span><span class="p">(</span><span class="n">kx</span><span class="o">*</span><span class="n">x</span><span class="o">+</span><span class="n">ky</span><span class="o">*</span><span class="n">y</span><span class="o">+</span><span class="n">kz</span><span class="o">*</span><span class="n">z</span><span class="o">-</span><span class="n">omega</span><span class="o">*</span><span class="n">t</span><span class="p">))</span> <span class="o">*</span> <span class="n">epsilonp</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plane_wave</span><span class="o">=</span><span class="n">plane_wave</span> <span class="o">+</span> <span class="n">plane_wave</span><span class="o">.</span><span class="n">conjugate</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.electric_field.electric_field_amplitude_gaussian">
+<code class="descclassname">fast.electric_field.</code><code class="descname">electric_field_amplitude_gaussian</code><span class="sig-paren">(</span><em>P</em>, <em>sigmax</em>, <em>sigmay=None</em>, <em>Omega=1000000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.electric_field.electric_field_amplitude_gaussian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amplitude of the electric field for a Gaussian beam.</p>
+<p>This the amplitude at the center of a laser beam of power P (in Watts) and a Gaussian intensity distribution of standard deviations sigmax, sigmay (in meters). The value of E0 is given in rescaled units according to the frequency scale  Omega (in Hertz) understood as absolute frequency (as opposed to angular frequency).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">electric_field_amplitude_gaussian</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="go">19.6861467587</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.electric_field.electric_field_amplitude_intensity">
+<code class="descclassname">fast.electric_field.</code><code class="descname">electric_field_amplitude_intensity</code><span class="sig-paren">(</span><em>s0</em>, <em>Omega=1000000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.electric_field.electric_field_amplitude_intensity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amplitude of the electric field for a given intensity.</p>
+<p>This is at a given saturation parameter s0=I/I0, where I0=2.50399 mW/cm^2 is the saturation intensity of the D2 line of rubidium for linearly polarized light.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">electric_field_amplitude_intensity</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="go">6.37477867488</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.electric_field.electric_field_amplitude_top">
+<code class="descclassname">fast.electric_field.</code><code class="descname">electric_field_amplitude_top</code><span class="sig-paren">(</span><em>P</em>, <em>a</em>, <em>Omega=1000000.0</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.electric_field.electric_field_amplitude_top" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the amplitude of the electric field for a top hat beam.</p>
+<p>This is the amplitude of a laser beam of power P (in Watts) and a top-hat intensity distribution of radius a (in meters). The value of E0 is given in rescaled units according to the frequency scale  Omega (in Hertz) understood as absolute frequency (as opposed to angular frequency).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">electric_field_amplitude_top</span><span class="p">(</span><span class="mf">0.001</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="go">27.8404157371</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">FAST</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atomic_structure.html">Atomic Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bloch.html">Optical Bloch Equations</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optical Fields</a></li>
+<li class="toctree-l1"><a class="reference internal" href="symbolic.html">Symbolic Routines</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="bloch.html" title="previous chapter">Optical Bloch Equations</a></li>
+      <li>Next: <a href="symbolic.html" title="next chapter">Symbolic Routines</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2014-2017, Oscar Gerardo Lazo Arjona.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../sources/modules/electric_field.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
