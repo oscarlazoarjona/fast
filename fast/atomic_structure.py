@@ -1574,6 +1574,11 @@ def matrix_element(ji, fi, mi, jj, fj, mj,
     rpij *= sqrt(2*fi+1)
     rpij *= wigner_6j(ji, jj, 1, fj, fi, II)
     rpij *= reduced_matrix_element
+
+    if convention == 2:
+        rpij = rpij * sqrt(2*ji+1)
+    if numeric:
+        rpij = float(rpij)
     return rpij
 
 
@@ -1608,8 +1613,6 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements, numeric=True):
                                           p, II, reduced_matrix_elementij,
                                           numeric=numeric)
 
-                    if numeric:
-                        rpij = float(rpij)
                     r[p+1][i][j] = rpij
 
     return r
