@@ -1217,7 +1217,7 @@ class Transition(Basic):
         if self.allowed: self.einsteinA = None
         for pair in pairs:
             if pair[:-1] == ord1 or pair[:-1] == ord2:
-                self.einsteinA = pair[-1]
+                self.einsteinA = pair[-1]*self.omega/abs(self.omega)
 
         # print self.allowed, self.einsteinA
         if self.allowed and self.einsteinA is None and verbose > 0:
@@ -1499,19 +1499,108 @@ def calculate_gamma_matrix(magnetic_states, Omega=1):
     return gamma
 
 
-def reduced_matrix_element(fine_statei, fine_statej, convantion=1):
-    r"""Calculate the reduced matrix element.
+def reduced_matrix_element(fine_statei, fine_statej, convention=1):
+    r"""Return the reduced matrix element of the position operator in Bohr\
+    radii.
+
+    We have two available conventions for this
+
+    1.- [Racah]_ and [Edmonds]_
+
+    .. math::
+        \langle \gamma_i, J_i, M_i| \hat{T}^k_q| \gamma_j, J_j, M_j\rangle \
+        = (-1)^{J_i-M_i} \
+        \left(\begin{matrix}J_i & k & J_j\\-M_i & q & M_j\end{matrix}\right) \
+        \langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j \
+        \rangle_\mathrm{Racah}
+
+
+    2.- [Brink_Satchler]_
+
+    .. math::
+        \langle \gamma_i, J_i, M_i| \hat{T}^k_q| \gamma_j, J_j, M_j\rangle \
+        = (-1)^{J_i-M_i} \sqrt{2J_i+1} \
+        \left(\begin{matrix}J_i & k & J_j\\-M_i & q & M_j\end{matrix}\right) \
+        \langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+        _\mathrm{Brink}
+
+    These two definitions of the reduced matrix element are related by
+
+    .. math::
+        \langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j \
+        \rangle_\mathrm{Racah} = \sqrt{2J_i+1} \
+        \langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+        _\mathrm{Brink}
+
+    With the Racah element being symetric under argument exchange apart from a\
+    sign:
+
+    .. math::
+        \langle \gamma_j, J_j|| (\hat{T}^k)^\dagger|| \gamma_i, J_i\rangle \
+        _\mathrm{Racah} = (-1)^{J_j-J_i}\
+        \langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+        _\mathrm{Racah}
+
+    And the Brink element being asymetric under argument exchange:
+
+    .. math::
+        \langle \gamma_j, J_j|| \hat{T}^k|| \gamma_i, J_i\rangle \
+        _\mathrm{Brink} = (-1)^{J_j-J_i}\
+        \frac{\sqrt{2J_i +1}}{\sqrt{2J_j +1}}\
+        \langle \gamma_i, J_i|| \hat{T}^k|| \gamma_j, J_j\rangle \
+        _\mathrm{Brink}
+
+    References:
+
+    .. [Brink_Satchler] Brink, D. M. and G. R.  Satchler: 1994. "Angular\
+        Momentum". Oxford: Oxford University Press, 3rd edn., 182 pages.
+    .. [Racah] Racah, G.: 1942. "Theory of complex spectra II". Phys. Rev., \
+        62 438-462.
+    .. [Edmonds] Racah, G.: 1942. "Theory of complex spectra II". Phys. Rev., \
+        62 438-462.
+
 
     >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
-    >>> e = State("Rb", 87, 5, 0, 1/Integer(2))
-    >>> reduced_matrix_element(e, g)
-    6
+    >>> e = State("Rb", 87, 5, 1, 3/Integer(2))
+    >>> print reduced_matrix_element(g, e)
+    5.97785756147
+    >>> print reduced_matrix_element(e, g)
+    -5.97785756146761
+    >>> print reduced_matrix_element(g, e, convention=2)
+    4.22698361868
+    >>> print reduced_matrix_element(e, g, convention=2)
+    -2.11349180934051
 
     """
-    return 2
+    if fine_statei == fine_statej:
+        return 0.0
+
+    t = Transition(fine_statei, fine_statej)
+    einsteinAij = t.einsteinA
+    omega0 = t.omega
+    Ji = fine_statei.j; Jj = fine_statej.j
+
+    factor = sqrt(3*Pi*hbar*c**3*epsilon0)/e
+
+    if omega0 < 0:
+        rij = factor*sqrt((2*Jj+1)*einsteinAij/omega0**3)/a0
+    else:
+        rij = reduced_matrix_element(fine_statej, fine_statei,
+                                     convention=convention)
+        rij *= (-1)**(Jj-Ji)
+    # print omega0, einsteinAij
+
+    # We return the Brink matrix element.
+    if convention == 2:
+        if omega0 < 0:
+            rij = rij / sqrt(2*Ji+1)
+        else:
+            rij = rij / sqrt(2*Ji+1)
+
+    return rij
 
 
-def calculate_reduced_matrix_elements(fine_states):
+def calculate_reduced_matrix_elements(fine_states, convention=1):
     r"""Calculate the reduced matrix elements for a list of fine states.
 
     This function calculates the reduced matrix elments
@@ -1525,44 +1614,16 @@ def calculate_reduced_matrix_elements(fine_states):
     >>> e1=State("Rb",87,5,1,1/Integer(2))
     >>> e2=State("Rb",87,5,1,3/Integer(2))
     >>> red=calculate_reduced_matrix_elements([g,e1,e2])
-    >>> print red[1][0]
-    4.23143658816481
-    >>> print red[2][0]
-    8.45396724128841
+    >>> print red[0][1]
+    4.2314365862
+    >>> print red[0][2]
+    5.97785756147
 
     """
-    # We calculate the reduced matrix elements starting from the list of
-    # fine_states. The factor composed of physical quantities.
-    factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
-    # factor = 3*pi*hbar*c**3*epsilon0/e**2
-    # We read the database to obtain the Einstein A coefficients in rad/s.
-    einsteinA = get_einstein_A_matrix(fine_states)
-    # We read the database to obtain the transition frequencies in rad/s.
-    omega_fine = calculate_omega_matrix(fine_states)
-
-    reduced_matrix_elements = [[0.0 for jj in range(len(fine_states))]
-                               for ii in range(len(fine_states))]
-
-    for ii in range(len(fine_states)):
-        i = fine_states[ii]
-        for jj in range(ii):
-            j = fine_states[jj]
-            einsteinAij = einsteinA[ii][jj]
-            omega0 = omega_fine[ii][jj]
-
-            # The formula is valid only for i =/= j so that omega0 =/= 0.
-            # Because fine states are asumed to be ordered by their energies we
-            # can asume that i decays in j.
-            Ji = i.j; Jj = j.j
-
-            rij = (2.0*Ji+1)/sqrt(2.0*Jj+1)*sqrt(einsteinAij/omega0**3)
-            rij = factor*rij
-            # print 333, Ji, Jj, einsteinAij/2/pi*1e-6
-            # rij = sqrt(factor*(2.0*Ji+1)*einsteinAij/omega0**3)/a0
-
-            reduced_matrix_elements[ii][jj] = rij
-            # We add the matrix elements on the other side of the diagonal.
-            reduced_matrix_elements[jj][ii] = rij*(-1)**(Ji-Jj)
+    reduced_matrix_elements = [[reduced_matrix_element(ei, ej,
+                                                       convention=convention)
+                                for ej in fine_states]
+                               for ei in fine_states]
 
     return reduced_matrix_elements
 
@@ -1801,7 +1862,7 @@ def find_fine_states(magnetic_states):
 #     # The factor composed of physical quantities.
 #     factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
 #     # We read the database to obtain the Einstein A coefficients in Hz.
-#     einsteinA = get_einstein_A_matrix(fine_states)
+#     einsteinA = tein_A_matrix(fine_states)
 #     # We read the database to obtain the transition frequencies in Hz.
 #     omega_fine = calculate_omega_matrix(fine_states)
 #
@@ -1844,7 +1905,7 @@ def find_fine_states(magnetic_states):
 #     # The factor composed of physical quantities.
 #     factor = sqrt(3*c**3*me**2*e**2/(16*Pi*epsilon0*hbar**3))
 #     # We read the database to obtain the Einstein A coefficients in Hz.
-#     einsteinA = get_einstein_A_matrix(fine_states)
+#     einsteinA = tein_A_matrix(fine_states)
 #     # We read the database to obtain the transition frequencies in Hz.
 #     omega_fine = calculate_omega_matrix(fine_states)
 #
