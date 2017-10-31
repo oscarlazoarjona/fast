@@ -1,4 +1,4 @@
-# fast
+# FAST documentation  
 
 To update the documentation run the `compile.sh` script in `doc`.
 
