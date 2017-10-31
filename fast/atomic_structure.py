@@ -1610,14 +1610,17 @@ def calculate_reduced_matrix_elements(fine_states, convention=1):
 
     given a list of fine states.
 
+    We calculate the reduced matrix elements found in [SteckRb87]_ for the \
+    D1 and D2 lines in rubidium.
+
     >>> g=State("Rb",87,5,0,1/Integer(2))
     >>> e1=State("Rb",87,5,1,1/Integer(2))
     >>> e2=State("Rb",87,5,1,3/Integer(2))
-    >>> red=calculate_reduced_matrix_elements([g,e1,e2])
+    >>> red=calculate_reduced_matrix_elements([g, e1, e2], convention=2)
     >>> print red[0][1]
-    4.2314365862
+    2.99207750426
     >>> print red[0][2]
-    5.97785756147
+    4.22698361868
 
     """
     reduced_matrix_elements = [[reduced_matrix_element(ei, ej,
