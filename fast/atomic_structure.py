@@ -1505,7 +1505,7 @@ def reduced_matrix_element(fine_statei, fine_statej, convantion=1):
     >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
     >>> e = State("Rb", 87, 5, 0, 1/Integer(2))
     >>> reduced_matrix_element(e, g)
-    3
+    6
 
     """
     return 2
