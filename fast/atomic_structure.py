@@ -156,17 +156,18 @@ class Atom(Basic):
         # ionization frequencies from [3,6,8]
         #          element, isotope, atomic number,   mass, abundance      ,
         #          Tmelt  , Tboil  , radius (m) , nuclear spin,
-        #          ionization frequencies
+        #          ionization frequencies,
+        #          ground state n
 
         database = [["Rb", 85, 37, m_Rb85, abundance_Rb85,
                     TmeltRb, TboilRb, 2.35e-10, 5/Integer(2),
-                    c*33690.79890],
+                    c*33690.79890, 5],
                     ["Rb", 87, 37, m_Rb87, abundance_Rb87,
                     TmeltRb, TboilRb, 2.35e-10, 3/Integer(2),
-                    c*33690.80480],
+                    c*33690.80480, 5],
                     ["Cs", 133, 55, m_Cs133, abundance_Cs133,
                     TmeltCs, TboilCs, 2.60e-10, 7/Integer(2),
-                    c*31406.46766]]
+                    c*31406.46766, 6]]
 
         # We scan the database
         valid_input = False
@@ -186,6 +187,7 @@ class Atom(Basic):
                 self.ionization_frequency = item[9]
 
                 self.neutrons = self.isotope-self.Z
+                self.ground_state_n = item[10]
                 break
 
             # If an isotope is not provided we return an object with a reduced
@@ -200,6 +202,7 @@ class Atom(Basic):
                     self.Tboil = item[6]
                     self.radius = item[7]
                     self.abundance = 1.0
+                    self.ground_state_n = item[10]
         if isotope is None:
             self.isotope = None
             self.isotopes = isotopes
@@ -1312,6 +1315,7 @@ def split_fine_to_hyperfine(state):
     return [State(state.element, state.isotope,
             state.n, state.l, state.j, f) for f in state.fperm]
 
+
 def split_hyperfine_to_magnetic(state):
     if type(state) == list:
         mag = []
@@ -1324,6 +1328,7 @@ def split_hyperfine_to_magnetic(state):
 
     return [State(state.element, state.isotope,
             state.n, state.l, state.j, state.f, m) for m in state.mperm]
+
 
 def split_fine_to_magnetic(state):
     if type(state) == list:
@@ -1341,6 +1346,7 @@ def split_fine_to_magnetic(state):
     for ll in [split_hyperfine_to_magnetic(h) for h in hip]:
         mag += ll
     return mag
+
 
 def order_by_energy(states):
     iso = states[0].isotope
@@ -1550,11 +1556,16 @@ def calculate_reduced_matrix_elements(fine_states):
 
 
 def matrix_element(ji, fi, mi, jj, fj, mj,
-                   q, II, reduced_matrix_element, numeric=True):
+                   q, II, reduced_matrix_element,
+                   numeric=True, convention=1):
     r"""Calculate a matrix element of the electric dipole."""
-    if not numeric:
+    if numeric:
+        from numpy import sqrt as numsqrt
+        sqrt = numsqrt
+    else:
         from sympy import sqrt as symsqrt
         sqrt = symsqrt
+
     rpij = (-1)**(fi-mi)
     rpij *= wigner_3j(fi, 1, fj, -mi, q, mj)
 
