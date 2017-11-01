@@ -2151,7 +2151,7 @@ def speed_average(Temperature, element, isotope):
 def speed_rms(Temperature, element, isotope):
     r"""This function calculates the root mean squared speed (in meters per
     second) of an atom in a vapour assuming a Maxwell-Boltzmann velocity
-    distribution. This is simply :math:`\sqrt{8k_B T/m/\pi}`
+    distribution. This is simply :math:`\sqrt{3k_B T/m}`
 
     where :math:`k_B` is Boltzmann's constant, T is the temperature
     (in Kelvins) and m is the mass of the atom (in kilograms).
