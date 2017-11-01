@@ -1505,7 +1505,7 @@ def reduced_matrix_element(fine_statei, fine_statej, convention=1):
 
     We have two available conventions for this
 
-    1.- [Racah]_ and [Edmonds]_
+    1.- [Racah]_ and [Edmonds74]_
 
     .. math::
         \langle \gamma_i, J_i, M_i| \hat{T}^k_q| \gamma_j, J_j, M_j\rangle \
@@ -1556,8 +1556,9 @@ def reduced_matrix_element(fine_statei, fine_statej, convention=1):
         Momentum". Oxford: Oxford University Press, 3rd edn., 182 pages.
     .. [Racah] Racah, G.: 1942. "Theory of complex spectra II". Phys. Rev., \
         62 438-462.
-    .. [Edmonds] Racah, G.: 1942. "Theory of complex spectra II". Phys. Rev., \
-        62 438-462.
+    .. [Edmonds74] A. R. Edmonds. Angular momentum in quantum mechanics.
+      Investigations in physics, 4.; Investigations in physics, no. 4.
+      Princeton, N.J., Princeton University Press, 1957..
 
 
     >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
