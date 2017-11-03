@@ -1158,8 +1158,9 @@ class Transition(Basic):
         ####################################################################
         self.nu = e1.nu-e2.nu
         if self.nu == 0: self.wavelength = float('inf')
-        else: self.wavelength = 299792458.0 / self.nu
+        else: self.wavelength = c / self.nu
         self.omega = self.nu*2*pi
+        self.wavenumber = self.omega/c
 
         # We find the Einstein A and B coefficients up to the fine structure
         # according to literature (in Hz).
