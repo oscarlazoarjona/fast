@@ -1310,7 +1310,7 @@ def split_fine_to_hyperfine(state):
         return mag
 
     if len(state.quantum_numbers) != 4:
-        s = str(state)+' no es un estado fino.'
+        s = str(state)+' is not a fine state.'
         raise ValueError(s)
 
     return [State(state.element, state.isotope,
