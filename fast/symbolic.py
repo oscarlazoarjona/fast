@@ -136,7 +136,7 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
             if i == j:
                 row_rho += [define_symbol(name, open_brace, comma, i, j,
                                           close_brace, variables,
-                                          positive=True)]
+                                          real=True)]
             elif i > j:
                 row_rho += [define_symbol(name, open_brace, comma, i, j,
                                           close_brace, variables)]
