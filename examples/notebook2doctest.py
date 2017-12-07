@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2017 Oscar Gerardo Lazo Arjona
-# mailto: oscar.lazoarjona@physics.ox.ac.uk
+# mailto: oscar.lazo@correo.nucleares.unam.mx
 r"""A script to transform jupyter notebooks into doctests."""
 from doctest import testmod
 import os
@@ -97,7 +97,7 @@ notebooks = [r"01 - Two level atom.ipynb",
              r"10 - States database.ipynb"]
 ########################################################################
 # We choose a notebook.
-index = 8
+index = 10
 notebook_name = notebooks[index-1]
 f = file(path_notebooks+notebook_name, "r")
 text = f.read()

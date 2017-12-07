@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2017 Oscar Gerardo Lazo Arjona
-# mailto: oscar.lazoarjona@physics.ox.ac.uk
+# mailto: oscar.lazo@correo.nucleares.unam.mx
 
 __doc__ = r"""
 
