@@ -1375,15 +1375,23 @@ def make_list_of_states(states, structure=None, verbose=1):
         return l3
     elif structure == 'magnetic':
         l1 = order_by_energy(states)
-        l2 = split_fine_to_hyperfine(l1)
+
+        if len(states[0].quantum_numbers) == 4:
+            l2 = split_fine_to_hyperfine(l1)
+        elif len(states[0].quantum_numbers) == 5:
+            l2 = split_hyperfine_to_magnetic(l1)
+
         l3 = order_by_energy(l2)
         if l2 != l3:
             if verbose > 0:
                 s = 'Warning: the ordering of the hyperfine states has been'
                 s += ' changed to ensure they are ordered by ascending energy.'
                 print
-        l4 = split_hyperfine_to_magnetic(l3)
-        return l4
+
+        if len(states[0].quantum_numbers) == 4:
+            l4 = split_hyperfine_to_magnetic(l3)
+            return l4
+        return l3
 
 
 def calculate_omega_matrix(states, Omega=1):
