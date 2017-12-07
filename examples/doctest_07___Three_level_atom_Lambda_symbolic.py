@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2017 Oscar Gerardo Lazo Arjona
-# mailto: oscar.lazoarjona@physics.ox.ac.uk
+# mailto: oscar.lazo@correo.nucleares.unam.mx
 
 __doc__ = r"""
 
@@ -33,7 +33,7 @@ We will be deriving the optical Bloch equations for a three level system in a La
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9aa6e6f290>
+<matplotlib.figure.Figure at 0x7fc89b52d350>
 
 
 
@@ -46,7 +46,7 @@ We define the variables related to the laser field.
 
 >>> E0,omega_laser=define_laser_variables(Nl)
 >>> fprint(E0,print_ascii=print_ascii)
-[E_0^1, E_0^2]
+[E_{01}, E_{02}]
 
 
 
@@ -107,14 +107,14 @@ The electric field (evaluated in $\\vec{R}=0$).
 ...                     for l in range(Nl)]
     
 >>> fprint(E_cartesian, print_ascii=print_ascii)
-[[                   0                    ], [                   0                    ]]
- [                                        ]  [                                        ] 
- [                   0                    ]  [                   0                    ] 
- [                                        ]  [                                        ] 
- [       -I*t*varpi_1    I*t*varpi_1 _____]  [       -I*t*varpi_2    I*t*varpi_2 _____] 
- [E_0^1*e               e           *E_0^1]  [E_0^2*e               e           *E_0^2] 
- [------------------- + ------------------]  [------------------- + ------------------] 
- [         2                    2         ]  [         2                    2         ] 
+[[                    0                     ], [                    0                     ]]
+ [                                          ]  [                                          ] 
+ [                    0                     ]  [                    0                     ] 
+ [                                          ]  [                                          ] 
+ [        -I*t*varpi_1    I*t*varpi_1 ______]  [        -I*t*varpi_2    I*t*varpi_2 ______] 
+ [E_{01}*e               e           *E_{01}]  [E_{02}*e               e           *E_{02}] 
+ [-------------------- + -------------------]  [-------------------- + -------------------] 
+ [         2                      2         ]  [         2                      2         ] 
 
 
 
@@ -126,7 +126,7 @@ The electric field (evaluated in $\\vec{R}=0$).
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9aa363ba10>
+<matplotlib.figure.Figure at 0x7fc8bd7298d0>
 
 
 
@@ -134,14 +134,14 @@ We write the electric field in the helicity basis (see notebook "Vectors in the 
 
 >>> E=[cartesian_to_helicity(E_cartesian[l]) for l in range(Nl)]
 >>> fprint(E, print_ascii=print_ascii)
-[[                   0                    ], [                   0                    ]]
- [                                        ]  [                                        ] 
- [       -I*t*varpi_1    I*t*varpi_1 _____]  [       -I*t*varpi_2    I*t*varpi_2 _____] 
- [E_0^1*e               e           *E_0^1]  [E_0^2*e               e           *E_0^2] 
- [------------------- + ------------------]  [------------------- + ------------------] 
- [         2                    2         ]  [         2                    2         ] 
- [                                        ]  [                                        ] 
- [                   0                    ]  [                   0                    ] 
+[[                    0                     ], [                    0                     ]]
+ [                                          ]  [                                          ] 
+ [        -I*t*varpi_1    I*t*varpi_1 ______]  [        -I*t*varpi_2    I*t*varpi_2 ______] 
+ [E_{01}*e               e           *E_{01}]  [E_{02}*e               e           *E_{02}] 
+ [-------------------- + -------------------]  [-------------------- + -------------------] 
+ [         2                      2         ]  [         2                      2         ] 
+ [                                          ]  [                                          ] 
+ [                    0                     ]  [                    0                     ] 
 
 
 
@@ -207,48 +207,48 @@ The interaction hamiltonian is
 >>> fprint(H1,print_ascii=print_ascii)
 [                                                                                                                     
 [                                                                                                                     
-[                                                      0                                                              
+[                                                        0                                                            
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
-[                                                      0                                                              
+[                                                        0                                                            
 [                                                                                                                     
 [                                                                                                                     
-[           /       -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\        
-[           |E_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|        
-[e*r_{0;31}*|------------------- + ------------------| + e*r_{0;31}*|------------------- + ------------------|  e*r_{0
-[           \         2                    2         /              \         2                    2         /        
+[           /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\    
+[           |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|    
+[e*r_{0;31}*|-------------------- + -------------------| + e*r_{0;31}*|-------------------- + -------------------|  e*
+[           \         2                      2         /              \         2                      2         /    
 <BLANKLINE>
-                                                                                                                    / 
-                                                                                                                    |E
-                                                0                                                        e*r_{0;31}*|-
-                                                                                                                    \ 
 <BLANKLINE>
-                                                                                                                    / 
-                                                                                                                    |E
-                                                0                                                        e*r_{0;32}*|-
-                                                                                                                    \ 
 <BLANKLINE>
-     /       -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\               
-     |E_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|               
-;32}*|------------------- + ------------------| + e*r_{0;32}*|------------------- + ------------------|               
-     \         2                    2         /              \         2                    2         /               
+                                                      0                                                          e*r_{
 <BLANKLINE>
-      -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\]
-_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|]
------------------- + ------------------| + e*r_{0;31}*|------------------- + ------------------|]
-        2                    2         /              \         2                    2         /]
-                                                                                                ]
-      -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\]
-_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|]
------------------- + ------------------| + e*r_{0;32}*|------------------- + ------------------|]
-        2                    2         /              \         2                    2         /]
-                                                                                                ]
-                                                                                                ]
-                                                                                                ]
-                                         0                                                      ]
-                                                                                                ]
+<BLANKLINE>
+<BLANKLINE>
+<BLANKLINE>
+                                                      0                                                          e*r_{
+<BLANKLINE>
+<BLANKLINE>
+         /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\       
+         |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|       
+r_{0;32}*|-------------------- + -------------------| + e*r_{0;32}*|-------------------- + -------------------|       
+         \         2                      2         /              \         2                      2         /       
+<BLANKLINE>
+      /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\]
+      |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|]
+0;31}*|-------------------- + -------------------| + e*r_{0;31}*|-------------------- + -------------------|]
+      \         2                      2         /              \         2                      2         /]
+                                                                                                            ]
+      /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\]
+      |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|]
+0;32}*|-------------------- + -------------------| + e*r_{0;32}*|-------------------- + -------------------|]
+      \         2                      2         /              \         2                      2         /]
+                                                                                                            ]
+                                                                                                            ]
+                                                                                                            ]
+                                                   0                                                        ]
+                                                                                                            ]
 
 
 
@@ -258,48 +258,48 @@ and the complete hamiltonian is
 >>> fprint(H,print_ascii=print_ascii)
 [                                                                                                                     
 [                                                                                                                     
-[                                                hbar*omega_1                                                         
+[                                                  hbar*omega_1                                                       
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
-[                                                      0                                                              
+[                                                        0                                                            
 [                                                                                                                     
 [                                                                                                                     
-[           /       -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\        
-[           |E_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|        
-[e*r_{0;31}*|------------------- + ------------------| + e*r_{0;31}*|------------------- + ------------------|  e*r_{0
-[           \         2                    2         /              \         2                    2         /        
+[           /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\    
+[           |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|    
+[e*r_{0;31}*|-------------------- + -------------------| + e*r_{0;31}*|-------------------- + -------------------|  e*
+[           \         2                      2         /              \         2                      2         /    
 <BLANKLINE>
-                                                                                                                    / 
-                                                                                                                    |E
-                                                0                                                        e*r_{0;31}*|-
-                                                                                                                    \ 
 <BLANKLINE>
-                                                                                                                    / 
-                                                                                                                    |E
-                                          hbar*omega_2                                                   e*r_{0;32}*|-
-                                                                                                                    \ 
 <BLANKLINE>
-     /       -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\               
-     |E_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|               
-;32}*|------------------- + ------------------| + e*r_{0;32}*|------------------- + ------------------|               
-     \         2                    2         /              \         2                    2         /               
+                                                      0                                                          e*r_{
 <BLANKLINE>
-      -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\]
-_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|]
------------------- + ------------------| + e*r_{0;31}*|------------------- + ------------------|]
-        2                    2         /              \         2                    2         /]
-                                                                                                ]
-      -I*t*varpi_1    I*t*varpi_1 _____\              /       -I*t*varpi_2    I*t*varpi_2 _____\]
-_0^1*e               e           *E_0^1|              |E_0^2*e               e           *E_0^2|]
------------------- + ------------------| + e*r_{0;32}*|------------------- + ------------------|]
-        2                    2         /              \         2                    2         /]
-                                                                                                ]
-                                                                                                ]
-                                                                                                ]
-                                   hbar*omega_3                                                 ]
-                                                                                                ]
+<BLANKLINE>
+<BLANKLINE>
+<BLANKLINE>
+                                                hbar*omega_2                                                     e*r_{
+<BLANKLINE>
+<BLANKLINE>
+         /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\       
+         |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|       
+r_{0;32}*|-------------------- + -------------------| + e*r_{0;32}*|-------------------- + -------------------|       
+         \         2                      2         /              \         2                      2         /       
+<BLANKLINE>
+      /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\]
+      |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|]
+0;31}*|-------------------- + -------------------| + e*r_{0;31}*|-------------------- + -------------------|]
+      \         2                      2         /              \         2                      2         /]
+                                                                                                            ]
+      /        -I*t*varpi_1    I*t*varpi_1 ______\              /        -I*t*varpi_2    I*t*varpi_2 ______\]
+      |E_{01}*e               e           *E_{01}|              |E_{02}*e               e           *E_{02}|]
+0;32}*|-------------------- + -------------------| + e*r_{0;32}*|-------------------- + -------------------|]
+      \         2                      2         /              \         2                      2         /]
+                                                                                                            ]
+                                                                                                            ]
+                                                                                                            ]
+                                             hbar*omega_3                                                   ]
+                                                                                                            ]
 
 
 
@@ -313,14 +313,14 @@ Notice that the electric field can be separated by terms with positive and negat
 >>> E_m=[cartesian_to_helicity(E_cartesian_m[l]) for l in range(Nl)]
     
 >>> fprint([E_p,E_m], print_ascii=print_ascii)
-[[[         0         ], [         0         ]], [[        0         ], [        0         ]]]
-  [                   ]  [                   ]    [                  ]  [                  ]  
-  [       -I*t*varpi_1]  [       -I*t*varpi_2]    [ I*t*varpi_1 _____]  [ I*t*varpi_2 _____]  
-  [E_0^1*e            ]  [E_0^2*e            ]    [e           *E_0^1]  [e           *E_0^2]  
-  [-------------------]  [-------------------]    [------------------]  [------------------]  
-  [         2         ]  [         2         ]    [        2         ]  [        2         ]  
-  [                   ]  [                   ]    [                  ]  [                  ]  
-  [         0         ]  [         0         ]    [        0         ]  [        0         ]  
+[[[         0          ], [         0          ]], [[         0         ], [         0         ]]]
+  [                    ]  [                    ]    [                   ]  [                   ]  
+  [        -I*t*varpi_1]  [        -I*t*varpi_2]    [ I*t*varpi_1 ______]  [ I*t*varpi_2 ______]  
+  [E_{01}*e            ]  [E_{02}*e            ]    [e           *E_{01}]  [e           *E_{02}]  
+  [--------------------]  [--------------------]    [-------------------]  [-------------------]  
+  [         2          ]  [         2          ]    [         2         ]  [         2         ]  
+  [                    ]  [                    ]    [                   ]  [                   ]  
+  [         0          ]  [         0          ]    [         0         ]  [         0         ]  
 
 
 
@@ -459,63 +459,63 @@ Thus the interaction hamiltonian in the interaciton picture is
 >>> fprint(H1I, print_ascii=print_ascii)
 [                                                                                                                     
 [                                                                                                                     
-[                                                                    0                                                
+[                                                                      0                                              
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
-[                                                                    0                                                
+[                                                                      0                                              
 [                                                                                                                     
 [                                                                                                                     
-[           /       -I*t*varpi_1    I*t*varpi_1 _____\                            /       -I*t*varpi_2    I*t*varpi_2 
-[           |E_0^1*e               e           *E_0^1|  I*omega_31*t              |E_0^2*e               e           *
-[e*r_{0;31}*|------------------- + ------------------|*e             + e*r_{0;31}*|------------------- + -------------
-[           \         2                    2         /                            \         2                    2    
+[           /        -I*t*varpi_1    I*t*varpi_1 ______\                            /        -I*t*varpi_2    I*t*varpi
+[           |E_{01}*e               e           *E_{01}|  I*omega_31*t              |E_{02}*e               e         
+[e*r_{0;31}*|-------------------- + -------------------|*e             + e*r_{0;31}*|-------------------- + ----------
+[           \         2                      2         /                            \         2                      2
 <BLANKLINE>
 <BLANKLINE>
 <BLANKLINE>
-                                                                                          0                           
+                                                                                                0                     
 <BLANKLINE>
 <BLANKLINE>
 <BLANKLINE>
 <BLANKLINE>
-                                                                                          0                           
+                                                                                                0                     
 <BLANKLINE>
 <BLANKLINE>
-_____\                           /       -I*t*varpi_1    I*t*varpi_1 _____\                            /       -I*t*va
-E_0^2|  I*omega_31*t             |E_0^1*e               e           *E_0^1|  I*omega_32*t              |E_0^2*e       
------|*e              e*r_{0;32}*|------------------- + ------------------|*e             + e*r_{0;32}*|--------------
-     /                           \         2                    2         /                            \         2    
+_2 ______\                           /        -I*t*varpi_1    I*t*varpi_1 ______\                            /        
+  *E_{02}|  I*omega_31*t             |E_{01}*e               e           *E_{01}|  I*omega_32*t              |E_{02}*e
+---------|*e              e*r_{0;32}*|-------------------- + -------------------|*e             + e*r_{0;32}*|--------
+         /                           \         2                      2         /                            \        
 <BLANKLINE>
-                                                      /       -I*t*varpi_1    I*t*varpi_1 _____\                      
-                                                      |E_0^1*e               e           *E_0^1|  -I*omega_31*t       
-                                           e*r_{0;31}*|------------------- + ------------------|*e              + e*r_
-                                                      \         2                    2         /                      
+                                                              /        -I*t*varpi_1    I*t*varpi_1 ______\            
+                                                              |E_{01}*e               e           *E_{01}|  -I*omega_3
+                                                   e*r_{0;31}*|-------------------- + -------------------|*e          
+                                                              \         2                      2         /            
 <BLANKLINE>
-                                                      /       -I*t*varpi_1    I*t*varpi_1 _____\                      
-                                                      |E_0^1*e               e           *E_0^1|  -I*omega_32*t       
-                                           e*r_{0;32}*|------------------- + ------------------|*e              + e*r_
-                                                      \         2                    2         /                      
+                                                              /        -I*t*varpi_1    I*t*varpi_1 ______\            
+                                                              |E_{01}*e               e           *E_{01}|  -I*omega_3
+                                                   e*r_{0;32}*|-------------------- + -------------------|*e          
+                                                              \         2                      2         /            
 <BLANKLINE>
-rpi_2    I*t*varpi_2 _____\                                                                                           
-        e           *E_0^2|  I*omega_32*t                                                                             
------ + ------------------|*e                                                                                   0     
-                2         /                                                                                           
+-I*t*varpi_2    I*t*varpi_2 ______\                                                                                   
+               e           *E_{02}|  I*omega_32*t                                                                     
+------------ + -------------------|*e                                                                                 
+ 2                      2         /                                                                                   
 <BLANKLINE>
-       /       -I*t*varpi_2    I*t*varpi_2 _____\               ]
-       |E_0^2*e               e           *E_0^2|  -I*omega_31*t]
-{0;31}*|------------------- + ------------------|*e             ]
-       \         2                    2         /               ]
-                                                                ]
-       /       -I*t*varpi_2    I*t*varpi_2 _____\               ]
-       |E_0^2*e               e           *E_0^2|  -I*omega_32*t]
-{0;32}*|------------------- + ------------------|*e             ]
-       \         2                    2         /               ]
-                                                                ]
-                                                                ]
-                                                                ]
-                                                                ]
-                                                                ]
+                 /        -I*t*varpi_2    I*t*varpi_2 ______\               ]
+1*t              |E_{02}*e               e           *E_{02}|  -I*omega_31*t]
+    + e*r_{0;31}*|-------------------- + -------------------|*e             ]
+                 \         2                      2         /               ]
+                                                                            ]
+                 /        -I*t*varpi_2    I*t*varpi_2 ______\               ]
+2*t              |E_{02}*e               e           *E_{02}|  -I*omega_32*t]
+    + e*r_{0;32}*|-------------------- + -------------------|*e             ]
+                 \         2                      2         /               ]
+                                                                            ]
+                                                                            ]
+                                                                            ]
+    0                                                                       ]
+                                                                            ]
 
 
 
@@ -531,68 +531,68 @@ That is known as the rotating wave approximation (RWA).
 >>> fprint(H1IRWA, print_ascii=print_ascii)
 [                                                                                                                     
 [                                                                                                                     
-[                                             0                                                                       
+[                                              0                                                                      
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
 [                                                                                                                     
-[                                             0                                                                       
+[                                              0                                                                      
 [                                                                                                                     
 [                                                                                                                     
-[                  I*omega_31*t  -I*t*varpi_1                     I*omega_31*t  -I*t*varpi_2                    I*omeg
-[E_0^1*e*r_{0;31}*e            *e               E_0^2*e*r_{0;31}*e            *e              E_0^1*e*r_{0;32}*e      
-[-------------------------------------------- + --------------------------------------------  ------------------------
-[                     2                                              2                                             2  
+[                   I*omega_31*t  -I*t*varpi_1                      I*omega_31*t  -I*t*varpi_2                     I*o
+[E_{01}*e*r_{0;31}*e            *e               E_{02}*e*r_{0;31}*e            *e              E_{01}*e*r_{0;32}*e   
+[--------------------------------------------- + ---------------------------------------------  ----------------------
+[                      2                                               2                                              
 <BLANKLINE>
-                                                                                 -I*omega_31*t  I*t*varpi_1 _____     
-                                                                     e*r_{0;31}*e             *e           *E_0^1   e*
-                     0                                               -------------------------------------------- + --
-                                                                                          2                           
+                                                                                     -I*omega_31*t  I*t*varpi_1 ______
+                                                                         e*r_{0;31}*e             *e           *E_{01}
+                        0                                                ---------------------------------------------
+                                                                                               2                      
 <BLANKLINE>
-                                                                                 -I*omega_32*t  I*t*varpi_1 _____     
-                                                                     e*r_{0;32}*e             *e           *E_0^1   e*
-                     0                                               -------------------------------------------- + --
-                                                                                          2                           
+                                                                                     -I*omega_32*t  I*t*varpi_1 ______
+                                                                         e*r_{0;32}*e             *e           *E_{01}
+                        0                                                ---------------------------------------------
+                                                                                               2                      
 <BLANKLINE>
-a_32*t  -I*t*varpi_1                     I*omega_32*t  -I*t*varpi_2                                                   
-      *e               E_0^2*e*r_{0;32}*e            *e                                                               
--------------------- + --------------------------------------------                                               0   
-                                            2                                                                         
+mega_32*t  -I*t*varpi_1                      I*omega_32*t  -I*t*varpi_2                                               
+         *e               E_{02}*e*r_{0;32}*e            *e                                                           
+----------------------- + ---------------------------------------------                                               
+2                                               2                                                                     
 <BLANKLINE>
-          -I*omega_31*t  I*t*varpi_2 _____]
-r_{0;31}*e             *e           *E_0^2]
-------------------------------------------]
-                   2                      ]
-                                          ]
-          -I*omega_32*t  I*t*varpi_2 _____]
-r_{0;32}*e             *e           *E_0^2]
-------------------------------------------]
-                   2                      ]
-                                          ]
-                                          ]
-                                          ]
-                                          ]
-                                          ]
+               -I*omega_31*t  I*t*varpi_2 ______]
+   e*r_{0;31}*e             *e           *E_{02}]
+ + ---------------------------------------------]
+                         2                      ]
+                                                ]
+               -I*omega_32*t  I*t*varpi_2 ______]
+   e*r_{0;32}*e             *e           *E_{02}]
+ + ---------------------------------------------]
+                         2                      ]
+                                                ]
+                                                ]
+                                                ]
+ 0                                              ]
+                                                ]
 
 
 
 The matrix element $(\\hat{H}_{1I,RWA})_{31}$ element is
 
 >>> fprint(H1IRWA[2,0].expand(), print_ascii=print_ascii)
-                  I*omega_31*t  -I*t*varpi_1                     I*omega_31*t  -I*t*varpi_2
-E_0^1*e*r_{0;31}*e            *e               E_0^2*e*r_{0;31}*e            *e            
--------------------------------------------- + --------------------------------------------
-                     2                                              2                      
+                   I*omega_31*t  -I*t*varpi_1                      I*omega_31*t  -I*t*varpi_2
+E_{01}*e*r_{0;31}*e            *e               E_{02}*e*r_{0;31}*e            *e            
+--------------------------------------------- + ---------------------------------------------
+                      2                                               2                      
 
 
 
 But if the detuning $\\omega_{31}-\\omega^1 \\ll \\omega_{31}-\\omega^2$ (the second field is far detuned from the $1 \\rightarrow 3$ transition), then $\\omega_{31}-\\omega^2$ may be also considered too high a frequency to be relevant to coarse-grained evolution. So we might neclect that term in $(\\hat{H}_{1I,RWA})_{31}$ and similarly neglect the $\\omega_{32}-\\omega^1$ for term in $(\\hat{H}_{1I,RWA})_{32}$:
 
 >>> fprint(H1IRWA[2,1].expand(), print_ascii=print_ascii)
-                  I*omega_32*t  -I*t*varpi_1                     I*omega_32*t  -I*t*varpi_2
-E_0^1*e*r_{0;32}*e            *e               E_0^2*e*r_{0;32}*e            *e            
--------------------------------------------- + --------------------------------------------
-                     2                                              2                      
+                   I*omega_32*t  -I*t*varpi_1                      I*omega_32*t  -I*t*varpi_2
+E_{01}*e*r_{0;32}*e            *e               E_{02}*e*r_{0;32}*e            *e            
+--------------------------------------------- + ---------------------------------------------
+                      2                                               2                      
 
 
 
@@ -615,35 +615,35 @@ Thus the interacion hamiltonian in the interaction picture can be approximated a
 ...             for l in range(Nl) for j in range(Ne) for i in range(Ne) if l+1 in Lij[i][j] ],zero_matrix)
     
 >>> fprint(H1IRWA, print_ascii=print_ascii)
-[                                                                                                        -I*omega_31*t
-[                                                                                            e*r_{0;31}*e             
-[                     0                                             0                        -------------------------
-[                                                                                                                 2   
+[                                                                                                          -I*omega_31
+[                                                                                              e*r_{0;31}*e           
+[                      0                                              0                        -----------------------
+[                                                                                                                    2
 [                                                                                                                     
-[                                                                                                        -I*omega_32*t
-[                                                                                            e*r_{0;32}*e             
-[                     0                                             0                        -------------------------
-[                                                                                                                 2   
+[                                                                                                          -I*omega_32
+[                                                                                              e*r_{0;32}*e           
+[                      0                                              0                        -----------------------
+[                                                                                                                    2
 [                                                                                                                     
-[                  I*omega_31*t  -I*t*varpi_1                    I*omega_32*t  -I*t*varpi_2                           
-[E_0^1*e*r_{0;31}*e            *e              E_0^2*e*r_{0;32}*e            *e                                       
-[--------------------------------------------  --------------------------------------------                       0   
-[                     2                                             2                                                 
+[                   I*omega_31*t  -I*t*varpi_1                     I*omega_32*t  -I*t*varpi_2                         
+[E_{01}*e*r_{0;31}*e            *e              E_{02}*e*r_{0;32}*e            *e                                     
+[---------------------------------------------  ---------------------------------------------                        0
+[                      2                                              2                                               
 <BLANKLINE>
-  I*t*varpi_1 _____]
-*e           *E_0^1]
--------------------]
-                   ]
-                   ]
-  I*t*varpi_2 _____]
-*e           *E_0^2]
--------------------]
-                   ]
-                   ]
-                   ]
-                   ]
-                   ]
-                   ]
+*t  I*t*varpi_1 ______]
+  *e           *E_{01}]
+----------------------]
+                      ]
+                      ]
+*t  I*t*varpi_2 ______]
+  *e           *E_{02}]
+----------------------]
+                      ]
+                      ]
+                      ]
+                      ]
+                      ]
+                      ]
 
 
 
@@ -686,20 +686,20 @@ Thus the interaction hamiltonian in the Schrödinger picture in the rotating wav
 ...             for l in range(Nl) for j in range(Ne) for i in range(Ne) if l+1 in Lij[i][j] ],zero_matrix)
     
 >>> fprint(H1RWA, print_ascii=print_ascii)
-[                                                                            I*t*varpi_1 _____]
-[                                                                e*r_{0;31}*e           *E_0^1]
-[              0                               0                 -----------------------------]
-[                                                                              2              ]
-[                                                                                             ]
-[                                                                            I*t*varpi_2 _____]
-[                                                                e*r_{0;32}*e           *E_0^2]
-[              0                               0                 -----------------------------]
-[                                                                              2              ]
-[                                                                                             ]
-[                  -I*t*varpi_1                    -I*t*varpi_2                               ]
-[E_0^1*e*r_{0;31}*e              E_0^2*e*r_{0;32}*e                                           ]
-[------------------------------  ------------------------------                0              ]
-[              2                               2                                              ]
+[                                                                              I*t*varpi_1 ______]
+[                                                                  e*r_{0;31}*e           *E_{01}]
+[               0                                0                 ------------------------------]
+[                                                                                2               ]
+[                                                                                                ]
+[                                                                              I*t*varpi_2 ______]
+[                                                                  e*r_{0;32}*e           *E_{02}]
+[               0                                0                 ------------------------------]
+[                                                                                2               ]
+[                                                                                                ]
+[                   -I*t*varpi_1                     -I*t*varpi_2                                ]
+[E_{01}*e*r_{0;31}*e              E_{02}*e*r_{0;32}*e                                            ]
+[-------------------------------  -------------------------------                0               ]
+[               2                                2                                               ]
 
 
 
@@ -707,20 +707,20 @@ And the complete hamiltonian in the Schrödinger picture in the rotating wave ap
 
 >>> HRWA=H0+H1RWA
 >>> fprint(HRWA, print_ascii=print_ascii)
-[                                                                            I*t*varpi_1 _____]
-[                                                                e*r_{0;31}*e           *E_0^1]
-[         hbar*omega_1                         0                 -----------------------------]
-[                                                                              2              ]
-[                                                                                             ]
-[                                                                            I*t*varpi_2 _____]
-[                                                                e*r_{0;32}*e           *E_0^2]
-[              0                          hbar*omega_2           -----------------------------]
-[                                                                              2              ]
-[                                                                                             ]
-[                  -I*t*varpi_1                    -I*t*varpi_2                               ]
-[E_0^1*e*r_{0;31}*e              E_0^2*e*r_{0;32}*e                                           ]
-[------------------------------  ------------------------------          hbar*omega_3         ]
-[              2                               2                                              ]
+[                                                                              I*t*varpi_1 ______]
+[                                                                  e*r_{0;31}*e           *E_{01}]
+[         hbar*omega_1                           0                 ------------------------------]
+[                                                                                2               ]
+[                                                                                                ]
+[                                                                              I*t*varpi_2 ______]
+[                                                                  e*r_{0;32}*e           *E_{02}]
+[               0                          hbar*omega_2            ------------------------------]
+[                                                                                2               ]
+[                                                                                                ]
+[                   -I*t*varpi_1                     -I*t*varpi_2                                ]
+[E_{01}*e*r_{0;31}*e              E_{02}*e*r_{0;32}*e                                            ]
+[-------------------------------  -------------------------------           hbar*omega_3         ]
+[               2                                2                                               ]
 
 
 
@@ -781,35 +781,35 @@ We multiply each of these equations by $e^{-i \\theta_i t}$ and substracting $i 
 
 >>> rhs_new=Matrix([simplify(  rhs[i]*exp(-I*phase[i]*t) +hbar*phase[i]*ctilde[i] ) for i in range(Ne)])
 >>> fprint(rhs_new, print_ascii=print_ascii)
-[                                                                   -I*t*theta1  I*t*theta3  I*t*varpi_1 _____        
-[                                      e*r_{0;31}*\tilde{c}_{3}(t)*e           *e          *e           *E_0^1        
-[                                      ----------------------------------------------------------------------- + hbar*
+[                                                                   -I*t*theta1  I*t*theta3  I*t*varpi_1 ______       
+[                                      e*r_{0;31}*\tilde{c}_{3}(t)*e           *e          *e           *E_{01}       
+[                                      ------------------------------------------------------------------------ + hbar
 [                                                                         2                                           
 [                                                                                                                     
-[                                                                   -I*t*theta2  I*t*theta3  I*t*varpi_2 _____        
-[                                      e*r_{0;32}*\tilde{c}_{3}(t)*e           *e          *e           *E_0^2        
-[                                      ----------------------------------------------------------------------- + hbar*
+[                                                                   -I*t*theta2  I*t*theta3  I*t*varpi_2 ______       
+[                                      e*r_{0;32}*\tilde{c}_{3}(t)*e           *e          *e           *E_{02}       
+[                                      ------------------------------------------------------------------------ + hbar
 [                                                                         2                                           
 [                                                                                                                     
-[                                   I*t*theta1  -I*t*theta3  -I*t*varpi_1                                      I*t*the
-[E_0^1*e*r_{0;31}*\tilde{c}_{1}(t)*e          *e           *e               E_0^2*e*r_{0;32}*\tilde{c}_{2}(t)*e       
-[------------------------------------------------------------------------ + ------------------------------------------
-[                                   2                                                                          2      
+[                                    I*t*theta1  -I*t*theta3  -I*t*varpi_1                                       I*t*t
+[E_{01}*e*r_{0;31}*\tilde{c}_{1}(t)*e          *e           *e               E_{02}*e*r_{0;32}*\tilde{c}_{2}(t)*e     
+[------------------------------------------------------------------------- + -----------------------------------------
+[                                    2                                                                           2    
 <BLANKLINE>
-                                                                                             ]
-                                                                                             ]
-omega_1*\tilde{c}_{1}(t) + hbar*theta1*\tilde{c}_{1}(t)                                      ]
-                                                                                             ]
-                                                                                             ]
-                                                                                             ]
-                                                                                             ]
-omega_2*\tilde{c}_{2}(t) + hbar*theta2*\tilde{c}_{2}(t)                                      ]
-                                                                                             ]
-                                                                                             ]
-ta2  -I*t*theta3  -I*t*varpi_2                                                               ]
-   *e           *e                                                                           ]
------------------------------- + hbar*omega_3*\tilde{c}_{3}(t) + hbar*theta3*\tilde{c}_{3}(t)]
-                                                                                             ]
+                                                                                               ]
+                                                                                               ]
+*omega_1*\tilde{c}_{1}(t) + hbar*theta1*\tilde{c}_{1}(t)                                       ]
+                                                                                               ]
+                                                                                               ]
+                                                                                               ]
+                                                                                               ]
+*omega_2*\tilde{c}_{2}(t) + hbar*theta2*\tilde{c}_{2}(t)                                       ]
+                                                                                               ]
+                                                                                               ]
+heta2  -I*t*theta3  -I*t*varpi_2                                                               ]
+     *e           *e                                                                           ]
+-------------------------------- + hbar*omega_3*\tilde{c}_{3}(t) + hbar*theta3*\tilde{c}_{3}(t)]
+                                                                                               ]
 
 
 
@@ -849,33 +849,33 @@ Thus the equations become
 
 >>> rhs_new=simplify(rhs_new.subs(phase_transformation)).expand()
 >>> fprint(rhs_new, print_ascii=print_ascii)
-[                                                              _____                                                  
-[                                  e*r_{0;31}*\tilde{c}_{3}(t)*E_0^1                                                  
-[                                  --------------------------------- + hbar*omega_1*\tilde{c}_{1}(t) + hbar*theta1*\ti
+[                                                              ______                                                 
+[                                  e*r_{0;31}*\tilde{c}_{3}(t)*E_{01}                                                 
+[                                  ---------------------------------- + hbar*omega_1*\tilde{c}_{1}(t) + hbar*theta1*\t
 [                                                  2                                                                  
 [                                                                                                                     
-[                              _____                                                                                  
-[  e*r_{0;32}*\tilde{c}_{3}(t)*E_0^2                                                                                  
-[  --------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*theta1*\tilde{c}_{2}(t) - hbar*varpi_1*\ti
+[                              ______                                                                                 
+[  e*r_{0;32}*\tilde{c}_{3}(t)*E_{02}                                                                                 
+[  ---------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*theta1*\tilde{c}_{2}(t) - hbar*varpi_1*\t
 [                  2                                                                                                  
 [                                                                                                                     
-[E_0^1*e*r_{0;31}*\tilde{c}_{1}(t)   E_0^2*e*r_{0;32}*\tilde{c}_{2}(t)                                                
-[--------------------------------- + --------------------------------- + hbar*omega_3*\tilde{c}_{3}(t) + hbar*theta1*\
-[                2                                   2                                                                
+[E_{01}*e*r_{0;31}*\tilde{c}_{1}(t)   E_{02}*e*r_{0;32}*\tilde{c}_{2}(t)                                              
+[---------------------------------- + ---------------------------------- + hbar*omega_3*\tilde{c}_{3}(t) + hbar*theta1
+[                2                                    2                                                               
 <BLANKLINE>
-                                               ]
-                                               ]
-lde{c}_{1}(t)                                  ]
-                                               ]
-                                               ]
-                                               ]
-                                               ]
-lde{c}_{2}(t) + hbar*varpi_2*\tilde{c}_{2}(t)  ]
-                                               ]
-                                               ]
-                                               ]
-tilde{c}_{3}(t) - hbar*varpi_1*\tilde{c}_{3}(t)]
-                                               ]
+                                                 ]
+                                                 ]
+ilde{c}_{1}(t)                                   ]
+                                                 ]
+                                                 ]
+                                                 ]
+                                                 ]
+ilde{c}_{2}(t) + hbar*varpi_2*\tilde{c}_{2}(t)   ]
+                                                 ]
+                                                 ]
+                                                 ]
+*\tilde{c}_{3}(t) - hbar*varpi_1*\tilde{c}_{3}(t)]
+                                                 ]
 
 
 
@@ -883,18 +883,18 @@ It can be seen that this is the Schrödinger equation derived from an effective 
 
 >>> Htilde=Matrix([ [Derivative(rhs_new[i],ctilde[j]).doit() for j in range(Ne)] for i in range(Ne)])
 >>> fprint(Htilde, print_ascii=print_ascii)
-[                                                                                                             _____   
-[                                                                                                  e*r_{0;31}*E_0^1   
-[hbar*omega_1 + hbar*theta1                             0                                          ----------------   
-[                                                                                                         2           
+[                                                                                                             ______  
+[                                                                                                  e*r_{0;31}*E_{01}  
+[hbar*omega_1 + hbar*theta1                             0                                          -----------------  
+[                                                                                                          2          
 [                                                                                                                     
-[                                                                                                             _____   
-[                                                                                                  e*r_{0;32}*E_0^2   
-[            0               hbar*omega_2 + hbar*theta1 - hbar*varpi_1 + hbar*varpi_2              ----------------   
-[                                                                                                         2           
+[                                                                                                             ______  
+[                                                                                                  e*r_{0;32}*E_{02}  
+[            0               hbar*omega_2 + hbar*theta1 - hbar*varpi_1 + hbar*varpi_2              -----------------  
+[                                                                                                          2          
 [                                                                                                                     
-[     E_0^1*e*r_{0;31}                           E_0^2*e*r_{0;32}                                                     
-[     ----------------                           ----------------                      hbar*omega_3 + hbar*theta1 - hb
+[    E_{01}*e*r_{0;31}                          E_{02}*e*r_{0;32}                                                     
+[    -----------------                          -----------------                      hbar*omega_3 + hbar*theta1 - hb
 [            2                                          2                                                             
 <BLANKLINE>
           ]
@@ -923,19 +923,19 @@ We can see that it is convenient to choose $\\theta_1=-\\omega_1$ to simplify th
 >>> Htilde=Htilde.expand()
     
 >>> fprint(Htilde, print_ascii=print_ascii)
-[                                                         _____]
-[                                              e*r_{0;31}*E_0^1]
-[       0                      0               ----------------]
-[                                                     2        ]
-[                                                              ]
-[                                                         _____]
-[                                              e*r_{0;32}*E_0^2]
-[       0          -delta1*hbar + delta2*hbar  ----------------]
-[                                                     2        ]
-[                                                              ]
-[E_0^1*e*r_{0;31}       E_0^2*e*r_{0;32}                       ]
-[----------------       ----------------         -delta1*hbar  ]
-[       2                      2                               ]
+[                                                          ______]
+[                                               e*r_{0;31}*E_{01}]
+[        0                      0               -----------------]
+[                                                       2        ]
+[                                                                ]
+[                                                          ______]
+[                                               e*r_{0;32}*E_{02}]
+[        0          -delta1*hbar + delta2*hbar  -----------------]
+[                                                       2        ]
+[                                                                ]
+[E_{01}*e*r_{0;31}      E_{02}*e*r_{0;32}                        ]
+[-----------------      -----------------         -delta1*hbar   ]
+[        2                      2                                ]
 
 
 

@@ -164,18 +164,18 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
 
     >>> E0, omega_laser = define_laser_variables(2)
     >>> E0, omega_laser
-    ([E_0^1, E_0^2], [varpi_1, varpi_2])
+    ([E_{01}, E_{02}], [varpi_1, varpi_2])
 
     The amplitudes are complex by default:
 
     >>> conjugate(E0[0])
-    conjugate(E_0^1)
+    conjugate(E_{01})
 
     But they can optionally be made real:
 
     >>> E0, omega_laser = define_laser_variables(2, real_amplitudes=True)
     >>> conjugate(E0[0])
-    E_0^1
+    E_{01}
 
     They can also be made explicit functions of given variables:
 
@@ -183,14 +183,14 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
     >>> t, z = symbols("t, z", real=True)
     >>> E0, omega_laser = define_laser_variables(2, variables=[t, z])
     >>> E0
-    [E_0^1(t, z), E_0^2(t, z)]
+    [E_{01}(t, z), E_{02}(t, z)]
 
     """
     if variables is None:
-        E0 = [Symbol(r"E_0^"+str(l+1), real=real_amplitudes)
+        E0 = [Symbol(r"E_{0"+str(l+1)+"}", real=real_amplitudes)
               for l in range(Nl)]
     else:
-        E0 = [Function(r"E_0^"+str(l+1), real=real_amplitudes)(*variables)
+        E0 = [Function(r"E_{0"+str(l+1)+"}", real=real_amplitudes)(*variables)
               for l in range(Nl)]
 
     omega_laser = [Symbol(r"varpi_"+str(l+1), positive=True)
@@ -1245,9 +1245,9 @@ def hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser, xi,
     ...                 omega_laser, xi, RWA=True, RF=False)
 
     >>> print H[1, 0]
-    -E_0^1*e*r_{0;21}*exp(-I*t*varpi_1)/2
+    -E_{01}*e*r_{0;21}*exp(-I*t*varpi_1)/2
     >>> print H[2, 0]
-    -E_0^2*e*r_{0;31}*exp(-I*t*varpi_2)/2
+    -E_{02}*e*r_{0;31}*exp(-I*t*varpi_2)/2
     >>> print H[2, 2]
     hbar*omega_3
 

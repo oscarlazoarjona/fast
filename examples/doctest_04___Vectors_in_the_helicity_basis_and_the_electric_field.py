@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2017 Oscar Gerardo Lazo Arjona
-# mailto: oscar.lazoarjona@physics.ox.ac.uk
+# mailto: oscar.lazo@correo.nucleares.unam.mx
 
 __doc__ = r"""
 
@@ -8,7 +8,8 @@ __doc__ = r"""
 
 >>> from sympy import init_printing
 >>> init_printing() 
->>> print_ascii=True#; print_ascii=False
+>>> print_ascii=True
+>>> #print_ascii=False
 
 >>> from sympy import Symbol,Matrix,symbols
 >>> from sympy import I,conjugate
@@ -94,7 +95,7 @@ We will specify the electric field associated to a plane wave with arbitrary amp
 
 >>> E0,omega_laser=define_laser_variables(1)
 >>> fprint( [E0,omega_laser], print_ascii=print_ascii)
-[[E_0^1], [varpi_1]]
+[[E_{01}], [varpi_1]]
 
 
 
