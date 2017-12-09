@@ -617,7 +617,7 @@ def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
 
 def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                      file_name=None):
-    r"""Return a fast function that returns a Hamiltonian as a numerical array.
+    r"""Return a fast function that returns a Hamiltonian as an array.
 
     INPUT:
 
@@ -857,11 +857,10 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         0.00000000+0.j  97.00000000+0.j]]
 
     """
-    # We find out the number of fields and states.
+    # We determine which arguments are constants.
     if True:
         Nl = len(Ep)
         Ne = np.array(rm[0]).shape[0]
-        # We determine which arguments are constants.
         try:
             Ep = np.array([complex(Ep[l]) for l in range(Nl)])
             variable_Ep = False
@@ -989,364 +988,424 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     return hamiltonian
 
 
-def vectorization(Ne, Nv=1, real=False, lower_triangular=True,
-                  normalized=False):
-    r"""Return functions to map matrix element indices to vectorized indices.
+class Vectorization(object):
+    r"""A class defining a vectorization."""
 
-    This function returns a function Mu that takes a pair of indices i, j
-    spanning Ne states, and returns an index mu spanning the elements of the
-    vectorized density matrix. If complex=True.
+    def __init__(self, Ne, Nv=1, real=False, lower_triangular=True,
+                 normalized=False):
+        r"""Return functions to map matrix element indices to vectorized \
+        indices.
 
-    >>> def test_vectorization(Ne, Nv, real=False,
-    ...                        lower_triangular=True, normalized=False):
-    ...
-    ...     Mu, IJ = vectorization(Ne, Nv, real, lower_triangular, normalized)
-    ...     if normalized:
-    ...         j0 = 1
-    ...     else:
-    ...         j0 = 0
-    ...     for k in range(Nv):
-    ...         for j in range(j0, Ne):
-    ...             if real:
-    ...                 muu = Mu(1, j, j, k)
-    ...                 ss, ii, jj, kk = IJ(muu)
-    ...                 print j, j, muu, j-ii, j-jj, k-kk, 1-ss
-    ...             else:
-    ...                 muu = Mu(j, j, k)
-    ...                 ii, jj, kk = IJ(muu)
-    ...                 print j, j, muu, j-ii, j-jj, k-kk
-    ...         for j in range(Ne):
-    ...             for i in range(j+1, Ne):
-    ...                 if real:
-    ...                     muu = Mu(1, i, j, k)
-    ...                     ss, ii, jj, kk = IJ(muu)
-    ...                     print i, j, muu, i-ii, j-jj, k-kk, 1-ss
-    ...                     muu = Mu(-1, i, j, k)
-    ...                     ss, ii, jj, kk = IJ(muu)
-    ...                     print i, j, muu, i-ii, j-jj, k-kk, -1-ss
-    ...                 else:
-    ...                     muu = Mu(i, j, k)
-    ...                     ii, jj, kk = IJ(muu)
-    ...                     print i, j, muu, i-ii, j-jj, k-kk
-    ...                 if not lower_triangular:
-    ...                     if real:
-    ...                         muu = Mu(1, j, i, k)
-    ...                         ss, ii, jj, kk = IJ(muu)
-    ...                         print j, i, muu, j-ii, i-jj, k-kk, 1-ss
-    ...                         muu = Mu(-1, j, i, k)
-    ...                         ss, ii, jj, kk = IJ(muu)
-    ...                         print j, i, muu, j-ii, i-jj, k-kk, -1-ss
-    ...                     else:
-    ...                         muu = Mu(j, i, k)
-    ...                         ii, jj, kk = IJ(muu)
-    ...                         print i, j, muu, j-ii, i-jj, k-kk
-    ...
-
-    >>> Ne = 3
-    >>> Nv = 3
-
-    >>> test_vectorization(Ne, Nv, False, False, False)
-    0 0 0 0 0 0
-    1 1 1 0 0 0
-    2 2 2 0 0 0
-    1 0 3 0 0 0
-    1 0 4 0 0 0
-    2 0 5 0 0 0
-    2 0 6 0 0 0
-    2 1 7 0 0 0
-    2 1 8 0 0 0
-    0 0 9 0 0 0
-    1 1 10 0 0 0
-    2 2 11 0 0 0
-    1 0 12 0 0 0
-    1 0 13 0 0 0
-    2 0 14 0 0 0
-    2 0 15 0 0 0
-    2 1 16 0 0 0
-    2 1 17 0 0 0
-    0 0 18 0 0 0
-    1 1 19 0 0 0
-    2 2 20 0 0 0
-    1 0 21 0 0 0
-    1 0 22 0 0 0
-    2 0 23 0 0 0
-    2 0 24 0 0 0
-    2 1 25 0 0 0
-    2 1 26 0 0 0
+        This class has as atributes
 
 
-    >>> test_vectorization(Ne, Nv, False, False, True)
-    1 1 0 0 0 0
-    2 2 1 0 0 0
-    1 0 2 0 0 0
-    1 0 3 0 0 0
-    2 0 4 0 0 0
-    2 0 5 0 0 0
-    2 1 6 0 0 0
-    2 1 7 0 0 0
-    1 1 8 0 0 0
-    2 2 9 0 0 0
-    1 0 10 0 0 0
-    1 0 11 0 0 0
-    2 0 12 0 0 0
-    2 0 13 0 0 0
-    2 1 14 0 0 0
-    2 1 15 0 0 0
-    1 1 16 0 0 0
-    2 2 17 0 0 0
-    1 0 18 0 0 0
-    1 0 19 0 0 0
-    2 0 20 0 0 0
-    2 0 21 0 0 0
-    2 1 22 0 0 0
-    2 1 23 0 0 0
+        -  ``Nrho`` - the size of the vectorized density matrix.
+        -  ``real`` - whether the elements of the vectorized density matrix \
+        are real.
+        -  ``lower_triangular`` - whether the vectorization includes only the \
+        lower triangular elements.
+        -  ``normalized`` - whether the populations are normalized to 1 (the \
+        first population is not included).
 
-    >>> test_vectorization(Ne, Nv, False, True, False)
-    0 0 0 0 0 0
-    1 1 1 0 0 0
-    2 2 2 0 0 0
-    1 0 3 0 0 0
-    2 0 4 0 0 0
-    2 1 5 0 0 0
-    0 0 6 0 0 0
-    1 1 7 0 0 0
-    2 2 8 0 0 0
-    1 0 9 0 0 0
-    2 0 10 0 0 0
-    2 1 11 0 0 0
-    0 0 12 0 0 0
-    1 1 13 0 0 0
-    2 2 14 0 0 0
-    1 0 15 0 0 0
-    2 0 16 0 0 0
-    2 1 17 0 0 0
+        and two functions ``Mu``, ``IJ``. If ``real=True``, ``Mu`` is a \
+        function that takes arguments
 
-    >>> test_vectorization(Ne, Nv, False, True, True)
-    1 1 0 0 0 0
-    2 2 1 0 0 0
-    1 0 2 0 0 0
-    2 0 3 0 0 0
-    2 1 4 0 0 0
-    1 1 5 0 0 0
-    2 2 6 0 0 0
-    1 0 7 0 0 0
-    2 0 8 0 0 0
-    2 1 9 0 0 0
-    1 1 10 0 0 0
-    2 2 11 0 0 0
-    1 0 12 0 0 0
-    2 0 13 0 0 0
-    2 1 14 0 0 0
+        -  ``s`` 1 for the real part, -1 for the imaginary part.
+        -  ``i`` an index spanning the ``Ne`` states.
+        -  ``j`` an index spanning the ``Ne`` states.
+        -  ``k`` an index spanning the ``Nv`` velocity classes (0 by default).
 
-    >>> test_vectorization(Ne, Nv, True, False, False)
-    0 0 0 0 0 0 0
-    1 1 1 0 0 0 0
-    2 2 2 0 0 0 0
-    1 0 3 0 0 0 0
-    1 0 4 0 0 0 0
-    0 1 5 0 0 0 0
-    0 1 6 0 0 0 0
-    2 0 7 0 0 0 0
-    2 0 8 0 0 0 0
-    0 2 9 0 0 0 0
-    0 2 10 0 0 0 0
-    2 1 11 0 0 0 0
-    2 1 12 0 0 0 0
-    1 2 13 0 0 0 0
-    1 2 14 0 0 0 0
-    0 0 15 0 0 0 0
-    1 1 16 0 0 0 0
-    2 2 17 0 0 0 0
-    1 0 18 0 0 0 0
-    1 0 19 0 0 0 0
-    0 1 20 0 0 0 0
-    0 1 21 0 0 0 0
-    2 0 22 0 0 0 0
-    2 0 23 0 0 0 0
-    0 2 24 0 0 0 0
-    0 2 25 0 0 0 0
-    2 1 26 0 0 0 0
-    2 1 27 0 0 0 0
-    1 2 28 0 0 0 0
-    1 2 29 0 0 0 0
-    0 0 30 0 0 0 0
-    1 1 31 0 0 0 0
-    2 2 32 0 0 0 0
-    1 0 33 0 0 0 0
-    1 0 34 0 0 0 0
-    0 1 35 0 0 0 0
-    0 1 36 0 0 0 0
-    2 0 37 0 0 0 0
-    2 0 38 0 0 0 0
-    0 2 39 0 0 0 0
-    0 2 40 0 0 0 0
-    2 1 41 0 0 0 0
-    2 1 42 0 0 0 0
-    1 2 43 0 0 0 0
-    1 2 44 0 0 0 0
+        and returns an index ``mu`` spanning the density matrix, ``IJ`` is \
+        the inverse of ``Mu``.
 
-    >>> test_vectorization(Ne, Nv, True, False, True)
-    1 1 0 0 0 0 0
-    2 2 1 0 0 0 0
-    1 0 2 0 0 0 0
-    1 0 3 0 0 0 0
-    0 1 4 0 0 0 0
-    0 1 5 0 0 0 0
-    2 0 6 0 0 0 0
-    2 0 7 0 0 0 0
-    0 2 8 0 0 0 0
-    0 2 9 0 0 0 0
-    2 1 10 0 0 0 0
-    2 1 11 0 0 0 0
-    1 2 12 0 0 0 0
-    1 2 13 0 0 0 0
-    1 1 14 0 0 0 0
-    2 2 15 0 0 0 0
-    1 0 16 0 0 0 0
-    1 0 17 0 0 0 0
-    0 1 18 0 0 0 0
-    0 1 19 0 0 0 0
-    2 0 20 0 0 0 0
-    2 0 21 0 0 0 0
-    0 2 22 0 0 0 0
-    0 2 23 0 0 0 0
-    2 1 24 0 0 0 0
-    2 1 25 0 0 0 0
-    1 2 26 0 0 0 0
-    1 2 27 0 0 0 0
-    1 1 28 0 0 0 0
-    2 2 29 0 0 0 0
-    1 0 30 0 0 0 0
-    1 0 31 0 0 0 0
-    0 1 32 0 0 0 0
-    0 1 33 0 0 0 0
-    2 0 34 0 0 0 0
-    2 0 35 0 0 0 0
-    0 2 36 0 0 0 0
-    0 2 37 0 0 0 0
-    2 1 38 0 0 0 0
-    2 1 39 0 0 0 0
-    1 2 40 0 0 0 0
-    1 2 41 0 0 0 0
+        If ``real=False``, ``Mu`` is a function that takes arguments
 
-    >>> test_vectorization(Ne, Nv, True, True, False)
-    0 0 0 0 0 0 0
-    1 1 1 0 0 0 0
-    2 2 2 0 0 0 0
-    1 0 3 0 0 0 0
-    1 0 4 0 0 0 0
-    2 0 5 0 0 0 0
-    2 0 6 0 0 0 0
-    2 1 7 0 0 0 0
-    2 1 8 0 0 0 0
-    0 0 9 0 0 0 0
-    1 1 10 0 0 0 0
-    2 2 11 0 0 0 0
-    1 0 12 0 0 0 0
-    1 0 13 0 0 0 0
-    2 0 14 0 0 0 0
-    2 0 15 0 0 0 0
-    2 1 16 0 0 0 0
-    2 1 17 0 0 0 0
-    0 0 18 0 0 0 0
-    1 1 19 0 0 0 0
-    2 2 20 0 0 0 0
-    1 0 21 0 0 0 0
-    1 0 22 0 0 0 0
-    2 0 23 0 0 0 0
-    2 0 24 0 0 0 0
-    2 1 25 0 0 0 0
-    2 1 26 0 0 0 0
+        -  ``i`` an index spanning the ``Ne`` states.
+        -  ``j`` an index spanning the ``Ne`` states.
+        -  ``k`` an index spanning the ``Nv`` velocity classes (0 by default).
 
-    >>> test_vectorization(Ne, Nv, True, True, True)
-    1 1 0 0 0 0 0
-    2 2 1 0 0 0 0
-    1 0 2 0 0 0 0
-    1 0 3 0 0 0 0
-    2 0 4 0 0 0 0
-    2 0 5 0 0 0 0
-    2 1 6 0 0 0 0
-    2 1 7 0 0 0 0
-    1 1 8 0 0 0 0
-    2 2 9 0 0 0 0
-    1 0 10 0 0 0 0
-    1 0 11 0 0 0 0
-    2 0 12 0 0 0 0
-    2 0 13 0 0 0 0
-    2 1 14 0 0 0 0
-    2 1 15 0 0 0 0
-    1 1 16 0 0 0 0
-    2 2 17 0 0 0 0
-    1 0 18 0 0 0 0
-    1 0 19 0 0 0 0
-    2 0 20 0 0 0 0
-    2 0 21 0 0 0 0
-    2 1 22 0 0 0 0
-    2 1 23 0 0 0 0
+        and returns an index ``mu`` spanning the density matrix, ``IJ`` is \
+        the inverse of ``Mu``.
 
-    """
-    real_map = {}; real_map_inv = {}
-    comp_map = {}; comp_map_inv = {}
-    mu_real = 0
-    mu_comp = 0
-    # We repeat the same thing for each velocity group.
-    for k in range(Nv):
-        # We get the mappings of populations.
-        if normalized:
-            start = 1
-        else:
-            start = 0
-        for i in range(start, Ne):
-            comp_map.update({(i, i, k): mu_comp})
-            comp_map_inv.update({mu_comp: (i, i, k)})
-            mu_comp += 1
-            real_map.update({(1, i, i, k): mu_real})
-            real_map_inv.update({mu_real: (1, i, i, k)})
-            mu_real += 1
+        For a two-level system:
+        >>> Ne = 2
+        >>> Nv = 1
+        >>> vect = Vectorization(Ne, Nv, real=True,
+        ...                              lower_triangular=True,
+        ...                              normalized=True)
 
-        # We get the mappings for coherences.
-        for j in range(Ne):
-            for i in range(j+1, Ne):
-                comp_map.update({(i, j, k): mu_comp})
-                comp_map_inv.update({mu_comp: (i, j, k)})
+        The second population and the real and imaginary parts of the \
+        coherence,
+        >>> vect.Mu(1, 1, 1), vect.Mu(1, 1, 0), vect.Mu(-1, 1, 0)
+        (0, 1, 2)
+
+        and back again
+        >>> vect.IJ(0), vect.IJ(1), vect.IJ(2)
+        ((1, 1, 1, 0), (1, 1, 0, 0), (-1, 1, 0, 0))
+
+
+        >>> Ne = 3
+        >>> Nv = 3
+
+        >>> def test_vectorization(Ne, Nv, real=False,
+        ...                        lower_triangular=True, normalized=False):
+        ...
+        ...     vect = Vectorization(Ne, Nv, real, lower_triangular,
+        ...                          normalized)
+        ...     if normalized:
+        ...         j0 = 1
+        ...     else:
+        ...         j0 = 0
+        ...     for k in range(Nv):
+        ...         for j in range(j0, Ne):
+        ...             if real:
+        ...                 muu = vect.Mu(1, j, j, k)
+        ...                 ss, ii, jj, kk = vect.IJ(muu)
+        ...                 print j, j, muu, j-ii, j-jj, k-kk, 1-ss
+        ...             else:
+        ...                 muu = vect.Mu(j, j, k)
+        ...                 ii, jj, kk = vect.IJ(muu)
+        ...                 print j, j, muu, j-ii, j-jj, k-kk
+        ...         for j in range(Ne):
+        ...             for i in range(j+1, Ne):
+        ...                 if real:
+        ...                     muu = vect.Mu(1, i, j, k)
+        ...                     ss, ii, jj, kk = vect.IJ(muu)
+        ...                     print i, j, muu, i-ii, j-jj, k-kk, 1-ss
+        ...                     muu = vect.Mu(-1, i, j, k)
+        ...                     ss, ii, jj, kk = vect.IJ(muu)
+        ...                     print i, j, muu, i-ii, j-jj, k-kk, -1-ss
+        ...                 else:
+        ...                     muu = vect.Mu(i, j, k)
+        ...                     ii, jj, kk = vect.IJ(muu)
+        ...                     print i, j, muu, i-ii, j-jj, k-kk
+        ...                 if not lower_triangular:
+        ...                     if real:
+        ...                         muu = vect.Mu(1, j, i, k)
+        ...                         ss, ii, jj, kk = vect.IJ(muu)
+        ...                         print j, i, muu, j-ii, i-jj, k-kk, 1-ss
+        ...                         muu = vect.Mu(-1, j, i, k)
+        ...                         ss, ii, jj, kk = vect.IJ(muu)
+        ...                         print j, i, muu, j-ii, i-jj, k-kk, -1-ss
+        ...                     else:
+        ...                         muu = vect.Mu(j, i, k)
+        ...                         ii, jj, kk = vect.IJ(muu)
+        ...                         print i, j, muu, j-ii, i-jj, k-kk
+        ...
+
+
+        >>> test_vectorization(Ne, Nv, False, False, False)
+        0 0 0 0 0 0
+        1 1 1 0 0 0
+        2 2 2 0 0 0
+        1 0 3 0 0 0
+        1 0 4 0 0 0
+        2 0 5 0 0 0
+        2 0 6 0 0 0
+        2 1 7 0 0 0
+        2 1 8 0 0 0
+        0 0 9 0 0 0
+        1 1 10 0 0 0
+        2 2 11 0 0 0
+        1 0 12 0 0 0
+        1 0 13 0 0 0
+        2 0 14 0 0 0
+        2 0 15 0 0 0
+        2 1 16 0 0 0
+        2 1 17 0 0 0
+        0 0 18 0 0 0
+        1 1 19 0 0 0
+        2 2 20 0 0 0
+        1 0 21 0 0 0
+        1 0 22 0 0 0
+        2 0 23 0 0 0
+        2 0 24 0 0 0
+        2 1 25 0 0 0
+        2 1 26 0 0 0
+
+
+        >>> test_vectorization(Ne, Nv, False, False, True)
+        1 1 0 0 0 0
+        2 2 1 0 0 0
+        1 0 2 0 0 0
+        1 0 3 0 0 0
+        2 0 4 0 0 0
+        2 0 5 0 0 0
+        2 1 6 0 0 0
+        2 1 7 0 0 0
+        1 1 8 0 0 0
+        2 2 9 0 0 0
+        1 0 10 0 0 0
+        1 0 11 0 0 0
+        2 0 12 0 0 0
+        2 0 13 0 0 0
+        2 1 14 0 0 0
+        2 1 15 0 0 0
+        1 1 16 0 0 0
+        2 2 17 0 0 0
+        1 0 18 0 0 0
+        1 0 19 0 0 0
+        2 0 20 0 0 0
+        2 0 21 0 0 0
+        2 1 22 0 0 0
+        2 1 23 0 0 0
+
+        >>> test_vectorization(Ne, Nv, False, True, False)
+        0 0 0 0 0 0
+        1 1 1 0 0 0
+        2 2 2 0 0 0
+        1 0 3 0 0 0
+        2 0 4 0 0 0
+        2 1 5 0 0 0
+        0 0 6 0 0 0
+        1 1 7 0 0 0
+        2 2 8 0 0 0
+        1 0 9 0 0 0
+        2 0 10 0 0 0
+        2 1 11 0 0 0
+        0 0 12 0 0 0
+        1 1 13 0 0 0
+        2 2 14 0 0 0
+        1 0 15 0 0 0
+        2 0 16 0 0 0
+        2 1 17 0 0 0
+
+        >>> test_vectorization(Ne, Nv, False, True, True)
+        1 1 0 0 0 0
+        2 2 1 0 0 0
+        1 0 2 0 0 0
+        2 0 3 0 0 0
+        2 1 4 0 0 0
+        1 1 5 0 0 0
+        2 2 6 0 0 0
+        1 0 7 0 0 0
+        2 0 8 0 0 0
+        2 1 9 0 0 0
+        1 1 10 0 0 0
+        2 2 11 0 0 0
+        1 0 12 0 0 0
+        2 0 13 0 0 0
+        2 1 14 0 0 0
+
+        >>> test_vectorization(Ne, Nv, True, False, False)
+        0 0 0 0 0 0 0
+        1 1 1 0 0 0 0
+        2 2 2 0 0 0 0
+        1 0 3 0 0 0 0
+        1 0 4 0 0 0 0
+        0 1 5 0 0 0 0
+        0 1 6 0 0 0 0
+        2 0 7 0 0 0 0
+        2 0 8 0 0 0 0
+        0 2 9 0 0 0 0
+        0 2 10 0 0 0 0
+        2 1 11 0 0 0 0
+        2 1 12 0 0 0 0
+        1 2 13 0 0 0 0
+        1 2 14 0 0 0 0
+        0 0 15 0 0 0 0
+        1 1 16 0 0 0 0
+        2 2 17 0 0 0 0
+        1 0 18 0 0 0 0
+        1 0 19 0 0 0 0
+        0 1 20 0 0 0 0
+        0 1 21 0 0 0 0
+        2 0 22 0 0 0 0
+        2 0 23 0 0 0 0
+        0 2 24 0 0 0 0
+        0 2 25 0 0 0 0
+        2 1 26 0 0 0 0
+        2 1 27 0 0 0 0
+        1 2 28 0 0 0 0
+        1 2 29 0 0 0 0
+        0 0 30 0 0 0 0
+        1 1 31 0 0 0 0
+        2 2 32 0 0 0 0
+        1 0 33 0 0 0 0
+        1 0 34 0 0 0 0
+        0 1 35 0 0 0 0
+        0 1 36 0 0 0 0
+        2 0 37 0 0 0 0
+        2 0 38 0 0 0 0
+        0 2 39 0 0 0 0
+        0 2 40 0 0 0 0
+        2 1 41 0 0 0 0
+        2 1 42 0 0 0 0
+        1 2 43 0 0 0 0
+        1 2 44 0 0 0 0
+
+        >>> test_vectorization(Ne, Nv, True, False, True)
+        1 1 0 0 0 0 0
+        2 2 1 0 0 0 0
+        1 0 2 0 0 0 0
+        1 0 3 0 0 0 0
+        0 1 4 0 0 0 0
+        0 1 5 0 0 0 0
+        2 0 6 0 0 0 0
+        2 0 7 0 0 0 0
+        0 2 8 0 0 0 0
+        0 2 9 0 0 0 0
+        2 1 10 0 0 0 0
+        2 1 11 0 0 0 0
+        1 2 12 0 0 0 0
+        1 2 13 0 0 0 0
+        1 1 14 0 0 0 0
+        2 2 15 0 0 0 0
+        1 0 16 0 0 0 0
+        1 0 17 0 0 0 0
+        0 1 18 0 0 0 0
+        0 1 19 0 0 0 0
+        2 0 20 0 0 0 0
+        2 0 21 0 0 0 0
+        0 2 22 0 0 0 0
+        0 2 23 0 0 0 0
+        2 1 24 0 0 0 0
+        2 1 25 0 0 0 0
+        1 2 26 0 0 0 0
+        1 2 27 0 0 0 0
+        1 1 28 0 0 0 0
+        2 2 29 0 0 0 0
+        1 0 30 0 0 0 0
+        1 0 31 0 0 0 0
+        0 1 32 0 0 0 0
+        0 1 33 0 0 0 0
+        2 0 34 0 0 0 0
+        2 0 35 0 0 0 0
+        0 2 36 0 0 0 0
+        0 2 37 0 0 0 0
+        2 1 38 0 0 0 0
+        2 1 39 0 0 0 0
+        1 2 40 0 0 0 0
+        1 2 41 0 0 0 0
+
+        >>> test_vectorization(Ne, Nv, True, True, False)
+        0 0 0 0 0 0 0
+        1 1 1 0 0 0 0
+        2 2 2 0 0 0 0
+        1 0 3 0 0 0 0
+        1 0 4 0 0 0 0
+        2 0 5 0 0 0 0
+        2 0 6 0 0 0 0
+        2 1 7 0 0 0 0
+        2 1 8 0 0 0 0
+        0 0 9 0 0 0 0
+        1 1 10 0 0 0 0
+        2 2 11 0 0 0 0
+        1 0 12 0 0 0 0
+        1 0 13 0 0 0 0
+        2 0 14 0 0 0 0
+        2 0 15 0 0 0 0
+        2 1 16 0 0 0 0
+        2 1 17 0 0 0 0
+        0 0 18 0 0 0 0
+        1 1 19 0 0 0 0
+        2 2 20 0 0 0 0
+        1 0 21 0 0 0 0
+        1 0 22 0 0 0 0
+        2 0 23 0 0 0 0
+        2 0 24 0 0 0 0
+        2 1 25 0 0 0 0
+        2 1 26 0 0 0 0
+
+        >>> test_vectorization(Ne, Nv, True, True, True)
+        1 1 0 0 0 0 0
+        2 2 1 0 0 0 0
+        1 0 2 0 0 0 0
+        1 0 3 0 0 0 0
+        2 0 4 0 0 0 0
+        2 0 5 0 0 0 0
+        2 1 6 0 0 0 0
+        2 1 7 0 0 0 0
+        1 1 8 0 0 0 0
+        2 2 9 0 0 0 0
+        1 0 10 0 0 0 0
+        1 0 11 0 0 0 0
+        2 0 12 0 0 0 0
+        2 0 13 0 0 0 0
+        2 1 14 0 0 0 0
+        2 1 15 0 0 0 0
+        1 1 16 0 0 0 0
+        2 2 17 0 0 0 0
+        1 0 18 0 0 0 0
+        1 0 19 0 0 0 0
+        2 0 20 0 0 0 0
+        2 0 21 0 0 0 0
+        2 1 22 0 0 0 0
+        2 1 23 0 0 0 0
+
+        """
+        real_map = {}; real_map_inv = {}
+        comp_map = {}; comp_map_inv = {}
+        mu_real = 0
+        mu_comp = 0
+        # We repeat the same thing for each velocity group.
+        for k in range(Nv):
+            # We get the mappings of populations.
+            if normalized:
+                start = 1
+            else:
+                start = 0
+            for i in range(start, Ne):
+                comp_map.update({(i, i, k): mu_comp})
+                comp_map_inv.update({mu_comp: (i, i, k)})
                 mu_comp += 1
-                for s in [1, -1]:
-                    real_map.update({(s, i, j, k): mu_real})
-                    real_map_inv.update({mu_real: (s, i, j, k)})
-                    mu_real += 1
+                real_map.update({(1, i, i, k): mu_real})
+                real_map_inv.update({mu_real: (1, i, i, k)})
+                mu_real += 1
 
-                if not lower_triangular:
-                    comp_map.update({(j, i, k): mu_comp})
-                    comp_map_inv.update({mu_comp: (j, i, k)})
+            # We get the mappings for coherences.
+            for j in range(Ne):
+                for i in range(j+1, Ne):
+                    comp_map.update({(i, j, k): mu_comp})
+                    comp_map_inv.update({mu_comp: (i, j, k)})
                     mu_comp += 1
                     for s in [1, -1]:
-                        real_map.update({(s, j, i, k): mu_real})
-                        real_map_inv.update({mu_real: (s, j, i, k)})
+                        real_map.update({(s, i, j, k): mu_real})
+                        real_map_inv.update({mu_real: (s, i, j, k)})
                         mu_real += 1
 
-        # if normalized:
-        #     three.pop((0, 0))
-        #     four.pop((0, 0, 1))
-        #
-        #     three_inv.pop(0)
-        #     four_inv.pop(0)
+                    if not lower_triangular:
+                        comp_map.update({(j, i, k): mu_comp})
+                        comp_map_inv.update({mu_comp: (j, i, k)})
+                        mu_comp += 1
+                        for s in [1, -1]:
+                            real_map.update({(s, j, i, k): mu_real})
+                            real_map_inv.update({mu_real: (s, j, i, k)})
+                            mu_real += 1
 
-    def Mu_comp(i, j, k=0):
-        return comp_map[(i, j, k)]
+            # if normalized:
+            #     three.pop((0, 0))
+            #     four.pop((0, 0, 1))
+            #
+            #     three_inv.pop(0)
+            #     four_inv.pop(0)
 
-    def Mu_real(s, i, j, k=0):
-        return real_map[(s, i, j, k)]
+        Nrho_real = len(real_map.keys())
+        Nrho_comp = len(comp_map.keys())
 
-    def IJ_comp(mu):
-        return comp_map_inv[mu]
+        def Mu_comp(i, j, k=0):
+            return comp_map[(i, j, k)]
 
-    def IJ_real(mu):
-        return real_map_inv[mu]
+        def Mu_real(s, i, j, k=0):
+            return real_map[(s, i, j, k)]
 
-    if real:
-        return Mu_real, IJ_real
-    else:
-        return Mu_comp, IJ_comp
+        def IJ_comp(mu):
+            return comp_map_inv[mu]
+
+        def IJ_real(mu):
+            return real_map_inv[mu]
+
+        if real:
+            self.Mu = Mu_real
+            self.IJ = IJ_real
+            self.Nrho = Nrho_real
+        else:
+            self.Mu = Mu_comp
+            self.IJ = IJ_comp
+            self.Nrho = Nrho_comp
+        self.lower_triangular = lower_triangular
+        self.real = real
+        self.normalized = normalized
 
 
 if __name__ == "__main__":
