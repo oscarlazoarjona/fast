@@ -216,10 +216,12 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff
+from sympy import Symbol, diff, IndexedBase, re, im
 from fast.symbolic import cartesian_dot_product, define_frequencies
-from fast.symbolic import define_laser_variables
+from fast.symbolic import define_laser_variables, define_density_matrix
 from scipy.constants import physical_constants
+from symbolic import Vector3D, dot, delta_greater, delta_lesser
+from misc import part, symbolic_part
 
 import numpy as np
 import sympy
@@ -988,21 +990,21 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     return hamiltonian
 
 
-class Vectorization(object):
-    r"""A class defining a vectorization."""
+class Unfolding(object):
+    r"""A class defining a matrix unfolding."""
 
     def __init__(self, Ne, Nv=1, real=False, lower_triangular=True,
                  normalized=False):
-        r"""Return functions to map matrix element indices to vectorized \
+        r"""Return functions to map matrix element indices to unfolded \
         indices.
 
         This class has as atributes
 
 
-        -  ``Nrho`` - the size of the vectorized density matrix.
-        -  ``real`` - whether the elements of the vectorized density matrix \
+        -  ``Nrho`` - the size of the unfolded density matrix.
+        -  ``real`` - whether the elements of the unfolded density matrix \
         are real.
-        -  ``lower_triangular`` - whether the vectorization includes only the \
+        -  ``lower_triangular`` - whether the unfolding includes only the \
         lower triangular elements.
         -  ``normalized`` - whether the populations are normalized to 1 (the \
         first population is not included).
@@ -1030,7 +1032,7 @@ class Vectorization(object):
         For a two-level system:
         >>> Ne = 2
         >>> Nv = 1
-        >>> vect = Vectorization(Ne, Nv, real=True,
+        >>> vect = Unfolding(Ne, Nv, real=True,
         ...                              lower_triangular=True,
         ...                              normalized=True)
 
@@ -1047,10 +1049,10 @@ class Vectorization(object):
         >>> Ne = 3
         >>> Nv = 3
 
-        >>> def test_vectorization(Ne, Nv, real=False,
-        ...                        lower_triangular=True, normalized=False):
+        >>> def test_unfolding(Ne, Nv, real=False,
+        ...                    lower_triangular=True, normalized=False):
         ...
-        ...     vect = Vectorization(Ne, Nv, real, lower_triangular,
+        ...     vect = Unfolding(Ne, Nv, real, lower_triangular,
         ...                          normalized)
         ...     if normalized:
         ...         j0 = 1
@@ -1063,8 +1065,8 @@ class Vectorization(object):
         ...                 ss, ii, jj, kk = vect.IJ(muu)
         ...                 print j, j, muu, j-ii, j-jj, k-kk, 1-ss
         ...             else:
-        ...                 muu = vect.Mu(j, j, k)
-        ...                 ii, jj, kk = vect.IJ(muu)
+        ...                 muu = vect.Mu(0, j, j, k)
+        ...                 ss, ii, jj, kk = vect.IJ(muu)
         ...                 print j, j, muu, j-ii, j-jj, k-kk
         ...         for j in range(Ne):
         ...             for i in range(j+1, Ne):
@@ -1076,8 +1078,8 @@ class Vectorization(object):
         ...                     ss, ii, jj, kk = vect.IJ(muu)
         ...                     print i, j, muu, i-ii, j-jj, k-kk, -1-ss
         ...                 else:
-        ...                     muu = vect.Mu(i, j, k)
-        ...                     ii, jj, kk = vect.IJ(muu)
+        ...                     muu = vect.Mu(0, i, j, k)
+        ...                     ss, ii, jj, kk = vect.IJ(muu)
         ...                     print i, j, muu, i-ii, j-jj, k-kk
         ...                 if not lower_triangular:
         ...                     if real:
@@ -1088,13 +1090,13 @@ class Vectorization(object):
         ...                         ss, ii, jj, kk = vect.IJ(muu)
         ...                         print j, i, muu, j-ii, i-jj, k-kk, -1-ss
         ...                     else:
-        ...                         muu = vect.Mu(j, i, k)
-        ...                         ii, jj, kk = vect.IJ(muu)
+        ...                         muu = vect.Mu(0, j, i, k)
+        ...                         ss, ii, jj, kk = vect.IJ(muu)
         ...                         print i, j, muu, j-ii, i-jj, k-kk
         ...
 
 
-        >>> test_vectorization(Ne, Nv, False, False, False)
+        >>> test_unfolding(Ne, Nv, False, False, False)
         0 0 0 0 0 0
         1 1 1 0 0 0
         2 2 2 0 0 0
@@ -1124,7 +1126,7 @@ class Vectorization(object):
         2 1 26 0 0 0
 
 
-        >>> test_vectorization(Ne, Nv, False, False, True)
+        >>> test_unfolding(Ne, Nv, False, False, True)
         1 1 0 0 0 0
         2 2 1 0 0 0
         1 0 2 0 0 0
@@ -1150,7 +1152,7 @@ class Vectorization(object):
         2 1 22 0 0 0
         2 1 23 0 0 0
 
-        >>> test_vectorization(Ne, Nv, False, True, False)
+        >>> test_unfolding(Ne, Nv, False, True, False)
         0 0 0 0 0 0
         1 1 1 0 0 0
         2 2 2 0 0 0
@@ -1170,7 +1172,7 @@ class Vectorization(object):
         2 0 16 0 0 0
         2 1 17 0 0 0
 
-        >>> test_vectorization(Ne, Nv, False, True, True)
+        >>> test_unfolding(Ne, Nv, False, True, True)
         1 1 0 0 0 0
         2 2 1 0 0 0
         1 0 2 0 0 0
@@ -1187,7 +1189,7 @@ class Vectorization(object):
         2 0 13 0 0 0
         2 1 14 0 0 0
 
-        >>> test_vectorization(Ne, Nv, True, False, False)
+        >>> test_unfolding(Ne, Nv, True, False, False)
         0 0 0 0 0 0 0
         1 1 1 0 0 0 0
         2 2 2 0 0 0 0
@@ -1234,7 +1236,7 @@ class Vectorization(object):
         1 2 43 0 0 0 0
         1 2 44 0 0 0 0
 
-        >>> test_vectorization(Ne, Nv, True, False, True)
+        >>> test_unfolding(Ne, Nv, True, False, True)
         1 1 0 0 0 0 0
         2 2 1 0 0 0 0
         1 0 2 0 0 0 0
@@ -1278,7 +1280,7 @@ class Vectorization(object):
         1 2 40 0 0 0 0
         1 2 41 0 0 0 0
 
-        >>> test_vectorization(Ne, Nv, True, True, False)
+        >>> test_unfolding(Ne, Nv, True, True, False)
         0 0 0 0 0 0 0
         1 1 1 0 0 0 0
         2 2 2 0 0 0 0
@@ -1307,7 +1309,7 @@ class Vectorization(object):
         2 1 25 0 0 0 0
         2 1 26 0 0 0 0
 
-        >>> test_vectorization(Ne, Nv, True, True, True)
+        >>> test_unfolding(Ne, Nv, True, True, True)
         1 1 0 0 0 0 0
         2 2 1 0 0 0 0
         1 0 2 0 0 0 0
@@ -1346,8 +1348,8 @@ class Vectorization(object):
             else:
                 start = 0
             for i in range(start, Ne):
-                comp_map.update({(i, i, k): mu_comp})
-                comp_map_inv.update({mu_comp: (i, i, k)})
+                comp_map.update({(0, i, i, k): mu_comp})
+                comp_map_inv.update({mu_comp: (0, i, i, k)})
                 mu_comp += 1
                 real_map.update({(1, i, i, k): mu_real})
                 real_map_inv.update({mu_real: (1, i, i, k)})
@@ -1356,8 +1358,8 @@ class Vectorization(object):
             # We get the mappings for coherences.
             for j in range(Ne):
                 for i in range(j+1, Ne):
-                    comp_map.update({(i, j, k): mu_comp})
-                    comp_map_inv.update({mu_comp: (i, j, k)})
+                    comp_map.update({(0, i, j, k): mu_comp})
+                    comp_map_inv.update({mu_comp: (0, i, j, k)})
                     mu_comp += 1
                     for s in [1, -1]:
                         real_map.update({(s, i, j, k): mu_real})
@@ -1365,8 +1367,8 @@ class Vectorization(object):
                         mu_real += 1
 
                     if not lower_triangular:
-                        comp_map.update({(j, i, k): mu_comp})
-                        comp_map_inv.update({mu_comp: (j, i, k)})
+                        comp_map.update({(0, j, i, k): mu_comp})
+                        comp_map_inv.update({mu_comp: (0, j, i, k)})
                         mu_comp += 1
                         for s in [1, -1]:
                             real_map.update({(s, j, i, k): mu_real})
@@ -1383,8 +1385,8 @@ class Vectorization(object):
         Nrho_real = len(real_map.keys())
         Nrho_comp = len(comp_map.keys())
 
-        def Mu_comp(i, j, k=0):
-            return comp_map[(i, j, k)]
+        def Mu_comp(s, i, j, k=0):
+            return comp_map[(s, i, j, k)]
 
         def Mu_real(s, i, j, k=0):
             return real_map[(s, i, j, k)]
@@ -1406,6 +1408,125 @@ class Vectorization(object):
         self.lower_triangular = lower_triangular
         self.real = real
         self.normalized = normalized
+        self.Ne = Ne
+        self.Nv = Nv
+
+    def __call__(self, rho):
+        r"""Unfold a matrix into a vector.
+
+        The input of this function can be a numpy array or a sympy Matrix.
+
+        >>> unfolding = Unfolding(2, 1, real=True, lower_triangular=True,
+        ...                       normalized=True)
+        >>> rhos = np.array([[[0.6, 1+2j], [1-2j, 0.4]]])
+        >>> print unfolding(rhos)
+        [ 0.4  1.  -2. ]
+
+        >>> from fast import define_density_matrix
+        >>> from sympy import pprint
+        >>> rho = define_density_matrix(2)
+        >>> pprint(unfolding(rho), use_unicode=False)
+        [  rho22  ]
+        [         ]
+        [re(rho21)]
+        [         ]
+        [im(rho21)]
+
+        """
+        Nrho = self.Nrho
+        IJ = self.IJ
+        if isinstance(rho, np.ndarray):
+            if self.real:
+                rhov = np.zeros(Nrho)
+            else:
+                rhov = np.zeros(Nrho, complex)
+            numeric = True
+        elif isinstance(rho, sympy.Matrix):
+            rhov = sympy.zeros(Nrho, 1)
+            numeric = False
+        else:
+            raise ValueError
+
+        for mu in range(Nrho):
+            s, i, j, ivz = IJ(mu)
+            if numeric:
+                rhomu = part(rho[ivz, i, j], s)
+            else:
+                rhomu = symbolic_part(rho[i, j], s)
+            rhov[mu] = rhomu
+
+        return rhov
+
+    def inverse(self, rhov):
+        r"""Fold a vector into a matrix.
+
+        The input of this function can be a numpy array or a sympy Matrix.
+
+        >>> unfolding = Unfolding(2, 1, real=True, lower_triangular=True,
+        ...                       normalized=True)
+        >>> rhos = np.array([[[0.6, 1+2j], [1-2j, 0.4]]])
+        >>> print rhos == unfolding.inverse(unfolding(rhos))
+        [[[ True  True]
+          [ True  True]]]
+
+        >>> from fast import define_density_matrix
+        >>> from sympy import pprint
+        >>> rho = define_density_matrix(2)
+        >>> pprint(unfolding.inverse(unfolding(rho)), use_unicode=False)
+        [      -rho22 + 1         re(rho21) - I*im(rho21)]
+        [                                                ]
+        [re(rho21) + I*im(rho21)           rho22         ]
+
+        """
+        Ne = self.Ne
+        Nv = self.Nv
+        Nrho = self.Nrho
+        IJ = self.IJ
+
+        if isinstance(rhov, np.ndarray):
+            rho = np.zeros((Nv, Ne, Ne), complex)
+            numeric = True
+        elif isinstance(rhov, sympy.Matrix):
+            rho = sympy.zeros(Ne, Ne)
+            numeric = False
+
+        for mu in range(Nrho):
+            s, i, j, ivz = IJ(mu)
+            if numeric:
+                if s == 1:
+                    rho[ivz, i, j] += rhov[mu]
+                elif s == -1:
+                    rho[ivz, i, j] += 1j*rhov[mu]
+                elif s == 0:
+                    rho[ivz, i, j] += rhov[mu]
+            else:
+                if s == 1:
+                    rho[i, j] += rhov[mu]
+                elif s == -1:
+                    rho[i, j] += sympy.I*rhov[mu]
+                elif s == 0:
+                    rho[i, j] += rhov[mu]
+
+        if self.lower_triangular:
+            for i in range(Ne):
+                for j in range(i):
+                    if numeric:
+                        for ivz in range(Nv):
+                            aa = rho[ivz, i, j].conjugate()
+                            rho[ivz, j, i] = aa
+                    else:
+                        rho[j, i] = rho[i, j].conjugate()
+
+        if self.normalized:
+            if numeric:
+                for ivz in range(Nv):
+                    rho11 = 1-sum([rho[ivz, i, i] for i in range(1, Ne)])
+                    rho[ivz, 0, 0] = rho11
+            else:
+                rho11 = 1-sum([rho[i, i] for i in range(1, Ne)])
+                rho[0, 0] = rho11
+
+        return rho
 
 
 if __name__ == "__main__":
