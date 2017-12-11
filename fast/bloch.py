@@ -216,7 +216,7 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff, IndexedBase
+from sympy import Symbol, diff, IndexedBase, re, im
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
 from scipy.constants import physical_constants
@@ -993,7 +993,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
 class Unfolding(object):
     r"""A class defining a matrix unfolding."""
 
-    def __init__(self, Ne, Nv=1, real=False, lower_triangular=True,
+    def __init__(self, Ne, real=False, lower_triangular=True,
                  normalized=False):
         r"""Return functions to map matrix element indices to unfolded \
         indices.
@@ -1032,71 +1032,139 @@ class Unfolding(object):
         For a two-level system:
         >>> Ne = 2
         >>> Nv = 1
-        >>> vect = Unfolding(Ne, Nv, real=True,
-        ...                              lower_triangular=True,
-        ...                              normalized=True)
+        >>> unf = Unfolding(Ne, real=True, lower_triangular=True,
+        ...                       normalized=True)
 
         The second population and the real and imaginary parts of the \
         coherence,
-        >>> vect.Mu(1, 1, 1), vect.Mu(1, 1, 0), vect.Mu(-1, 1, 0)
+        >>> unf.Mu(1, 1, 1), unf.Mu(1, 1, 0), unf.Mu(-1, 1, 0)
         (0, 1, 2)
 
         and back again
-        >>> vect.IJ(0), vect.IJ(1), vect.IJ(2)
-        ((1, 1, 1, 0), (1, 1, 0, 0), (-1, 1, 0, 0))
+        >>> unf.IJ(0), unf.IJ(1), unf.IJ(2)
+        ((1, 1, 1), (1, 1, 0), (-1, 1, 0))
 
 
         >>> Ne = 3
         >>> Nv = 3
 
-        >>> def test_unfolding(Ne, Nv, real=False,
+        >>> def test_unfolding(Ne, real=False,
         ...                    lower_triangular=True, normalized=False):
         ...
-        ...     vect = Unfolding(Ne, Nv, real, lower_triangular,
+        ...     vect = Unfolding(Ne, real, lower_triangular,
         ...                          normalized)
         ...     if normalized:
         ...         j0 = 1
         ...     else:
         ...         j0 = 0
-        ...     for k in range(Nv):
-        ...         for j in range(j0, Ne):
+        ...     for j in range(j0, Ne):
+        ...         if real:
+        ...             muu = vect.Mu(1, j, j)
+        ...             ss, ii, jj = vect.IJ(muu)
+        ...             print j, j, muu, j-ii, j-jj, 1-ss
+        ...         else:
+        ...             muu = vect.Mu(0, j, j)
+        ...             ss, ii, jj = vect.IJ(muu)
+        ...             print j, j, muu, j-ii, j-jj
+        ...     for j in range(Ne):
+        ...         for i in range(j+1, Ne):
         ...             if real:
-        ...                 muu = vect.Mu(1, j, j, k)
-        ...                 ss, ii, jj, kk = vect.IJ(muu)
-        ...                 print j, j, muu, j-ii, j-jj, k-kk, 1-ss
+        ...                 muu = vect.Mu(1, i, j)
+        ...                 ss, ii, jj = vect.IJ(muu)
+        ...                 print i, j, muu, i-ii, j-jj, 1-ss
+        ...                 muu = vect.Mu(-1, i, j)
+        ...                 ss, ii, jj = vect.IJ(muu)
+        ...                 print i, j, muu, i-ii, j-jj, -1-ss
         ...             else:
-        ...                 muu = vect.Mu(0, j, j, k)
-        ...                 ss, ii, jj, kk = vect.IJ(muu)
-        ...                 print j, j, muu, j-ii, j-jj, k-kk
-        ...         for j in range(Ne):
-        ...             for i in range(j+1, Ne):
+        ...                 muu = vect.Mu(0, i, j)
+        ...                 ss, ii, jj = vect.IJ(muu)
+        ...                 print i, j, muu, i-ii, j-jj
+        ...             if not lower_triangular:
         ...                 if real:
-        ...                     muu = vect.Mu(1, i, j, k)
-        ...                     ss, ii, jj, kk = vect.IJ(muu)
-        ...                     print i, j, muu, i-ii, j-jj, k-kk, 1-ss
-        ...                     muu = vect.Mu(-1, i, j, k)
-        ...                     ss, ii, jj, kk = vect.IJ(muu)
-        ...                     print i, j, muu, i-ii, j-jj, k-kk, -1-ss
+        ...                     muu = vect.Mu(1, j, i)
+        ...                     ss, ii, jj = vect.IJ(muu)
+        ...                     print j, i, muu, j-ii, i-jj, 1-ss
+        ...                     muu = vect.Mu(-1, j, i)
+        ...                     ss, ii, jj = vect.IJ(muu)
+        ...                     print j, i, muu, j-ii, i-jj, -1-ss
         ...                 else:
-        ...                     muu = vect.Mu(0, i, j, k)
-        ...                     ss, ii, jj, kk = vect.IJ(muu)
-        ...                     print i, j, muu, i-ii, j-jj, k-kk
-        ...                 if not lower_triangular:
-        ...                     if real:
-        ...                         muu = vect.Mu(1, j, i, k)
-        ...                         ss, ii, jj, kk = vect.IJ(muu)
-        ...                         print j, i, muu, j-ii, i-jj, k-kk, 1-ss
-        ...                         muu = vect.Mu(-1, j, i, k)
-        ...                         ss, ii, jj, kk = vect.IJ(muu)
-        ...                         print j, i, muu, j-ii, i-jj, k-kk, -1-ss
-        ...                     else:
-        ...                         muu = vect.Mu(0, j, i, k)
-        ...                         ss, ii, jj, kk = vect.IJ(muu)
-        ...                         print i, j, muu, j-ii, i-jj, k-kk
+        ...                     muu = vect.Mu(0, j, i)
+        ...                     ss, ii, jj = vect.IJ(muu)
+        ...                     print i, j, muu, j-ii, i-jj
         ...
 
 
-        >>> test_unfolding(Ne, Nv, False, False, False)
+        >>> test_unfolding(Ne, False, False, False)
+        0 0 0 0 0
+        1 1 1 0 0
+        2 2 2 0 0
+        1 0 3 0 0
+        1 0 4 0 0
+        2 0 5 0 0
+        2 0 6 0 0
+        2 1 7 0 0
+        2 1 8 0 0
+
+
+        >>> test_unfolding(Ne, False, False, True)
+        1 1 0 0 0
+        2 2 1 0 0
+        1 0 2 0 0
+        1 0 3 0 0
+        2 0 4 0 0
+        2 0 5 0 0
+        2 1 6 0 0
+        2 1 7 0 0
+
+        >>> test_unfolding(Ne, False, True, False)
+        0 0 0 0 0
+        1 1 1 0 0
+        2 2 2 0 0
+        1 0 3 0 0
+        2 0 4 0 0
+        2 1 5 0 0
+
+        >>> test_unfolding(Ne, False, True, True)
+        1 1 0 0 0
+        2 2 1 0 0
+        1 0 2 0 0
+        2 0 3 0 0
+        2 1 4 0 0
+
+        >>> test_unfolding(Ne, True, False, False)
+        0 0 0 0 0 0
+        1 1 1 0 0 0
+        2 2 2 0 0 0
+        1 0 3 0 0 0
+        1 0 4 0 0 0
+        0 1 5 0 0 0
+        0 1 6 0 0 0
+        2 0 7 0 0 0
+        2 0 8 0 0 0
+        0 2 9 0 0 0
+        0 2 10 0 0 0
+        2 1 11 0 0 0
+        2 1 12 0 0 0
+        1 2 13 0 0 0
+        1 2 14 0 0 0
+
+        >>> test_unfolding(Ne, True, False, True)
+        1 1 0 0 0 0
+        2 2 1 0 0 0
+        1 0 2 0 0 0
+        1 0 3 0 0 0
+        0 1 4 0 0 0
+        0 1 5 0 0 0
+        2 0 6 0 0 0
+        2 0 7 0 0 0
+        0 2 8 0 0 0
+        0 2 9 0 0 0
+        2 1 10 0 0 0
+        2 1 11 0 0 0
+        1 2 12 0 0 0
+        1 2 13 0 0 0
+
+        >>> test_unfolding(Ne, True, True, False)
         0 0 0 0 0 0
         1 1 1 0 0 0
         2 2 2 0 0 0
@@ -1106,27 +1174,8 @@ class Unfolding(object):
         2 0 6 0 0 0
         2 1 7 0 0 0
         2 1 8 0 0 0
-        0 0 9 0 0 0
-        1 1 10 0 0 0
-        2 2 11 0 0 0
-        1 0 12 0 0 0
-        1 0 13 0 0 0
-        2 0 14 0 0 0
-        2 0 15 0 0 0
-        2 1 16 0 0 0
-        2 1 17 0 0 0
-        0 0 18 0 0 0
-        1 1 19 0 0 0
-        2 2 20 0 0 0
-        1 0 21 0 0 0
-        1 0 22 0 0 0
-        2 0 23 0 0 0
-        2 0 24 0 0 0
-        2 1 25 0 0 0
-        2 1 26 0 0 0
 
-
-        >>> test_unfolding(Ne, Nv, False, False, True)
+        >>> test_unfolding(Ne, True, True, True)
         1 1 0 0 0 0
         2 2 1 0 0 0
         1 0 2 0 0 0
@@ -1135,245 +1184,45 @@ class Unfolding(object):
         2 0 5 0 0 0
         2 1 6 0 0 0
         2 1 7 0 0 0
-        1 1 8 0 0 0
-        2 2 9 0 0 0
-        1 0 10 0 0 0
-        1 0 11 0 0 0
-        2 0 12 0 0 0
-        2 0 13 0 0 0
-        2 1 14 0 0 0
-        2 1 15 0 0 0
-        1 1 16 0 0 0
-        2 2 17 0 0 0
-        1 0 18 0 0 0
-        1 0 19 0 0 0
-        2 0 20 0 0 0
-        2 0 21 0 0 0
-        2 1 22 0 0 0
-        2 1 23 0 0 0
-
-        >>> test_unfolding(Ne, Nv, False, True, False)
-        0 0 0 0 0 0
-        1 1 1 0 0 0
-        2 2 2 0 0 0
-        1 0 3 0 0 0
-        2 0 4 0 0 0
-        2 1 5 0 0 0
-        0 0 6 0 0 0
-        1 1 7 0 0 0
-        2 2 8 0 0 0
-        1 0 9 0 0 0
-        2 0 10 0 0 0
-        2 1 11 0 0 0
-        0 0 12 0 0 0
-        1 1 13 0 0 0
-        2 2 14 0 0 0
-        1 0 15 0 0 0
-        2 0 16 0 0 0
-        2 1 17 0 0 0
-
-        >>> test_unfolding(Ne, Nv, False, True, True)
-        1 1 0 0 0 0
-        2 2 1 0 0 0
-        1 0 2 0 0 0
-        2 0 3 0 0 0
-        2 1 4 0 0 0
-        1 1 5 0 0 0
-        2 2 6 0 0 0
-        1 0 7 0 0 0
-        2 0 8 0 0 0
-        2 1 9 0 0 0
-        1 1 10 0 0 0
-        2 2 11 0 0 0
-        1 0 12 0 0 0
-        2 0 13 0 0 0
-        2 1 14 0 0 0
-
-        >>> test_unfolding(Ne, Nv, True, False, False)
-        0 0 0 0 0 0 0
-        1 1 1 0 0 0 0
-        2 2 2 0 0 0 0
-        1 0 3 0 0 0 0
-        1 0 4 0 0 0 0
-        0 1 5 0 0 0 0
-        0 1 6 0 0 0 0
-        2 0 7 0 0 0 0
-        2 0 8 0 0 0 0
-        0 2 9 0 0 0 0
-        0 2 10 0 0 0 0
-        2 1 11 0 0 0 0
-        2 1 12 0 0 0 0
-        1 2 13 0 0 0 0
-        1 2 14 0 0 0 0
-        0 0 15 0 0 0 0
-        1 1 16 0 0 0 0
-        2 2 17 0 0 0 0
-        1 0 18 0 0 0 0
-        1 0 19 0 0 0 0
-        0 1 20 0 0 0 0
-        0 1 21 0 0 0 0
-        2 0 22 0 0 0 0
-        2 0 23 0 0 0 0
-        0 2 24 0 0 0 0
-        0 2 25 0 0 0 0
-        2 1 26 0 0 0 0
-        2 1 27 0 0 0 0
-        1 2 28 0 0 0 0
-        1 2 29 0 0 0 0
-        0 0 30 0 0 0 0
-        1 1 31 0 0 0 0
-        2 2 32 0 0 0 0
-        1 0 33 0 0 0 0
-        1 0 34 0 0 0 0
-        0 1 35 0 0 0 0
-        0 1 36 0 0 0 0
-        2 0 37 0 0 0 0
-        2 0 38 0 0 0 0
-        0 2 39 0 0 0 0
-        0 2 40 0 0 0 0
-        2 1 41 0 0 0 0
-        2 1 42 0 0 0 0
-        1 2 43 0 0 0 0
-        1 2 44 0 0 0 0
-
-        >>> test_unfolding(Ne, Nv, True, False, True)
-        1 1 0 0 0 0 0
-        2 2 1 0 0 0 0
-        1 0 2 0 0 0 0
-        1 0 3 0 0 0 0
-        0 1 4 0 0 0 0
-        0 1 5 0 0 0 0
-        2 0 6 0 0 0 0
-        2 0 7 0 0 0 0
-        0 2 8 0 0 0 0
-        0 2 9 0 0 0 0
-        2 1 10 0 0 0 0
-        2 1 11 0 0 0 0
-        1 2 12 0 0 0 0
-        1 2 13 0 0 0 0
-        1 1 14 0 0 0 0
-        2 2 15 0 0 0 0
-        1 0 16 0 0 0 0
-        1 0 17 0 0 0 0
-        0 1 18 0 0 0 0
-        0 1 19 0 0 0 0
-        2 0 20 0 0 0 0
-        2 0 21 0 0 0 0
-        0 2 22 0 0 0 0
-        0 2 23 0 0 0 0
-        2 1 24 0 0 0 0
-        2 1 25 0 0 0 0
-        1 2 26 0 0 0 0
-        1 2 27 0 0 0 0
-        1 1 28 0 0 0 0
-        2 2 29 0 0 0 0
-        1 0 30 0 0 0 0
-        1 0 31 0 0 0 0
-        0 1 32 0 0 0 0
-        0 1 33 0 0 0 0
-        2 0 34 0 0 0 0
-        2 0 35 0 0 0 0
-        0 2 36 0 0 0 0
-        0 2 37 0 0 0 0
-        2 1 38 0 0 0 0
-        2 1 39 0 0 0 0
-        1 2 40 0 0 0 0
-        1 2 41 0 0 0 0
-
-        >>> test_unfolding(Ne, Nv, True, True, False)
-        0 0 0 0 0 0 0
-        1 1 1 0 0 0 0
-        2 2 2 0 0 0 0
-        1 0 3 0 0 0 0
-        1 0 4 0 0 0 0
-        2 0 5 0 0 0 0
-        2 0 6 0 0 0 0
-        2 1 7 0 0 0 0
-        2 1 8 0 0 0 0
-        0 0 9 0 0 0 0
-        1 1 10 0 0 0 0
-        2 2 11 0 0 0 0
-        1 0 12 0 0 0 0
-        1 0 13 0 0 0 0
-        2 0 14 0 0 0 0
-        2 0 15 0 0 0 0
-        2 1 16 0 0 0 0
-        2 1 17 0 0 0 0
-        0 0 18 0 0 0 0
-        1 1 19 0 0 0 0
-        2 2 20 0 0 0 0
-        1 0 21 0 0 0 0
-        1 0 22 0 0 0 0
-        2 0 23 0 0 0 0
-        2 0 24 0 0 0 0
-        2 1 25 0 0 0 0
-        2 1 26 0 0 0 0
-
-        >>> test_unfolding(Ne, Nv, True, True, True)
-        1 1 0 0 0 0 0
-        2 2 1 0 0 0 0
-        1 0 2 0 0 0 0
-        1 0 3 0 0 0 0
-        2 0 4 0 0 0 0
-        2 0 5 0 0 0 0
-        2 1 6 0 0 0 0
-        2 1 7 0 0 0 0
-        1 1 8 0 0 0 0
-        2 2 9 0 0 0 0
-        1 0 10 0 0 0 0
-        1 0 11 0 0 0 0
-        2 0 12 0 0 0 0
-        2 0 13 0 0 0 0
-        2 1 14 0 0 0 0
-        2 1 15 0 0 0 0
-        1 1 16 0 0 0 0
-        2 2 17 0 0 0 0
-        1 0 18 0 0 0 0
-        1 0 19 0 0 0 0
-        2 0 20 0 0 0 0
-        2 0 21 0 0 0 0
-        2 1 22 0 0 0 0
-        2 1 23 0 0 0 0
 
         """
         real_map = {}; real_map_inv = {}
         comp_map = {}; comp_map_inv = {}
         mu_real = 0
         mu_comp = 0
-        # We repeat the same thing for each velocity group.
-        for k in range(Nv):
-            # We get the mappings of populations.
-            if normalized:
-                start = 1
-            else:
-                start = 0
-            for i in range(start, Ne):
-                comp_map.update({(0, i, i, k): mu_comp})
-                comp_map_inv.update({mu_comp: (0, i, i, k)})
-                mu_comp += 1
-                real_map.update({(1, i, i, k): mu_real})
-                real_map_inv.update({mu_real: (1, i, i, k)})
-                mu_real += 1
 
-            # We get the mappings for coherences.
-            for j in range(Ne):
-                for i in range(j+1, Ne):
-                    comp_map.update({(0, i, j, k): mu_comp})
-                    comp_map_inv.update({mu_comp: (0, i, j, k)})
+        # We get the mappings of populations.
+        if normalized:
+            start = 1
+        else:
+            start = 0
+        for i in range(start, Ne):
+            comp_map.update({(0, i, i): mu_comp})
+            comp_map_inv.update({mu_comp: (0, i, i)})
+            mu_comp += 1
+            real_map.update({(1, i, i): mu_real})
+            real_map_inv.update({mu_real: (1, i, i)})
+            mu_real += 1
+
+        # We get the mappings for coherences.
+        for j in range(Ne):
+            for i in range(j+1, Ne):
+                comp_map.update({(0, i, j): mu_comp})
+                comp_map_inv.update({mu_comp: (0, i, j)})
+                mu_comp += 1
+                for s in [1, -1]:
+                    real_map.update({(s, i, j): mu_real})
+                    real_map_inv.update({mu_real: (s, i, j)})
+                    mu_real += 1
+
+                if not lower_triangular:
+                    comp_map.update({(0, j, i): mu_comp})
+                    comp_map_inv.update({mu_comp: (0, j, i)})
                     mu_comp += 1
                     for s in [1, -1]:
-                        real_map.update({(s, i, j, k): mu_real})
-                        real_map_inv.update({mu_real: (s, i, j, k)})
+                        real_map.update({(s, j, i): mu_real})
+                        real_map_inv.update({mu_real: (s, j, i)})
                         mu_real += 1
-
-                    if not lower_triangular:
-                        comp_map.update({(0, j, i, k): mu_comp})
-                        comp_map_inv.update({mu_comp: (0, j, i, k)})
-                        mu_comp += 1
-                        for s in [1, -1]:
-                            real_map.update({(s, j, i, k): mu_real})
-                            real_map_inv.update({mu_real: (s, j, i, k)})
-                            mu_real += 1
 
             # if normalized:
             #     three.pop((0, 0))
@@ -1385,11 +1234,11 @@ class Unfolding(object):
         Nrho_real = len(real_map.keys())
         Nrho_comp = len(comp_map.keys())
 
-        def Mu_comp(s, i, j, k=0):
-            return comp_map[(s, i, j, k)]
+        def Mu_comp(s, i, j):
+            return comp_map[(s, i, j)]
 
-        def Mu_real(s, i, j, k=0):
-            return real_map[(s, i, j, k)]
+        def Mu_real(s, i, j):
+            return real_map[(s, i, j)]
 
         def IJ_comp(mu):
             return comp_map_inv[mu]
@@ -1409,16 +1258,15 @@ class Unfolding(object):
         self.real = real
         self.normalized = normalized
         self.Ne = Ne
-        self.Nv = Nv
 
     def __call__(self, rho):
         r"""Unfold a matrix into a vector.
 
         The input of this function can be a numpy array or a sympy Matrix.
 
-        >>> unfolding = Unfolding(2, 1, real=True, lower_triangular=True,
+        >>> unfolding = Unfolding(2, real=True, lower_triangular=True,
         ...                       normalized=True)
-        >>> rhos = np.array([[[0.6, 1+2j], [1-2j, 0.4]]])
+        >>> rhos = np.array([[0.6, 1+2j], [1-2j, 0.4]])
         >>> print unfolding(rhos)
         [ 0.4  1.  -2. ]
 
@@ -1448,9 +1296,9 @@ class Unfolding(object):
             raise ValueError
 
         for mu in range(Nrho):
-            s, i, j, ivz = IJ(mu)
+            s, i, j = IJ(mu)
             if numeric:
-                rhomu = part(rho[ivz, i, j], s)
+                rhomu = part(rho[i, j], s)
             else:
                 rhomu = symbolic_part(rho[i, j], s)
             rhov[mu] = rhomu
@@ -1462,12 +1310,12 @@ class Unfolding(object):
 
         The input of this function can be a numpy array or a sympy Matrix.
 
-        >>> unfolding = Unfolding(2, 1, real=True, lower_triangular=True,
+        >>> unfolding = Unfolding(2, real=True, lower_triangular=True,
         ...                       normalized=True)
-        >>> rhos = np.array([[[0.6, 1+2j], [1-2j, 0.4]]])
+        >>> rhos = np.array([[0.6, 1+2j], [1-2j, 0.4]])
         >>> print rhos == unfolding.inverse(unfolding(rhos))
-        [[[ True  True]
-          [ True  True]]]
+        [[ True  True]
+         [ True  True]]
 
         >>> from fast import define_density_matrix
         >>> from sympy import pprint
@@ -1479,26 +1327,25 @@ class Unfolding(object):
 
         """
         Ne = self.Ne
-        Nv = self.Nv
         Nrho = self.Nrho
         IJ = self.IJ
 
         if isinstance(rhov, np.ndarray):
-            rho = np.zeros((Nv, Ne, Ne), complex)
+            rho = np.zeros((Ne, Ne), complex)
             numeric = True
         elif isinstance(rhov, sympy.Matrix):
             rho = sympy.zeros(Ne, Ne)
             numeric = False
 
         for mu in range(Nrho):
-            s, i, j, ivz = IJ(mu)
+            s, i, j = IJ(mu)
             if numeric:
                 if s == 1:
-                    rho[ivz, i, j] += rhov[mu]
+                    rho[i, j] += rhov[mu]
                 elif s == -1:
-                    rho[ivz, i, j] += 1j*rhov[mu]
+                    rho[i, j] += 1j*rhov[mu]
                 elif s == 0:
-                    rho[ivz, i, j] += rhov[mu]
+                    rho[i, j] += rhov[mu]
             else:
                 if s == 1:
                     rho[i, j] += rhov[mu]
@@ -1510,21 +1357,10 @@ class Unfolding(object):
         if self.lower_triangular:
             for i in range(Ne):
                 for j in range(i):
-                    if numeric:
-                        for ivz in range(Nv):
-                            aa = rho[ivz, i, j].conjugate()
-                            rho[ivz, j, i] = aa
-                    else:
-                        rho[j, i] = rho[i, j].conjugate()
+                    rho[j, i] = rho[i, j].conjugate()
 
         if self.normalized:
-            if numeric:
-                for ivz in range(Nv):
-                    rho11 = 1-sum([rho[ivz, i, i] for i in range(1, Ne)])
-                    rho[ivz, 0, 0] = rho11
-            else:
-                rho11 = 1-sum([rho[i, i] for i in range(1, Ne)])
-                rho[0, 0] = rho11
+            rho[0, 0] = 1-sum([rho[i, i] for i in range(1, Ne)])
 
         return rho
 
