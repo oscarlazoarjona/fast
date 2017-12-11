@@ -46,6 +46,10 @@ from sympy import re, im, zeros, factorial, binomial
 from fast.misc import IJ, find_phase_transformation
 from numpy import array as nparray
 from numpy import sqrt as npsqrt
+from sympy import Expr
+from sympy.physics.quantum.qexpr import QExpr
+from sympy.core import Mul
+# from sympy.core.compatibility import u
 
 
 def define_symbol(name, open_brace, comma, i, j,
@@ -1311,6 +1315,202 @@ approximation, as far as I know."
                     H[i, j] += hbar*omega_level[i]
 
     return H
+
+
+###############################################################################
+# 3D vector class definitions.
+class Vector3D(QExpr):
+    """Class for 3d vectors."""
+
+    @classmethod
+    def default_args(self):
+        """Default arguments."""
+        return ("v",)
+
+    def _sympystr(self, printer, *args):
+        contents = self._print_contents(printer, *args)
+        return str(contents)
+
+    def _latex(self, printer, *args):
+        contents = self._print_contents_latex(printer, *args)
+        # The extra {} brackets are needed to get matplotlib's latex
+        # rendered to render this properly.
+        return '{%s%s%s}' % (r"\vec{",
+                             contents, "}")
+
+    def dot(self, other):
+        """Return the dot product."""
+        return DotProduct(self, other)
+
+    def cross(self, other):
+        """Return the cross product."""
+        return CrossProduct(self, other)
+
+    def __getitem__(self, key):
+        r"""Return an indexed instance if the vector is an iterable type."""
+        arg = self.args[0]
+        if isinstance(arg, conjugate):
+            arg = arg.args[0]
+            if hasattr(arg, '__getitem__'):
+                return Vector3D(arg[key].conjugate())
+            else:
+                raise TypeError("This vector is not iterable.")
+
+        if hasattr(arg, '__getitem__'):
+            return Vector3D(arg[key])
+        else:
+            raise TypeError("This vector is not iterable.")
+
+    def __mul__(self, other):
+        r"""Scalar multiplication."""
+        if isinstance(other, Vector3D):
+            s = "Try methods dot or cross for scalar or vector products."
+            raise TypeError(s)
+        else:
+            return other*self
+
+
+class DotProduct(Expr):
+    """An unevaluated dot product."""
+
+    is_complex = True
+
+    def __new__(cls, v1, v2):
+        r"""Create a new dot product."""
+        if not isinstance(v1, Vector3D):
+            raise TypeError("first object must be an instance of Vector3D.")
+        if not isinstance(v2, Vector3D):
+            raise TypeError("second object must be an instance of Vector3D.")
+
+        obj = Expr.__new__(cls, v1, v2)
+        return obj
+
+    @property
+    def v1(self):
+        r"""The left-hand side vector."""
+        return self.args[0]
+
+    @property
+    def v2(self):
+        r"""The right-hand side vector."""
+        return self.args[1]
+
+    def _sympystr(self, printer, *args):
+        sv1 = self.v1._sympystr(printer, *args)
+        sv2 = self.v2._sympystr(printer, *args)
+        return 'dot(%s, %s)' % (sv1, sv2)
+
+    def _latex(self, printer, *args):
+        v1 = printer._print(self.v1, *args)
+        v2 = printer._print(self.v2, *args)
+        return r'{%s \cdot %s}' % (v1, v2)
+
+
+class CrossProduct(Expr):
+    """An unevaluated dot product."""
+
+    is_complex = True
+
+    def __new__(cls, v1, v2):
+        r"""Create a new dot product."""
+        if not isinstance(v1, Vector3D):
+            raise TypeError("first object must be an instance of Vector3D.")
+        if not isinstance(v2, Vector3D):
+            raise TypeError("second object must be an instance of Vector3D.")
+
+        obj = Expr.__new__(cls, v1, v2)
+        return obj
+
+    @property
+    def v1(self):
+        r"""The left-hand side vector."""
+        return self.args[0]
+
+    @property
+    def v2(self):
+        r"""The left-hand side vector."""
+        return self.args[1]
+
+    def _sympystr(self, printer, *args):
+        sv1 = self.v1._sympystr(printer, *args)
+        sv2 = self.v2._sympystr(printer, *args)
+        return 'cross(%s,%s)' % (sv1, sv2)
+
+    def _latex(self, printer, *args):
+        v1 = printer._print(self.v1, *args)
+        v2 = printer._print(self.v2, *args)
+        return r'{%s \times %s}' % (v1, v2)
+
+
+def dot(a, b):
+    r"""Dot product of two 3d vectors."""
+    if isinstance(a, Mul):
+        a = a.expand()
+        avect = 1
+        aivect = -1
+        for ai, fact in enumerate(a.args):
+            if isinstance(fact, Vector3D):
+                avect = fact
+                aivect = ai
+                break
+
+        acoef = a.args[:aivect] + a.args[aivect+1:]
+        acoef = Mul(*acoef)
+        return acoef*dot(avect, b)
+
+    if isinstance(b, Mul):
+        b = b.expand()
+        bvect = 1
+        bivect = -1
+        for bi, fact in enumerate(b.args):
+            if isinstance(fact, Vector3D):
+                bvect = fact
+                bivect = bi
+                break
+
+        bcoef = b.args[:bivect] + b.args[bivect+1:]
+        bcoef = Mul(*bcoef)
+        return bcoef*dot(a, bvect)
+
+    if isinstance(a, Vector3D) and isinstance(b, Vector3D):
+        return DotProduct(a, b)
+
+    if hasattr(a, "shape") and hasattr(b, "shape"):
+        return cartesian_dot_product(a, b)
+
+
+def cross(a, b):
+    r"""Cross product of two 3d vectors."""
+    if isinstance(a, Mul):
+        a = a.expand()
+        avect = 1
+        aivect = -1
+        for ai, fact in enumerate(a.args):
+            if isinstance(fact, Vector3D):
+                avect = fact
+                aivect = ai
+                break
+
+        acoef = a.args[:aivect] + a.args[aivect+1:]
+        acoef = Mul(*acoef)
+        return acoef*cross(avect, b)
+
+    if isinstance(b, Mul):
+        b = b.expand()
+        bvect = 1
+        bivect = -1
+        for bi, fact in enumerate(b.args):
+            if isinstance(fact, Vector3D):
+                bvect = fact
+                bivect = bi
+                break
+
+        bcoef = b.args[:bivect] + b.args[bivect+1:]
+        bcoef = Mul(*bcoef)
+        return bcoef*cross(a, bvect)
+
+    if isinstance(a, Vector3D) and isinstance(b, Vector3D):
+        return CrossProduct(a, b)
 
 
 if __name__ == "__main__":

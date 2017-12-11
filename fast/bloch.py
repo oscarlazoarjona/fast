@@ -216,7 +216,7 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff, IndexedBase, re, im
+from sympy import Symbol, diff, IndexedBase
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
 from scipy.constants import physical_constants
