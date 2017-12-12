@@ -295,7 +295,8 @@ class MotField(object):
         return plo
 
 
-def electric_field_amplitude_gaussian(P, sigmax, sigmay=None, Omega=1.0e6):
+def electric_field_amplitude_gaussian(P, sigmax, sigmay=None, Omega=1.0e6,
+                                      units="ad-hoc"):
     """Return the amplitude of the electric field for a Gaussian beam.
 
     This the amplitude at the center of a laser beam of power P (in Watts) and\
@@ -311,10 +312,13 @@ def electric_field_amplitude_gaussian(P, sigmax, sigmay=None, Omega=1.0e6):
     e0 = hbar*Omega/(e*a0)  # This is the electric field scale.
 
     if sigmay is None: sigmay = sigmax
-    return sqrt((c*mu0*P)/(2*Pi))/sqrt(sigmax*sigmay)/e0
+    E0 = sqrt((c*mu0*P)/(2*Pi))/sqrt(sigmax*sigmay)
+    if units == "ad-hoc":
+        E0 = E0/e0
+    return E0
 
 
-def electric_field_amplitude_top(P, a, Omega=1e6):
+def electric_field_amplitude_top(P, a, Omega=1e6, units="ad-hoc"):
     """Return the amplitude of the electric field for a top hat beam.
 
     This is the amplitude of a laser beam of power P (in Watts) and a top-hat\
@@ -327,8 +331,10 @@ def electric_field_amplitude_top(P, a, Omega=1e6):
 
     """
     e0 = hbar*Omega/(e*a0)  # This is the electric field scale.
-
-    return sqrt((c*mu0*P)/(Pi*a**2))/e0
+    E0 = sqrt((c*mu0*P)/(Pi*a**2))
+    if units == "ad-hoc":
+        E0 = E0/e0
+    return E0
 
 
 def electric_field_amplitude_intensity(s0, Omega=1e6):

@@ -1204,6 +1204,9 @@ class Unfolding(object):
             real_map_inv.update({mu_real: (1, i, i)})
             mu_real += 1
 
+            real_map.update({(-1, i, i): None})
+            real_map_inv.update({None: (-1, i, i)})
+
         # We get the mappings for coherences.
         for j in range(Ne):
             for i in range(j+1, Ne):
@@ -1231,8 +1234,8 @@ class Unfolding(object):
             #     three_inv.pop(0)
             #     four_inv.pop(0)
 
-        Nrho_real = len(real_map.keys())
-        Nrho_comp = len(comp_map.keys())
+        Nrho_real = mu_real
+        Nrho_comp = mu_comp
 
         def Mu_comp(s, i, j):
             return comp_map[(s, i, j)]
@@ -1363,6 +1366,319 @@ class Unfolding(object):
             rho[0, 0] = 1-sum([rho[i, i] for i in range(1, Ne)])
 
         return rho
+
+
+def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
+                    matrix_form=False, file_name=None):
+    r"""Return a fast function that returns the Rabi frequency terms."""
+    Nl = len(Ep)
+    Ne = unfolding.Ne
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
+
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+    # We unpack variables.
+    if True:
+        Nrho = unfolding.Nrho
+        # Mu = unfolding.Mu
+        IJ = unfolding.IJ
+        normalized = unfolding.normalized
+        lower_triangular = unfolding.lower_triangular
+
+        # The conjugate stuff.
+        Em = [ii.conjugate() for ii in Ep]
+        if variable_epsilonp:
+            epsilonm = Vector3D(epsilonp.args[0].conjugate())
+        else:
+            epsilonm = [ii.conjugate() for ii in epsilonp]
+        # We convert rm to a numpy array
+        rm = np.array([[[complex(rm[k][i, j])
+                       for j in range(Ne)] for i in range(Ne)]
+                       for k in range(3)])
+        rp = np.array([rm[ii].T.conjugate() for ii in range(3)])
+        rm_aux = Vector3D(IndexedBase("rm", shape=(Ne, Ne)))
+        rp_aux = Vector3D(IndexedBase("rp", shape=(Ne, Ne)))
+
+        # We define needed matrices.
+        rho = define_density_matrix(Ne, explicitly_hermitian=lower_triangular,
+                                    normalized=normalized)
+
+        if variable_epsilonp:
+            Omega = [[sum([xi[l, i, j] *
+                          (Ep[l]*dot(epsilonp[l], rm_aux[i, j]) *
+                          delta_greater(i, j) +
+                           Em[l]*dot(epsilonm[l], rp_aux[i, j]) *
+                          delta_lesser(i, j))
+                           for l in range(Nl)])
+                     for j in range(Ne)] for i in range(Ne)]
+        else:
+            Omega = [[sum([xi[l, i, j] *
+                          (Ep[l]*dot(epsilonp[l], rm[:, i, j]) +
+                           Em[l]*dot(epsilonm[l], rp[:, i, j]))
+                           for l in range(Nl)])
+                     for j in range(Ne)] for i in range(Ne)]
+    # We establish the arguments of the output function.
+    if True:
+        code = ""
+        code += "def rabi_terms("
+        if not matrix_form: code += "rho, "
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        if code[-2:] == ", ":
+            code = code[:-2]
+        code += "):\n"
+        code += '    r"""A fast calculation of the Rabi terms."""\n'
+    # We initialize the output and auxiliaries.
+    if True:
+        # We introduce the factor that multiplies all terms.
+        code += "    fact = "+str(e_num/hbar_num)+"\n\n"
+        if variable_epsilonp:
+            # We put rm and rp into the code
+            code += "    rm = np."+rm.__repr__()+"\n\n"
+            code += "    rp = np."+rp.__repr__()+"\n\n"
+            code += "    def dot(epsilon, rij):\n"
+            code += "        return epsilon[0]*rij[0]"
+            code += " + epsilon[1]*rij[1]"
+            code += " + epsilon[2]*rij[2]\n\n"
+
+        # if unfolding.normalized:
+        #     if not matrix_form:
+        #         mu11 = Mu(1, 1, 1)
+        #         muNeNe = Mu(1, Ne-1, Ne-1)
+        #         code += "    # The first population.\n"
+        #         code += "    rho00 = 1 "
+        #         code += "- sum([rho[mu] for mu in range("
+        #         code += str(mu11)+", "+str(muNeNe+1)+")])\n"
+
+        if matrix_form:
+            code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+            if unfolding.normalized:
+                code += "    b = np.zeros(("+str(Nrho)
+                if not unfolding.real:
+                    code += "), complex)\n\n"
+                else:
+                    code += "))\n\n"
+        else:
+            code += "    rhs = np.zeros(("+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+
+    # We write code for the linear terms.
+    rho00_terms = []
+    for mu in range(Nrho):
+        s, i, j = IJ(mu)
+        for l in range(Nl):
+            for k in range(Ne):
+                if xi[l, i, k] == 1:
+                    # There is a I* Omega_l,i,k * rho_k,j term.
+                    u = k; v = j
+                    coef_list = linear_get_coefficients(0.5*Omega[i][k],
+                                                        rho[k, j],
+                                                        s, i, j, k, u, v,
+                                                        unfolding,
+                                                        matrix_form)
+                    for coef in coef_list:
+                        code += term_code(*coef)
+
+                    # We keep note that there was a term with rho00.
+                    if k == 0 and j == 0:
+                        rho00_terms += [(0.5*Omega[i][k], rho[k, j],
+                                        s, i, j, k, u, v,
+                                        unfolding, matrix_form)]
+                if xi[l, k, j] == 1:
+                    # There is a -I * Omega_l,k,j * rho_i,k term.
+                    u = i; v = k
+                    coef_list = linear_get_coefficients(-0.5*Omega[k][j],
+                                                        rho[i, k],
+                                                        s, i, j, k, u, v,
+                                                        unfolding,
+                                                        matrix_form)
+                    for coef in coef_list:
+                        code += term_code(*coef)
+                    # We keep note that there was a term with rho00.
+                    if i == 0 and k == 0:
+                        rho00_terms += [(-0.5*Omega[k][j], rho[i, k],
+                                         s, i, j, k, u, v,
+                                         unfolding, matrix_form)]
+
+    # We write code for the independent terms.
+    if unfolding.normalized:
+        code += "\n    # Independent terms:\n"
+        for term in rho00_terms:
+            coef_list = independent_get_coefficients(*term)
+            for coef in coef_list:
+                code += term_code(*coef, linear=False)
+    # We finish the code.
+    if True:
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    A *= fact\n"
+                code += "    b *= fact\n"
+                code += "    return A, b\n"
+            else:
+                code += "    A *= fact\n"
+                code += "    return A\n"
+        else:
+            code += "    rhs *= fact\n"
+            code += "    return rhs\n"
+
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name, "w")
+            f.write(code)
+            f.close()
+
+        rabi_terms = code
+        exec rabi_terms
+    return rabi_terms
+
+
+def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+                                 unfolding, matrix_form):
+    r"""Get the indices mu, nu, and term coefficients for linear terms."""
+    if matrix_form:
+        coef = -coef
+    Mu = unfolding.Mu
+    mu = Mu(s, i, j)
+    if s == 1:
+        coef_list = [[mu, None, -im(coef), matrix_form]]
+    elif s == -1:
+        coef_list = [[mu, None, re(coef), matrix_form]]
+    else:
+        coef_list = [[mu, None, coef, matrix_form]]
+    return coef_list
+
+
+def linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+                            unfolding, matrix_form):
+    r"""Get the indices mu, nu, and term coefficients for linear terms.
+
+    We determine mu and nu, the indices labeling the density matrix components
+          d rho[mu] /dt = sum_nu A[mu, nu]*rho[nu]
+    for this complex and rho_u,v.
+    """
+    Ne = unfolding.Ne
+    Mu = unfolding.Mu
+    # We determine mu, the index labeling the equation.
+    mu = Mu(s, i, j)
+
+    if unfolding.normalized and u == 0 and v == 0:
+        # We find the nu and coefficients for a term of the form.
+        # coef*rho_{00} = coef*(1-sum_{i=1}^{Ne-1} rho_{ii})
+        mu11 = Mu(1, 1, 1)
+        muNeNe = Mu(1, Ne-1, Ne-1)
+        if s == 1:
+            coef_list = [[mu, nu, im(coef), matrix_form]
+                         for nu in range(mu11, muNeNe+1)]
+        elif s == -1:
+            coef_list = [[mu, nu, -re(coef), matrix_form]
+                         for nu in range(mu11, muNeNe+1)]
+        elif s == 0:
+            coef_list = [[mu, nu, coef, matrix_form]
+                         for nu in range(mu11, muNeNe+1)]
+        return coef_list
+
+    #####################################################################
+
+    if (unfolding.lower_triangular and
+       isinstance(rhouv, sympy.conjugate)):
+        u, v = (v, u)
+        rhouv_isconjugated = True
+    else:
+        rhouv_isconjugated = False
+    # If the unfolding is real, there are two terms for this
+    # component rhouv of equation mu.
+    if unfolding.real:
+        nur = Mu(1, u, v)
+        nui = Mu(-1, u, v)
+    else:
+        nu = Mu(0, u, v)
+    #####################################################################
+    # We determine the coefficients for each term.
+    if unfolding.real:
+        # There are two sets of forumas for the coefficients depending
+        # on whether rhouv_isconjugated.
+        # re(I*x*conjugate(y)) = -im(x)*re(y) + re(x)*im(y)
+        # re(I*x*y)            = -im(x)*re(y) - re(x)*im(y)
+        # im(I*x*conjugate(y)) = +re(x)*re(y) + im(x)*im(y)
+        # im(I*x*y)            = +re(x)*re(y) - im(x)*im(y)
+        if s == 1:
+            # The real part
+            if rhouv_isconjugated:
+                coef_rerhouv = -im(coef)
+                coef_imrhouv = re(coef)
+            else:
+                coef_rerhouv = -im(coef)
+                coef_imrhouv = -re(coef)
+        elif s == -1:
+            if rhouv_isconjugated:
+                coef_rerhouv = re(coef)
+                coef_imrhouv = im(coef)
+            else:
+                coef_rerhouv = re(coef)
+                coef_imrhouv = -im(coef)
+
+        coef_list = [[mu, nur, coef_rerhouv, matrix_form]]
+        if nui is not None:
+            coef_list += [[mu, nui, coef_imrhouv, matrix_form]]
+    else:
+        coef_list = [[mu, nu, coef, matrix_form]]
+
+    return coef_list
+
+
+def term_code(mu, nu, coef, matrix_form, linear=True):
+    r"""Get code to calculate a linear term."""
+    coef = str(coef)
+
+    # We change E_{0i} -> E0[i-1]
+    ini = coef.find("E_{0")
+    fin = coef.find("}")
+    if ini != -1:
+        l = int(coef[ini+4: fin])
+        coef = coef[:ini]+"Ep["+str(l-1)+"]"+coef[fin+1:]
+
+    # We change r[i, j] -> r[:, i, j]
+    coef = coef.replace("rp[", "rp[:, ")
+    coef = coef.replace("rm[", "rm[:, ")
+
+    # We change symbolic complex-operations into fast numpy functions.
+    coef = coef.replace("conjugate(", "np.conjugate(")
+    coef = coef.replace("re(", "np.real(")
+    coef = coef.replace("im(", "np.imag(")
+
+    if not linear:
+        if matrix_form:
+            s = "    b["+str(mu)+"] += "+coef+"\n"
+        else:
+            s = "    rhs["+str(mu)+"] += "+coef+"\n"
+        return s
+
+    # We add the syntax to calculate the term and store it in memory.
+    s = "    "
+    if matrix_form:
+        s += "A["+str(mu)+", "+str(nu)+"] += "+coef+"\n"
+    else:
+        s += "rhs["+str(mu)+"] += "+coef+"*rho["+str(nu)+']\n'
+
+    return s
 
 
 if __name__ == "__main__":
