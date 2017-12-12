@@ -20,6 +20,8 @@
 #                                                                       *
 # ***********************************************************************
 
+# TODO:
+#      Make doctests of fast_rabi_terms that show the new features.
 r"""This module contains all the fast routines for optical Bloch equations.
 
 Here is an example with rubidum 87.
@@ -1253,10 +1255,12 @@ class Unfolding(object):
             self.Mu = Mu_real
             self.IJ = IJ_real
             self.Nrho = Nrho_real
+            self.map = real_map
         else:
             self.Mu = Mu_comp
             self.IJ = IJ_comp
             self.Nrho = Nrho_comp
+            self.map = comp_map
         self.lower_triangular = lower_triangular
         self.real = real
         self.normalized = normalized
@@ -1370,7 +1374,53 @@ class Unfolding(object):
 
 def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                     matrix_form=False, file_name=None):
-    r"""Return a fast function that returns the Rabi frequency terms."""
+    r"""Return a fast function that returns the Rabi frequency terms.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.symbolic import define_laser_variables, polarization_vector
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+    We define symbolic variables to be used as token arguments.
+    >>> Eps = [electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")]
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    We obtain a function to calculate Rabi frequency terms.
+    >>> rabi_terms = fast_rabi_terms(Ep, epsilonps, rm, xi, theta, unfolding)
+
+    Apply this to a density matrix.
+    >>> rhos = np.array([[0.6, 3+2j],
+    ...                  [3-2j, 0.4]])
+    >>> rhosv = unfolding(rhos)
+    >>> rhs_rabi = rabi_terms(rhosv, Eps)
+    >>> print rhs_rabi
+    [-55680831.47404964         0.           2784041.57370248]
+
+    """
+    if not unfolding.lower_triangular:
+        mes = "It is very inefficient to solve using all components of the "
+        mes += "density matrix. Better set lower_triangular=True in Unfolding."
+        raise NotImplementedError(mes)
+    if matrix_form and (not unfolding.real) and (unfolding.lower_triangular):
+        mes = "It is not possible to express the equations in matrix form "
+        mes += "for complex lower triangular components only."
+        raise ValueError(mes)
     Nl = len(Ep)
     Ne = unfolding.Ne
     # We determine which arguments are constants.
@@ -1441,7 +1491,10 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
     # We initialize the output and auxiliaries.
     if True:
         # We introduce the factor that multiplies all terms.
-        code += "    fact = "+str(e_num/hbar_num)+"\n\n"
+        if unfolding.real:
+            code += "    fact = "+str(e_num/hbar_num)+"\n\n"
+        else:
+            code += "    fact = "+str(1j*e_num/hbar_num)+"\n\n"
         if variable_epsilonp:
             # We put rm and rp into the code
             code += "    rm = np."+rm.__repr__()+"\n\n"
@@ -1450,15 +1503,6 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
             code += "        return epsilon[0]*rij[0]"
             code += " + epsilon[1]*rij[1]"
             code += " + epsilon[2]*rij[2]\n\n"
-
-        # if unfolding.normalized:
-        #     if not matrix_form:
-        #         mu11 = Mu(1, 1, 1)
-        #         muNeNe = Mu(1, Ne-1, Ne-1)
-        #         code += "    # The first population.\n"
-        #         code += "    rho00 = 1 "
-        #         code += "- sum([rho[mu] for mu in range("
-        #         code += str(mu11)+", "+str(muNeNe+1)+")])\n"
 
         if matrix_form:
             code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
@@ -1488,34 +1532,26 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                 if xi[l, i, k] == 1:
                     # There is a I* Omega_l,i,k * rho_k,j term.
                     u = k; v = j
-                    coef_list = linear_get_coefficients(0.5*Omega[i][k],
-                                                        rho[k, j],
-                                                        s, i, j, k, u, v,
-                                                        unfolding,
-                                                        matrix_form)
-                    for coef in coef_list:
-                        code += term_code(*coef)
+                    args = (0.5*Omega[i][k], rho[k, j], s, i, j, k, u, v,
+                            unfolding, matrix_form)
+                    term_list = linear_get_coefficients(*args)
+                    for term in term_list:
+                        code += term_code(*term)
 
                     # We keep note that there was a term with rho00.
                     if k == 0 and j == 0:
-                        rho00_terms += [(0.5*Omega[i][k], rho[k, j],
-                                        s, i, j, k, u, v,
-                                        unfolding, matrix_form)]
+                        rho00_terms += [args]
                 if xi[l, k, j] == 1:
                     # There is a -I * Omega_l,k,j * rho_i,k term.
                     u = i; v = k
-                    coef_list = linear_get_coefficients(-0.5*Omega[k][j],
-                                                        rho[i, k],
-                                                        s, i, j, k, u, v,
-                                                        unfolding,
-                                                        matrix_form)
-                    for coef in coef_list:
-                        code += term_code(*coef)
+                    args = (-0.5*Omega[k][j], rho[i, k], s, i, j, k, u, v,
+                            unfolding, matrix_form)
+                    term_list = linear_get_coefficients(*args)
+                    for term in term_list:
+                        code += term_code(*term)
                     # We keep note that there was a term with rho00.
                     if i == 0 and k == 0:
-                        rho00_terms += [(-0.5*Omega[k][j], rho[i, k],
-                                         s, i, j, k, u, v,
-                                         unfolding, matrix_form)]
+                        rho00_terms += [args]
 
     # We write code for the independent terms.
     if unfolding.normalized:
@@ -1552,17 +1588,31 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
 
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
                                  unfolding, matrix_form):
-    r"""Get the indices mu, nu, and term coefficients for linear terms."""
+    r"""Get the indices mu, nu, and term coefficients for linear terms.
+
+    >>> from fast.symbolic import define_density_matrix
+    >>> Ne = 2
+    >>> coef = 1+2j
+    >>> rhouv = define_density_matrix(Ne)[1, 1]
+    >>> s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
+    >>> unfolding = Unfolding(Ne, real=True, normalized=True)
+
+    >>> independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+    ...                              unfolding, False)
+    [[1, None, -2.00000000000000, False, False]]
+
+    """
     if matrix_form:
         coef = -coef
     Mu = unfolding.Mu
     mu = Mu(s, i, j)
+    rhouv_isconjugated = False
     if s == 1:
-        coef_list = [[mu, None, -im(coef), matrix_form]]
+        coef_list = [[mu, None, -im(coef), matrix_form, rhouv_isconjugated]]
     elif s == -1:
-        coef_list = [[mu, None, re(coef), matrix_form]]
+        coef_list = [[mu, None, re(coef), matrix_form, rhouv_isconjugated]]
     else:
-        coef_list = [[mu, None, coef, matrix_form]]
+        coef_list = [[mu, None, coef, matrix_form, rhouv_isconjugated]]
     return coef_list
 
 
@@ -1573,6 +1623,18 @@ def linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
     We determine mu and nu, the indices labeling the density matrix components
           d rho[mu] /dt = sum_nu A[mu, nu]*rho[nu]
     for this complex and rho_u,v.
+
+    >>> from fast.symbolic import define_density_matrix
+    >>> Ne = 2
+    >>> coef = 1+2j
+    >>> rhouv = define_density_matrix(Ne)[1, 1]
+    >>> s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
+    >>> unfolding = Unfolding(Ne, real=True, normalized=True)
+
+    >>> linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+    ...                              unfolding, False)
+    [[1, 0, -2.00000000000000, False, False]]
+
     """
     Ne = unfolding.Ne
     Mu = unfolding.Mu
@@ -1582,16 +1644,22 @@ def linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
     if unfolding.normalized and u == 0 and v == 0:
         # We find the nu and coefficients for a term of the form.
         # coef*rho_{00} = coef*(1-sum_{i=1}^{Ne-1} rho_{ii})
-        mu11 = Mu(1, 1, 1)
-        muNeNe = Mu(1, Ne-1, Ne-1)
+        if unfolding.real:
+            ss = 1
+        else:
+            ss = 0
+
+        mu11 = Mu(ss, 1, 1)
+        muNeNe = Mu(ss, Ne-1, Ne-1)
+        rhouv_isconjugated = False
         if s == 1:
-            coef_list = [[mu, nu, im(coef), matrix_form]
+            coef_list = [[mu, nu, im(coef), matrix_form, rhouv_isconjugated]
                          for nu in range(mu11, muNeNe+1)]
         elif s == -1:
-            coef_list = [[mu, nu, -re(coef), matrix_form]
+            coef_list = [[mu, nu, -re(coef), matrix_form, rhouv_isconjugated]
                          for nu in range(mu11, muNeNe+1)]
         elif s == 0:
-            coef_list = [[mu, nu, coef, matrix_form]
+            coef_list = [[mu, nu, -coef, matrix_form, rhouv_isconjugated]
                          for nu in range(mu11, muNeNe+1)]
         return coef_list
 
@@ -1635,17 +1703,23 @@ def linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
                 coef_rerhouv = re(coef)
                 coef_imrhouv = -im(coef)
 
-        coef_list = [[mu, nur, coef_rerhouv, matrix_form]]
+        coef_list = [[mu, nur, coef_rerhouv, matrix_form, rhouv_isconjugated]]
         if nui is not None:
-            coef_list += [[mu, nui, coef_imrhouv, matrix_form]]
+            coef_list += [[mu, nui, coef_imrhouv,
+                           matrix_form, rhouv_isconjugated]]
     else:
-        coef_list = [[mu, nu, coef, matrix_form]]
+        coef_list = [[mu, nu, coef, matrix_form, rhouv_isconjugated]]
 
     return coef_list
 
 
-def term_code(mu, nu, coef, matrix_form, linear=True):
-    r"""Get code to calculate a linear term."""
+def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
+    r"""Get code to calculate a linear term.
+
+    >>> term_code(1, 0, 33, False, False, True)
+    '    rhs[1] += 33*rho[0]\n'
+
+    """
     coef = str(coef)
 
     # We change E_{0i} -> E0[i-1]
@@ -1676,7 +1750,11 @@ def term_code(mu, nu, coef, matrix_form, linear=True):
     if matrix_form:
         s += "A["+str(mu)+", "+str(nu)+"] += "+coef+"\n"
     else:
-        s += "rhs["+str(mu)+"] += "+coef+"*rho["+str(nu)+']\n'
+        s += "rhs["+str(mu)+"] += "+coef
+        if rhouv_isconjugated:
+            s += "*np.conjugate(rho["+str(nu)+'])\n'
+        else:
+            s += "*rho["+str(nu)+']\n'
 
     return s
 
