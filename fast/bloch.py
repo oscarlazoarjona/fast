@@ -1312,10 +1312,13 @@ class Unfolding(object):
 
         return rhov
 
-    def inverse(self, rhov):
+    def inverse(self, rhov, time_derivative=False):
         r"""Fold a vector into a matrix.
 
         The input of this function can be a numpy array or a sympy Matrix.
+
+        If the input is understood to represent the time derivative of a
+        density matrix, then the flag time_derivative must be set to True.
 
         >>> unfolding = Unfolding(2, real=True, lower_triangular=True,
         ...                       normalized=True)
@@ -1331,6 +1334,14 @@ class Unfolding(object):
         [      -rho22 + 1         re(rho21) - I*im(rho21)]
         [                                                ]
         [re(rho21) + I*im(rho21)           rho22         ]
+
+
+        >>> rhops = np.array([[0.0, 0.0],
+        ...                   [0.0, 0.0]])
+
+        >>> print unfolding.inverse(unfolding(rhops), True)
+        [[-0.-0.j  0.-0.j]
+         [ 0.+0.j  0.+0.j]]
 
         """
         Ne = self.Ne
@@ -1367,7 +1378,10 @@ class Unfolding(object):
                     rho[j, i] = rho[i, j].conjugate()
 
         if self.normalized:
-            rho[0, 0] = 1-sum([rho[i, i] for i in range(1, Ne)])
+            if time_derivative:
+                rho[0, 0] = -sum([rho[i, i] for i in range(1, Ne)])
+            else:
+                rho[0, 0] = 1-sum([rho[i, i] for i in range(1, Ne)])
 
         return rho
 
