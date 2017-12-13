@@ -902,7 +902,8 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
 
         code += '    r"""A fast calculation of the hamiltonian."""\n'
         code += "    H = np.zeros(("+str(Ne)+", "+str(Ne)+"), complex)\n\n"
-    # We get the code for the below-diagonal elements.
+    # We get the code for the below-diagonal elements
+    # (Rabi frequencies).
     if True:
         code += "    # We calculate the below-diagonal elements.\n"
         for i in range(Ne):
@@ -929,23 +930,25 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
                             code += "*("+str(dp)+")"
 
                         code += "\n"
-    # We get the code for the above-diagonal elements.
+    # We get the code for the above-diagonal elements
+    # (Conjugate Rabi frequencies).
     if True:
         code += "\n"
         code += """    # We calculate the above-diagonal elements.\n"""
         code += """    for i in range("""+str(Ne)+"""):\n"""
         code += """        for j in range(i+1, """+str(Ne)+"""):\n"""
         code += """            H[i, j] = H[j, i].conjugate()\n\n"""
-    # We get the code for the diagonal elements.
+    # We get the code for the diagonal elements (detunings).
     if True:
         code += "    # We calculate the diagonal elements.\n"
-        # 1 We build the degeneration simplification and its inverse (to avoid
+        # We build the degeneration simplification and is inverse (to avoid
         # large combinatorics).
         aux = define_simplification(omega_level, xi, Nl)
         u, invu, omega_levelu, Neu, xiu = aux
         # For each field we find the smallest transition frequency, and its
         # simplified indices.
         omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+        #####################################
         # We get the code to calculate the non degenerate detunings.
         pairs = detunings_indices(Neu, Nl, xiu)
         if not variable_detuning_knob:
@@ -956,7 +959,6 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
 
         code_det = detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
         code += code_det
-
         code += "\n"
         #####################################
         # We find the coefficients a_l that multiply omega_laser_l in
@@ -968,9 +970,9 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         combs = detunings_combinations(pairs)
         for i in range(Ne):
             _Hii = theta[i] + _omega_levelu[u(i)]
-            assign = detunings_rewrite(_Hii, combs, omega_laser,
-                                       _omega_levelu, omega_levelu,
-                                       iu0, ju0)
+            aux = (_Hii, combs, omega_laser,
+                   _omega_levelu, omega_levelu, iu0, ju0)
+            assign = detunings_rewrite(*aux)
 
             if assign != "":
                 code += "    H["+str(i)+", "+str(i)+"] = "+assign+"\n"
@@ -1587,7 +1589,6 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
         else:
             code += "    rhs *= fact\n"
             code += "    return rhs\n"
-
     # We write the code to file if provided, and execute it.
     if True:
         if file_name is not None:
@@ -1598,6 +1599,175 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
         rabi_terms = code
         exec rabi_terms
     return rabi_terms
+
+
+def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
+                        matrix_form=False, file_name=None):
+    r"""Return a fast function that returns the detuning terms.
+
+    >>> from sympy import Matrix, symbols
+    >>> from scipy.constants import physical_constants
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [Matrix([[0, 0], [a0, 0]]),
+    ...       Matrix([[0, 0], [0, 0]]),
+    ...       Matrix([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [1, 100]
+    >>> rhos = np.array([[0.6, 3+2j],
+    ...                  [3-2j, 0.4]])
+    >>> rhosv = unfolding(rhos)
+    >>> detuning_knobs = [1.0]
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+    >>> detuning_knob = [symbols("delta1")]
+
+    >>> detuning_terms = fast_detuning_terms(detuning_knob, omega_level,
+    ...                                      xi, theta,
+    ...                                      unfolding)
+
+    >>> print detuning_terms(rhosv, detuning_knobs)
+    [ 0.  2.  3.]
+
+    """
+    # We unpack variables.
+    if True:
+        Ne = unfolding.Ne
+        Nrho = unfolding.Nrho
+        Nl = xi.shape[0]
+        IJ = unfolding.IJ
+        Mu = unfolding.Mu
+    # We determine which arguments are constants.
+    if True:
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+    # We establish the arguments of the output function.
+    if True:
+        code = ""
+        code += "def detuning_terms("
+        if not matrix_form: code += "rho, "
+        if variable_detuning_knob: code += "detuning_knob, "
+        if code[-2:] == ", ":
+            code = code[:-2]
+        code += "):\n"
+
+        code += '    r"""A fast calculation of the detuning terms."""\n'
+    # We initialize the output and auxiliaries.
+    if True:
+        # We introduce the factor that multiplies all terms.
+        if unfolding.real:
+            code += "    fact = 1.0\n\n"
+        else:
+            code += "    fact = 1.0j\n\n"
+
+        if matrix_form:
+            code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+            if unfolding.normalized:
+                code += "    b = np.zeros(("+str(Nrho)
+                if not unfolding.real:
+                    code += "), complex)\n\n"
+                else:
+                    code += "))\n\n"
+        else:
+            code += "    rhs = np.zeros(("+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+
+    # We build the degeneration simplification and is inverse (to avoid
+    # large combinatorics).
+    aux = define_simplification(omega_level, xi, Nl)
+    u, invu, omega_levelu, Neu, xiu = aux
+    # For each field we find the smallest transition frequency, and its
+    # simplified indices.
+    omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+    #####################################
+    # We get the code to calculate the non degenerate detunings.
+    pairs = detunings_indices(Neu, Nl, xiu)
+    if not variable_detuning_knob:
+        code += "    detuning_knob = np.zeros("+str(Nl)+")\n"
+        for l in range(Nl):
+            code += "    detuning_knob["+str(l)+"] = " +\
+                str(detuning_knob[l])+"\n"
+
+    code_det = detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+    code += code_det
+    code += "\n"
+    #####################################
+    # There is a term
+    # I * Theta_ij * rho_ij = I * (omega_level_j - omega_level_i
+    #                              theta_j - theta_i)
+    # for all i != j.
+    # This term can be re expressed as
+    # re(Theta_ij*rho_ij) = - Theta_ij * im(rho_ij)
+    # im(Theta_ij*rho_ij) = + Theta_ij * re(rho_ij)
+    _omega_level, omega, gamma = define_frequencies(Ne)
+    _omega_levelu, omega, gamma = define_frequencies(Neu)
+    E0, omega_laser = define_laser_variables(Nl)
+    # We build all combinations.
+    combs = detunings_combinations(pairs)
+    # We add all terms.
+    for mu in range(Nrho):
+        s, i, j = IJ(mu)
+        if i != j:
+            _Thetaij = _omega_levelu[u(j)] - _omega_levelu[u(i)]
+            _Thetaij += theta[j] - theta[i]
+            aux = (_Thetaij, combs, omega_laser,
+                   _omega_levelu, omega_levelu, iu0, ju0)
+            assign = detunings_rewrite(*aux)
+
+            if s == 0:
+                nu = mu
+            elif s == 1:
+                assign = "-(%s)" % assign
+                nu = Mu(-s, i, j)
+            elif s == -1:
+                assign = "+(%s)" % assign
+                nu = Mu(-s, i, j)
+
+            if matrix_form:
+                term_code = "    A[%s, %s] = %s\n" % (mu, nu, assign)
+            else:
+                term_code = "    rhs[%s] = (%s)*rho[%s]\n" % (mu, assign, nu)
+
+            code += term_code
+
+    #####################################
+
+    # We finish the code.
+    if True:
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    A *= fact\n"
+                code += "    b *= fact\n"
+                code += "    return A, b\n"
+            else:
+                code += "    A *= fact\n"
+                code += "    return A\n"
+        else:
+            code += "    rhs *= fact\n"
+            code += "    return rhs\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name, "w")
+            f.write(code)
+            f.close()
+
+        detuning_terms = code
+        exec detuning_terms
+    return detuning_terms
 
 
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
