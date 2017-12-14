@@ -1389,7 +1389,7 @@ class Unfolding(object):
 
 
 def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
-                    matrix_form=False, file_name=None):
+                    matrix_form=False, file_name=None, return_code=False):
     r"""Return a fast function that returns the Rabi frequency terms.
 
     We test a basic two-level system.
@@ -1493,6 +1493,7 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                            Em[l]*dot(epsilonm[l], rp[:, i, j]))
                            for l in range(Nl)])
                      for j in range(Ne)] for i in range(Ne)]
+
     # We establish the arguments of the output function.
     if True:
         code = ""
@@ -1557,6 +1558,7 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                     # We keep note that there was a term with rho00.
                     if k == 0 and j == 0:
                         rho00_terms += [args]
+
                 if xi[l, k, j] == 1:
                     # There is a -I * Omega_l,k,j * rho_i,k term.
                     u = i; v = k
@@ -1592,17 +1594,18 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
     # We write the code to file if provided, and execute it.
     if True:
         if file_name is not None:
-            f = file(file_name, "w")
+            f = file(file_name+".py", "w")
             f.write(code)
             f.close()
 
         rabi_terms = code
-        exec rabi_terms
+        if not return_code:
+            exec rabi_terms
     return rabi_terms
 
 
 def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
-                        matrix_form=False, file_name=None):
+                        matrix_form=False, file_name=None, return_code=False):
     r"""Return a fast function that returns the detuning terms.
 
     >>> from sympy import Matrix, symbols
@@ -1761,13 +1764,217 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
     # We write the code to file if provided, and execute it.
     if True:
         if file_name is not None:
-            f = file(file_name, "w")
+            f = file(file_name+".py", "w")
             f.write(code)
             f.close()
 
         detuning_terms = code
-        exec detuning_terms
+        if not return_code:
+            exec detuning_terms
     return detuning_terms
+
+
+def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
+                           omega_level, rm, xi, theta,
+                           unfolding, matrix_form=False, file_name=None):
+    r"""Return a fast function that returns the hamiltonian terms.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix, symbols
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.symbolic import define_laser_variables, polarization_vector
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 1.0e9]
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+    We define symbolic variables to be used as token arguments.
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+    >>> detuning_knob = [symbols("delta1", real=True)]
+
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    We obtain a function to calculate Hamiltonian terms.
+    >>> aux = (Ep, epsilonps, detuning_knob, omega_level, rm, xi, theta,
+    ...        unfolding, False, None)
+    >>> hamiltonian_terms = fast_hamiltonian_terms(*aux)
+
+    Apply this to a density matrix.
+    >>> rhos = np.array([[0.6, 3+2j],
+    ...                  [3-2j, 0.4]])
+    >>> rhosv = unfolding(rhos)
+
+    We specify values for the variables
+    >>> detuning_knobs = [100e6]
+    >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+    >>> Eps *= np.exp(1j*np.pi)
+    >>> Eps = [Eps]
+    >>> print hamiltonian_terms(rhosv, Eps, detuning_knobs)
+    [  5.56808315e+07   2.00000000e+08   2.97215958e+08]
+
+
+    """
+    if not unfolding.lower_triangular:
+        mes = "It is very inefficient to solve using all components of the "
+        mes += "density matrix. Better set lower_triangular=True in Unfolding."
+        raise NotImplementedError(mes)
+    if matrix_form and (not unfolding.real) and (unfolding.lower_triangular):
+        mes = "It is not possible to express the equations in matrix form "
+        mes += "for complex lower triangular components only."
+        raise ValueError(mes)
+    Nl = len(Ep)
+    # Ne = unfolding.Ne
+    Nrho = unfolding.Nrho
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
+
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+    # We obtain code for the two parts.
+    if True:
+        if file_name is not None:
+            file_name_rabi = file_name+"_rabi"
+            file_name_detuning = file_name+"_detuning"
+        else:
+            file_name_rabi = file_name
+            file_name_detuning = file_name
+
+        rabi_terms = fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
+                                     matrix_form=matrix_form,
+                                     file_name=file_name_rabi,
+                                     return_code=False)
+
+        detuning_terms = fast_detuning_terms(detuning_knob, omega_level, xi,
+                                             theta, unfolding,
+                                             matrix_form=matrix_form,
+                                             file_name=file_name_detuning,
+                                             return_code=False)
+    # We establish the arguments of the output function.
+    if True:
+        code = ""
+        code += "def hamiltonian_terms("
+        if not matrix_form: code += "rho, "
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        if variable_detuning_knob: code += "detuning_knob, "
+        code += "rabi_terms=rabi_terms, detuning_terms=detuning_terms"
+        # if code[-2:] == ", ": code = code[:-2]
+        code += "):\n"
+
+        code += '    r"""A fast calculation of the hamiltonian terms."""\n'
+        # if not variable_Ep and not varia
+    # We initialize the output and auxiliaries.
+    if True:
+        # We introduce the factor that multiplies all terms.
+        if matrix_form:
+            code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+            if unfolding.normalized:
+                code += "    b = np.zeros(("+str(Nrho)
+                if not unfolding.real:
+                    code += "), complex)\n\n"
+                else:
+                    code += "))\n\n"
+        else:
+            code += "    rhs = np.zeros(("+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+    # We call the Hamiltonian terms.
+    if True:
+        if not variable_Ep and not variable_epsilonp and matrix_form:
+            # We can call rabi_terms here!
+            rabi_terms = rabi_terms()
+            aux_code = "rabi_terms\n"
+        else:
+            aux_code = "rabi_terms("
+            if not matrix_form: aux_code += "rho, "
+            if variable_Ep: aux_code += "Ep, "
+            if variable_epsilonp: aux_code += "epsilonp, "
+            if aux_code[-2:] == ", ": aux_code = aux_code[:-2]
+            aux_code += ")\n"
+
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    aux = " + aux_code
+                code += "    A += aux[0]\n"
+                code += "    b += aux[1]\n"
+            else:
+                code += "    A = " + aux_code
+        else:
+            code += "    rhs = " + aux_code
+    # We call the detuning terms.
+    if True:
+        if not variable_detuning_knob and matrix_form:
+            detuning_terms = detuning_terms()
+            aux_code = "detuning_terms\n"
+        else:
+            aux_code = "detuning_terms("
+            if not matrix_form: aux_code += "rho, "
+            if variable_detuning_knob: aux_code += "detuning_knob, "
+            if aux_code[-2:] == ", ": aux_code = aux_code[:-2]
+            aux_code += ")\n"
+
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    aux = " + aux_code
+                code += "    A += aux[0]\n"
+                code += "    b += aux[1]\n"
+            else:
+                code += "    A += " + aux_code
+        else:
+            code += "    rhs += " + aux_code
+
+    # We finish the code.
+    if True:
+        # code = rabi_code + "\n\n" + code
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    return A, b\n"
+            else:
+                code += "    return A\n"
+        else:
+            code += "    return rhs\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        hamiltonian_terms = code
+        exec hamiltonian_terms
+    return hamiltonian_terms
 
 
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
@@ -1901,7 +2108,7 @@ def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
     r"""Get code to calculate a linear term.
 
     >>> term_code(1, 0, 33, False, False, True)
-    '    rhs[1] += 33*rho[0]\n'
+    '    rhs[1] += (33)*rho[0]\n'
 
     """
     coef = str(coef)
@@ -1922,6 +2129,8 @@ def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
     coef = coef.replace("re(", "np.real(")
     coef = coef.replace("im(", "np.imag(")
 
+    coef = coef.replace("*I", "j")
+
     if not linear:
         if matrix_form:
             s = "    b["+str(mu)+"] += "+coef+"\n"
@@ -1934,7 +2143,7 @@ def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
     if matrix_form:
         s += "A["+str(mu)+", "+str(nu)+"] += "+coef+"\n"
     else:
-        s += "rhs["+str(mu)+"] += "+coef
+        s += "rhs["+str(mu)+"] += ("+coef+")"
         if rhouv_isconjugated:
             s += "*np.conjugate(rho["+str(nu)+'])\n'
         else:
