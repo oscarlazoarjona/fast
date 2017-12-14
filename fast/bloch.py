@@ -215,7 +215,6 @@ Here is an example with rubidum 87.
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j
      0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]]
 
-
 """
 
 from sympy import Symbol, diff, IndexedBase, re, im
@@ -1774,6 +1773,141 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
     return detuning_terms
 
 
+def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
+                        return_code=False):
+    r"""Return a fast function that returns the Lindblad terms.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> Ne = 2
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0.0, -gamma21],
+    ...                   [gamma21, 0.0]])
+    >>> rhos = np.array([[0.6, 3+2j],
+    ...                  [3-2j, 0.4]])
+
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    We obtain a function to calculate Lindblad terms.
+    >>> lindblad_terms = fast_lindblad_terms(gamma, unfolding)
+
+    Apply this to a density matrix.
+    >>> rhos = np.array([[0.6, 3+2j],
+    ...                  [3-2j, 0.4]])
+    >>> rhosv = unfolding(rhos)
+    >>> rhs_lindblad = lindblad_terms(rhosv)
+    >>> print rhs_lindblad
+    [-15079644.73724    -56548667.76450001  37699111.843     ]
+
+    """
+    Ne = unfolding.Ne
+    Nrho = unfolding.Nrho
+    Mu = unfolding.Mu
+
+    # We establish the arguments of the output function.
+    if True:
+        code = ""
+        code += "def lindblad_terms("
+        if not matrix_form: code += "rho, "
+        if code[-2:] == ", ": code = code[:-2]
+        code += "):\n"
+    # We initialize the output and auxiliaries.
+    if True:
+        # We introduce the factor that multiplies all terms.
+        if matrix_form:
+            code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+            if unfolding.normalized:
+                code += "    b = np.zeros(("+str(Nrho)
+                if not unfolding.real:
+                    code += "), complex)\n\n"
+                else:
+                    code += "))\n\n"
+        else:
+            code += "    rhs = np.zeros(("+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+
+    for a in range(Ne):
+        for b in range(a):
+            # The first term is of the from
+            # gamma_ab * rho_aa |b><b|
+            if not (unfolding.normalized and b == 0):
+                coef = gamma[a, b]
+                if unfolding.real:
+                    mu = Mu(1, b, b)
+                    nu = Mu(1, a, a)
+                else:
+                    mu = Mu(0, b, b)
+                    nu = Mu(0, a, a)
+                code += term_code(mu, nu, coef, matrix_form, False)
+
+            # The second term is of the form
+            #  sum_j -gamma_ab/2 rho_aj |a><j|
+            # for a lower triangular unfolding, this j runs from 1 to a.
+            for j in range(a):
+                coef = -gamma[a, b]*0.5
+                if unfolding.real:
+                    mur = Mu(1, a, j)
+                    code += term_code(mur, mur, coef, matrix_form, False)
+                    mui = Mu(-1, a, j)
+                    code += term_code(mui, mui, coef, matrix_form, False)
+                else:
+                    mu = Mu(0, a, j)
+                    code += term_code(mu, mu, coef, matrix_form, False)
+
+            # The third term is of the form
+            #  - sum_i 1/2 rho_ia |i><a|
+            # for a lower triangular unfolding, this i runs from a to Ne.
+            for i in range(a+1, Ne):
+                coef = -gamma[a, b]*0.5
+                if unfolding.real:
+                    mur = Mu(1, i, a)
+                    code += term_code(mur, mur, coef, matrix_form, False)
+                    mui = Mu(-1, i, a)
+                    code += term_code(mui, mui, coef, matrix_form, False)
+                else:
+                    mu = Mu(0, i, a)
+                    code += term_code(mu, mu, coef, matrix_form, False)
+
+            # We missed one term in each of the previous fors, that together
+            # correspond to
+            # -gamma_ab * rho_aa |a><a|
+            coef = -gamma[a, b]
+            if unfolding.real:
+                mu = Mu(1, a, a)
+            else:
+                mu = Mu(0, a, a)
+            code += term_code(mu, mu, coef, matrix_form, False)
+
+    # We finish the code.
+    if True:
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    return A, b\n"
+            else:
+                code += "    return A\n"
+        else:
+            code += "    return rhs\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        lindblad_terms = code
+        exec lindblad_terms
+    return lindblad_terms
+
+
 def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
                            omega_level, rm, xi, theta,
                            unfolding, matrix_form=False, file_name=None,
@@ -1835,7 +1969,6 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
         mes += "for complex lower triangular components only."
         raise ValueError(mes)
     Nl = len(Ep)
-    # Ne = unfolding.Ne
     Nrho = unfolding.Nrho
     # We determine which arguments are constants.
     if True:
@@ -1955,7 +2088,6 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
                 code += "    A += " + aux_code
         else:
             code += "    rhs += " + aux_code
-
     # We finish the code.
     if True:
         # code = rabi_code + "\n\n" + code
@@ -1979,47 +2111,132 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
     return hamiltonian_terms
 
 
-def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
-                        return_code=False):
-    r"""Return a fast function that returns the Lindblad terms.
+def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
+                         omega_level, rm, xi, theta,
+                         unfolding, matrix_form=False, file_name=None,
+                         return_code=False):
+    r"""Return a fast function that returns the numeric right-hand sides of \
+Bloch equations.
 
-    We test a basic two-level system.
+        We test a basic two-level system.
 
-    >>> import numpy as np
-    >>> Ne = 2
-    >>> gamma21 = 2*np.pi*6e6
-    >>> gamma = np.array([[0.0, -gamma21],
-    ...                   [gamma21, 0.0]])
-    >>> rhos = np.array([[0.6, 3+2j],
-    ...                  [3-2j, 0.4]])
+        >>> import numpy as np
+        >>> from scipy.constants import physical_constants
+        >>> from sympy import Matrix, symbols
+        >>> from fast.electric_field import electric_field_amplitude_top
+        >>> from fast.symbolic import (define_laser_variables,
+        ...                            polarization_vector)
 
-    An map to unfold the density matrix.
-    >>> unfolding = Unfolding(Ne, True, True, True)
+        >>> Ne = 2
+        >>> Nl = 1
+        >>> a0 = physical_constants["Bohr radius"][0]
+        >>> rm = [np.array([[0, 0], [a0, 0]]),
+        ...       np.array([[0, 0], [0, 0]]),
+        ...       np.array([[0, 0], [0, 0]])]
+        >>> xi = np.array([[[0, 1], [1, 0]]])
+        >>> omega_level = [0, 1.0e9]
+        >>> gamma21 = 2*np.pi*6e6
+        >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
+        >>> theta = phase_transformation(Ne, Nl, rm, xi)
 
-    We obtain a function to calculate Lindblad terms.
-    >>> lindblad_terms = fast_lindblad_terms(gamma, unfolding)
+        We define symbolic variables to be used as token arguments.
+        >>> Ep, omega_laser = define_laser_variables(Nl)
+        >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+        >>> detuning_knob = [symbols("delta1", real=True)]
 
-    Apply this to a density matrix.
-    >>> rhos = np.array([[0.6, 3+2j],
-    ...                  [3-2j, 0.4]])
-    >>> rhosv = unfolding(rhos)
-    >>> rhs_lindblad = lindblad_terms(rhosv)
-    >>> print rhs_lindblad
-    [-15079644.73724    -56548667.76450001  37699111.843     ]
+        An map to unfold the density matrix.
+        >>> unfolding = Unfolding(Ne, True, True, True)
 
-    """
-    Ne = unfolding.Ne
+        We obtain a function to calculate Hamiltonian terms.
+        >>> aux = (Ep, epsilonps, detuning_knob, gamma,
+        ...        omega_level, rm, xi, theta,
+        ...        unfolding, False, None)
+        >>> bloch_equations = fast_bloch_equations(*aux)
+
+        Apply this to a density matrix.
+        >>> rhos = np.array([[0.6, 3+2j],
+        ...                  [3-2j, 0.4]])
+        >>> rhosv = unfolding(rhos)
+
+        We specify values for the variables
+        >>> detuning_knobs = [100e6]
+        >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+        >>> Eps *= np.exp(1j*np.pi)
+        >>> Eps = [Eps]
+        >>> print bloch_equations(rhosv, Eps, detuning_knobs)
+        [  4.06011867e+07   1.43451332e+08   3.34915070e+08]
+
+"""
+    if not unfolding.lower_triangular:
+        mes = "It is very inefficient to solve using all components of the "
+        mes += "density matrix. Better set lower_triangular=True in Unfolding."
+        raise NotImplementedError(mes)
+    if matrix_form and (not unfolding.real) and (unfolding.lower_triangular):
+        mes = "It is not possible to express the equations in matrix form "
+        mes += "for complex lower triangular components only."
+        raise ValueError(mes)
+    Nl = len(Ep)
     Nrho = unfolding.Nrho
-    Mu = unfolding.Mu
-    normalized = unfolding.normalized
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
 
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+    # We obtain code for the three parts.
+    if True:
+        if file_name is not None:
+            file_name_rabi = file_name+"_rabi"
+            file_name_detuning = file_name+"_detuning"
+            file_name_lindblad = file_name+"_lindblad"
+        else:
+            file_name_rabi = file_name
+            file_name_detuning = file_name
+            file_name_lindblad = file_name
+
+        rabi_terms = fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
+                                     matrix_form=matrix_form,
+                                     file_name=file_name_rabi,
+                                     return_code=False)
+
+        detuning_terms = fast_detuning_terms(detuning_knob, omega_level, xi,
+                                             theta, unfolding,
+                                             matrix_form=matrix_form,
+                                             file_name=file_name_detuning,
+                                             return_code=False)
+
+        lindblad_terms = fast_lindblad_terms(gamma, unfolding,
+                                             matrix_form=matrix_form,
+                                             file_name=file_name_lindblad,
+                                             return_code=False)
     # We establish the arguments of the output function.
     if True:
         code = ""
-        code += "def lindblad_terms("
+        code += "def bloch_equations("
         if not matrix_form: code += "rho, "
-        if code[-2:] == ", ": code = code[:-2]
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        if variable_detuning_knob: code += "detuning_knob, "
+        code += "rabi_terms=rabi_terms, detuning_terms=detuning_terms, "
+        code += "lindblad_terms=lindblad_terms"
         code += "):\n"
+
+        code += '    r"""A fast calculation of the hamiltonian terms."""\n'
+        # if not variable_Ep and not varia
     # We initialize the output and auxiliaries.
     if True:
         # We introduce the factor that multiplies all terms.
@@ -2041,59 +2258,71 @@ def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
                 code += "), complex)\n\n"
             else:
                 code += "))\n\n"
+    # We call the Hamiltonian terms.
+    if True:
+        if not variable_Ep and not variable_epsilonp and matrix_form:
+            # We can call rabi_terms here!
+            rabi_terms = rabi_terms()
+            aux_code = "rabi_terms\n"
+        else:
+            aux_code = "rabi_terms("
+            if not matrix_form: aux_code += "rho, "
+            if variable_Ep: aux_code += "Ep, "
+            if variable_epsilonp: aux_code += "epsilonp, "
+            if aux_code[-2:] == ", ": aux_code = aux_code[:-2]
+            aux_code += ")\n"
 
-    for a in range(Ne):
-        for b in range(a):
-            # The first term is of the from
-            # gamma_ab * rho_aa |b><b|
-            if not (unfolding.normalized and b == 0):
-                coef = gamma[a, b]
-                if unfolding.real:
-                    mu = Mu(1, b, b)
-                else:
-                    mu = Mu(0, b, b)
-                code += term_code(mu, mu, coef, matrix_form, False)
-
-            # The second term is of the form
-            #  sum_j -gamma_ab/2 rho_aj |a><j|
-            # for a lower triangular unfolding, this j runs from 1 to a.
-            for j in range(a):
-                coef = -gamma[a, b]*0.5
-                if unfolding.real:
-                    mur = Mu(1, a, j)
-                    code += term_code(mur, mur, coef, matrix_form, False)
-                    mui = Mu(-1, a, j)
-                    code += term_code(mui, mui, coef, matrix_form, False)
-                else:
-                    mu = Mu(0, a, j)
-                    code += term_code(mu, mu, coef, matrix_form, False)
-
-            # The third term is of the form
-            #  - sum_i 1/2 rho_ia |i><a|
-            # for a lower triangular unfolding, this i runs from a to Ne.
-            for i in range(a+1, Ne):
-                coef = -gamma[a, b]*0.5
-                if unfolding.real:
-                    mur = Mu(1, i, a)
-                    code += term_code(mur, mur, coef, matrix_form, False)
-                    mui = Mu(-1, i, a)
-                    code += term_code(mui, mui, coef, matrix_form, False)
-                else:
-                    mu = Mu(0, i, a)
-                    code += term_code(mu, mu, coef, matrix_form, False)
-
-            # We missed one term in each of the previous fors, that together
-            # correspond to
-            # -gamma_ab * rho_aa |a><a|
-            coef = -gamma[a, b]
-            if unfolding.real:
-                mu = Mu(1, a, a)
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    aux = " + aux_code
+                code += "    A += aux[0]\n"
+                code += "    b += aux[1]\n"
             else:
-                mu = Mu(0, a, a)
-            code += term_code(mu, mu, coef, matrix_form, False)
+                code += "    A = " + aux_code
+        else:
+            code += "    rhs = " + aux_code
+    # We call the detuning terms.
+    if True:
+        if not variable_detuning_knob and matrix_form:
+            # We can call rabi_terms here!
+            detuning_terms = detuning_terms()
+            aux_code = "detuning_terms\n"
+        else:
+            aux_code = "detuning_terms("
+            if not matrix_form: aux_code += "rho, "
+            if variable_detuning_knob: aux_code += "detuning_knob, "
+            if aux_code[-2:] == ", ": aux_code = aux_code[:-2]
+            aux_code += ")\n"
 
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    aux = " + aux_code
+                code += "    A += aux[0]\n"
+                code += "    b += aux[1]\n"
+            else:
+                code += "    A += " + aux_code
+        else:
+            code += "    rhs += " + aux_code
+    # We call the Lindblad terms.
+    if True:
+        if matrix_form:
+            # We can call rabi_terms here!
+            lindblad_terms = lindblad_terms()
+            aux_code = "lindblad_terms\n"
+        else:
+            aux_code = "lindblad_terms(rho)\n"
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    aux = " + aux_code
+                code += "    A += aux[0]\n"
+                code += "    b += aux[1]\n"
+            else:
+                code += "    A += " + aux_code
+        else:
+            code += "    rhs += " + aux_code
     # We finish the code.
     if True:
+        # code = rabi_code + "\n\n" + code
         if matrix_form:
             if unfolding.normalized:
                 code += "    return A, b\n"
@@ -2108,9 +2337,10 @@ def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
             f.write(code)
             f.close()
 
-        lindblad_terms = code
-        exec lindblad_terms
-    return lindblad_terms
+        bloch_equations = code
+        if not return_code:
+            exec bloch_equations
+    return bloch_equations
 
 
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
