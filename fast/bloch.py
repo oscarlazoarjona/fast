@@ -2641,6 +2641,63 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     return steady_state
 
 
+def sweep_steady_state(detuning_knob, steady_state):
+    r"""Return an array of density matrices in the steady state.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from sympy import symbols
+    >>> from scipy.constants import physical_constants
+
+    >>> e_num = physical_constants["elementary charge"][0]
+    >>> hbar_num = physical_constants["Planck constant over 2 pi"][0]
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> Ep = [-1.0]
+    >>> epsilonp = [np.array([0, 0, 1.0])]
+    >>> delta = symbols("delta")
+
+    >>> detuning_knob = [delta]
+    >>> gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
+    >>> omega_level = np.array([0.0, 100.0])
+    >>> rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
+    ...       for p in range(3)]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+    >>> steady_state = fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
+    ...                                  omega_level, rm, xi, theta)
+
+    >>> rho_deltas = sweep_steady_state([[delta, -20, 20, 11]], steady_state)
+    >>> print rho_deltas
+    [[ 0.00062383 -0.02495321 -0.00062383]
+     [ 0.00097371 -0.03115871 -0.00097371]
+     [ 0.00172712 -0.04145078 -0.00172712]
+     [ 0.003861   -0.06177606 -0.003861  ]
+     [ 0.01492537 -0.11940299 -0.01492537]
+     [ 0.33333333  0.         -0.33333333]
+     [ 0.01492537  0.11940299 -0.01492537]
+     [ 0.003861    0.06177606 -0.003861  ]
+     [ 0.00172712  0.04145078 -0.00172712]
+     [ 0.00097371  0.03115871 -0.00097371]
+     [ 0.00062383  0.02495321 -0.00062383]]
+
+    """
+    detuning_knob_fast = []
+    for delta in detuning_knob:
+        if hasattr(delta, "__getitem__"):
+            detuning_knob_fast += [delta[0]]
+            delta0 = delta[1]
+            deltaf = delta[2]
+            N_delta = delta[3]
+        else:
+            detuning_knob_fast += [delta]
+    deltas = np.linspace(delta0, deltaf, N_delta)
+    rho_deltas = np.array([steady_state([deltai]) for deltai in deltas])
+    return rho_deltas
+
+
 if __name__ == "__main__":
     import doctest
     print doctest.testmod(verbose=False)
