@@ -1387,6 +1387,181 @@ class Unfolding(object):
         return rho
 
 
+def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+                                 unfolding, matrix_form):
+    r"""Get the indices mu, nu, and term coefficients for linear terms.
+
+    >>> from fast.symbolic import define_density_matrix
+    >>> Ne = 2
+    >>> coef = 1+2j
+    >>> rhouv = define_density_matrix(Ne)[1, 1]
+    >>> s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
+    >>> unfolding = Unfolding(Ne, real=True, normalized=True)
+
+    >>> independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+    ...                              unfolding, False)
+    [[1, None, -2.00000000000000, False, False]]
+
+    """
+    if matrix_form:
+        coef = -coef
+    Mu = unfolding.Mu
+    mu = Mu(s, i, j)
+    rhouv_isconjugated = False
+    if s == 1:
+        coef_list = [[mu, None, -im(coef), matrix_form, rhouv_isconjugated]]
+    elif s == -1:
+        coef_list = [[mu, None, re(coef), matrix_form, rhouv_isconjugated]]
+    else:
+        coef_list = [[mu, None, coef, matrix_form, rhouv_isconjugated]]
+    return coef_list
+
+
+def linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+                            unfolding, matrix_form):
+    r"""Get the indices mu, nu, and term coefficients for linear terms.
+
+    We determine mu and nu, the indices labeling the density matrix components
+          d rho[mu] /dt = sum_nu A[mu, nu]*rho[nu]
+    for this complex and rho_u,v.
+
+    >>> from fast.symbolic import define_density_matrix
+    >>> Ne = 2
+    >>> coef = 1+2j
+    >>> rhouv = define_density_matrix(Ne)[1, 1]
+    >>> s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
+    >>> unfolding = Unfolding(Ne, real=True, normalized=True)
+
+    >>> linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+    ...                              unfolding, False)
+    [[1, 0, -2.00000000000000, False, False]]
+
+    """
+    Ne = unfolding.Ne
+    Mu = unfolding.Mu
+    # We determine mu, the index labeling the equation.
+    mu = Mu(s, i, j)
+
+    if unfolding.normalized and u == 0 and v == 0:
+        # We find the nu and coefficients for a term of the form.
+        # coef*rho_{00} = coef*(1-sum_{i=1}^{Ne-1} rho_{ii})
+        if unfolding.real:
+            ss = 1
+        else:
+            ss = 0
+
+        mu11 = Mu(ss, 1, 1)
+        muNeNe = Mu(ss, Ne-1, Ne-1)
+        rhouv_isconjugated = False
+        if s == 1:
+            coef_list = [[mu, nu, im(coef), matrix_form, rhouv_isconjugated]
+                         for nu in range(mu11, muNeNe+1)]
+        elif s == -1:
+            coef_list = [[mu, nu, -re(coef), matrix_form, rhouv_isconjugated]
+                         for nu in range(mu11, muNeNe+1)]
+        elif s == 0:
+            coef_list = [[mu, nu, -coef, matrix_form, rhouv_isconjugated]
+                         for nu in range(mu11, muNeNe+1)]
+        return coef_list
+
+    #####################################################################
+
+    if (unfolding.lower_triangular and
+       isinstance(rhouv, sympy.conjugate)):
+        u, v = (v, u)
+        rhouv_isconjugated = True
+    else:
+        rhouv_isconjugated = False
+    # If the unfolding is real, there are two terms for this
+    # component rhouv of equation mu.
+    if unfolding.real:
+        nur = Mu(1, u, v)
+        nui = Mu(-1, u, v)
+    else:
+        nu = Mu(0, u, v)
+    #####################################################################
+    # We determine the coefficients for each term.
+    if unfolding.real:
+        # There are two sets of forumas for the coefficients depending
+        # on whether rhouv_isconjugated.
+        # re(I*x*conjugate(y)) = -im(x)*re(y) + re(x)*im(y)
+        # re(I*x*y)            = -im(x)*re(y) - re(x)*im(y)
+        # im(I*x*conjugate(y)) = +re(x)*re(y) + im(x)*im(y)
+        # im(I*x*y)            = +re(x)*re(y) - im(x)*im(y)
+        if s == 1:
+            # The real part
+            if rhouv_isconjugated:
+                coef_rerhouv = -im(coef)
+                coef_imrhouv = re(coef)
+            else:
+                coef_rerhouv = -im(coef)
+                coef_imrhouv = -re(coef)
+        elif s == -1:
+            if rhouv_isconjugated:
+                coef_rerhouv = re(coef)
+                coef_imrhouv = im(coef)
+            else:
+                coef_rerhouv = re(coef)
+                coef_imrhouv = -im(coef)
+
+        coef_list = [[mu, nur, coef_rerhouv, matrix_form, rhouv_isconjugated]]
+        if nui is not None:
+            coef_list += [[mu, nui, coef_imrhouv,
+                           matrix_form, rhouv_isconjugated]]
+    else:
+        coef_list = [[mu, nu, coef, matrix_form, rhouv_isconjugated]]
+
+    return coef_list
+
+
+def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
+    r"""Get code to calculate a linear term.
+
+    >>> term_code(1, 0, 33, False, False, True)
+    '    rhs[1] += (33)*rho[0]\n'
+
+    """
+    coef = str(coef)
+
+    # We change E_{0i} -> E0[i-1]
+    ini = coef.find("E_{0")
+    fin = coef.find("}")
+    if ini != -1:
+        l = int(coef[ini+4: fin])
+        coef = coef[:ini]+"Ep["+str(l-1)+"]"+coef[fin+1:]
+
+    # We change r[i, j] -> r[:, i, j]
+    coef = coef.replace("rp[", "rp[:, ")
+    coef = coef.replace("rm[", "rm[:, ")
+
+    # We change symbolic complex-operations into fast numpy functions.
+    coef = coef.replace("conjugate(", "np.conjugate(")
+    coef = coef.replace("re(", "np.real(")
+    coef = coef.replace("im(", "np.imag(")
+
+    coef = coef.replace("*I", "j")
+
+    if not linear:
+        if matrix_form:
+            s = "    b["+str(mu)+"] += "+coef+"\n"
+        else:
+            s = "    rhs["+str(mu)+"] += "+coef+"\n"
+        return s
+
+    # We add the syntax to calculate the term and store it in memory.
+    s = "    "
+    if matrix_form:
+        s += "A["+str(mu)+", "+str(nu)+"] += "+coef+"\n"
+    else:
+        s += "rhs["+str(mu)+"] += ("+coef+")"
+        if rhouv_isconjugated:
+            s += "*np.conjugate(rho["+str(nu)+'])\n'
+        else:
+            s += "*rho["+str(nu)+']\n'
+
+    return s
+
+
 def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                     matrix_form=False, file_name=None, return_code=False):
     r"""Return a fast function that returns the Rabi frequency terms.
@@ -2116,57 +2291,57 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
                          unfolding, matrix_form=False, file_name=None,
                          return_code=False):
     r"""Return a fast function that returns the numeric right-hand sides of \
-Bloch equations.
+    Bloch equations.
 
-        We test a basic two-level system.
+    We test a basic two-level system.
 
-        >>> import numpy as np
-        >>> from scipy.constants import physical_constants
-        >>> from sympy import Matrix, symbols
-        >>> from fast.electric_field import electric_field_amplitude_top
-        >>> from fast.symbolic import (define_laser_variables,
-        ...                            polarization_vector)
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix, symbols
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.symbolic import (define_laser_variables,
+    ...                            polarization_vector)
 
-        >>> Ne = 2
-        >>> Nl = 1
-        >>> a0 = physical_constants["Bohr radius"][0]
-        >>> rm = [np.array([[0, 0], [a0, 0]]),
-        ...       np.array([[0, 0], [0, 0]]),
-        ...       np.array([[0, 0], [0, 0]])]
-        >>> xi = np.array([[[0, 1], [1, 0]]])
-        >>> omega_level = [0, 1.0e9]
-        >>> gamma21 = 2*np.pi*6e6
-        >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
-        >>> theta = phase_transformation(Ne, Nl, rm, xi)
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 1.0e9]
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
 
-        We define symbolic variables to be used as token arguments.
-        >>> Ep, omega_laser = define_laser_variables(Nl)
-        >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
-        >>> detuning_knob = [symbols("delta1", real=True)]
+    We define symbolic variables to be used as token arguments.
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+    >>> detuning_knob = [symbols("delta1", real=True)]
 
-        An map to unfold the density matrix.
-        >>> unfolding = Unfolding(Ne, True, True, True)
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
 
-        We obtain a function to calculate Hamiltonian terms.
-        >>> aux = (Ep, epsilonps, detuning_knob, gamma,
-        ...        omega_level, rm, xi, theta,
-        ...        unfolding, False, None)
-        >>> bloch_equations = fast_bloch_equations(*aux)
+    We obtain a function to calculate Hamiltonian terms.
+    >>> aux = (Ep, epsilonps, detuning_knob, gamma,
+    ...        omega_level, rm, xi, theta,
+    ...        unfolding, False, None)
+    >>> bloch_equations = fast_bloch_equations(*aux)
 
-        Apply this to a density matrix.
-        >>> rhos = np.array([[0.6, 3+2j],
-        ...                  [3-2j, 0.4]])
-        >>> rhosv = unfolding(rhos)
+    Apply this to a density matrix.
+    >>> rhos = np.array([[0.6, 3+2j],
+    ...                  [3-2j, 0.4]])
+    >>> rhosv = unfolding(rhos)
 
-        We specify values for the variables
-        >>> detuning_knobs = [100e6]
-        >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
-        >>> Eps *= np.exp(1j*np.pi)
-        >>> Eps = [Eps]
-        >>> print bloch_equations(rhosv, Eps, detuning_knobs)
-        [  4.06011867e+07   1.43451332e+08   3.34915070e+08]
+    We specify values for the variables
+    >>> detuning_knobs = [100e6]
+    >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+    >>> Eps *= np.exp(1j*np.pi)
+    >>> Eps = [Eps]
+    >>> print bloch_equations(rhosv, Eps, detuning_knobs)
+    [  4.06011867e+07   1.43451332e+08   3.34915070e+08]
 
-"""
+    """
     if not unfolding.lower_triangular:
         mes = "It is very inefficient to solve using all components of the "
         mes += "density matrix. Better set lower_triangular=True in Unfolding."
@@ -2284,7 +2459,7 @@ Bloch equations.
     # We call the detuning terms.
     if True:
         if not variable_detuning_knob and matrix_form:
-            # We can call rabi_terms here!
+            # We can call detuning_terms here!
             detuning_terms = detuning_terms()
             aux_code = "detuning_terms\n"
         else:
@@ -2343,179 +2518,127 @@ Bloch equations.
     return bloch_equations
 
 
-def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
-                                 unfolding, matrix_form):
-    r"""Get the indices mu, nu, and term coefficients for linear terms.
+def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
+                      omega_level, rm, xi, theta,
+                      file_name=None, return_code=False):
+    r"""Return a fast function that returns a steady state.
 
-    >>> from fast.symbolic import define_density_matrix
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix, symbols
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.symbolic import (define_laser_variables,
+    ...                            polarization_vector)
+
     >>> Ne = 2
-    >>> coef = 1+2j
-    >>> rhouv = define_density_matrix(Ne)[1, 1]
-    >>> s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
-    >>> unfolding = Unfolding(Ne, real=True, normalized=True)
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 1.0e9]
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
 
-    >>> independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
-    ...                              unfolding, False)
-    [[1, None, -2.00000000000000, False, False]]
+    We define symbolic variables to be used as token arguments.
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+    >>> detuning_knob = [symbols("delta1", real=True)]
 
-    """
-    if matrix_form:
-        coef = -coef
-    Mu = unfolding.Mu
-    mu = Mu(s, i, j)
-    rhouv_isconjugated = False
-    if s == 1:
-        coef_list = [[mu, None, -im(coef), matrix_form, rhouv_isconjugated]]
-    elif s == -1:
-        coef_list = [[mu, None, re(coef), matrix_form, rhouv_isconjugated]]
-    else:
-        coef_list = [[mu, None, coef, matrix_form, rhouv_isconjugated]]
-    return coef_list
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
 
+    We obtain a function to calculate Hamiltonian terms.
+    >>> aux = (Ep, epsilonps, detuning_knob, gamma,
+    ...        omega_level, rm, xi, theta)
+    >>> steady_state = fast_steady_state(*aux)
 
-def linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
-                            unfolding, matrix_form):
-    r"""Get the indices mu, nu, and term coefficients for linear terms.
-
-    We determine mu and nu, the indices labeling the density matrix components
-          d rho[mu] /dt = sum_nu A[mu, nu]*rho[nu]
-    for this complex and rho_u,v.
-
-    >>> from fast.symbolic import define_density_matrix
-    >>> Ne = 2
-    >>> coef = 1+2j
-    >>> rhouv = define_density_matrix(Ne)[1, 1]
-    >>> s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
-    >>> unfolding = Unfolding(Ne, real=True, normalized=True)
-
-    >>> linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
-    ...                              unfolding, False)
-    [[1, 0, -2.00000000000000, False, False]]
+    We specify values for the variables
+    >>> detuning_knobs = [100e6]
+    >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+    >>> Eps *= np.exp(1j*np.pi)
+    >>> Eps = [Eps]
+    >>> print steady_state(Eps, detuning_knobs)
+    [ 0.01803732  0.12957649 -0.02442459]
 
     """
-    Ne = unfolding.Ne
-    Mu = unfolding.Mu
-    # We determine mu, the index labeling the equation.
-    mu = Mu(s, i, j)
+    # We unpack variables.
+    if True:
+        Ne = len(omega_level)
+        Nl = xi.shape[0]
+        unfolding = Unfolding(Ne, True, True, True)
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
 
-    if unfolding.normalized and u == 0 and v == 0:
-        # We find the nu and coefficients for a term of the form.
-        # coef*rho_{00} = coef*(1-sum_{i=1}^{Ne-1} rho_{ii})
-        if unfolding.real:
-            ss = 1
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+    # We establish the arguments of the output function.
+    if True:
+        code = ""
+        code += "def steady_state("
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        if variable_detuning_knob: code += "detuning_knob, "
+        code += "bloch_equations=bloch_equations):\n"
+        code += '    r"""A fast calculation of the steady state."""\n'
+    # We call the Bloch equations.
+    if True:
+        if file_name is not None:
+            file_name_bloch_equations = file_name + "_bloch_equations"
         else:
-            ss = 0
-
-        mu11 = Mu(ss, 1, 1)
-        muNeNe = Mu(ss, Ne-1, Ne-1)
-        rhouv_isconjugated = False
-        if s == 1:
-            coef_list = [[mu, nu, im(coef), matrix_form, rhouv_isconjugated]
-                         for nu in range(mu11, muNeNe+1)]
-        elif s == -1:
-            coef_list = [[mu, nu, -re(coef), matrix_form, rhouv_isconjugated]
-                         for nu in range(mu11, muNeNe+1)]
-        elif s == 0:
-            coef_list = [[mu, nu, -coef, matrix_form, rhouv_isconjugated]
-                         for nu in range(mu11, muNeNe+1)]
-        return coef_list
-
-    #####################################################################
-
-    if (unfolding.lower_triangular and
-       isinstance(rhouv, sympy.conjugate)):
-        u, v = (v, u)
-        rhouv_isconjugated = True
-    else:
-        rhouv_isconjugated = False
-    # If the unfolding is real, there are two terms for this
-    # component rhouv of equation mu.
-    if unfolding.real:
-        nur = Mu(1, u, v)
-        nui = Mu(-1, u, v)
-    else:
-        nu = Mu(0, u, v)
-    #####################################################################
-    # We determine the coefficients for each term.
-    if unfolding.real:
-        # There are two sets of forumas for the coefficients depending
-        # on whether rhouv_isconjugated.
-        # re(I*x*conjugate(y)) = -im(x)*re(y) + re(x)*im(y)
-        # re(I*x*y)            = -im(x)*re(y) - re(x)*im(y)
-        # im(I*x*conjugate(y)) = +re(x)*re(y) + im(x)*im(y)
-        # im(I*x*y)            = +re(x)*re(y) - im(x)*im(y)
-        if s == 1:
-            # The real part
-            if rhouv_isconjugated:
-                coef_rerhouv = -im(coef)
-                coef_imrhouv = re(coef)
-            else:
-                coef_rerhouv = -im(coef)
-                coef_imrhouv = -re(coef)
-        elif s == -1:
-            if rhouv_isconjugated:
-                coef_rerhouv = re(coef)
-                coef_imrhouv = im(coef)
-            else:
-                coef_rerhouv = re(coef)
-                coef_imrhouv = -im(coef)
-
-        coef_list = [[mu, nur, coef_rerhouv, matrix_form, rhouv_isconjugated]]
-        if nui is not None:
-            coef_list += [[mu, nui, coef_imrhouv,
-                           matrix_form, rhouv_isconjugated]]
-    else:
-        coef_list = [[mu, nu, coef, matrix_form, rhouv_isconjugated]]
-
-    return coef_list
-
-
-def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
-    r"""Get code to calculate a linear term.
-
-    >>> term_code(1, 0, 33, False, False, True)
-    '    rhs[1] += (33)*rho[0]\n'
-
-    """
-    coef = str(coef)
-
-    # We change E_{0i} -> E0[i-1]
-    ini = coef.find("E_{0")
-    fin = coef.find("}")
-    if ini != -1:
-        l = int(coef[ini+4: fin])
-        coef = coef[:ini]+"Ep["+str(l-1)+"]"+coef[fin+1:]
-
-    # We change r[i, j] -> r[:, i, j]
-    coef = coef.replace("rp[", "rp[:, ")
-    coef = coef.replace("rm[", "rm[:, ")
-
-    # We change symbolic complex-operations into fast numpy functions.
-    coef = coef.replace("conjugate(", "np.conjugate(")
-    coef = coef.replace("re(", "np.real(")
-    coef = coef.replace("im(", "np.imag(")
-
-    coef = coef.replace("*I", "j")
-
-    if not linear:
-        if matrix_form:
-            s = "    b["+str(mu)+"] += "+coef+"\n"
+            file_name_bloch_equations = file_name
+        args = (Ep, epsilonp, detuning_knob, gamma,
+                omega_level, rm, xi, theta,
+                unfolding, True, file_name_bloch_equations, False)
+        # print 111, args
+        bloch_equations = fast_bloch_equations(*args)
+        code += r"""    A, b = bloch_equations"""
+        if ((not variable_Ep) and
+           (not variable_epsilonp) and
+           (not variable_detuning_knob)):
+            # We can call bloch_equations here!
+            bloch_equations = bloch_equations()
+            code += "\n"
         else:
-            s = "    rhs["+str(mu)+"] += "+coef+"\n"
-        return s
+            code += "("
+            if variable_Ep: code += "Ep, "
+            if variable_epsilonp: code += "epsilonp, "
+            if variable_detuning_knob: code += "detuning_knob, "
+            if code[-2:] == ", ": code = code[:-2]
+            code += ")\n"
 
-    # We add the syntax to calculate the term and store it in memory.
-    s = "    "
-    if matrix_form:
-        s += "A["+str(mu)+", "+str(nu)+"] += "+coef+"\n"
-    else:
-        s += "rhs["+str(mu)+"] += ("+coef+")"
-        if rhouv_isconjugated:
-            s += "*np.conjugate(rho["+str(nu)+'])\n'
-        else:
-            s += "*rho["+str(nu)+']\n'
+        code += """    rhox = np.linalg.solve(A, b)\n"""
+        code += """    return rhox\n"""
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
 
-    return s
+        steady_state = code
+        if not return_code:
+            exec steady_state
+    return steady_state
 
 
 if __name__ == "__main__":
