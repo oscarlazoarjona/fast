@@ -2642,7 +2642,7 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     return steady_state
 
 
-def sweep_steady_state(detuning_knob, steady_state):
+def sweep_steady_state(*args):
     r"""Return an array of density matrices in the steady state.
 
     We test a basic two-level system.
@@ -2685,18 +2685,28 @@ def sweep_steady_state(detuning_knob, steady_state):
      [ 0.00062383  0.02495321 -0.00062383]]
 
     """
+    if len(args) == 2:
+        detuning_knob, steady_state = args
+    elif len(args) == 3:
+        Ep, detuning_knob, steady_state = args
+
     detuning_knob_fast = []
     for delta in detuning_knob:
         if hasattr(delta, "__getitem__"):
-            detuning_knob_fast += [delta[0]]
             delta0 = delta[1]
             deltaf = delta[2]
             N_delta = delta[3]
         else:
             detuning_knob_fast += [delta]
     deltas = np.linspace(delta0, deltaf, N_delta)
-    rho_deltas = np.array([steady_state([deltai]) for deltai in deltas])
-    return rho_deltas
+
+    if len(args) == 2:
+        rho_deltas = np.array([steady_state([deltai])
+                               for deltai in deltas])
+    elif len(args) == 3:
+        rho_deltas = np.array([steady_state(Ep, [deltai]+detuning_knob_fast)
+                               for deltai in deltas])
+    return deltas, rho_deltas
 
 
 if __name__ == "__main__":
