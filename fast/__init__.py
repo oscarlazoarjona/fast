@@ -7,7 +7,7 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 
 >>> from fast import __version__
 >>> print __version__
-1.2
+1.3
 
 >>> from fast import all_atoms
 >>> all_atoms
@@ -74,5 +74,5 @@ from matplotlib import rcParams
 rcParams['mathtext.fontset'] = 'cm'
 rcParams['mathtext.rm'] = 'serif'
 
-__version__ = "1.2"
+__version__ = "1.3"
 all_atoms = [Atom("Rb", 85), Atom("Rb", 87), Atom("Cs", 133)]
