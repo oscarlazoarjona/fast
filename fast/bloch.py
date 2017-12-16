@@ -1903,23 +1903,24 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
             aux = (_Thetaij, combs, omega_laser,
                    _omega_levelu, omega_levelu, iu0, ju0)
             assign = detunings_rewrite(*aux)
+            if assign != "":
+                if s == 0:
+                    nu = mu
+                elif s == 1:
+                    assign = "-(%s)" % assign
+                    nu = Mu(-s, i, j)
+                elif s == -1:
+                    assign = "+(%s)" % assign
+                    nu = Mu(-s, i, j)
 
-            if s == 0:
-                nu = mu
-            elif s == 1:
-                assign = "-(%s)" % assign
-                nu = Mu(-s, i, j)
-            elif s == -1:
-                assign = "+(%s)" % assign
-                nu = Mu(-s, i, j)
-
-            if matrix_form:
-                term_code = "    A[%s, %s] = %s\n" % (mu, nu, assign)
+                if matrix_form:
+                    term_code = "    A[%s, %s] = %s\n" % (mu, nu, assign)
+                else:
+                    term_code = "    rhs[%s] = (%s)*rho[%s]\n" % (mu,
+                                                                  assign, nu)
             else:
-                term_code = "    rhs[%s] = (%s)*rho[%s]\n" % (mu, assign, nu)
-
+                term_code = ""
             code += term_code
-
     #####################################
 
     # We finish the code.
