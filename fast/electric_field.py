@@ -337,33 +337,32 @@ def electric_field_amplitude_top(P, a, Omega=1e6, units="ad-hoc"):
     return E0
 
 
-def electric_field_amplitude_intensity(s0, Omega=1e6):
-    """Return the amplitude of the electric field for a given intensity.
+def electric_field_amplitude_intensity(s0, Isat=16.6889462814,
+                                       Omega=1e6, units="ad-hoc"):
+    """Return the amplitude of the electric field for saturation parameter.
 
-    This is at a given saturation parameter s0=I/I0, where I0=2.50399 mW/cm^2\
- is the saturation intensity of the D2 line of rubidium for linearly\
- polarized light.
+    This is at a given saturation parameter s0=I/Isat, where I0 is by default \
+Isat=16.6889462814 m/m^2 is the saturation intensity of the D2 line of \
+rubidium for circularly polarized light. Optionally, a frequency scale \
+`Omega` can be provided.
 
-    >>> print electric_field_amplitude_intensity(1.0)
-    6.37477867488
+    >>> print electric_field_amplitude_intensity(1.0, units="ad-hoc")
+    9.0152984553
+    >>> print electric_field_amplitude_intensity(1.0, Omega=1.0, units="SI")
+    112.135917207
+    >>> print electric_field_amplitude_intensity(1.0, units="SI")
+    0.000112135917207
 
     """
-    e0 = hbar*Omega/(e*a0)  # This is the electric field scale.
+    E0_sat = sqrt(2*mu0*c*Isat)/Omega
 
-    I0 = 2.50399  # mW/cm^2
-    I0 = 1.66889451102868  # mW/cm^2
+    if units == "ad-hoc":
+        e0 = hbar/(e*a0)  # This is the electric field scale.
+        E0_sat = E0_sat/e0
 
-    I0 = I0/1000*(100**2)  # W/m^2
-    r_ciclic = 4.226983616875483  # a0
-    gamma_D2 = 2*Pi*6.065e6/Omega  # The decay frequency of the D2 line.
-    E0_sat = gamma_D2/r_ciclic/sqrt(2.0)
-
-    E0_sat = E0_sat*e0
-    I0 = E0_sat**2/2/c/mu0
-
-    return sqrt(2*c*mu0*s0*I0)/e0
+    return E0_sat*sqrt(s0)
 
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=False)
+    print doctest.testmod(verbose=False)
