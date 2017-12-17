@@ -2080,7 +2080,8 @@ def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
             f.close()
 
         lindblad_terms = code
-        exec lindblad_terms
+        if not return_code:
+            exec lindblad_terms
     return lindblad_terms
 
 
@@ -2178,16 +2179,22 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
         rabi_terms = fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                                      matrix_form=matrix_form,
                                      file_name=file_name_rabi,
-                                     return_code=False)
+                                     return_code=True)
 
         detuning_terms = fast_detuning_terms(detuning_knob, omega_level, xi,
                                              theta, unfolding,
                                              matrix_form=matrix_form,
                                              file_name=file_name_detuning,
-                                             return_code=False)
+                                             return_code=True)
+        code = rabi_terms + "\n\n" + detuning_terms + "\n\n"
+
+        # If these functions have 0 arguments, we call them only once!
+        if not variable_Ep and not variable_epsilonp and matrix_form:
+            code += "rabi_terms = rabi_terms()\n\n"
+        if not variable_detuning_knob and matrix_form:
+            code += "detuning_terms = detuning_terms()\n\n"
     # We establish the arguments of the output function.
     if True:
-        code = ""
         code += "def hamiltonian_terms("
         if not matrix_form: code += "rho, "
         if variable_Ep: code += "Ep, "
@@ -2220,11 +2227,9 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
                 code += "), complex)\n\n"
             else:
                 code += "))\n\n"
-    # We call the Hamiltonian terms.
+    # We call the Rabi terms.
     if True:
         if not variable_Ep and not variable_epsilonp and matrix_form:
-            # We can call rabi_terms here!
-            rabi_terms = rabi_terms()
             aux_code = "rabi_terms\n"
         else:
             aux_code = "rabi_terms("
@@ -2246,7 +2251,6 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
     # We call the detuning terms.
     if True:
         if not variable_detuning_knob and matrix_form:
-            detuning_terms = detuning_terms()
             aux_code = "detuning_terms\n"
         else:
             aux_code = "detuning_terms("
@@ -2387,21 +2391,32 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
         rabi_terms = fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                                      matrix_form=matrix_form,
                                      file_name=file_name_rabi,
-                                     return_code=False)
+                                     return_code=True)
 
         detuning_terms = fast_detuning_terms(detuning_knob, omega_level, xi,
                                              theta, unfolding,
                                              matrix_form=matrix_form,
                                              file_name=file_name_detuning,
-                                             return_code=False)
+                                             return_code=True)
 
         lindblad_terms = fast_lindblad_terms(gamma, unfolding,
                                              matrix_form=matrix_form,
                                              file_name=file_name_lindblad,
-                                             return_code=False)
+                                             return_code=True)
+
+        code = rabi_terms+"\n\n"
+        code += detuning_terms+"\n\n"
+        code += lindblad_terms+"\n\n"
+
+        # If these functions have 0 arguments, we call them only once!
+        if not variable_Ep and not variable_epsilonp and matrix_form:
+            code += "rabi_terms = rabi_terms()\n\n"
+        if not variable_detuning_knob and matrix_form:
+            code += "detuning_terms = detuning_terms()\n\n"
+        if matrix_form:
+            code += "lindblad_terms = lindblad_terms()\n\n"
     # We establish the arguments of the output function.
     if True:
-        code = ""
         code += "def bloch_equations("
         if not matrix_form: code += "rho, "
         if variable_Ep: code += "Ep, "
@@ -2434,11 +2449,9 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
                 code += "), complex)\n\n"
             else:
                 code += "))\n\n"
-    # We call the Hamiltonian terms.
+    # We call the Rabi terms.
     if True:
         if not variable_Ep and not variable_epsilonp and matrix_form:
-            # We can call rabi_terms here!
-            rabi_terms = rabi_terms()
             aux_code = "rabi_terms\n"
         else:
             aux_code = "rabi_terms("
@@ -2460,8 +2473,6 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
     # We call the detuning terms.
     if True:
         if not variable_detuning_knob and matrix_form:
-            # We can call detuning_terms here!
-            detuning_terms = detuning_terms()
             aux_code = "detuning_terms\n"
         else:
             aux_code = "detuning_terms("
@@ -2482,8 +2493,6 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
     # We call the Lindblad terms.
     if True:
         if matrix_form:
-            # We can call rabi_terms here!
-            lindblad_terms = lindblad_terms()
             aux_code = "lindblad_terms\n"
         else:
             aux_code = "lindblad_terms(rho)\n"
@@ -2592,9 +2601,23 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
             variable_detuning_knob = False
         except:
             variable_detuning_knob = True
+    # We obtain code for the three parts.
+    if True:
+        args = (Ep, epsilonp, detuning_knob, gamma,
+                omega_level, rm, xi, theta,
+                unfolding, True, None, True)
+
+        bloch_equations = fast_bloch_equations(*args)
+
+        code = bloch_equations+"\n\n"
+
+        if ((not variable_Ep) and
+           (not variable_epsilonp) and
+           (not variable_detuning_knob)):
+            # We can call bloch_equations here!
+            code += "bloch_equations = bloch_equations()\n"
     # We establish the arguments of the output function.
     if True:
-        code = ""
         code += "def steady_state("
         if variable_Ep: code += "Ep, "
         if variable_epsilonp: code += "epsilonp, "
@@ -2603,21 +2626,11 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
         code += '    r"""A fast calculation of the steady state."""\n'
     # We call the Bloch equations.
     if True:
-        if file_name is not None:
-            file_name_bloch_equations = file_name + "_bloch_equations"
-        else:
-            file_name_bloch_equations = file_name
-        args = (Ep, epsilonp, detuning_knob, gamma,
-                omega_level, rm, xi, theta,
-                unfolding, True, file_name_bloch_equations, False)
-        # print 111, args
-        bloch_equations = fast_bloch_equations(*args)
         code += r"""    A, b = bloch_equations"""
         if ((not variable_Ep) and
            (not variable_epsilonp) and
            (not variable_detuning_knob)):
-            # We can call bloch_equations here!
-            bloch_equations = bloch_equations()
+
             code += "\n"
         else:
             code += "("
