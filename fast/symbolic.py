@@ -1478,6 +1478,10 @@ def dot(a, b):
     if hasattr(a, "shape") and hasattr(b, "shape"):
         return cartesian_dot_product(a, b)
 
+    print a, b, type(a), type(b),
+    print isinstance(a, Vector3D), isinstance(b, Vector3D)
+    raise NotImplementedError("could not catch these instances in dot!")
+
 
 def cross(a, b):
     r"""Cross product of two 3d vectors."""

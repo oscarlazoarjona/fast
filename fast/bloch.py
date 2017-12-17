@@ -217,7 +217,7 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff, IndexedBase, re, im
+from sympy import Symbol, diff, IndexedBase, re, im, symbols
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
 from scipy.constants import physical_constants
@@ -1667,7 +1667,6 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
                            Em[l]*dot(epsilonm[l], rp[:, i, j]))
                            for l in range(Nl)])
                      for j in range(Ne)] for i in range(Ne)]
-
     # We establish the arguments of the output function.
     if True:
         code = ""
@@ -1688,12 +1687,14 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
             code += "    fact = "+str(1j*e_num/hbar_num)+"\n\n"
         if variable_epsilonp:
             # We put rm and rp into the code
+            np.set_printoptions(threshold=np.nan)
             code += "    rm = np."+rm.__repr__()+"\n\n"
             code += "    rp = np."+rp.__repr__()+"\n\n"
             code += "    def dot(epsilon, rij):\n"
             code += "        return epsilon[0]*rij[0]"
             code += " + epsilon[1]*rij[1]"
             code += " + epsilon[2]*rij[2]\n\n"
+            np.set_printoptions(threshold=1000)
 
         if matrix_form:
             code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
@@ -2427,7 +2428,7 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
         code += "):\n"
 
         code += '    r"""A fast calculation of the hamiltonian terms."""\n'
-        # if not variable_Ep and not varia
+
     # We initialize the output and auxiliaries.
     if True:
         # We introduce the factor that multiplies all terms.
@@ -2490,6 +2491,7 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
                 code += "    A += " + aux_code
         else:
             code += "    rhs += " + aux_code
+
     # We call the Lindblad terms.
     if True:
         if matrix_form:
@@ -2655,7 +2657,9 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     return steady_state
 
 
-def sweep_steady_state(*args):
+def fast_sweep_steady_state(Ep, epsilonp, gamma,
+                            omega_level, rm, xi, theta,
+                            file_name=None, return_code=False):
     r"""Return an array of density matrices in the steady state.
 
     We test a basic two-level system.
@@ -2683,7 +2687,8 @@ def sweep_steady_state(*args):
     >>> steady_state = fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     ...                                  omega_level, rm, xi, theta)
 
-    >>> rho_deltas = sweep_steady_state([[delta, -20, 20, 11]], steady_state)
+    >>> deltas, rho_deltas = sweep_steady_state([[delta, -20, 20, 11]],
+    ...                                         steady_state)
     >>> print rho_deltas
     [[ 0.00062383 -0.02495321 -0.00062383]
      [ 0.00097371 -0.03115871 -0.00097371]
@@ -2698,28 +2703,80 @@ def sweep_steady_state(*args):
      [ 0.00062383  0.02495321 -0.00062383]]
 
     """
-    if len(args) == 2:
-        detuning_knob, steady_state = args
-    elif len(args) == 3:
-        Ep, detuning_knob, steady_state = args
+    # We unpack variables.
+    if True:
+        Nl = xi.shape[0]
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
 
-    detuning_knob_fast = []
-    for delta in detuning_knob:
-        if hasattr(delta, "__getitem__"):
-            delta0 = delta[1]
-            deltaf = delta[2]
-            N_delta = delta[3]
-        else:
-            detuning_knob_fast += [delta]
-    deltas = np.linspace(delta0, deltaf, N_delta)
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+    # We obtain code for the steady state.
+    if True:
+        detuning_knob = symbols("delta1:"+str(Nl))
+        args = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi, theta,
+                file_name, True)
 
-    if len(args) == 2:
-        rho_deltas = np.array([steady_state([deltai])
-                               for deltai in deltas])
-    elif len(args) == 3:
-        rho_deltas = np.array([steady_state(Ep, [deltai]+detuning_knob_fast)
-                               for deltai in deltas])
-    return deltas, rho_deltas
+        steady_state = fast_steady_state(*args)
+        code = steady_state+"\n\n"
+    # We establish the arguments of the output function.
+    if True:
+        code += "def sweep_steady_state("
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        code += "detuning_knob, "
+        code += "steady_state=steady_state):\n"
+        code += '    r"""A fast frequency sweep of the steady state."""\n'
+    # Code to determine the sweep range.
+    if True:
+        code += """    sweepN = -1\n"""
+        code += """    for i, delta in enumerate(detuning_knob):\n"""
+        code += """        if hasattr(delta, "__getitem__"):\n"""
+        code += """            sweepN = i\n"""
+        code += """            delta0 = delta[0]\n"""
+        code += """            deltaf = delta[1]\n"""
+        code += """            Ndelta = delta[2]\n"""
+        code += """            break\n\n"""
+        code += """    if sweepN == -1:\n"""
+        code += """        s = 'One of the detuning knobs '\n"""
+        code += """        s += 'must be of the form '\n"""
+        code += """        s += '(start, stop, Nsteps)'\n"""
+        code += """        raise ValueError(s)\n\n"""
+        code += """    deltas = np.linspace(delta0, deltaf, Ndelta)\n\n"""
+    # We call steady_state.
+    if True:
+        code += "    args = [["
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        code += """list(detuning_knob[:sweepN]) +\n"""
+        code += """            [deltas[i]] +\n"""
+        code += """            list(detuning_knob[sweepN+1:])]\n"""
+        code += """          for i in range(Ndelta)]\n\n"""
+        code += "    rho = np.array([steady_state(*argsi)\n"
+        code += "                   for argsi in args])\n\n"
+    # We finish the code.
+    if True:
+        code += "    return rho\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        sweep_steady_state = code
+        if not return_code:
+            exec sweep_steady_state
+    return sweep_steady_state
 
 
 if __name__ == "__main__":
