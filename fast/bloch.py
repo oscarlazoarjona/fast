@@ -1521,6 +1521,8 @@ def term_code(mu, nu, coef, matrix_form, rhouv_isconjugated, linear=True):
     '    rhs[1] += (33)*rho[0]\n'
 
     """
+    if coef == 0:
+        return ""
     coef = str(coef)
 
     # We change E_{0i} -> E0[i-1]
