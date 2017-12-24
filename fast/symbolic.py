@@ -202,7 +202,7 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
     return E0, omega_laser
 
 
-def polarization_vector(phi, theta, alpha, beta, p):
+def polarization_vector(phi, theta, alpha, beta, p, numeric=False):
     """
     This function returns a unitary vector describing the polarization
     of plane waves.:
@@ -272,7 +272,10 @@ def polarization_vector(phi, theta, alpha, beta, p):
                  [sin(phi), cos(phi), 0],
                  [0, 0, 1]])
 
-    return R3*R2*R1*epsilon
+    epsilon = R3*R2*R1*epsilon
+    if numeric:
+        epsilon = nparray([complex(epsilon[i]) for i in range(3)])
+    return epsilon
 
 
 def cartesian_to_helicity(vector, numeric=False):
