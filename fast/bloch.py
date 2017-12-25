@@ -220,16 +220,17 @@ Here is an example with rubidum 87.
 from sympy import Symbol, diff, IndexedBase, re, im, symbols
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
-from scipy.constants import physical_constants
+
 from symbolic import Vector3D, dot, delta_greater, delta_lesser
 from misc import part, symbolic_part
 
 import numpy as np
 import sympy
-
+from scipy.constants import physical_constants
 hbar_num = physical_constants["Planck constant over 2 pi"][0]
 e_num = physical_constants["elementary charge"][0]
 a0 = physical_constants["Bohr radius"][0]
+epsilon_0_num = physical_constants["electric constant"][0]
 
 
 def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
@@ -2837,6 +2838,81 @@ def observable(operator, rho, unfolding, complex=False):
     if not complex:
         obs = np.real(obs)
     return obs
+
+
+def electric_succeptibility(l, Ep, epsilonp, rm, n, rho, unfolding, part=0):
+    r"""Return the electric succeptibility for a given field.
+
+    INPUT:
+
+    -  ``l`` - The index labeling the probe field.
+    -  ``Ep`` - A list of the amplitudes of all pump fields.
+    -  ``epsilonp`` - The polarization vector of the probe field.
+    -  ``rm`` -     The below-diagonal components of the position operator \
+    in the cartesian basis:
+    -  ``n`` - The number density of atoms.
+    -  ``rho`` - A density matrix in unfolded format, or a list of such \
+    density matrices.
+    -  ``unfolding`` - A mapping from matrix element indices to unfolded \
+    indices.
+
+
+    >>> import numpy as np
+    >>> from sympy import symbols
+    >>> from scipy.constants import physical_constants
+    >>> from fast import vapour_number_density
+
+    >>> e_num = physical_constants["elementary charge"][0]
+    >>> hbar_num = physical_constants["Planck constant over 2 pi"][0]
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> Ep = [-1.0]
+    >>> epsilonp = np.array([[0, 0, 1.0]])
+    >>> delta = symbols("delta")
+
+    >>> detuning_knob = [delta]
+    >>> gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
+    >>> omega_level = np.array([0.0, 100.0])
+    >>> rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
+    ...       for p in range(3)]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+    >>> sweep_steady_state = fast_sweep_steady_state(Ep, epsilonp, gamma,
+    ...                                              omega_level, rm, xi,
+    ...                                              theta)
+    >>> deltas, rho = sweep_steady_state([[-20, 20, 11]])
+    >>> n = vapour_number_density(273.15+20, "Rb")
+    >>> unfolding = Unfolding(Ne, True, True, True)
+    >>> chire = electric_succeptibility(0, Ep, epsilonp, rm, n,
+    ...                                 rho, unfolding)
+    >>> print chire
+    [  4.48238603e-09 -1.12059651e-10j   5.59709041e-09 -1.74909075e-10j
+       7.44587027e-09 -3.10244594e-10j   1.10969341e-08 -6.93558379e-10j
+       2.14485517e-08 -2.68106896e-09j   0.00000000e+00 -5.98772067e-08j
+      -2.14485517e-08 -2.68106896e-09j  -1.10969341e-08 -6.93558379e-10j
+      -7.44587027e-09 -3.10244594e-10j  -5.59709041e-09 -1.74909075e-10j
+      -4.48238603e-09 -1.12059651e-10j]
+
+    """
+    epsilonm = epsilonp.conjugate()
+    rp = np.array([rm[i].transpose().conjugate() for i in range(3)])
+    if part == 1:
+        op = cartesian_dot_product(rp, epsilonm[0])
+        op += cartesian_dot_product(rm, epsilonp[0])
+        op = -e_num*n/epsilon_0_num/np.abs(Ep[0])*op
+    elif part == -1:
+        op = cartesian_dot_product(rm, epsilonp[0])
+        op += - cartesian_dot_product(rp, epsilonm[0])
+        op = -1j*e_num*n/epsilon_0_num/np.abs(Ep[0])*op
+    elif part == 0:
+        chire = electric_succeptibility(l, Ep, epsilonp, rm,
+                                        n, rho, unfolding, +1)
+        chiim = electric_succeptibility(l, Ep, epsilonp, rm,
+                                        n, rho, unfolding, -1)
+        return chire + 1j*chiim
+
+    return np.real(observable(op, rho, unfolding))
 
 
 if __name__ == "__main__":
