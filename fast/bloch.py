@@ -2686,12 +2686,11 @@ def fast_sweep_steady_state(Ep, epsilonp, gamma,
     ...       for p in range(3)]
     >>> xi = np.array([[[0, 1], [1, 0]]])
     >>> theta = phase_transformation(Ne, Nl, rm, xi)
-    >>> steady_state = fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
-    ...                                  omega_level, rm, xi, theta)
-
-    >>> deltas, rho_deltas = sweep_steady_state([[delta, -20, 20, 11]],
-    ...                                         steady_state)
-    >>> print rho_deltas
+    >>> sweep_steady_state = fast_sweep_steady_state(Ep, epsilonp, gamma,
+    ...                                              omega_level, rm, xi,
+    ...                                              theta)
+    >>> deltas, rho = sweep_steady_state([[-20, 20, 11]])
+    >>> print rho
     [[ 0.00062383 -0.02495321 -0.00062383]
      [ 0.00097371 -0.03115871 -0.00097371]
      [ 0.00172712 -0.04145078 -0.00172712]
@@ -2767,7 +2766,7 @@ def fast_sweep_steady_state(Ep, epsilonp, gamma,
         code += "                   for argsi in args])\n\n"
     # We finish the code.
     if True:
-        code += "    return rho\n"
+        code += "    return deltas, rho\n"
     # We write the code to file if provided, and execute it.
     if True:
         if file_name is not None:
