@@ -1041,7 +1041,7 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
 
 
 def compile_code(path, name, optimization_flag=' -O3',
-                 lapack=False, parallel=True, clone=None):
+                 lapack=False, parallel=True, clone=None, verbose=0):
     r"""Compile fortran code."""
     from config import use_netcdf
     t0 = time()
@@ -1077,7 +1077,8 @@ def compile_code(path, name, optimization_flag=' -O3',
     com += optimization_flag+' '
     com += path+name+clone+'.f90 -o '+path+name+clone
     com += end_flags
-    # print com
+    if verbose > 0:
+        print com
     exit_code = os.system(com)
     if exit_code != 0:
         s = 'command: '+com+' returned exit_code '+str(exit_code)
