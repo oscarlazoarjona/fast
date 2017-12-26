@@ -2660,6 +2660,163 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     return steady_state
 
 
+def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
+                        omega_level, rm, xi, theta,
+                        file_name=None, return_code=False,
+                        semi_analytic=True):
+    r"""Return a fast function the time evolution of a state.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix, symbols
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.symbolic import (define_laser_variables,
+    ...                            polarization_vector)
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 1.0e9]
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+    We define symbolic variables to be used as token arguments.
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+    >>> detuning_knob = [symbols("delta1", real=True)]
+
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    We obtain a function to calculate Hamiltonian terms.
+    >>> aux = (Ep, epsilonps, detuning_knob, gamma,
+    ...        omega_level, rm, xi, theta)
+    >>> time_evolution = fast_time_evolution(*aux)
+
+    We specify values for the variables
+    >>> detuning_knobs = [100e6]
+    >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+    >>> Eps *= np.exp(1j*np.pi)
+    >>> Eps = [Eps]
+
+    >>> t = np.linspace(0, 1e-6, 11)
+    >>> rho0 = np.array([[1, 0], [0, 0]])
+    >>> rho0 = unfolding(rho0)
+
+    >>> print time_evolution(t, rho0, Eps, detuning_knobs)
+    [[ 0.          0.          0.        ]
+     [ 0.02147019  0.14276917 -0.01160453]
+     [ 0.01825732  0.12987983 -0.02707568]
+     [ 0.01794253  0.1292563  -0.0242422 ]
+     [ 0.01804897  0.12962366 -0.02440144]
+     [ 0.0180373   0.12957509 -0.02443214]
+     [ 0.01803708  0.12957577 -0.0244238 ]
+     [ 0.01803736  0.12957664 -0.02442457]
+     [ 0.01803731  0.12957648 -0.02442461]
+     [ 0.01803732  0.12957649 -0.02442459]
+     [ 0.01803732  0.12957649 -0.02442459]]
+
+    """
+    if not semi_analytic:
+        s = "The numeric integrator has not been implemented."
+        raise NotImplementedError(s)
+    # We unpack variables.
+    if True:
+        Ne = len(omega_level)
+        Nl = xi.shape[0]
+        unfolding = Unfolding(Ne, True, True, True)
+        Nrho = unfolding.Nrho
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
+
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+    # We obtain code for the three parts.
+    if True:
+        args = (Ep, epsilonp, detuning_knob, gamma,
+                omega_level, rm, xi, theta,
+                unfolding, True, None, True)
+
+        bloch_equations = fast_bloch_equations(*args)
+
+        code = bloch_equations+"\n\n"
+
+        if ((not variable_Ep) and
+           (not variable_epsilonp) and
+           (not variable_detuning_knob)):
+            # We can call bloch_equations here!
+            code += "bloch_equations = bloch_equations()\n"
+    # We establish the arguments of the output function.
+    if True:
+        code += "def time_evolution(t, rho0, "
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        if variable_detuning_knob: code += "detuning_knob, "
+        code += "bloch_equations=bloch_equations):\n"
+        code += '    r"""A fast calculation of time evolution."""\n'
+    # We call the Bloch equations.
+    if True:
+        code += r"""    A, b = bloch_equations"""
+        if ((not variable_Ep) and
+           (not variable_epsilonp) and
+           (not variable_detuning_knob)):
+
+            code += "\n"
+        else:
+            code += "("
+            if variable_Ep: code += "Ep, "
+            if variable_epsilonp: code += "epsilonp, "
+            if variable_detuning_knob: code += "detuning_knob, "
+            if code[-2:] == ", ": code = code[:-2]
+            code += ")\n"
+
+        code += "    Nt = t.shape[0]\n"
+        code += "    lam, S = np.linalg.eig(A)\n"
+        code += "    Sinv = np.linalg.inv(S)\n"
+        code += "    d = np.dot(Sinv, b)/lam\n"
+        code += "    r = np.dot(Sinv, rho0) - d\n"
+        code += "    rho_steady = np.dot(S, d)\n"
+        code += "    rho = np.zeros((Nt, %s))\n" % Nrho
+        code += "    for i, ti in enumerate(t):\n"
+        code += "        rho_prime = r*np.exp(lam*ti)\n"
+        code += "        rho[i, :] = np.real(np.dot(S, rho_prime) "
+        code += "+ rho_steady)\n"
+        code += """    return rho\n"""
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        time_evolution = code
+        if not return_code:
+            exec time_evolution
+    return time_evolution
+
+
 def fast_sweep_steady_state(Ep, epsilonp, gamma,
                             omega_level, rm, xi, theta,
                             file_name=None, return_code=False):
