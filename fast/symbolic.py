@@ -42,7 +42,7 @@ from sympy import I, conjugate, diff
 from sympy import sin, cos, sqrt, exp
 from sympy import KroneckerDelta
 from sympy import Function, Derivative
-from sympy import re, im, zeros, factorial, binomial
+from sympy import re, im, zeros, factorial, binomial, IndexedBase
 from fast.misc import IJ, find_phase_transformation
 from numpy import array as nparray
 from numpy import sqrt as npsqrt
@@ -202,7 +202,8 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
     return E0, omega_laser
 
 
-def polarization_vector(phi, theta, alpha, beta, p, numeric=False):
+def polarization_vector(phi, theta, alpha, beta, p,
+                        numeric=False, abstract=False):
     """
     This function returns a unitary vector describing the polarization
     of plane waves.:
@@ -257,7 +258,23 @@ def polarization_vector(phi, theta, alpha, beta, p, numeric=False):
     [0],
     [0]])
 
+    We can also define abstract polarization vectors without explicit \
+    components
+
+    >>> polarization_vector(0, 0, 0, 0, 1, abstract=True)
+    epsilonp
+    >>> polarization_vector(0, 0, 0, 0, -1, abstract=True)
+    epsilonm
+
     """
+    if abstract:
+        Nl = symbols("N_l", integer=True)
+        if p == 1:
+            epsilon = Vector3D(IndexedBase("epsilonp", shape=(Nl,)))
+        else:
+            epsilon = Vector3D(IndexedBase("epsilonm", shape=(Nl,)))
+        return epsilon
+
     epsilon = Matrix([cos(2*beta), p*I*sin(2*beta), 0])
 
     R1 = Matrix([[cos(2*alpha), -sin(2*alpha), 0],
@@ -1522,4 +1539,4 @@ def cross(a, b):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=False)
+    print doctest.testmod(verbose=False)
