@@ -231,6 +231,8 @@ hbar_num = physical_constants["Planck constant over 2 pi"][0]
 e_num = physical_constants["elementary charge"][0]
 a0 = physical_constants["Bohr radius"][0]
 epsilon_0_num = physical_constants["electric constant"][0]
+alpha_num = physical_constants["fine-structure constant"][0]
+c_num = physical_constants["speed of light in vacuum"][0]
 
 
 def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
@@ -3070,6 +3072,94 @@ def electric_succeptibility(l, Ep, epsilonp, rm, n, rho, unfolding, part=0):
         return chire + 1j*chiim
 
     return np.real(observable(op, rho, unfolding))
+
+
+def radiated_intensity(rho, i, j, epsilonp, rm, omega_level, xi,
+                       N, D, unfolding):
+    r"""Return the radiated intensity in a given direction.
+
+    >>> from fast import State, Integer, split_hyperfine_to_magnetic
+    >>> g = State("Rb", 87, 5, 1, 3/Integer(2), 0)
+    >>> e = State("Rb", 87, 4, 2, 5/Integer(2), 1)
+    >>> magnetic_states = split_hyperfine_to_magnetic([g, e])
+    >>> omega0 = magnetic_states[0].omega
+    >>> omega_level = [ei.omega - omega0 for ei in magnetic_states]
+    >>> Ne = len(magnetic_states)
+
+    >>> N = 4e6
+    >>> D = 0.1
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    >>> rho = np.zeros((Ne, Ne))
+    >>> rho[0, 0] = 0.8
+    >>> rho[3, 3] = 0.2
+    >>> rho[3, 0] = 0.3
+    >>> rho[0, 3] = 0.3
+    >>> rho = unfolding(rho)
+
+    >>> ep = np.array([1, 1j, 0])/np.sqrt(2.0)
+    >>> ex = np.array([1, 0, 0])
+    >>> r0 = 4.75278521538619e-11
+    >>> rm = np.zeros((3, Ne, Ne), complex)
+    >>> rm[0, 1, 0] = -r0
+    >>> rm[0, 3, 0] = r0
+    >>> rm[1, 1, 0] = -1j*r0
+    >>> rm[1, 3, 0] = -1j*r0
+    >>> rm[1, 2, 0] = -np.sqrt(2)*r0
+
+    >>> xi = np.zeros((1, Ne, Ne))
+    >>> xi[0, 1, 0] = 1
+    >>> xi[0, 2, 0] = 1
+    >>> xi[0, 3, 0] = 1
+    >>> xi[0, :, :] += xi[0, :, :].transpose()
+
+    >>> print radiated_intensity(rho, 1, 0, ex, rm,
+    ...                          omega_level, xi, N, D, unfolding)
+    4.60125990174e-22
+
+    """
+    def inij(i, j, ilist, jlist):
+        if (i in ilist) and (j in jlist):
+            return 1
+        else:
+            return 0
+
+    rm = np.array(rm)
+    Nl = xi.shape[0]
+    Ne = xi.shape[1]
+    aux = define_simplification(omega_level, xi, Nl)
+    u = aux[0]
+    omega_levelu = aux[2]
+
+    ui = u(i)
+    uj = u(j)
+    omegaij = omega_levelu[ui] - omega_levelu[uj]
+
+    ilist = [ii for ii in range(Ne) if u(ii) == ui]
+    jlist = [jj for jj in range(Ne) if u(jj) == uj]
+
+    rp = np.array([rm[ii].conjugate().transpose() for ii in range(3)])
+
+    rm = np.array([[[rm[p, ii, jj]*inij(ii, jj, ilist, jlist)
+                   for jj in range(Ne)]
+                   for ii in range(Ne)]
+                   for p in range(3)])
+    rp = np.array([[[rp[p, ii, jj]*inij(jj, ii, ilist, jlist)
+                   for jj in range(Ne)]
+                   for ii in range(Ne)]
+                   for p in range(3)])
+
+    epsilonm = epsilonp.conjugate()
+
+    Adag = cartesian_dot_product(rm, epsilonp)
+    A = cartesian_dot_product(rp, epsilonm)
+
+    fact = alpha_num*N*hbar_num*omegaij**3/2/np.pi/c_num**2/D**2
+
+    Iop = fact * np.dot(Adag, A)
+    intensity = observable(Iop, rho, unfolding)
+    intensity = float(np.real(intensity))
+    return intensity
 
 
 if __name__ == "__main__":
