@@ -47,6 +47,7 @@ from sympy.core.numbers import Rational as Integer
 from math import sqrt, pi
 from sympy.physics.wigner import wigner_3j, wigner_6j
 from sympy import Basic
+import numpy as np
 
 # Physical constants (SI units):
 from scipy.constants import physical_constants
@@ -2214,6 +2215,34 @@ def collision_rate(Temperature, element, isotope):
     return 2*pi*sigma*v*n
 
 
+def thermal_state(omega_level, T, return_diagonal=False):
+    r"""Return a thermal state for a given set of levels.
+
+    INPUT:
+
+    -  ``omega_level`` - The angular frequencies of each state.
+    -  ``T`` - The temperature of the ensemble (in Kelvin).
+    -  ``return_diagonal`` - Whether to return only the populations.
+
+    >>> ground = State("Rb", 85, 5, 0, 1/Integer(2))
+    >>> magnetic_states = make_list_of_states([ground], "magnetic")
+    >>> omega_level = [ei.omega for ei in magnetic_states]
+    >>> T = 273.15 + 20
+
+    >>> print thermal_state(omega_level, T, return_diagonal=True)
+    [ 0.08335749  0.08335749  0.08335749  0.08335749  0.08335749  0.08331608
+      0.08331608  0.08331608  0.08331608  0.08331608  0.08331608  0.08331608]
+
+    """
+    Ne = len(omega_level)
+    E = np.array([hbar*omega_level[i] for i in range(Ne)])
+    p = np.exp(-E/k_B/T)
+    p = p/sum(p)
+    if not return_diagonal:
+        return np.diag(p)
+    return p
+
+
 # [1] Wavelengths, Transition Probabilities, and Energy Levels for the
 #     Spectra of Cesium (Cs I–Cs LV),
 #     J. E. Sansonetti,
@@ -2273,4 +2302,4 @@ def collision_rate(Temperature, element, isotope):
 
 if __name__ == "__main__":
     import doctest
-    doctest.testmod(verbose=False)
+    print doctest.testmod(verbose=False)
