@@ -24,6 +24,8 @@
 
 from scipy.constants import physical_constants
 from math import pi, sqrt, cos, sin
+from fast.symbolic import polarization_vector
+import numpy as np
 
 Pi = pi
 # Physical constants (SI units):
@@ -111,7 +113,7 @@ class PlaneWave(object):
     """
 
     def __init__(self, phi, theta, alpha, beta,
-                 omega=1, E0=1, color='blue', symbolical=True):
+                 omega=1, E0=1, color='blue', numeric=True):
         r"""A plane wave.
 
         >>> PlaneWave(0, 0, 0, 0, symbolical=False)
@@ -125,13 +127,20 @@ class PlaneWave(object):
         self.E0 = E0
         self.omega = omega
 
+        self.epsilonp = polarization_vector(phi, theta, alpha, beta, 1,
+                                            numeric=numeric)
+        self.epsilonm = polarization_vector(phi, theta, alpha, beta, -1,
+                                            numeric=numeric)
+        self.k = [cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta)]
+        if numeric:
+            self.k = np.array([float(ki) for ki in self.k])
+
         if color == 'blue':
             self.color = 'b'
         elif color == 'red':
             self.color = 'r'
         elif color == 'green':
             self.color = 'g'
-
         Ypm1 = 0.5*sqrt(2)*((cos(2*alpha)*cos(phi)*cos(theta) -
                             sin(2*alpha)*sin(phi))*cos(2*beta) -
                             1j*(cos(phi)*cos(theta)*sin(2*alpha) +
