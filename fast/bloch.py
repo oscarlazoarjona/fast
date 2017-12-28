@@ -2664,9 +2664,9 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
 
 def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
                         omega_level, rm, xi, theta,
-                        file_name=None, return_code=False,
-                        semi_analytic=True):
-    r"""Return a fast function the time evolution of a state.
+                        semi_analytic=True,
+                        file_name=None, return_code=False):
+    r"""Return a fast function to calculate the time evolution of a state.
 
     We test a basic two-level system.
 
@@ -2725,6 +2725,9 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
      [ 0.01803732  0.12957649 -0.02442459]
      [ 0.01803732  0.12957649 -0.02442459]]
 
+    >>> print time_evolution(t, rho0, Eps, detuning_knobs, average=True)
+    [ 0.0174924   0.12441977 -0.02216659]
+
     """
     if not semi_analytic:
         s = "The numeric integrator has not been implemented."
@@ -2776,6 +2779,7 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
         if variable_Ep: code += "Ep, "
         if variable_epsilonp: code += "epsilonp, "
         if variable_detuning_knob: code += "detuning_knob, "
+        code += "average=False, "
         code += "bloch_equations=bloch_equations):\n"
         code += '    r"""A fast calculation of time evolution."""\n'
     # We call the Bloch equations.
@@ -2805,6 +2809,8 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
         code += "        rho_prime = r*np.exp(lam*ti)\n"
         code += "        rho[i, :] = np.real(np.dot(S, rho_prime) "
         code += "+ rho_steady)\n"
+        code += "    if average:\n"
+        code += "        rho = time_average(rho, t)\n"
         code += """    return rho\n"""
     # We write the code to file if provided, and execute it.
     if True:
