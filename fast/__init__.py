@@ -19,6 +19,7 @@ from electric_field import PlaneWave, MotField
 from electric_field import electric_field_amplitude_gaussian
 from electric_field import electric_field_amplitude_top
 from electric_field import electric_field_amplitude_intensity
+
 from misc import Mu, IJ, find_phase_transformation
 from misc import formatLij, convolve_with_gaussian, read_result, fprint
 
@@ -32,18 +33,18 @@ from evolution import write_evolution, run_evolution
 from stationary import write_stationary, run_stationary
 from misc import compile_code
 
-from atomic_structure import Atom, State, Transition
-from atomic_structure import split_fine_to_hyperfine, split_fine_to_magnetic
-from atomic_structure import split_hyperfine_to_magnetic
-from atomic_structure import calculate_matrices, make_list_of_states
-from atomic_structure import calculate_gamma_matrix, calculate_omega_matrix
-from atomic_structure import calculate_r_matrices, calculate_boundaries
-from atomic_structure import calculate_reduced_matrix_elements
-from atomic_structure import vapour_pressure, vapour_number_density
-from atomic_structure import vapour_density
-from atomic_structure import speed_likely, speed_average, speed_rms
-from atomic_structure import collision_rate
-from atomic_structure import matrix_element
+from atomic_structure import (Atom, State, Transition,
+                              split_fine_to_hyperfine, split_fine_to_magnetic,
+                              split_hyperfine_to_magnetic,
+                              calculate_matrices, make_list_of_states,
+                              calculate_gamma_matrix, calculate_omega_matrix,
+                              calculate_r_matrices, calculate_boundaries,
+                              calculate_reduced_matrix_elements,
+                              vapour_pressure, vapour_number_density,
+                              vapour_density,
+                              speed_likely, speed_average, speed_rms,
+                              collision_rate, matrix_element,
+                              thermal_state)
 
 from sympy.core.numbers import Rational as Integer
 

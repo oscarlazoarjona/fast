@@ -2819,6 +2819,65 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
     return time_evolution
 
 
+def time_average(rho, t):
+    r"""Return a time-averaged density matrix.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix, symbols
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.symbolic import (define_laser_variables,
+    ...                            polarization_vector)
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 1.0e9]
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+    We define symbolic variables to be used as token arguments.
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+    >>> detuning_knob = [symbols("delta1", real=True)]
+
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    We obtain a function to calculate Hamiltonian terms.
+    >>> aux = (Ep, epsilonps, detuning_knob, gamma,
+    ...        omega_level, rm, xi, theta)
+    >>> time_evolution = fast_time_evolution(*aux)
+
+    We specify values for the variables
+    >>> detuning_knobs = [100e6]
+    >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+    >>> Eps *= np.exp(1j*np.pi)
+    >>> Eps = [Eps]
+
+    >>> t = np.linspace(0, 1e-6, 11)
+    >>> rho0 = np.array([[1, 0], [0, 0]])
+    >>> rho0 = unfolding(rho0)
+
+    >>> rho = time_evolution(t, rho0, Eps, detuning_knobs)
+    >>> print time_average(rho, t)
+    [ 0.0174924   0.12441977 -0.02216659]
+
+    """
+    T = t[-1]-t[0]
+    dt = t[1]-t[0]
+    rhoav = np.sum(rho[1:-1], axis=0) + 0.5*(rho[0]+rho[-1])
+    rhoav = dt/T*rhoav
+    return rhoav
+
+
 def fast_sweep_steady_state(Ep, epsilonp, gamma,
                             omega_level, rm, xi, theta,
                             file_name=None, return_code=False):
