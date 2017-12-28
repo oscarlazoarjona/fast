@@ -116,7 +116,7 @@ class PlaneWave(object):
                  omega=1, E0=1, color='blue', numeric=True):
         r"""A plane wave.
 
-        >>> PlaneWave(0, 0, 0, 0, symbolical=False)
+        >>> PlaneWave(0, 0, 0, 0)
         PlaneWave with phi=0, theta=0, alpha=0, beta=0, E0=1
 
         """
@@ -204,7 +204,7 @@ class PlaneWave(object):
     def __str__(self):
         r"""The str routine for plane waves.
 
-        >>> w = PlaneWave(0, 0, 0, 0, symbolical=False)
+        >>> w = PlaneWave(0, 0, 0, 0)
         >>> w.__str__()
         'PlaneWave with phi=0, theta=0, alpha=0, beta=0, E0=1'
 
@@ -217,7 +217,7 @@ class PlaneWave(object):
     def __repr__(self):
         r"""The repr routine for plane waves.
 
-        >>> w = PlaneWave(0, 0, 0, 0, symbolical=False)
+        >>> w = PlaneWave(0, 0, 0, 0)
         >>> w.__repr__()
         'PlaneWave with phi=0, theta=0, alpha=0, beta=0, E0=1'
 
@@ -235,17 +235,14 @@ class MotField(object):
         MotField with relative intensities [1, 1, 1, 1, 1, 1]
 
         """
-        lx = PlaneWave(Pi, Pi/2, 0, parity*Pi/8, symbolical=False, color=color)
-        lx_r = PlaneWave(0, Pi/2, 0, parity*Pi/8, symbolical=False,
-                         color=color)
+        lx = PlaneWave(Pi, Pi/2, 0, parity*Pi/8, color=color)
+        lx_r = PlaneWave(0, Pi/2, 0, parity*Pi/8, color=color)
 
-        ly = PlaneWave(-Pi/2, Pi/2, 0, parity*Pi/8, symbolical=False,
-                       color=color)
-        ly_r = PlaneWave(Pi/2, Pi/2, 0, parity*Pi/8, symbolical=False,
-                         color=color)
+        ly = PlaneWave(-Pi/2, Pi/2, 0, parity*Pi/8, color=color)
+        ly_r = PlaneWave(Pi/2, Pi/2, 0, parity*Pi/8, color=color)
 
-        lz = PlaneWave(0, Pi, 0, -parity*Pi/8, symbolical=False, color=color)
-        lz_r = PlaneWave(0, 0, 0, -parity*Pi/8, symbolical=False, color=color)
+        lz = PlaneWave(0, Pi, 0, -parity*Pi/8, color=color)
+        lz_r = PlaneWave(0, 0, 0, -parity*Pi/8, color=color)
 
         self.lx = lx; self.ly = ly; self.lz = lz
         self.lx_r = lx_r; self.ly_r = ly_r; self.lz_r = lz_r
