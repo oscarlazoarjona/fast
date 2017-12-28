@@ -2826,7 +2826,7 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
 
 
 def time_average(rho, t):
-    r"""Return a time-averaged density matrix.
+    r"""Return a time-averaged density matrix (using trapezium rule).
 
     We test a basic two-level system.
 
@@ -2887,7 +2887,7 @@ def time_average(rho, t):
 def fast_sweep_steady_state(Ep, epsilonp, gamma,
                             omega_level, rm, xi, theta,
                             file_name=None, return_code=False):
-    r"""Return an array of density matrices in the steady state.
+    r"""Return an spectrum of density matrices in the steady state.
 
     We test a basic two-level system.
 
@@ -3003,6 +3003,199 @@ def fast_sweep_steady_state(Ep, epsilonp, gamma,
         if not return_code:
             exec sweep_steady_state
     return sweep_steady_state
+
+
+def fast_sweep_time_evolution(Ep, epsilonp, gamma,
+                              omega_level, rm, xi, theta,
+                              semi_analytic=True,
+                              file_name=None, return_code=False):
+    r"""Return a spectrum of time evolutions of the density matrix.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from sympy import symbols
+    >>> from scipy.constants import physical_constants
+
+    >>> e_num = physical_constants["elementary charge"][0]
+    >>> hbar_num = physical_constants["Planck constant over 2 pi"][0]
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> Ep = [-1.0]
+    >>> epsilonp = [np.array([0, 0, 1.0])]
+    >>> delta = symbols("delta")
+
+    >>> detuning_knob = [delta]
+    >>> gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
+    >>> omega_level = np.array([0.0, 100.0])
+    >>> rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
+    ...       for p in range(3)]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+    >>> sweep_time_evolution = fast_sweep_time_evolution(Ep, epsilonp, gamma,
+    ...                                                  omega_level, rm, xi,
+    ...                                                  theta)
+
+    >>> t = np.linspace(0, 1e1, 11)
+    >>> unfolding = Unfolding(Ne, True, True, True)
+    >>> rho0 = np.array([[1, 0], [0, 0]])
+    >>> rho0 = unfolding(rho0)
+
+    >>> deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 5]])
+    >>> print rho
+    [[[  0.00000000e+00   0.00000000e+00   0.00000000e+00]
+      [  5.62048975e-04  -1.87738708e-02  -1.44368294e-02]
+      [  1.03023067e-03  -3.12259136e-02  -7.30305635e-03]
+      [  9.12184547e-04  -3.01487805e-02   1.33250669e-03]
+      [  6.37106612e-04  -2.50730799e-02   2.74370534e-03]
+      [  5.34378513e-04  -2.30997060e-02   2.29774290e-04]
+      [  5.80976828e-04  -2.40435159e-02  -1.46256227e-03]
+      [  6.38084021e-04  -2.52093923e-02  -1.32909716e-03]
+      [  6.46745698e-04  -2.54070480e-02  -6.44976127e-04]
+      [  6.29482707e-04  -2.50709886e-02  -3.74574189e-04]
+      [  6.18119824e-04  -2.48414541e-02  -4.99674790e-04]]
+    <BLANKLINE>
+     [[  0.00000000e+00   0.00000000e+00   0.00000000e+00]
+      [  5.81424860e-03  -7.46503637e-02   1.38589101e-02]
+      [  2.24583358e-03  -4.30271127e-02  -1.94356220e-02]
+      [  2.27876199e-03  -4.68669200e-02   8.17093102e-03]
+      [  3.05714698e-03  -5.47244372e-02  -6.72997591e-03]
+      [  2.09801690e-03  -4.56261983e-02  -2.21208118e-03]
+      [  2.68657227e-03  -5.16850335e-02  -1.19060077e-03]
+      [  2.43506413e-03  -4.90723263e-02  -3.84674854e-03]
+      [  2.45717014e-03  -4.94192610e-02  -1.61405170e-03]
+      [  2.52412284e-03  -5.00355681e-02  -2.83273897e-03]
+      [  2.44906189e-03  -4.93038867e-02  -2.45410426e-03]]
+    <BLANKLINE>
+     [[  0.00000000e+00   0.00000000e+00   0.00000000e+00]
+      [  1.43610413e-01   0.00000000e+00  -3.44581796e-01]
+      [  3.06127967e-01   0.00000000e+00  -4.13732743e-01]
+      [  3.61099850e-01   0.00000000e+00  -3.73871185e-01]
+      [  3.54270513e-01   0.00000000e+00  -3.37098714e-01]
+      [  3.38348041e-01   0.00000000e+00  -3.26304189e-01]
+      [  3.31346609e-01   0.00000000e+00  -3.28729595e-01]
+      [  3.31150662e-01   0.00000000e+00  -3.32436798e-01]
+      [  3.32607978e-01   0.00000000e+00  -3.33880540e-01]
+      [  3.33431981e-01   0.00000000e+00  -3.33826365e-01]
+      [  3.33548000e-01   0.00000000e+00  -3.33475215e-01]]
+    <BLANKLINE>
+     [[  0.00000000e+00   0.00000000e+00   0.00000000e+00]
+      [  5.81424860e-03   7.46503637e-02   1.38589101e-02]
+      [  2.24583358e-03   4.30271127e-02  -1.94356220e-02]
+      [  2.27876199e-03   4.68669200e-02   8.17093102e-03]
+      [  3.05714698e-03   5.47244372e-02  -6.72997591e-03]
+      [  2.09801690e-03   4.56261983e-02  -2.21208118e-03]
+      [  2.68657227e-03   5.16850335e-02  -1.19060077e-03]
+      [  2.43506413e-03   4.90723263e-02  -3.84674854e-03]
+      [  2.45717014e-03   4.94192610e-02  -1.61405170e-03]
+      [  2.52412284e-03   5.00355681e-02  -2.83273897e-03]
+      [  2.44906189e-03   4.93038867e-02  -2.45410426e-03]]
+    <BLANKLINE>
+     [[  0.00000000e+00   0.00000000e+00   0.00000000e+00]
+      [  5.62048975e-04   1.87738708e-02  -1.44368294e-02]
+      [  1.03023067e-03   3.12259136e-02  -7.30305635e-03]
+      [  9.12184547e-04   3.01487805e-02   1.33250669e-03]
+      [  6.37106612e-04   2.50730799e-02   2.74370534e-03]
+      [  5.34378513e-04   2.30997060e-02   2.29774290e-04]
+      [  5.80976828e-04   2.40435159e-02  -1.46256227e-03]
+      [  6.38084021e-04   2.52093923e-02  -1.32909716e-03]
+      [  6.46745698e-04   2.54070480e-02  -6.44976127e-04]
+      [  6.29482707e-04   2.50709886e-02  -3.74574189e-04]
+      [  6.18119824e-04   2.48414541e-02  -4.99674790e-04]]]
+
+    >>> deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 11]],
+    ...                                    average=True)
+    >>> print rho
+    [[ 0.00064803 -0.0240473  -0.00214949]
+     [ 0.00105421 -0.03076586 -0.00072189]
+     [ 0.00157427 -0.0375314   0.00239996]
+     [ 0.00412612 -0.06039333 -0.00605042]
+     [ 0.01603272 -0.11753686 -0.01178172]
+     [ 0.2998768   0.         -0.32911995]
+     [ 0.01603272  0.11753686 -0.01178172]
+     [ 0.00412612  0.06039333 -0.00605042]
+     [ 0.00157427  0.0375314   0.00239996]
+     [ 0.00105421  0.03076586 -0.00072189]
+     [ 0.00064803  0.0240473  -0.00214949]]
+
+    """
+    # We unpack variables.
+    if True:
+        Nl = xi.shape[0]
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
+
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+    # We obtain code for the steady state.
+    if True:
+        detuning_knob = symbols("delta1:"+str(Nl))
+        args = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi, theta,
+                file_name, True)
+
+        args = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi,
+                theta, True, file_name, True)
+        time_evolution = fast_time_evolution(*args)
+        code = time_evolution+"\n\n"
+    # We establish the arguments of the output function.
+    if True:
+        code += "def sweep_time_evolution(t, rho0, "
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        code += "detuning_knob, average=False, "
+        code += "time_evolution=time_evolution):\n"
+        code += '    r"""A fast frequency sweep of the steady state."""\n'
+    # Code to determine the sweep range.
+    if True:
+        code += """    sweepN = -1\n"""
+        code += """    for i, delta in enumerate(detuning_knob):\n"""
+        code += """        if hasattr(delta, "__getitem__"):\n"""
+        code += """            sweepN = i\n"""
+        code += """            delta0 = delta[0]\n"""
+        code += """            deltaf = delta[1]\n"""
+        code += """            Ndelta = delta[2]\n"""
+        code += """            break\n\n"""
+        code += """    if sweepN == -1:\n"""
+        code += """        s = 'One of the detuning knobs '\n"""
+        code += """        s += 'must be of the form '\n"""
+        code += """        s += '(start, stop, Nsteps)'\n"""
+        code += """        raise ValueError(s)\n\n"""
+        code += """    deltas = np.linspace(delta0, deltaf, Ndelta)\n\n"""
+    # We call steady_state.
+    if True:
+        code += "    args = [[t, rho0, "
+        if variable_Ep: code += "Ep, "
+        if variable_epsilonp: code += "epsilonp, "
+        code += """list(detuning_knob[:sweepN]) +\n"""
+        code += """            [deltas[i]] +\n"""
+        code += """            list(detuning_knob[sweepN+1:]), average]\n"""
+        code += """          for i in range(Ndelta)]\n\n"""
+        code += "    rho = np.array([time_evolution(*argsi)\n"
+        code += "                   for argsi in args])\n\n"
+    # We finish the code.
+    if True:
+        code += "    return deltas, rho\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        sweep_time_evolution = code
+        if not return_code:
+            exec sweep_time_evolution
+    return sweep_time_evolution
 
 
 def observable(operator, rho, unfolding, complex=False):
