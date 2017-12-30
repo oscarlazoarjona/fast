@@ -64,7 +64,12 @@ from symbolic import (define_density_matrix, define_laser_variables,
 
 from error_propagation import Measurement
 
-from bloch import fast_hamiltonian
+from bloch import (Unfolding, fast_hamiltonian, fast_rabi_terms,
+                   fast_detuning_terms, fast_lindblad_terms,
+                   fast_hamiltonian_terms, fast_bloch_equations,
+                   fast_steady_state, fast_time_evolution,
+                   fast_sweep_steady_state, fast_sweep_time_evolution,
+                   observable, electric_succeptibility, radiated_intensity)
 
 from matplotlib import rcParams
 
