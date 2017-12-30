@@ -26,6 +26,9 @@ from scipy.constants import physical_constants
 from math import pi, sqrt, cos, sin
 from fast.symbolic import polarization_vector
 import numpy as np
+from sympy import cos as symcos
+from sympy import sin as symsin
+from sympy import Matrix
 
 Pi = pi
 # Physical constants (SI units):
@@ -131,9 +134,17 @@ class PlaneWave(object):
                                             numeric=numeric)
         self.epsilonm = polarization_vector(phi, theta, alpha, beta, -1,
                                             numeric=numeric)
-        self.k = [cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta)]
+
         if numeric:
-            self.k = np.array([float(ki) for ki in self.k])
+            k = [cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta)]
+            k = np.array([float(ki) for ki in k])
+            self.k = k
+        else:
+            k = [symcos(phi)*symsin(theta),
+                 symsin(phi)*symsin(theta),
+                 symcos(theta)]
+            k = Matrix(k)
+            self.k = k
 
         if color == 'blue':
             self.color = 'b'
