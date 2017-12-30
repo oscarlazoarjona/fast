@@ -985,8 +985,8 @@ def define_rho_vector(rho, Ne):
     return Matrix(rho_vect)
 
 
-def calculate_A_b(eqs, rho, Ne):
-    u"""Calculate the equations in vector form.
+def calculate_A_b(eqs, unfolding):
+    u"""Calculate the equations in matrix form.
 
     >>> from sympy import symbols, pprint, I
     >>> rho = define_density_matrix(2, explicitly_hermitian=True,
@@ -994,53 +994,60 @@ def calculate_A_b(eqs, rho, Ne):
 
     >>> Omega, delta = symbols("Omega delta")
     >>> hbar = symbols("hbar", positive=True)
-    >>> H = Matrix([[0, Omega.conjugate()], [Omega, -delta]])
+    >>> H = hbar*Matrix([[0, Omega.conjugate()/2], [Omega/2, -delta]])
 
-    >>> aux = define_frequencies(2, explicitly_antisymmetric=True)
+    >>> Ne = 2
+    >>> aux = define_frequencies(Ne, explicitly_antisymmetric=True)
     >>> omega_level, omega, gamma = aux
 
     >>> eqs = I/hbar*(rho*H-H*rho) + lindblad_terms(gamma, rho, 2)
 
-    >>> A, b = calculate_A_b(eqs, rho, 2)
+    >>> from fast import Unfolding
+    >>> unfolding = Unfolding(Ne, True, True, True)
+    >>> A, b = calculate_A_b(eqs, unfolding)
     >>> pprint(A, use_unicode=True)
-    ⎡              2⋅im(Ω)       -2⋅re(Ω)   ⎤
-    ⎢  -γ₂₁        ───────       ─────────  ⎥
-    ⎢                 h̅             h̅     ⎥
-    ⎢                                       ⎥
-    ⎢-2⋅im(Ω)     γ₂₁   im(δ)     -re(δ)    ⎥
-    ⎢─────────  - ─── - ─────     ───────   ⎥
-    ⎢    h̅        2      h̅         h̅     ⎥
-    ⎢                                       ⎥
-    ⎢ 2⋅re(Ω)       re(δ)        γ₂₁   im(δ)⎥
-    ⎢ ───────       ─────      - ─── - ─────⎥
-    ⎣    h̅           h̅          2      h̅ ⎦
+    ⎡ -γ₂₁       im(Ω)         -re(Ω)    ⎤
+    ⎢                                    ⎥
+    ⎢          γ₂₁                       ⎥
+    ⎢-im(Ω)  - ─── - im(δ)     -re(δ)    ⎥
+    ⎢           2                        ⎥
+    ⎢                                    ⎥
+    ⎢                         γ₂₁        ⎥
+    ⎢re(Ω)       re(δ)      - ─── - im(δ)⎥
+    ⎣                          2         ⎦
 
     >>> pprint(b, use_unicode=True)
     ⎡   0   ⎤
     ⎢       ⎥
     ⎢-im(Ω) ⎥
     ⎢───────⎥
-    ⎢   h̅  ⎥
+    ⎢   2   ⎥
     ⎢       ⎥
     ⎢ re(Ω) ⎥
     ⎢ ───── ⎥
-    ⎣   h̅  ⎦
+    ⎣   2   ⎦
 
     """
-    rho_vect = define_rho_vector(rho, Ne)
-    A = []; b = []
-    ss_comp = {rho[i, j]: re(rho[i, j])+I*im(rho[i, j])
-               for j in range(Ne) for i in range(Ne)}
+    Ne = unfolding.Ne
+    Nrho = unfolding.Nrho
+    lower_triangular = unfolding.lower_triangular
+    rho = define_density_matrix(Ne, explicitly_hermitian=lower_triangular,
+                                normalized=unfolding.normalized)
 
-    for mu in range(1, Ne**2):
-        i, j, s = IJ(mu, Ne)
-        ii = i-1; jj = j-1
+    rho_vect = unfolding(rho)
+    A = []; b = []
+    if unfolding.real:
+        ss_comp = {rho[i, j]: re(rho[i, j])+I*im(rho[i, j])
+                   for j in range(Ne) for i in range(Ne)}
+
+    for mu in range(Nrho):
+        s, i, j = unfolding.IJ(mu)
         # print ii,jj,s
-        eq = part_symbolic(eqs[ii, jj].subs(ss_comp), s)
+        eq = part_symbolic(eqs[i, j].subs(ss_comp), s)
         eq_new = 0
         row = []
-        for nu in range(1, Ne**2):
-            variable = rho_vect[nu-1]
+        for nu in range(Nrho):
+            variable = rho_vect[nu]
             coefficient = Derivative(eq, variable).doit()
             row += [coefficient]
             eq_new += coefficient*variable
