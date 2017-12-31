@@ -472,7 +472,6 @@ def detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0):
 
     """
     code_det = ""
-
     for l in range(Nl):
         for pair in pairs[l]:
             iu, ju = pair
@@ -481,7 +480,8 @@ def detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0):
             code_det += "_"+str(ju+1)
             code_det += " = detuning_knob["+str(l)+"]"
             corr = -omega_levelu[iu]+omega_levelu[iu0[l]]
-            corr = +omega_levelu[ju0[l]]-omega_levelu[ju] + corr
+            corr = -omega_levelu[ju0[l]]+omega_levelu[ju] + corr
+
             if corr != 0:
                 code_det += " + ("+str(corr)+")"
             code_det += "\n"
@@ -610,6 +610,7 @@ def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
         remainder += sum([a[l]*(omega_levelu[iu0[l]] -
                                 omega_levelu[ju0[l]])
                           for l in range(Nl)])
+        assign = str(remainder)
         # We get the code for Hii using detuning knobs.
         for l in range(Nl):
             if a[l] != 0:
@@ -618,6 +619,7 @@ def detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
                 elif a[l] == -1:
                     assign += "-"
                 assign += "detuning_knob["+str(l)+"]"
+
     return assign
 
 
@@ -1909,6 +1911,7 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
             aux = (_Thetaij, combs, omega_laser,
                    _omega_levelu, omega_levelu, iu0, ju0)
             assign = detunings_rewrite(*aux)
+
             if assign != "":
                 if s == 0:
                     nu = mu
