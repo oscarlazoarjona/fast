@@ -985,14 +985,15 @@ def define_rho_vector(rho, Ne):
     return Matrix(rho_vect)
 
 
-def calculate_A_b(eqs, unfolding):
+def calculate_A_b(eqs, unfolding, verbose=0):
     u"""Calculate the equations in matrix form.
 
     >>> from sympy import symbols, pprint, I
     >>> rho = define_density_matrix(2, explicitly_hermitian=True,
     ...                             normalized=True)
 
-    >>> Omega, delta = symbols("Omega delta")
+    >>> Omega = symbols("Omega")
+    >>> delta = symbols("delta", real=True)
     >>> hbar = symbols("hbar", positive=True)
     >>> H = hbar*Matrix([[0, Omega.conjugate()/2], [Omega/2, -delta]])
 
@@ -1006,15 +1007,15 @@ def calculate_A_b(eqs, unfolding):
     >>> unfolding = Unfolding(Ne, True, True, True)
     >>> A, b = calculate_A_b(eqs, unfolding)
     >>> pprint(A, use_unicode=True)
-    ⎡ -γ₂₁       im(Ω)         -re(Ω)    ⎤
-    ⎢                                    ⎥
-    ⎢          γ₂₁                       ⎥
-    ⎢-im(Ω)  - ─── - im(δ)     -re(δ)    ⎥
-    ⎢           2                        ⎥
-    ⎢                                    ⎥
-    ⎢                         γ₂₁        ⎥
-    ⎢re(Ω)       re(δ)      - ─── - im(δ)⎥
-    ⎣                          2         ⎦
+    ⎡ -γ₂₁   im(Ω)  -re(Ω)⎤
+    ⎢                     ⎥
+    ⎢        -γ₂₁         ⎥
+    ⎢-im(Ω)  ─────    -δ  ⎥
+    ⎢          2          ⎥
+    ⎢                     ⎥
+    ⎢               -γ₂₁  ⎥
+    ⎢re(Ω)     δ    ───── ⎥
+    ⎣                 2   ⎦
 
     >>> pprint(b, use_unicode=True)
     ⎡   0   ⎤
@@ -1035,14 +1036,14 @@ def calculate_A_b(eqs, unfolding):
                                 normalized=unfolding.normalized)
 
     rho_vect = unfolding(rho)
-    A = []; b = []
     if unfolding.real:
         ss_comp = {rho[i, j]: re(rho[i, j])+I*im(rho[i, j])
                    for j in range(Ne) for i in range(Ne)}
 
+    A = []; b = []
     for mu in range(Nrho):
         s, i, j = unfolding.IJ(mu)
-        # print ii,jj,s
+        if verbose > 0: print mu
         eq = part_symbolic(eqs[i, j].subs(ss_comp), s)
         eq_new = 0
         row = []
