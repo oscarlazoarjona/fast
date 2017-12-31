@@ -48,6 +48,7 @@ from math import sqrt, pi
 from sympy.physics.wigner import wigner_3j, wigner_6j
 from sympy import Basic
 import numpy as np
+from symbolic import delta_lesser, delta_greater
 
 # Physical constants (SI units):
 from scipy.constants import physical_constants
@@ -1831,14 +1832,15 @@ def matrix_element(ji, fi, mi, jj, fj, mj,
     return rpij
 
 
-def calculate_r_matrices(fine_states, reduced_matrix_elements, numeric=True):
+def calculate_r_matrices(fine_states, reduced_matrix_elements, q=None,
+                         numeric=True):
     magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
     aux = calculate_boundaries(fine_states, magnetic_states)
     index_list_fine, index_list_hyperfine = aux
 
     Ne = len(magnetic_states)
 
-    r = [[[0.0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
+    r = [[[0 for j in range(Ne)] for i in range(Ne)] for p in range(3)]
 
     II = fine_states[0].i
 
@@ -1862,7 +1864,12 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements, numeric=True):
                                           p, II, reduced_matrix_elementij,
                                           numeric=numeric)
 
-                    r[p+1][i][j] = rpij
+                    if q == 1:
+                        r[p+1][i][j] = rpij*delta_lesser(i, j)
+                    elif q == -1:
+                        r[p+1][i][j] = rpij*delta_greater(i, j)
+                    else:
+                        r[p+1][i][j] = rpij
 
     return r
 
