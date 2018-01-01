@@ -275,12 +275,14 @@ from misc import part, symbolic_part
 import numpy as np
 import sympy
 from scipy.constants import physical_constants
+from atomic_structure import Atom
 hbar_num = physical_constants["Planck constant over 2 pi"][0]
 e_num = physical_constants["elementary charge"][0]
 a0 = physical_constants["Bohr radius"][0]
 epsilon_0_num = physical_constants["electric constant"][0]
 alpha_num = physical_constants["fine-structure constant"][0]
 c_num = physical_constants["speed of light in vacuum"][0]
+k_B_num = physical_constants["Boltzmann constant"][0]
 
 
 def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
@@ -3247,6 +3249,49 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
         if not return_code:
             exec sweep_time_evolution
     return sweep_time_evolution
+
+
+def fast_maxwell_boltzmann(element, isotope, file_name=None,
+                           return_code=False):
+    r"""Return a function that returns values of a Maxwell-Boltzmann
+    distribution.
+
+    >>> f = fast_maxwell_boltzmann('Rb', 87)
+    >>> print f(0, 273.15+20)
+    0.00238221482739
+
+    """
+    # We get the mass of the atom.
+    atom = Atom(element, isotope)
+    m = atom.mass
+    code = ""
+    code = "def maxwell_boltzmann(v, T):\n"
+    code += '    r"""A fast calculation of the'
+    code += ' Maxwell-Boltzmann distribution."""\n'
+    code += "    if hasattr(v, '__len__'):\n"
+    code += "        d = len(v)\n"
+    code += "        m = %s\n" % m
+    code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
+    code += "        f = f * np.exp(-m*np.dot(v, v)/2/k_B_num/T)\n"
+    code += "        return f\n"
+    code += "    else:\n"
+    code += "        d = 1\n"
+    code += "        m = %s\n" % m
+    code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
+    code += "        f = f * np.exp(-m*v**2/2/k_B_num/T)\n"
+    code += "        return f\n"
+
+    # We write the code to file if provided, and execute it.
+    if file_name is not None:
+        f = file(file_name+".py", "w")
+        f.write(code)
+        f.close()
+
+    maxwell_boltzmann = code
+    if not return_code:
+        exec maxwell_boltzmann
+
+    return maxwell_boltzmann
 
 
 def observable(operator, rho, unfolding, complex=False):
