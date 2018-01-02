@@ -2008,6 +2008,204 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
     return detuning_terms
 
 
+def fast_doppler_terms(v, detuning_knob, k, omega_level, xi, theta,
+                       unfolding, matrix_form=False, file_name=None,
+                       return_code=False):
+    r"""Return a fast function that returns the Doppler terms.
+
+    >>> from sympy import Matrix, symbols
+    >>> from scipy.constants import physical_constants
+    >>> from fast import PlaneWave
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [Matrix([[0, 0], [a0, 0]]),
+    ...       Matrix([[0, 0], [0, 0]]),
+    ...       Matrix([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+    >>> omega_level = [1, 2.4e15]
+    >>> detuning_knob = [symbols("delta1")]
+
+    >>> v = symbols("vx vy vz")
+    >>> laser = PlaneWave(0, 0, 0, 0, 1)
+    >>> k = [laser.k]
+
+    >>> detuning_terms = fast_doppler_terms(v, detuning_knob, k, omega_level,
+    ...                                     xi, theta, unfolding,
+    ...                                     matrix_form=True)
+
+    >>> detuning_knobs = [0]
+    >>> A, b = detuning_terms([0, 0, 167], detuning_knobs)
+    >>> print A/2/np.pi*1e-9
+    [[ 0.          0.          0.        ]
+     [ 0.          0.          0.21277821]
+     [ 0.         -0.21277821  0.        ]]
+
+    """
+    # We unpack variables.
+    if True:
+        Ne = unfolding.Ne
+        Nrho = unfolding.Nrho
+        Nl = xi.shape[0]
+        IJ = unfolding.IJ
+        Mu = unfolding.Mu
+    # We determine which arguments are constants.
+    if True:
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+    # We establish the arguments of the output function.
+    if True:
+        code = ""
+        code += "def doppler_terms(v, "
+        if not matrix_form: code += "rho, "
+        if variable_detuning_knob: code += "detuning_knob, "
+        if code[-2:] == ", ":
+            code = code[:-2]
+        code += "):\n"
+
+        code += '    r"""A fast calculation of the Doppler terms."""\n'
+    # We initialize the output and auxiliaries.
+    if True:
+        # We introduce the factor that multiplies all terms.
+        if unfolding.real:
+            code += "    fact = 1.0\n\n"
+        else:
+            code += "    fact = 1.0j\n\n"
+
+        if matrix_form:
+            code += "    A = np.zeros(("+str(Nrho)+", "+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+            if unfolding.normalized:
+                code += "    b = np.zeros(("+str(Nrho)
+                if not unfolding.real:
+                    code += "), complex)\n\n"
+                else:
+                    code += "))\n\n"
+        else:
+            code += "    rhs = np.zeros(("+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+
+    # We build the degeneration simplification and is inverse (to avoid
+    # large combinatorics).
+    aux = define_simplification(omega_level, xi, Nl)
+    u, invu, omega_levelu, Neu, xiu = aux
+    # For each field we find the smallest transition frequency, and its
+    # simplified indices.
+    omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+    #####################################
+    # We get the code to calculate the non degenerate detunings.
+    pairs = detunings_indices(Neu, Nl, xiu)
+    if not variable_detuning_knob:
+        code += "    detuning_knob = np.zeros("+str(Nl)+")\n"
+        for l in range(Nl):
+            code += "    detuning_knob["+str(l)+"] = " +\
+                str(detuning_knob[l])+"\n"
+    #####################################
+    # We put in the code to calculate the Doppler shift
+    if True:
+        # Delta omega = omega_laser /c k.v
+        code += "    # The Doppler shift\n"
+        dimension = len(v)
+        code += "    c = %s\n" % c_num
+        for l in range(Nl):
+            lp1 = l+1
+            code += "    omega_laser%s = %s" % (lp1, omega_min[l])
+            code += "+detuning_knob[%s]\n" % l
+            code += "    detuning_knob[%s] = 0\n" % l
+            for ii in range(dimension):
+
+                code += "    detuning_knob[%s] += -%s" % (l, k[l][ii])
+                if dimension == 1:
+                    code += "*v/c*omega_laser%s\n" % lp1
+                else:
+                    code += "*v[%s]/c*omega_laser%s\n" % (ii, lp1)
+
+    code += "\n"
+
+    code_det = detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+    code += code_det
+    code += "\n"
+    #####################################
+    # There is a term
+    # I * Theta_ij * rho_ij = I * (omega_level_j - omega_level_i
+    #                              theta_j - theta_i)
+    # for all i != j.
+    # This term can be re expressed as
+    # re(Theta_ij*rho_ij) = - Theta_ij * im(rho_ij)
+    # im(Theta_ij*rho_ij) = + Theta_ij * re(rho_ij)
+    _omega_level, omega, gamma = define_frequencies(Ne)
+    _omega_levelu, omega, gamma = define_frequencies(Neu)
+    E0, omega_laser = define_laser_variables(Nl)
+    # We build all combinations.
+    combs = detunings_combinations(pairs)
+    # We add all terms.
+    for mu in range(Nrho):
+        s, i, j = IJ(mu)
+        if i != j:
+            _Thetaij = _omega_levelu[u(j)] - _omega_levelu[u(i)]
+            _Thetaij += theta[j] - theta[i]
+            aux = (_Thetaij, combs, omega_laser,
+                   _omega_levelu, omega_levelu, iu0, ju0)
+            assign = detunings_rewrite(*aux)
+            if assign != "":
+                if s == 0:
+                    nu = mu
+                elif s == 1:
+                    assign = "-(%s)" % assign
+                    nu = Mu(-s, i, j)
+                elif s == -1:
+                    assign = "+(%s)" % assign
+                    nu = Mu(-s, i, j)
+
+                if matrix_form:
+                    term_code = "    A[%s, %s] = %s\n" % (mu, nu, assign)
+                else:
+                    term_code = "    rhs[%s] = (%s)*rho[%s]\n" % (mu,
+                                                                  assign, nu)
+            else:
+                term_code = ""
+            code += term_code
+    #####################################
+    # We finish the code.
+    if True:
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    A *= fact\n"
+                code += "    b *= fact\n"
+                code += "    return A, b\n"
+            else:
+                code += "    A *= fact\n"
+                code += "    return A\n"
+        else:
+            code += "    rhs *= fact\n"
+            code += "    return rhs\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        doppler_terms = code
+        if not return_code:
+            exec doppler_terms
+    return doppler_terms
+
+
 def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
                         return_code=False):
     r"""Return a fast function that returns the Lindblad terms.
