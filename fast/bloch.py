@@ -1503,6 +1503,109 @@ class Inhomogeneity(object):
         self.terms = terms
 
 
+class DopplerBroadening(Inhomogeneity):
+    r"""An object representing an ensemble of atom at different velocities."""
+
+    def __init__(self, shape, stds, T, element, isotope, detuning_knob, k,
+                 omega_level, xi, theta, unfolding,
+                 matrix_form=False, file_name=None, return_code=False):
+        r"""An object representing Doppler broadening.
+
+        >>> from fast.atomic_structure import speed_average
+        >>> from fast import PlaneWave
+        >>> import numpy as np
+        >>> from sympy import Matrix
+
+        >>> element = "Rb"
+        >>> isotope = 85
+        >>> T = 273.15+20
+        >>> v_av = speed_average(T, element, isotope)
+        >>> v = np.linspace(-4*v_av, 4*v_av, 11)
+        >>> f = fast_maxwell_boltzmann(element, isotope)
+        >>> distribution = f(v, T)
+        >>> print distribution
+        [  3.34624364e-12   5.12403858e-09   1.53771999e-06   9.04382537e-05
+           1.04240650e-03   2.35468108e-03   1.04240650e-03   9.04382537e-05
+           1.53771999e-06   5.12403858e-09   3.34624364e-12]
+
+        We obtain a fast function for the Doppler terms.
+
+        >>> Ne = 2
+        >>> Nl = 1
+        >>> unfolding = Unfolding(Ne, True, True, True)
+
+        >>> a0 = physical_constants["Bohr radius"][0]
+        >>> rm = [Matrix([[0, 0], [a0, 0]]),
+        ...       Matrix([[0, 0], [0, 0]]),
+        ...       Matrix([[0, 0], [0, 0]])]
+        >>> xi = np.array([[[0, 1], [1, 0]]])
+        >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+        >>> omega_level = [1, 2.4e15]
+
+        >>> v_sym = symbols("vx vy vz")
+        >>> detuning_knob = [symbols("delta1")]
+        >>> laser = PlaneWave(0, 0, 0, 0, 1)
+        >>> k = [laser.k]
+
+        >>> shape = [11]
+        >>> stds = [[-4, 4]]
+
+        >>> doppler_effect = DopplerBroadening(shape, stds, T, element,
+        ...                                    isotope, detuning_knob, k,
+        ...                                    omega_level, xi, theta,
+        ...                                    unfolding)
+        >>> print doppler_effect.domain
+        [-677.70074607 -542.16059685 -406.62044764 -271.08029843 -135.54014921
+            0.          135.54014921  271.08029843  406.62044764  542.16059685
+          677.70074607]
+
+        >>> print doppler_effect.v_sig
+        169.425186516
+
+        """
+        # We obtain the domain of the velocity distribution.
+        if hasattr(shape, "len"):
+            dimension = len(shape)
+        else:
+            dimension = 1
+        v_symb = symbols("v1:"+str(dimension+1))
+
+        mass = Atom(element, isotope).mass
+        v_sig = np.sqrt(k_B_num*T/mass)
+
+        if dimension == 3:
+            shape = list(shape)
+            shape.reverse()
+            domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
+                      for i in range(dimension)]
+            domain = np.array(np.meshgrid(*domain))
+            domain = np.swapaxes(domain, 0, -1)
+        elif dimension == 2:
+            domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
+                      for i in range(dimension)]
+            domain = np.array(np.meshgrid(*domain))
+            domain = np.swapaxes(domain, 0, -1)
+        elif dimension == 1:
+            domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
+                      for i in range(dimension)]
+            domain = domain[0]
+
+        # We obtain a function to calculate the distribution.
+        f = fast_maxwell_boltzmann(element, isotope)
+        distribution = f(domain, T)
+
+        doppler_terms = fast_doppler_terms(v_symb, detuning_knob, k,
+                                           omega_level, xi, theta, unfolding,
+                                           matrix_form=matrix_form,
+                                           file_name=file_name,
+                                           return_code=return_code)
+
+        Inhomogeneity.__init__(self, domain, distribution, doppler_terms)
+        self.T = T
+        self.v_sig = v_sig
+
+
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
                                  unfolding, matrix_form):
     r"""Get the indices mu, nu, and term coefficients for linear terms.
