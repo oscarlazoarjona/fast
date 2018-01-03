@@ -1560,10 +1560,18 @@ class DopplerBroadening(Inhomogeneity):
             0.          135.54014921  271.08029843  406.62044764  542.16059685
           677.70074607]
 
+        >>> print doppler_effect.distribution
+        [  1.07064870e-04   1.90728284e-03   1.79157396e-02   8.87372390e-02
+           2.31754734e-01   3.19155879e-01   2.31754734e-01   8.87372390e-02
+           1.79157396e-02   1.90728284e-03   1.07064870e-04]
+        >>> print sum(doppler_effect.distribution)
+        1.0
+
         >>> print doppler_effect.v_sig
         169.425186516
 
         """
+        ######################################################################
         # We obtain the domain of the velocity distribution.
         if hasattr(shape, "len"):
             dimension = len(shape)
@@ -1591,10 +1599,15 @@ class DopplerBroadening(Inhomogeneity):
                       for i in range(dimension)]
             domain = domain[0]
 
+        ######################################################################
         # We obtain a function to calculate the distribution.
         f = fast_maxwell_boltzmann(element, isotope)
         distribution = f(domain, T)
+        # We renormalize from probability density to probability.
+        not_one = sum(distribution.flatten())
+        distribution = distribution/not_one
 
+        ######################################################################
         doppler_terms = fast_doppler_terms(v_symb, detuning_knob, k,
                                            omega_level, xi, theta, unfolding,
                                            matrix_form=matrix_form,
