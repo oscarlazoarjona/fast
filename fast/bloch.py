@@ -1442,6 +1442,67 @@ class Unfolding(object):
         return rho
 
 
+class Inhomogeneity(object):
+    r"""A class describing an ensemble of atoms driven different dynamics."""
+
+    def __init__(self, domain, distribution, terms):
+        r"""A class describing an ensemble of atoms driven different dynamics.
+
+        To describe Doppler broadening from a Maxwell-Boltzmann velocity
+        distribution.
+
+        >>> from fast.atomic_structure import speed_average
+        >>> from fast import PlaneWave
+        >>> import numpy as np
+        >>> from sympy import Matrix
+
+        >>> element = "Rb"
+        >>> isotope = 85
+        >>> T = 273.15+20
+        >>> v_av = speed_average(T, element, isotope)
+        >>> v = np.linspace(-4*v_av, 4*v_av, 11)
+        >>> f = fast_maxwell_boltzmann(element, isotope)
+        >>> distribution = f(v, T)
+        >>> print distribution
+        [  3.34624364e-12   5.12403858e-09   1.53771999e-06   9.04382537e-05
+           1.04240650e-03   2.35468108e-03   1.04240650e-03   9.04382537e-05
+           1.53771999e-06   5.12403858e-09   3.34624364e-12]
+
+        We obtain a fast function for the Doppler terms.
+
+        >>> Ne = 2
+        >>> Nl = 1
+        >>> unfolding = Unfolding(Ne, True, True, True)
+
+        >>> a0 = physical_constants["Bohr radius"][0]
+        >>> rm = [Matrix([[0, 0], [a0, 0]]),
+        ...       Matrix([[0, 0], [0, 0]]),
+        ...       Matrix([[0, 0], [0, 0]])]
+        >>> xi = np.array([[[0, 1], [1, 0]]])
+        >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+        >>> omega_level = [1, 2.4e15]
+
+        >>> v_sym = symbols("vx vy vz")
+        >>> detuning_knob = [symbols("delta1")]
+        >>> laser = PlaneWave(0, 0, 0, 0, 1)
+        >>> k = [laser.k]
+
+        >>> doppler_terms = fast_doppler_terms(v_sym, detuning_knob, k,
+        ...                                    omega_level,
+        ...                                    xi, theta, unfolding,
+        ...                                    matrix_form=True)
+
+        >>> doppler_effect = Inhomogeneity(v, distribution, doppler_terms)
+
+
+        """
+        self.shape = domain.shape
+        self.domain = domain
+        self.distribution = distribution
+        self.terms = terms
+
+
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
                                  unfolding, matrix_form):
     r"""Get the indices mu, nu, and term coefficients for linear terms.
@@ -2034,12 +2095,12 @@ def fast_doppler_terms(v, detuning_knob, k, omega_level, xi, theta,
     >>> laser = PlaneWave(0, 0, 0, 0, 1)
     >>> k = [laser.k]
 
-    >>> detuning_terms = fast_doppler_terms(v, detuning_knob, k, omega_level,
-    ...                                     xi, theta, unfolding,
-    ...                                     matrix_form=True)
+    >>> doppler_terms = fast_doppler_terms(v, detuning_knob, k, omega_level,
+    ...                                    xi, theta, unfolding,
+    ...                                    matrix_form=True)
 
     >>> detuning_knobs = [0]
-    >>> A, b = detuning_terms([0, 0, 167], detuning_knobs)
+    >>> A, b = doppler_terms([0, 0, 167], detuning_knobs)
     >>> print A/2/np.pi*1e-9
     [[ 0.          0.          0.        ]
      [ 0.          0.          0.21277821]
@@ -3458,6 +3519,13 @@ def fast_maxwell_boltzmann(element, isotope, file_name=None,
     >>> print f(0, 273.15+20)
     0.00238221482739
 
+    >>> import numpy as np
+    >>> v = np.linspace(-600, 600, 101)
+    >>> dist = f(v, 273.15+20)
+    >>> dv = v[1]-v[0]
+    >>> print sum(dist)*dv
+    0.999704711134
+
     """
     # We get the mass of the atom.
     atom = Atom(element, isotope)
@@ -3467,10 +3535,11 @@ def fast_maxwell_boltzmann(element, isotope, file_name=None,
     code += '    r"""A fast calculation of the'
     code += ' Maxwell-Boltzmann distribution."""\n'
     code += "    if hasattr(v, '__len__'):\n"
-    code += "        d = len(v)\n"
+    code += "        if len(v.shape) > 1: d = v.shape[-1]\n"
+    code += "        else: d = 1\n"
     code += "        m = %s\n" % m
     code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
-    code += "        f = f * np.exp(-m*np.dot(v, v)/2/k_B_num/T)\n"
+    code += "        f = f * np.exp(-m*v**2/2/k_B_num/T)\n"
     code += "        return f\n"
     code += "    else:\n"
     code += "        d = 1\n"
