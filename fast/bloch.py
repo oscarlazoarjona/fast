@@ -1556,9 +1556,9 @@ class DopplerBroadening(Inhomogeneity):
         ...                                    omega_level, xi, theta,
         ...                                    unfolding)
         >>> print doppler_effect.domain
-        [-677.70074607 -542.16059685 -406.62044764 -271.08029843 -135.54014921
-            0.          135.54014921  271.08029843  406.62044764  542.16059685
-          677.70074607]
+        [array([-677.70074607, -542.16059685, -406.62044764, -271.08029843,
+               -135.54014921,    0.        ,  135.54014921,  271.08029843,
+                406.62044764,  542.16059685,  677.70074607])]
 
         >>> print doppler_effect.distribution
         [  1.07064870e-04   1.90728284e-03   1.79157396e-02   8.87372390e-02
@@ -1573,7 +1573,7 @@ class DopplerBroadening(Inhomogeneity):
         """
         ######################################################################
         # We obtain the domain of the velocity distribution.
-        if hasattr(shape, "len"):
+        if hasattr(shape, "__getitem__"):
             dimension = len(shape)
         else:
             dimension = 1
@@ -1582,22 +1582,12 @@ class DopplerBroadening(Inhomogeneity):
         mass = Atom(element, isotope).mass
         v_sig = np.sqrt(k_B_num*T/mass)
 
-        if dimension == 3:
-            shape = list(shape)
-            shape.reverse()
-            domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
-                      for i in range(dimension)]
-            domain = np.array(np.meshgrid(*domain))
-            domain = np.swapaxes(domain, 0, -1)
-        elif dimension == 2:
-            domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
-                      for i in range(dimension)]
-            domain = np.array(np.meshgrid(*domain))
-            domain = np.swapaxes(domain, 0, -1)
-        elif dimension == 1:
-            domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
-                      for i in range(dimension)]
-            domain = domain[0]
+        domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
+                  for i in range(dimension)]
+        domain = np.meshgrid(*domain)
+        if dimension in [2, 3]:
+            for i in range(dimension):
+                domain[i] = np.swapaxes(domain[i], 0, 1)
 
         ######################################################################
         # We obtain a function to calculate the distribution.
@@ -3650,12 +3640,18 @@ def fast_maxwell_boltzmann(element, isotope, file_name=None,
     code = "def maxwell_boltzmann(v, T):\n"
     code += '    r"""A fast calculation of the'
     code += ' Maxwell-Boltzmann distribution."""\n'
-    code += "    if hasattr(v, '__len__'):\n"
-    code += "        if len(v.shape) > 1: d = v.shape[-1]\n"
-    code += "        else: d = 1\n"
+    code += "    if hasattr(v, 'shape'):\n"
+    code += "        d = 1\n"
     code += "        m = %s\n" % m
     code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
     code += "        f = f * np.exp(-m*v**2/2/k_B_num/T)\n"
+    code += "        return f\n"
+    code += "    elif hasattr(v, '__len__'):\n"
+    code += "        d = len(v)\n"
+    code += "        m = %s\n" % m
+    code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
+    code += "        vsquare = sum([v[i]**2 for i in range(d)])\n"
+    code += "        f = f * np.exp(-m*vsquare/2/k_B_num/T)\n"
     code += "        return f\n"
     code += "    else:\n"
     code += "        d = 1\n"
