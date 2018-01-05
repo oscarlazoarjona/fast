@@ -1452,7 +1452,7 @@ class Inhomogeneity(object):
         distribution.
 
         >>> from fast.atomic_structure import speed_average
-        >>> from fast import PlaneWave
+        >>> from fast import PlaneWave, Atom
         >>> import numpy as np
         >>> from sympy import Matrix
 
@@ -1461,8 +1461,9 @@ class Inhomogeneity(object):
         >>> T = 273.15+20
         >>> v_av = speed_average(T, element, isotope)
         >>> v = np.linspace(-4*v_av, 4*v_av, 11)
-        >>> f = fast_maxwell_boltzmann(element, isotope)
-        >>> distribution = f(v, T)
+        >>> mass = Atom(element, isotope).mass
+        >>> f = fast_maxwell_boltzmann(mass)
+        >>> distribution = f([v], T)
         >>> print distribution
         [  3.34624364e-12   5.12403858e-09   1.53771999e-06   9.04382537e-05
            1.04240650e-03   2.35468108e-03   1.04240650e-03   9.04382537e-05
@@ -1493,26 +1494,26 @@ class Inhomogeneity(object):
         ...                                    xi, theta, unfolding,
         ...                                    matrix_form=True)
 
-        >>> doppler_effect = Inhomogeneity(v, distribution, doppler_terms)
-
+        >>> doppler_effect = Inhomogeneity([v], distribution, doppler_terms)
 
         """
-        self.shape = domain.shape
         self.domain = domain
         self.distribution = distribution
         self.terms = terms
+        self.shape = distribution.shape
 
 
 class DopplerBroadening(Inhomogeneity):
     r"""An object representing an ensemble of atom at different velocities."""
 
-    def __init__(self, shape, stds, T, element, isotope, detuning_knob, k,
-                 omega_level, xi, theta, unfolding,
+    def __init__(self, shape, stds, T, mass, detuning_knob, k,
+                 omega_level, xi, theta, unfolding, axes=["x", "y", "z"],
                  matrix_form=False, file_name=None, return_code=False):
         r"""An object representing Doppler broadening.
 
         >>> from fast.atomic_structure import speed_average
         >>> from fast import PlaneWave
+        >>> from fast import Atom
         >>> import numpy as np
         >>> from sympy import Matrix
 
@@ -1521,7 +1522,8 @@ class DopplerBroadening(Inhomogeneity):
         >>> T = 273.15+20
         >>> v_av = speed_average(T, element, isotope)
         >>> v = np.linspace(-4*v_av, 4*v_av, 11)
-        >>> f = fast_maxwell_boltzmann(element, isotope)
+        >>> mass = Atom(element, isotope).mass
+        >>> f = fast_maxwell_boltzmann(mass)
         >>> distribution = f(v, T)
         >>> print distribution
         [  3.34624364e-12   5.12403858e-09   1.53771999e-06   9.04382537e-05
@@ -1551,8 +1553,8 @@ class DopplerBroadening(Inhomogeneity):
         >>> shape = [11]
         >>> stds = [[-4, 4]]
 
-        >>> doppler_effect = DopplerBroadening(shape, stds, T, element,
-        ...                                    isotope, detuning_knob, k,
+        >>> doppler_effect = DopplerBroadening(shape, stds, T, mass,
+        ...                                    detuning_knob, k,
         ...                                    omega_level, xi, theta,
         ...                                    unfolding)
         >>> print doppler_effect.domain
@@ -1578,8 +1580,6 @@ class DopplerBroadening(Inhomogeneity):
         else:
             dimension = 1
         v_symb = symbols("v1:"+str(dimension+1))
-
-        mass = Atom(element, isotope).mass
         v_sig = np.sqrt(k_B_num*T/mass)
 
         domain = [np.linspace(stds[i][0]*v_sig, stds[i][1]*v_sig, shape[i])
@@ -1591,7 +1591,7 @@ class DopplerBroadening(Inhomogeneity):
 
         ######################################################################
         # We obtain a function to calculate the distribution.
-        f = fast_maxwell_boltzmann(element, isotope)
+        f = fast_maxwell_boltzmann(mass)
         distribution = f(domain, T)
         # We renormalize from probability density to probability.
         not_one = sum(distribution.flatten())
@@ -1600,13 +1600,31 @@ class DopplerBroadening(Inhomogeneity):
         ######################################################################
         doppler_terms = fast_doppler_terms(v_symb, detuning_knob, k,
                                            omega_level, xi, theta, unfolding,
+                                           axes=axes,
                                            matrix_form=matrix_form,
-                                           file_name=file_name,
-                                           return_code=return_code)
+                                           file_name=file_name)
 
         Inhomogeneity.__init__(self, domain, distribution, doppler_terms)
         self.T = T
         self.v_sig = v_sig
+        self.stds = stds
+        self.mass = mass
+        self.detuning_knob = detuning_knob
+        self.k = k
+        self.omega_level = omega_level
+        self.xi = xi
+        self.theta = theta
+        self.unfolding = unfolding
+        self.matrix_form = matrix_form
+        self.axes = axes
+
+    def reset(self, T):
+        r"""Recalculate the doppler broadening for a given temperature."""
+        self.__init__(self.shape, self.stds, T,
+                      self.mass, self.detuning_knob, self.k,
+                      self.omega_level, self.xi, self.theta, self.unfolding,
+                      self.axes,
+                      self.matrix_form)
 
 
 def independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
@@ -2176,7 +2194,8 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
 
 
 def fast_doppler_terms(v, detuning_knob, k, omega_level, xi, theta,
-                       unfolding, matrix_form=False, file_name=None,
+                       unfolding, axes=["x", "y", "z"], matrix_form=False,
+                       file_name=None,
                        return_code=False):
     r"""Return a fast function that returns the Doppler terms.
 
@@ -2281,7 +2300,6 @@ def fast_doppler_terms(v, detuning_knob, k, omega_level, xi, theta,
         for l in range(Nl):
             code += "    detuning_knob["+str(l)+"] = " +\
                 str(detuning_knob[l])+"\n"
-    #####################################
     # We put in the code to calculate the Doppler shift
     if True:
         # Delta omega = omega_laser /c k.v
@@ -2293,8 +2311,10 @@ def fast_doppler_terms(v, detuning_knob, k, omega_level, xi, theta,
             code += "    omega_laser%s = %s" % (lp1, omega_min[l])
             code += "+detuning_knob[%s]\n" % l
             code += "    detuning_knob[%s] = 0\n" % l
-            for ii in range(dimension):
 
+            axeindices = {"x": 0, "y": 1, "z": 2}
+            axeindices = [axeindices[axe] for axe in axes]
+            for ii in axeindices[:dimension]:
                 code += "    detuning_knob[%s] += -%s" % (l, k[l][ii])
                 if dimension == 1:
                     code += "*v/c*omega_laser%s\n" % lp1
@@ -2751,7 +2771,7 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
     An map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
-    We obtain a function to calculate Hamiltonian terms.
+    We obtain a function to calculate the Bloch equations.
     >>> aux = (Ep, epsilonps, detuning_knob, gamma,
     ...        omega_level, rm, xi, theta,
     ...        unfolding, False, None)
@@ -2847,11 +2867,8 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
         if variable_epsilonp: code += "epsilonp, "
         if variable_detuning_knob: code += "detuning_knob, "
         code += "rabi_terms=rabi_terms, detuning_terms=detuning_terms, "
-        code += "lindblad_terms=lindblad_terms"
-        code += "):\n"
-
-        code += '    r"""A fast calculation of the hamiltonian terms."""\n'
-
+        code += "lindblad_terms=lindblad_terms):\n"
+        code += '    r"""A fast calculation of Bloch equations."""\n'
     # We initialize the output and auxiliaries.
     if True:
         # We introduce the factor that multiplies all terms.
@@ -2914,7 +2931,6 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
                 code += "    A += " + aux_code
         else:
             code += "    rhs += " + aux_code
-
     # We call the Lindblad terms.
     if True:
         if matrix_form:
@@ -2951,6 +2967,218 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
         if not return_code:
             exec bloch_equations
     return bloch_equations
+
+
+def fast_inhomo_bloch_equations(Ep, epsilonp, detuning_knob, T, gamma,
+                                omega_level, rm, xi, theta,
+                                unfolding, inhomogeneity, matrix_form=False,
+                                file_name=None, return_code=False):
+    r"""Return a fast function that returns the numeric right-hand sides of \
+    inhomogeneous Bloch equations.
+
+    We test a basic two-level system.
+
+    >>> import numpy as np
+    >>> from scipy.constants import physical_constants
+    >>> from sympy import Matrix, symbols
+    >>> from fast.electric_field import electric_field_amplitude_top
+    >>> from fast.electric_field import PlaneWave
+    >>> from fast.symbolic import (define_laser_variables,
+    ...                            polarization_vector)
+    >>> from fast.atomic_structure import Atom
+
+    >>> Ne = 2
+    >>> Nl = 1
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
+    >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 2.4e15]
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
+    >>> theta = phase_transformation(Ne, Nl, rm, xi)
+
+    We define symbolic variables to be used as token arguments.
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> laser = PlaneWave(0, 0, 0, 0)
+    >>> epsilonp = [laser.epsilonp]
+    >>> k = [laser.k]
+    >>> detuning_knob = [symbols("delta1", real=True)]
+
+    An map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
+
+    We define the Doppler broadening.
+
+    >>> shape = [9]
+    >>> stds = [[-4, 4]]
+    >>> T = 273.15+20
+    >>> mass = Atom("Rb", 87).mass
+    >>> aux = (shape, stds, T, mass, detuning_knob, k,
+    ...        omega_level, xi, theta, unfolding, ["z", "x", "y"],
+    ...        True)
+
+    >>> doppler_effect = DopplerBroadening(*aux)
+    >>> doppler_effect.domain
+    [array([-669.86784872, -502.40088654, -334.93392436, -167.46696218,
+              0.        ,  167.46696218,  334.93392436,  502.40088654,
+            669.86784872])]
+
+    We obtain a function to calculate the Bloch equations.
+
+    >>> T_symb = symbols("T", positive=True)
+    >>> aux = (Ep, epsilonp, detuning_knob, T_symb, gamma,
+    ...        omega_level, rm, xi, theta, unfolding, doppler_effect,
+    ...        True)
+    >>> bloch_equations = fast_inhomo_bloch_equations(*aux)
+
+    We calculate an example.
+
+    >>> detuning_knobs = [0]
+    >>> Eps = electric_field_amplitude_top(0, 1e-3, 1, "SI")
+    >>> Eps *= np.exp(1j*np.pi)
+    >>> Eps = [Eps]
+    >>> A, b = bloch_equations(Eps, detuning_knobs, T)
+    >>> print A[:, 2, 1]*1e-6/2/np.pi
+    [ 853.49268666  640.12094531  426.74705849  213.37341005    0.
+     -213.37317167 -426.74610495 -640.11879984 -853.49125636]
+    >>> print b*1e-6
+    [[ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]
+     [ 0.  0.  0.]]
+
+    """
+    if not unfolding.lower_triangular:
+        mes = "It is very inefficient to solve using all components of the "
+        mes += "density matrix. Better set lower_triangular=True in Unfolding."
+        raise NotImplementedError(mes)
+    if matrix_form and (not unfolding.real) and (unfolding.lower_triangular):
+        mes = "It is not possible to express the equations in matrix form "
+        mes += "for complex lower triangular components only."
+        raise ValueError(mes)
+    Nl = len(Ep)
+    Nrho = unfolding.Nrho
+    # We determine which arguments are constants.
+    if True:
+        try:
+            Ep = np.array([complex(Ep[l]) for l in range(Nl)])
+            variable_Ep = False
+        except:
+            variable_Ep = True
+
+        try:
+            epsilonp = [np.array([complex(epsilonp[l][i]) for i in range(3)])
+                        for l in range(Nl)]
+            variable_epsilonp = False
+        except:
+            variable_epsilonp = True
+        try:
+            detuning_knob = np.array([float(detuning_knob[l])
+                                      for l in range(Nl)])
+            variable_detuning_knob = False
+        except:
+            variable_detuning_knob = True
+        try:
+            T = float(T)
+            variable_T = False
+        except:
+            variable_T = True
+    # We obtain code for the homogeneous terms.
+    if True:
+        if file_name is not None:
+            file_name_bloch = file_name+"_bloch"
+        else:
+            file_name_bloch = file_name
+        aux = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi, theta,
+               unfolding, matrix_form, file_name_bloch, True)
+        bloch_equations = fast_bloch_equations(*aux)
+        code = bloch_equations+"\n\n"
+    # We establish the arguments of the output function.
+    if True:
+        code += "def inhomogeneous_bloch_equations("
+        code_args = ""
+        if not matrix_form: code_args += "rho, "
+        if variable_Ep: code_args += "Ep, "
+        if variable_epsilonp: code_args += "epsilonp, "
+        if variable_detuning_knob: code_args += "detuning_knob, "
+        code += code_args
+        if variable_T: code += "T, "
+        code += "inhomogeneity=inhomogeneity, "
+        code += "bloch_equations=bloch_equations):\n"
+        code += '    r"""A fast calculation of inhomogeneous '
+        code += 'Bloch equations."""\n'
+    # We initialize the output and auxiliaries.
+    if True:
+        # We introduce the factor that multiplies all terms.
+        sha = str(inhomogeneity.shape)[1:-1]+" "
+        if matrix_form:
+            code += "    A = np.zeros(("+sha+str(Nrho)+", "+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+            if unfolding.normalized:
+                code += "    b = np.zeros(("+sha+str(Nrho)
+                if not unfolding.real:
+                    code += "), complex)\n\n"
+                else:
+                    code += "))\n\n"
+        else:
+            code += "    rhs = np.zeros(("+sha+str(Nrho)
+            if not unfolding.real:
+                code += "), complex)\n\n"
+            else:
+                code += "))\n\n"
+    # We calculate the equations for each ensemble.
+    if True:
+        if variable_T: code += "    inhomogeneity.reset(T)\n"
+        if code_args[-2:] == ", ": code_args = code_args[:-2]
+        code += "    homogeneous = bloch_equations("+code_args+")\n\n"
+        code += "    terms = inhomogeneity.terms\n"
+        code += "    shape = inhomogeneity.shape\n"
+        code += "    domain = inhomogeneity.domain\n"
+
+        shape = inhomogeneity.shape
+        dimension = len(shape)
+        if dimension == 1:
+            code += "    for i in range(shape[0]):\n"
+            code += "        result = terms(domain[0][i], detuning_knob)\n"
+            if matrix_form:
+                if unfolding.normalized:
+                    code += "        A[i] = homogeneous[0]+result[0]\n"
+                    code += "        b[i] = homogeneous[1]+result[1]\n"
+                else:
+                    code += "        A[i] = homogeneous+result\n"
+            else:
+                code += "        rhs[i] = homogeneous+result\n"
+    # We finish the code.
+    if True:
+        # code = rabi_code + "\n\n" + code
+        if matrix_form:
+            if unfolding.normalized:
+                code += "    return A, b\n"
+            else:
+                code += "    return A\n"
+        else:
+            code += "    return rhs\n"
+    # We write the code to file if provided, and execute it.
+    if True:
+        if file_name is not None:
+            f = file(file_name+".py", "w")
+            f.write(code)
+            f.close()
+
+        inhomogeneous_bloch_equations = code
+        if not return_code:
+            exec inhomogeneous_bloch_equations
+    return inhomogeneous_bloch_equations
 
 
 def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
@@ -3616,12 +3844,14 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
     return sweep_time_evolution
 
 
-def fast_maxwell_boltzmann(element, isotope, file_name=None,
+def fast_maxwell_boltzmann(mass, file_name=None,
                            return_code=False):
     r"""Return a function that returns values of a Maxwell-Boltzmann
     distribution.
 
-    >>> f = fast_maxwell_boltzmann('Rb', 87)
+    >>> from fast import Atom
+    >>> mass = Atom("Rb", 87).mass
+    >>> f = fast_maxwell_boltzmann(mass)
     >>> print f(0, 273.15+20)
     0.00238221482739
 
@@ -3634,28 +3864,26 @@ def fast_maxwell_boltzmann(element, isotope, file_name=None,
 
     """
     # We get the mass of the atom.
-    atom = Atom(element, isotope)
-    m = atom.mass
     code = ""
     code = "def maxwell_boltzmann(v, T):\n"
     code += '    r"""A fast calculation of the'
     code += ' Maxwell-Boltzmann distribution."""\n'
     code += "    if hasattr(v, 'shape'):\n"
     code += "        d = 1\n"
-    code += "        m = %s\n" % m
+    code += "        m = %s\n" % mass
     code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
     code += "        f = f * np.exp(-m*v**2/2/k_B_num/T)\n"
     code += "        return f\n"
     code += "    elif hasattr(v, '__len__'):\n"
     code += "        d = len(v)\n"
-    code += "        m = %s\n" % m
+    code += "        m = %s\n" % mass
     code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
     code += "        vsquare = sum([v[i]**2 for i in range(d)])\n"
     code += "        f = f * np.exp(-m*vsquare/2/k_B_num/T)\n"
     code += "        return f\n"
     code += "    else:\n"
     code += "        d = 1\n"
-    code += "        m = %s\n" % m
+    code += "        m = %s\n" % mass
     code += "        f = np.sqrt(m/2/np.pi/k_B_num/T)**d\n"
     code += "        f = f * np.exp(-m*v**2/2/k_B_num/T)\n"
     code += "        return f\n"
