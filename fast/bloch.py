@@ -3102,7 +3102,7 @@ def fast_inhomo_bloch_equations(Ep, epsilonp, detuning_knob, T, gamma,
         code = bloch_equations+"\n\n"
     # We establish the arguments of the output function.
     if True:
-        code += "def inhomogeneous_bloch_equations("
+        code += "def inhomo_bloch_equations("
         code_args = ""
         if not matrix_form: code_args += "rho, "
         if variable_Ep: code_args += "Ep, "
@@ -3175,10 +3175,10 @@ def fast_inhomo_bloch_equations(Ep, epsilonp, detuning_knob, T, gamma,
             f.write(code)
             f.close()
 
-        inhomogeneous_bloch_equations = code
+        inhomo_bloch_equations = code
         if not return_code:
-            exec inhomogeneous_bloch_equations
-    return inhomogeneous_bloch_equations
+            exec inhomo_bloch_equations
+    return inhomo_bloch_equations
 
 
 def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
