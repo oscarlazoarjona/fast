@@ -78,6 +78,22 @@ class Inhomogeneity(object):
         self.terms = terms
         self.shape = distribution.shape
 
+    def __repr__(self):
+        r"""Return a string representation."""
+        return "An inhomogeneity of shape "+str(self.shape)
+
+    def average(self, rho):
+        r"""Return the average density matrix of an inhomogeneous ensemble."""
+        def marginal(f, rho):
+            remaining = len(f.shape)
+            if remaining == 0:
+                return rho
+            rho = sum([f[i]*rho[i] for i in range(rho.shape[0])])
+            f = np.sum(f, 0)
+            return marginal(f, rho)
+
+        return marginal(self.distribution, rho)
+
 
 class DopplerBroadening(Inhomogeneity):
     r"""An object representing an ensemble of atom at different velocities."""
