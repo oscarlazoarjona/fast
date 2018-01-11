@@ -3092,6 +3092,8 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
     >>> rho0 = unfolding(rho0)
 
     >>> deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 5]])
+    >>> print rho.shape
+    (5, 11, 3)
     >>> print rho
     [[[  0.00000000e+00   0.00000000e+00   0.00000000e+00]
       [  5.62048975e-04  -1.87738708e-02  -1.44368294e-02]
@@ -3186,7 +3188,7 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
             variable_epsilonp = False
         except:
             variable_epsilonp = True
-    # We obtain code for the steady state.
+    # We obtain code for the time evolution.
     if True:
         detuning_knob = symbols("delta1:"+str(Nl))
         args = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi, theta,
@@ -3220,7 +3222,7 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
         code += """        s += '(start, stop, Nsteps)'\n"""
         code += """        raise ValueError(s)\n\n"""
         code += """    deltas = np.linspace(delta0, deltaf, Ndelta)\n\n"""
-    # We call steady_state.
+    # We call time_evolution.
     if True:
         code += "    args = [[t, rho0, "
         if variable_Ep: code += "Ep, "

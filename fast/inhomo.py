@@ -9,7 +9,7 @@ from scipy.constants import physical_constants
 from fast.bloch import (Unfolding, fast_bloch_equations, fast_time_evolution,
                         detunings_code, define_simplification, find_omega_min,
                         detunings_indices, detunings_combinations,
-                        detunings_rewrite, time_average)
+                        detunings_rewrite)
 from fast.symbolic import define_frequencies, define_laser_variables
 
 
@@ -721,7 +721,7 @@ def fast_inhomo_time_evolution(Ep, epsilonp, detuning_knob, gamma,
     A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
-    # We obtain a function to calculate time evolution.
+    We obtain a function to calculate time evolution.
     >>> aux = (Ep, epsilonp, detuning_knob, gamma,
     ...        omega_level, rm, xi, theta)
     >>> time_evolution = fast_time_evolution(*aux)
@@ -972,38 +972,64 @@ def fast_inhomo_sweep_time_evolution(Ep, epsilonp, gamma,
 
     We test a basic two-level system.
 
-    >>> import numpy as np
-    >>> from sympy import symbols
-    >>> from scipy.constants import physical_constants
     >>> from fast.bloch import phase_transformation
-
-    >>> e_num = physical_constants["elementary charge"][0]
-    >>> hbar_num = physical_constants["Planck constant over 2 pi"][0]
-
+    >>> from fast import PlaneWave, electric_field_amplitude_top, Atom
     >>> Ne = 2
     >>> Nl = 1
-    >>> Ep = [-1.0]
-    >>> epsilonp = [np.array([0, 0, 1.0])]
-    >>> delta = symbols("delta")
-
-    >>> detuning_knob = [delta]
-    >>> gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
-    >>> omega_level = np.array([0.0, 100.0])
-    >>> rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
-    ...       for p in range(3)]
+    >>> a0 = physical_constants["Bohr radius"][0]
+    >>> rm = [np.array([[0, 0], [a0, 0]]),
+    ...       np.array([[0, 0], [0, 0]]),
+    ...       np.array([[0, 0], [0, 0]])]
     >>> xi = np.array([[[0, 1], [1, 0]]])
+    >>> omega_level = [0, 2.4e15]
+    >>> gamma21 = 2*np.pi*6e6
+    >>> gamma = np.array([[0, -gamma21], [gamma21, 0]])
     >>> theta = phase_transformation(Ne, Nl, rm, xi)
 
-    >> sweep_time_evolution = fast_sweep_time_evolution(Ep, epsilonp, gamma,
-    ...                                                  omega_level, rm, xi,
-    ...                                                  theta)
+    >>> Ep, omega_laser = define_laser_variables(Nl)
+    >>> laser = PlaneWave(0, 0, 0, 0)
+    >>> epsilonp = [laser.epsilonp]
+    >>> k = [laser.k]
+    >>> detuning_knob = [symbols("delta1", real=True)]
 
-    >> t = np.linspace(0, 1e1, 11)
-    >> unfolding = Unfolding(Ne, True, True, True)
-    >> rho0 = np.array([[1, 0], [0, 0]])
-    >> rho0 = unfolding(rho0)
+    A map to unfold the density matrix.
+    >>> unfolding = Unfolding(Ne, True, True, True)
 
-    >> deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 5]])
+    >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+    >>> Eps = [Eps]
+
+    >>> t = np.linspace(0, 1e-6, 11)
+    >>> rho0 = np.array([[1, 0], [0, 0]])
+    >>> rho0 = unfolding(rho0)
+
+    We define the Doppler broadening.
+    >>> Nvz = 15
+    >>> shape = [Nvz]
+    >>> stds = [[-4, 4]]
+    >>> T = 273.15+20
+    >>> mass = Atom("Rb", 87).mass
+    >>> aux = (shape, stds, T, mass, detuning_knob, k,
+    ...    omega_level, xi, theta, unfolding, ["z", "x", "y"],
+    ...    True)
+
+    >>> doppler_effect = DopplerBroadening(*aux)
+
+    We get a function for the frequency sweep of time evolution.
+    >>> aux = (Ep, epsilonp, gamma,
+    ...        omega_level, rm, xi, theta,
+    ...        doppler_effect,
+    ...        True,
+    ...        "eqs")
+
+    >>> inhomo_time_evolution = fast_inhomo_sweep_time_evolution(*aux)
+
+    >>> amp = 1000e6*2*np.pi
+    >>> Ndelta = 101
+    >>> detuning_knobs = [[-amp, amp, Ndelta]]
+
+    >>> deltas, rhot = inhomo_time_evolution(t, rho0, Eps, detuning_knobs)
+    >>> print rhot.shape
+    (101, 11, 15, 3)
 
     """
     # We unpack variables.
@@ -1023,23 +1049,23 @@ def fast_inhomo_sweep_time_evolution(Ep, epsilonp, gamma,
             variable_epsilonp = False
         except:
             variable_epsilonp = True
-    # We obtain code for the steady state.
+    # We obtain code for the time evolution.
     if True:
         detuning_knob = symbols("delta1:"+str(Nl))
         args = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi, theta,
                 file_name, True)
 
         args = (Ep, epsilonp, detuning_knob, gamma, omega_level, rm, xi,
-                theta, True, file_name, True)
-        time_evolution = fast_time_evolution(*args)
-        code = time_evolution+"\n\n"
+                theta, inhomogeneity, True, file_name, True)
+        inhomo_time_evolution = fast_inhomo_time_evolution(*args)
+        code = inhomo_time_evolution+"\n\n"
     # We establish the arguments of the output function.
     if True:
         code += "def inhomo_sweep_time_evolution(t, rho0, "
         if variable_Ep: code += "Ep, "
         if variable_epsilonp: code += "epsilonp, "
-        code += "detuning_knob, average=False, "
-        code += "time_evolution=time_evolution):\n"
+        code += "detuning_knob, "
+        code += "inhomo_time_evolution=inhomo_time_evolution):\n"
         code += '    r"""A fast frequency sweep of the steady state."""\n'
     # Code to determine the sweep range.
     if True:
@@ -1057,16 +1083,16 @@ def fast_inhomo_sweep_time_evolution(Ep, epsilonp, gamma,
         code += """        s += '(start, stop, Nsteps)'\n"""
         code += """        raise ValueError(s)\n\n"""
         code += """    deltas = np.linspace(delta0, deltaf, Ndelta)\n\n"""
-    # We call steady_state.
+    # We call time_evolution.
     if True:
         code += "    args = [[t, rho0, "
         if variable_Ep: code += "Ep, "
         if variable_epsilonp: code += "epsilonp, "
         code += """list(detuning_knob[:sweepN]) +\n"""
         code += """            [deltas[i]] +\n"""
-        code += """            list(detuning_knob[sweepN+1:]), average]\n"""
+        code += """            list(detuning_knob[sweepN+1:])]\n"""
         code += """          for i in range(Ndelta)]\n\n"""
-        code += "    rho = np.array([time_evolution(*argsi)\n"
+        code += "    rho = np.array([inhomo_time_evolution(*argsi)\n"
         code += "                   for argsi in args])\n\n"
     # We finish the code.
     if True:
