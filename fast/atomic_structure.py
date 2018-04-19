@@ -143,6 +143,22 @@ class Atom(Basic):
         >>> print atom.ionization_frequency
         1.01002474142e+13
 
+        The nuclear mass
+        >>> atom.mass_nuclear
+        1.4096563709688232e-25
+
+        The orbital Lande g-factor
+        >>> atom.gL
+        0.9999935378694074
+
+        The electron Lande g-factor
+        >>> atom.gS
+        2.0023193043622
+
+        The nuclear Lande g-factor
+        >>> atom.gI
+        0.00029364
+
         """
         m_Rb85 = 84.9117897379*uma  # Rb85  mass in kg [4]
         m_Rb87 = 86.9091805310*uma  # Rb87  mass in kg [4]
@@ -155,21 +171,23 @@ class Atom(Basic):
         # Atomic radii from [7]
         # This is the database of implemented atoms.
         # nuclear spins from [5]
+        # Lande g-factors from Steck's alkali data.
         # ionization frequencies from [3,6,8]
         #          element, isotope, atomic number,   mass, abundance      ,
         #          Tmelt  , Tboil  , radius (m) , nuclear spin,
         #          ionization frequencies,
         #          ground state n
+        #          nuclear Lande g factor
 
         database = [["Rb", 85, 37, m_Rb85, abundance_Rb85,
                     TmeltRb, TboilRb, 2.35e-10, 5/Integer(2),
-                    c*33690.79890, 5],
+                    c*33690.79890, 5, 0.00029364000],
                     ["Rb", 87, 37, m_Rb87, abundance_Rb87,
                     TmeltRb, TboilRb, 2.35e-10, 3/Integer(2),
-                    c*33690.80480, 5],
+                    c*33690.80480, 5, -0.0009951414],
                     ["Cs", 133, 55, m_Cs133, abundance_Cs133,
                     TmeltCs, TboilCs, 2.60e-10, 7/Integer(2),
-                    c*31406.46766, 6]]
+                    c*31406.46766, 6, -0.00039885395]]
 
         # We scan the database
         valid_input = False
@@ -181,7 +199,7 @@ class Atom(Basic):
                 self.isotope = item[1]
                 self.Z = item[2]
                 self.mass = item[3]
-                self.mass_nuclear = self.mass - self.Z*e
+                self.mass_nuclear = self.mass - self.Z*me
                 self.abundance = item[4]
                 self.Tmelt = item[5]
                 self.Tboil = item[6]
@@ -191,6 +209,10 @@ class Atom(Basic):
 
                 self.neutrons = self.isotope-self.Z
                 self.ground_state_n = item[10]
+
+                self.gL = 1 - me/self.mass_nuclear
+                self.gS = 2.0023193043622
+                self.gI = item[11]
                 break
 
             # If an isotope is not provided we return an object with a reduced
