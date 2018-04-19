@@ -181,6 +181,7 @@ class Atom(Basic):
                 self.isotope = item[1]
                 self.Z = item[2]
                 self.mass = item[3]
+                self.mass_nuclear = self.mass - self.Z*e
                 self.abundance = item[4]
                 self.Tmelt = item[5]
                 self.Tboil = item[6]
