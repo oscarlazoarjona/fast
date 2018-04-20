@@ -199,6 +199,8 @@ class Atom(Basic):
                 self.isotope = item[1]
                 self.Z = item[2]
                 self.mass = item[3]
+
+                # Approximation without considering binding energy.
                 self.mass_nuclear = self.mass - self.Z*me
                 self.abundance = item[4]
                 self.Tmelt = item[5]
