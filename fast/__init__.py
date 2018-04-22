@@ -20,6 +20,9 @@ from electric_field import (PlaneWave, MotField,
                             electric_field_amplitude_top,
                             electric_field_amplitude_intensity)
 
+from magnetic_field import (lande_g_factors, zeeman_energies,
+                            paschen_back_energies)
+
 from misc import (Mu, IJ, find_phase_transformation,
                   formatLij, convolve_with_gaussian, read_result, fprint,
                   compile_code)
