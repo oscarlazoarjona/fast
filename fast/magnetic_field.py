@@ -28,20 +28,20 @@ from scipy.constants import physical_constants, hbar
 muB = physical_constants["Bohr magneton"][0]
 
 
-def Lande_g_factors(element, isotope, L=None, J=None, F=None):
+def lande_g_factors(element, isotope, L=None, J=None, F=None):
     r"""Return the Lande g-factors for a given atom or level.
 
     >>> element = "Rb"
     >>> isotope = 87
-    >>> print Lande_g_factors(element, isotope)
+    >>> print lande_g_factors(element, isotope)
     [  9.99993686e-01   2.00231930e+00  -9.95141400e-04]
 
     The spin-orbit g-factor for a certain J
-    >>> print Lande_g_factors(element, isotope, L=0, J=1/Integer(2))
+    >>> print lande_g_factors(element, isotope, L=0, J=1/Integer(2))
     [0.9999936864200584 2.0023193043622 -0.0009951414 2.00231930436220]
 
     The nuclear-coupled g-factor for a certain F
-    >>> print Lande_g_factors(element, isotope, L=0, J=1/Integer(2), F=1)
+    >>> print lande_g_factors(element, isotope, L=0, J=1/Integer(2), F=1)
     [0.9999936864200584 2.0023193043622 -0.0009951414 2.00231930436220
      -0.501823752840550]
 
@@ -90,7 +90,7 @@ def zeeman_energies(fine_state, Bz):
 
     energiesZeeman = []
     for i, F in enumerate(fine_state.fperm):
-        gL, gS, gI, gJ, gF = Lande_g_factors(element, isotope, L, J, F)
+        gL, gS, gI, gJ, gF = lande_g_factors(element, isotope, L, J, F)
         energiesF = []
         hyperfine_level = State(element, isotope, N, L, J, F)
         for MF in range(-F, F+1):
@@ -125,7 +125,7 @@ def paschen_back_energies(fine_state, Bz):
 
     Ahfs = fine_state.Ahfs
     Bhfs = fine_state.Bhfs
-    gL, gS, gI, gJ = Lande_g_factors(element, isotope, L, J)
+    gL, gS, gI, gJ = lande_g_factors(element, isotope, L, J)
 
     energiesPBack = []
     for mj in MJ:
