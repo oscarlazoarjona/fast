@@ -22,7 +22,7 @@
 """This module contains all routines related to magnetic field interaction."""
 from atomic_structure import Atom, State
 from sympy import Integer
-from numpy import array
+from numpy import array, pi
 from scipy.constants import physical_constants, hbar
 
 muB = physical_constants["Bohr magneton"][0]
@@ -100,6 +100,49 @@ def zeeman_energies(fine_state, Bz):
         energiesZeeman += [array(energiesF)]
 
     return energiesZeeman
+
+
+def paschen_back_energies(fine_state, Bz):
+    r"""Return Paschen-Back regime energies for a given fine state and\
+    magnetic field.
+
+    >>> ground_state = State("Rb", 87, 5, 0, 1/Integer(2))
+    >>> Bz = 200.0
+    >>> Bz = Bz/10000
+    >>> for f_group in paschen_back_energies(ground_state, Bz):
+    ...     print f_group
+
+
+    """
+    element = fine_state.element
+    isotope = fine_state.isotope
+
+    L = fine_state.l
+    J = fine_state.j
+    II = Atom(element, isotope).nuclear_spin
+    MJ = [-J+i for i in range(2*J+1)]
+    MI = [-II+i for i in range(2*II+1)]
+
+    Ahfs = fine_state.Ahfs
+    Bhfs = fine_state.Bhfs
+    gL, gS, gI, gJ = Lande_g_factors(element, isotope, L, J)
+
+    energiesPBack = []
+    for mj in MJ:
+        energiesMJ = []
+        for mi in MI:
+            energyMI = 2*pi*hbar*Ahfs*mi*mj
+            if J != 1/Integer(2) and II != 1/Integer(2):
+                num = 9*(mi*mj)**2 - 3*J*(J+1)*mi**2
+                num += -3*II*(II+1)*mj**2 + II*(II+1)*J*(J+1)
+                den = 4*J*(2*J-1)*II*(2*II-1)
+                energyMI += 2*pi*hbar*Bhfs*num/den
+
+            energyMI += muB*(gJ*mj+gI*mi)*Bz
+
+            energiesMJ += [energyMI]
+        energiesPBack += [energiesMJ]
+    return array(energiesPBack)
 
 
 if __name__ == "__main__":
