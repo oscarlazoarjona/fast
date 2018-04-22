@@ -20,9 +20,12 @@
 #                                                                       *
 # ***********************************************************************
 """This module contains all routines related to magnetic field interaction."""
-from atomic_structure import Atom
+from atomic_structure import Atom, State
 from sympy import Integer
 from numpy import array
+from scipy.constants import physical_constants, hbar
+
+muB = physical_constants["Bohr magneton"][0]
 
 
 def Lande_g_factors(element, isotope, L=None, J=None, F=None):
@@ -63,6 +66,40 @@ def Lande_g_factors(element, isotope, L=None, J=None, F=None):
         res += [gF]
 
     return array(res)
+
+
+def zeeman_energies(fine_state, Bz):
+    r"""Return Zeeman effect energies for a given fine state and\
+    magnetic field.
+
+    >>> ground_state = State("Rb", 87, 5, 0, 1/Integer(2))
+    >>> Bz = 200.0
+    >>> Bz = Bz/10000
+    >>> for f_group in zeeman_energies(ground_state, Bz):
+    ...     print f_group
+    [-2.73736448508248e-24 -2.83044285506388e-24 -2.92352122504527e-24]
+    [1.51284728917866e-24 1.60555650110849e-24 1.69826571303833e-24
+     1.79097492496816e-24 1.88368413689800e-24]
+
+    """
+    element = fine_state.element
+    isotope = fine_state.isotope
+    N = fine_state.n
+    L = fine_state.l
+    J = fine_state.j
+
+    energiesZeeman = []
+    for i, F in enumerate(fine_state.fperm):
+        gL, gS, gI, gJ, gF = Lande_g_factors(element, isotope, L, J, F)
+        energiesF = []
+        hyperfine_level = State(element, isotope, N, L, J, F)
+        for MF in range(-F, F+1):
+            unperturbed_energy = hbar*hyperfine_level.omega
+            energyMF = unperturbed_energy + muB*gF*MF*Bz
+            energiesF += [energyMF]
+        energiesZeeman += [array(energiesF)]
+
+    return energiesZeeman
 
 
 if __name__ == "__main__":
