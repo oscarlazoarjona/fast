@@ -61,8 +61,11 @@ def lande_g_factors(element, isotope, L=None, J=None, F=None):
         res += [gJ]
     if F is not None:
         II = atom.nuclear_spin
-        gF = gJ*(F*(F+1)-II*(II+1)+J*(J+1))/(2*F*(F+1))
-        gF += gI*(F*(F+1)+II*(II+1)-J*(J+1))/(2*F*(F+1))
+        if F == 0:
+            gF = gJ
+        else:
+            gF = gJ*(F*(F+1)-II*(II+1)+J*(J+1))/(2*F*(F+1))
+            gF += gI*(F*(F+1)+II*(II+1)-J*(J+1))/(2*F*(F+1))
         res += [gF]
 
     return array(res)
