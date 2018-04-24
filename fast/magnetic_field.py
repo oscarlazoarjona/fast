@@ -120,6 +120,7 @@ def paschen_back_energies(fine_state, Bz):
     element = fine_state.element
     isotope = fine_state.isotope
 
+    N = fine_state.n
     L = fine_state.l
     J = fine_state.j
     II = Atom(element, isotope).nuclear_spin
@@ -133,8 +134,10 @@ def paschen_back_energies(fine_state, Bz):
     energiesPBack = []
     for mj in MJ:
         energiesMJ = []
+        unperturbed_energy = hbar*State(element, isotope, N, L, J).omega
         for mi in MI:
-            energyMI = 2*pi*hbar*Ahfs*mi*mj
+            energyMI = unperturbed_energy
+            energyMI += 2*pi*hbar*Ahfs*mi*mj
             if J != 1/Integer(2) and II != 1/Integer(2):
                 num = 9*(mi*mj)**2 - 3*J*(J+1)*mi**2
                 num += -3*II*(II+1)*mj**2 + II*(II+1)*J*(J+1)
