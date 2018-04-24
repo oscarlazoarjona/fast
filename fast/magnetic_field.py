@@ -21,7 +21,8 @@
 # ***********************************************************************
 """This module contains all routines related to magnetic field interaction."""
 from atomic_structure import Atom, State
-from sympy import Integer
+from sympy import Integer, zeros
+from sympy.physics.wigner import clebsch_gordan
 from numpy import array, pi
 from scipy.constants import physical_constants, hbar
 
@@ -149,6 +150,76 @@ def paschen_back_energies(fine_state, Bz):
             energiesMJ += [energyMI]
         energiesPBack += [energiesMJ]
     return array(energiesPBack)
+
+
+def permj(j1, j2):
+    r"""Calculate the allowed total angular momenta.
+
+    >>> from sympy import Integer
+    >>> L = 1
+    >>> S = 1/Integer(2)
+    >>> permj(L, S)
+    [1/2, 3/2]
+
+    """
+    jmin = abs(j1-j2)
+    jmax = j1+j2
+    return [jmin + i for i in range(jmax-jmin+1)]
+
+
+def coupling_matrix_2j(j1, j2):
+    ur"""For angular momenta couplings $j = j_1 \oplus \j_2$ the unitary \
+    transformation from the coupled basis into the uncoupled basis.
+
+    >>> from sympy import Integer, pprint
+    >>> L = 0
+    >>> S = 1/Integer(2)
+    >>> pprint(coupling_matrix_2j(L, S))
+    ⎡1  0⎤
+    ⎢    ⎥
+    ⎣0  1⎦
+
+    >>> L = 1
+    >>> S = 1/Integer(2)
+    >>> pprint(coupling_matrix_2j(L, S))
+    ⎡   -√6   √3             ⎤
+    ⎢0  ────  ──   0    0   0⎥
+    ⎢    3    3              ⎥
+    ⎢                        ⎥
+    ⎢             -√3   √6   ⎥
+    ⎢0   0    0   ────  ──  0⎥
+    ⎢              3    3    ⎥
+    ⎢                        ⎥
+    ⎢1   0    0    0    0   0⎥
+    ⎢                        ⎥
+    ⎢    √3   √6             ⎥
+    ⎢0   ──   ──   0    0   0⎥
+    ⎢    3    3              ⎥
+    ⎢                        ⎥
+    ⎢              √6   √3   ⎥
+    ⎢0   0    0    ──   ──  0⎥
+    ⎢              3    3    ⎥
+    ⎢                        ⎥
+    ⎣0   0    0    0    0   1⎦
+
+    """
+    # We calculate the quantum numbers for the uncoupled basis.
+    M1 = [-j1 + i for i in range(2*j1+1)]
+    M2 = [-j2 + i for i in range(2*j2+1)]
+    j1j2nums = [(j1, m1, j2, m2) for m1 in M1 for m2 in M2]
+
+    # We calculate the quantum numbers for the coupled basis.
+    Jper = permj(j1, j2)
+    jmjnums = [(J, MJ-J) for J in Jper for MJ in range(2*J+1)]
+
+    # We build the transformation matrix.
+    U = zeros((2*j1+1)*(2*j2+1))
+    for ii, numj in enumerate(jmjnums):
+        j, mj = numj
+        for jj, numi in enumerate(j1j2nums):
+            j1, m1, j2, m2 = numi
+            U[ii, jj] = clebsch_gordan(j1, j2, j, m1, m2, mj)
+    return U
 
 
 if __name__ == "__main__":
