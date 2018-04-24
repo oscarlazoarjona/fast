@@ -1421,6 +1421,25 @@ def make_list_of_states(states, structure=None, verbose=1):
         return l3
 
 
+def unperturbed_hamiltonian(states):
+    r"""Return the unperturbed atomic hamiltonian for given states.
+
+    We calcualte the atomic hamiltonian in the basis of the ground states of \
+    rubidium 87 (in GHz).
+    >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
+    >>> magnetic_states = make_list_of_states([g], "magnetic")
+    >>> np.diag(unperturbed_hamiltonian(magnetic_states))/hbar/2/pi*1e-9
+    array([-4.27167663+0.j, -4.27167663+0.j, -4.27167663+0.j,  2.56300598+0.j,
+            2.56300598+0.j,  2.56300598+0.j,  2.56300598+0.j,  2.56300598+0.j])
+
+    """
+    Ne = len(states)
+    H0 = np.zeros((Ne, Ne), complex)
+    for i in range(Ne):
+        H0[i, i] = hbar*states[i].omega
+    return H0
+
+
 def calculate_omega_matrix(states, Omega=1):
     """Calculate the matrix of transition frequencies.
 
