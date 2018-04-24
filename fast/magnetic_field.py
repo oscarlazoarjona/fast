@@ -346,6 +346,134 @@ def angular_momentum_matrix(J, ind="z"):
         return JX, JY, JZ
 
 
+def orbital_spin_nuclear_matrices(L, S, II, ind="z"):
+    ur"""Return the matrix representation of the orbita, electron-spin, and \
+    nuclear-spin angular momentum operators \
+    :math:`\hat{\vec{L}}, \hat{\vec{L}}, \hat{\vec{L}}` in the coupled basis \
+    :math:`[|J, -J\rangle, \cdot, |J, J\rangle]`.
+
+    INPUT:
+
+    -  ``ind`` - A string ("x", "y", "z", "all") indicating which direction \
+    to calculate, or to return them all as :math:`(J_x, J_y, J_z)`.
+
+    >>> from sympy import Integer, pprint
+    >>> half = 1/Integer(2)
+    >>> Lz, Sz, Iz = orbital_spin_nuclear_matrices(0, half, 3*half)
+    >>> pprint(Lz)
+    ⎡0  0  0  0  0  0  0  0⎤
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎣0  0  0  0  0  0  0  0⎦
+
+    >>> pprint(Sz)
+    ⎡                       √3                ⎤
+    ⎢1/4   0    0     0     ──    0    0    0 ⎥
+    ⎢                       4                 ⎥
+    ⎢                                         ⎥
+    ⎢ 0    0    0     0     0    1/2   0    0 ⎥
+    ⎢                                         ⎥
+    ⎢                                 √3      ⎥
+    ⎢ 0    0   -1/4   0     0     0   ──    0 ⎥
+    ⎢                                 4       ⎥
+    ⎢                                         ⎥
+    ⎢ 0    0    0    -1/2   0     0    0    0 ⎥
+    ⎢                                         ⎥
+    ⎢√3                                       ⎥
+    ⎢──    0    0     0    -1/4   0    0    0 ⎥
+    ⎢4                                        ⎥
+    ⎢                                         ⎥
+    ⎢ 0   1/2   0     0     0     0    0    0 ⎥
+    ⎢                                         ⎥
+    ⎢           √3                            ⎥
+    ⎢ 0    0    ──    0     0     0   1/4   0 ⎥
+    ⎢           4                             ⎥
+    ⎢                                         ⎥
+    ⎣ 0    0    0     0     0     0    0   1/2⎦
+
+    >>> pprint(Iz)
+    ⎡                        -√3                  ⎤
+    ⎢-5/4   0     0     0    ────   0     0     0 ⎥
+    ⎢                         4                   ⎥
+    ⎢                                             ⎥
+    ⎢ 0     0     0     0     0    -1/2   0     0 ⎥
+    ⎢                                             ⎥
+    ⎢                                    -√3      ⎥
+    ⎢ 0     0    5/4    0     0     0    ────   0 ⎥
+    ⎢                                     4       ⎥
+    ⎢                                             ⎥
+    ⎢ 0     0     0    -3/2   0     0     0     0 ⎥
+    ⎢                                             ⎥
+    ⎢-√3                                          ⎥
+    ⎢────   0     0     0    -3/4   0     0     0 ⎥
+    ⎢ 4                                           ⎥
+    ⎢                                             ⎥
+    ⎢ 0    -1/2   0     0     0     0     0     0 ⎥
+    ⎢                                             ⎥
+    ⎢            -√3                              ⎥
+    ⎢ 0     0    ────   0     0     0    3/4    0 ⎥
+    ⎢             4                               ⎥
+    ⎢                                             ⎥
+    ⎣ 0     0     0     0     0     0     0    3/2⎦
+
+    >>> Lvec, Svec, Ivec = orbital_spin_nuclear_matrices(0, half, 0, "all")
+    >>> pprint(Lvec)
+    ⎡⎡0  0⎤, ⎡0  0⎤, ⎡0  0⎤⎤
+    ⎢⎢    ⎥  ⎢    ⎥  ⎢    ⎥⎥
+    ⎣⎣0  0⎦  ⎣0  0⎦  ⎣0  0⎦⎦
+
+    >>> pprint(Svec)
+    ⎡            ⎡     ⅈ⎤             ⎤
+    ⎢⎡ 0   1/2⎤, ⎢ 0   ─⎥, ⎡-1/2   0 ⎤⎥
+    ⎢⎢        ⎥  ⎢     2⎥  ⎢         ⎥⎥
+    ⎢⎣1/2   0 ⎦  ⎢      ⎥  ⎣ 0    1/2⎦⎥
+    ⎢            ⎢-ⅈ    ⎥             ⎥
+    ⎢            ⎢───  0⎥             ⎥
+    ⎣            ⎣ 2    ⎦             ⎦
+
+    >>> pprint(Ivec)
+    ⎡⎡0  0⎤, ⎡0  0⎤, ⎡0  0⎤⎤
+    ⎢⎢    ⎥  ⎢    ⎥  ⎢    ⎥⎥
+    ⎣⎣0  0⎦  ⎣0  0⎦  ⎣0  0⎦⎦
+
+    """
+    if ind == "all":
+        LSIx = orbital_spin_nuclear_matrices(L, S, II, "x")
+        LSIy = orbital_spin_nuclear_matrices(L, S, II, "y")
+        LSIz = orbital_spin_nuclear_matrices(L, S, II, "z")
+        return [[LSIx[i], LSIy[i], LSIz[i]] for i in range(3)]
+
+    L0 = eye(2*L+1)
+    S0 = eye(2*S+1)
+    I0 = eye(2*II+1)
+
+    Lind = angular_momentum_matrix(L, ind=ind)
+    Sind = angular_momentum_matrix(S, ind=ind)
+    Iind = angular_momentum_matrix(II, ind=ind)
+
+    Lind = TensorProduct(TensorProduct(Lind, S0), I0)
+    Sind = TensorProduct(TensorProduct(L0, Sind), I0)
+    Iind = TensorProduct(TensorProduct(L0, S0), Iind)
+
+    U_LSI = coupling_matrix_3j(L, S, II)
+
+    Lind = U_LSI*Lind*U_LSI.adjoint()
+    Sind = U_LSI*Sind*U_LSI.adjoint()
+    Iind = U_LSI*Iind*U_LSI.adjoint()
+
+    return Lind, Sind, Iind
+
 if __name__ == "__main__":
     import doctest
     print doctest.testmod(verbose=False)
