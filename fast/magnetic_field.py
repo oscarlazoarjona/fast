@@ -21,7 +21,7 @@
 # ***********************************************************************
 """This module contains all routines related to magnetic field interaction."""
 from atomic_structure import Atom, State
-from sympy import Integer, zeros, eye
+from sympy import Integer, zeros, eye, Matrix, KroneckerDelta, I, sqrt
 from sympy.physics.wigner import clebsch_gordan
 from sympy.physics.quantum import TensorProduct
 from numpy import array, pi
@@ -277,6 +277,73 @@ def coupling_matrix_3j(j1, j2, j3):
         U_Jj3[ind0: indf, ind0: indf] = U_Jj3_list[i]
         ind0 = indf
     return U_Jj3*TensorProduct(coupling_matrix_2j(j1, j2), idj3)
+
+
+def angular_momentum_matrix(J, ind="z"):
+    ur"""Return the angular momentum operator matrix (divided by hbar) for a\
+    given J angular momentum.
+
+    INPUT:
+
+    -  ``ind`` - A string ("x", "y", "z", "all") indicating which direction \
+    to calculate, or to return them all as :math:`(J_x, J_y, J_z)`.
+
+    OUTPUT:
+
+    - matrix forms of angular momentum operators in the basis \
+    :math:`[|J, -J\rangle, \cdot, |J, J\rangle]`.
+
+    >>> from sympy import Integer, pprint
+    >>> pprint(angular_momentum_matrix(1/Integer(2)))
+    ⎡-1/2   0 ⎤
+    ⎢         ⎥
+    ⎣ 0    1/2⎦
+
+    >>> pprint(angular_momentum_matrix(1/Integer(2), "all"))
+    ⎛            ⎡     ⅈ⎤             ⎞
+    ⎜⎡ 0   1/2⎤, ⎢ 0   ─⎥, ⎡-1/2   0 ⎤⎟
+    ⎜⎢        ⎥  ⎢     2⎥  ⎢         ⎥⎟
+    ⎜⎣1/2   0 ⎦  ⎢      ⎥  ⎣ 0    1/2⎦⎟
+    ⎜            ⎢-ⅈ    ⎥             ⎟
+    ⎜            ⎢───  0⎥             ⎟
+    ⎝            ⎣ 2    ⎦             ⎠
+
+    >>> pprint(angular_momentum_matrix(1, "all"))
+    ⎛⎡    √2    ⎤  ⎡         √2⋅ⅈ       ⎤            ⎞
+    ⎜⎢0   ──  0 ⎥, ⎢  0      ────    0  ⎥, ⎡-1  0  0⎤⎟
+    ⎜⎢    2     ⎥  ⎢          2         ⎥  ⎢        ⎥⎟
+    ⎜⎢          ⎥  ⎢                    ⎥  ⎢0   0  0⎥⎟
+    ⎜⎢√2      √2⎥  ⎢-√2⋅ⅈ           √2⋅ⅈ⎥  ⎢        ⎥⎟
+    ⎜⎢──  0   ──⎥  ⎢──────    0     ────⎥  ⎣0   0  1⎦⎟
+    ⎜⎢2       2 ⎥  ⎢  2              2  ⎥            ⎟
+    ⎜⎢          ⎥  ⎢                    ⎥            ⎟
+    ⎜⎢    √2    ⎥  ⎢        -√2⋅ⅈ       ⎥            ⎟
+    ⎜⎢0   ──  0 ⎥  ⎢  0     ──────   0  ⎥            ⎟
+    ⎝⎣    2     ⎦  ⎣          2         ⎦            ⎠
+
+    """
+    MJ = [-J+i for i in range(2*J+1)]
+
+    if ind == "x":
+        JX = Matrix([[sqrt((J-mj)*(J+mj+1))/2*KroneckerDelta(mi-1, mj)
+                     for mj in MJ] for mi in MJ])
+        JX += Matrix([[sqrt((J+mj)*(J-mj+1))/2*KroneckerDelta(mi+1, mj)
+                      for mj in MJ] for mi in MJ])
+        return JX
+    elif ind == "y":
+        JY = Matrix([[-I*sqrt((J-mj)*(J+mj+1))/2*KroneckerDelta(mi-1, mj)
+                     for mj in MJ] for mi in MJ])
+        JY += Matrix([[+I*sqrt((J+mj)*(J-mj+1))/2*KroneckerDelta(mi+1, mj)
+                      for mj in MJ] for mi in MJ])
+        return JY
+    elif ind == "z":
+        JZ = Matrix([[mi*KroneckerDelta(mi, mj) for mj in MJ] for mi in MJ])
+        return JZ
+    elif ind == "all":
+        JX = angular_momentum_matrix(J, "x")
+        JY = angular_momentum_matrix(J, "y")
+        JZ = angular_momentum_matrix(J, "z")
+        return JX, JY, JZ
 
 
 if __name__ == "__main__":
