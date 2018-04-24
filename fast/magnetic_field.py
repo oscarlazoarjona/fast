@@ -21,8 +21,9 @@
 # ***********************************************************************
 """This module contains all routines related to magnetic field interaction."""
 from atomic_structure import Atom, State
-from sympy import Integer, zeros
+from sympy import Integer, zeros, eye
 from sympy.physics.wigner import clebsch_gordan
+from sympy.physics.quantum import TensorProduct
 from numpy import array, pi
 from scipy.constants import physical_constants, hbar
 
@@ -171,8 +172,8 @@ def permj(j1, j2):
 
 
 def coupling_matrix_2j(j1, j2):
-    ur"""For angular momenta couplings $j = j_1 \oplus \j_2$ the unitary \
-    transformation from the coupled basis into the uncoupled basis.
+    ur"""For angular momenta $j_1, j_2$ the unitary transformation from the \
+    uncoupled basis into the $j = j_1 \oplus j_2$ coupled basis.
 
     >>> from sympy import Integer, pprint
     >>> L = 0
@@ -223,6 +224,59 @@ def coupling_matrix_2j(j1, j2):
             j1, m1, j2, m2 = numi
             U[ii, jj] = clebsch_gordan(j1, j2, j, m1, m2, mj)
     return U
+
+
+def coupling_matrix_3j(j1, j2, j3):
+    ur"""For angular momenta $j_1, j_2, j_3$ the unitary transformation from the \
+    uncoupled basis into the $j = (j_1 \oplus j_2)\oplus j_3$ coupled basis.
+
+    >>> from sympy import Integer, pprint
+    >>> L = 0
+    >>> S = 1/Integer(2)
+    >>> II = 3/Integer(2)
+    >>> pprint(coupling_matrix_3j(L, S, II))
+    ⎡                     √3             ⎤
+    ⎢0  -1/2   0     0    ──   0    0   0⎥
+    ⎢                     2              ⎥
+    ⎢                                    ⎥
+    ⎢         -√2              √2        ⎥
+    ⎢0   0    ────   0     0   ──   0   0⎥
+    ⎢          2               2         ⎥
+    ⎢                                    ⎥
+    ⎢               -√3                  ⎥
+    ⎢0   0     0    ────   0   0   1/2  0⎥
+    ⎢                2                   ⎥
+    ⎢                                    ⎥
+    ⎢1   0     0     0     0   0    0   0⎥
+    ⎢                                    ⎥
+    ⎢    √3                              ⎥
+    ⎢0   ──    0     0    1/2  0    0   0⎥
+    ⎢    2                               ⎥
+    ⎢                                    ⎥
+    ⎢          √2              √2        ⎥
+    ⎢0   0     ──    0     0   ──   0   0⎥
+    ⎢          2               2         ⎥
+    ⎢                                    ⎥
+    ⎢                              √3    ⎥
+    ⎢0   0     0    1/2    0   0   ──   0⎥
+    ⎢                              2     ⎥
+    ⎢                                    ⎥
+    ⎣0   0     0     0     0   0    0   1⎦
+
+    """
+    idj3 = eye(2*j3+1)
+    Jper = permj(j1, j2)
+    U_Jj3_list = [coupling_matrix_2j(J, j3) for J in Jper]
+
+    size = sum([U_Jj3_list[i].shape[0] for i in range(len(Jper))])
+    U_Jj3 = zeros(size, size)
+    ind0 = 0
+    for i, U_Jj3i in enumerate(U_Jj3_list):
+        sizeJ = U_Jj3i.shape[0]
+        indf = ind0 + sizeJ
+        U_Jj3[ind0: indf, ind0: indf] = U_Jj3_list[i]
+        ind0 = indf
+    return U_Jj3*TensorProduct(coupling_matrix_2j(j1, j2), idj3)
 
 
 if __name__ == "__main__":
