@@ -115,7 +115,10 @@ def paschen_back_energies(fine_state, Bz):
     >>> Bz = Bz/10000
     >>> for f_group in paschen_back_energies(ground_state, Bz):
     ...     print f_group
-
+    [1.51284728917866e-24 3.80485568127324e-25 -7.51876152924007e-25
+     -1.88423787397534e-24]
+    [-1.51229355210131e-24 -3.80300989101543e-25 7.51691573898227e-25
+     1.88368413689800e-24]
 
     """
     element = fine_state.element
