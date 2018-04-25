@@ -32,6 +32,7 @@ from math import sqrt, exp
 from sympy import solve, Symbol, diff, pprint
 from sympy import re as symre
 from sympy import im as symim
+from sympy import zeros as symzeros
 
 
 use_netcdf = False
@@ -1111,3 +1112,62 @@ def convolve_with_gaussian(x, f, sigma):
     # We give the convolution it's correct units.
     fg = [fg[i]*step for i in range(len(fg))]
     return xfg, fg
+
+
+def block_diagonal_matrix(matrices):
+    ur"""Build a block-diagonal matrix out of a given list of matrices.
+
+    >>> import numpy as np
+    >>> import sympy as sy
+    >>> lis = [sy.ones(2), 2*sy.ones(3), 3*sy.ones(4)]
+    >>> sy.pprint(block_diagonal_matrix(lis))
+    ⎡1  1  0  0  0  0  0  0  0⎤
+    ⎢                         ⎥
+    ⎢1  1  0  0  0  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎣0  0  0  0  0  3  3  3  3⎦
+
+    >>> lis = [np.ones((2, 2)), 2*np.ones((3, 3)), 3*np.ones((4, 4))]
+    >>> print block_diagonal_matrix(lis)
+    [[ 1.  1.  0.  0.  0.  0.  0.  0.  0.]
+     [ 1.  1.  0.  0.  0.  0.  0.  0.  0.]
+     [ 0.  0.  2.  2.  2.  0.  0.  0.  0.]
+     [ 0.  0.  2.  2.  2.  0.  0.  0.  0.]
+     [ 0.  0.  2.  2.  2.  0.  0.  0.  0.]
+     [ 0.  0.  0.  0.  0.  3.  3.  3.  3.]
+     [ 0.  0.  0.  0.  0.  3.  3.  3.  3.]
+     [ 0.  0.  0.  0.  0.  3.  3.  3.  3.]
+     [ 0.  0.  0.  0.  0.  3.  3.  3.  3.]]
+
+    """
+    sizes = [Ai.shape[0] for Ai in matrices]
+    size = sum(sizes)
+    symbolic = hasattr(matrices[0][0], "subs")
+    if symbolic:
+        A = symzeros(size, size)
+    else:
+        A = np.zeros((size, size))
+    ini = 0; fin = 0
+    for i, sizei in enumerate(sizes):
+        fin += sizei
+        A[ini: fin, ini: fin] = matrices[i]
+        ini += sizei
+
+    return A
+
+
+if __name__ == "__main__":
+    import doctest
+    print doctest.testmod(verbose=False)
