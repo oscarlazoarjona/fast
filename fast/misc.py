@@ -1114,8 +1114,10 @@ def convolve_with_gaussian(x, f, sigma):
     return xfg, fg
 
 
-def block_diagonal_matrix(matrices):
+def block_diagonal_matrix(matrices, type):
     ur"""Build a block-diagonal matrix out of a given list of matrices.
+
+    The type of matrix is chosen according to the input matrices.
 
     >>> import numpy as np
     >>> import sympy as sy
@@ -1158,7 +1160,7 @@ def block_diagonal_matrix(matrices):
     if symbolic:
         A = symzeros(size, size)
     else:
-        A = np.zeros((size, size))
+        A = np.zeros((size, size), type)
     ini = 0; fin = 0
     for i, sizei in enumerate(sizes):
         fin += sizei
