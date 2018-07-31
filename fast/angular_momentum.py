@@ -26,19 +26,31 @@ from sympy.physics.wigner import clebsch_gordan
 from sympy.physics.quantum import TensorProduct
 
 
-def permj(j1, j2):
+def perm_j(j1, j2):
     r"""Calculate the allowed total angular momenta.
 
     >>> from sympy import Integer
     >>> L = 1
     >>> S = 1/Integer(2)
-    >>> permj(L, S)
+    >>> perm_j(L, S)
     [1/2, 3/2]
 
     """
     jmin = abs(j1-j2)
     jmax = j1+j2
     return [jmin + i for i in range(jmax-jmin+1)]
+
+
+def perm_m(J):
+    r"""Calculate the allowed magnetic quantum numbers for a given `J`.
+
+    >>> from sympy import Integer
+    >>> S = 1/Integer(2)
+    >>> perm_m(S)
+    [-1/2, 1/2]
+
+    """
+    return [-J+i for i in range(2*J+1)]
 
 
 def coupling_matrix_2j(j1, j2):
@@ -83,7 +95,7 @@ def coupling_matrix_2j(j1, j2):
     j1j2nums = [(j1, m1, j2, m2) for m1 in M1 for m2 in M2]
 
     # We calculate the quantum numbers for the coupled basis.
-    Jper = permj(j1, j2)
+    Jper = perm_j(j1, j2)
     jmjnums = [(J, MJ-J) for J in Jper for MJ in range(2*J+1)]
 
     # We build the transformation matrix.
@@ -135,7 +147,7 @@ def coupling_matrix_3j(j1, j2, j3):
 
     """
     idj3 = eye(2*j3+1)
-    Jper = permj(j1, j2)
+    Jper = perm_j(j1, j2)
     U_Jj3_list = [coupling_matrix_2j(J, j3) for J in Jper]
 
     size = sum([U_Jj3_list[i].shape[0] for i in range(len(Jper))])
@@ -343,6 +355,60 @@ def orbital_spin_nuclear_matrices(L, S, II, ind="z"):
     Iind = U_LSI*Iind*U_LSI.adjoint()
 
     return Lind, Sind, Iind
+
+
+def spherical_tensor(Ji, Jj, K, Q):
+    ur"""Return a matrix representation of the spherical tensor with quantum
+    numbers $J_i, J_j, K, Q$.
+
+    >>> from sympy import pprint
+    >>> pprint(spherical_tensor(1, 1, 1, 0))
+    ⎡-√2        ⎤
+    ⎢────  0  0 ⎥
+    ⎢ 2         ⎥
+    ⎢           ⎥
+    ⎢ 0    0  0 ⎥
+    ⎢           ⎥
+    ⎢         √2⎥
+    ⎢ 0    0  ──⎥
+    ⎣         2 ⎦
+
+    >>> pprint(spherical_tensor(1, 2, 1, -1))
+    ⎡      √10          ⎤
+    ⎢0  0  ───   0    0 ⎥
+    ⎢       10          ⎥
+    ⎢                   ⎥
+    ⎢           √30     ⎥
+    ⎢0  0   0   ───   0 ⎥
+    ⎢            10     ⎥
+    ⎢                   ⎥
+    ⎢                √15⎥
+    ⎢0  0   0    0   ───⎥
+    ⎣                 5 ⎦
+
+    """
+    keti = {(Ji, Mi): Matrix([KroneckerDelta(i, j)
+            for j in range(2*Ji+1)])
+            for i, Mi in enumerate(perm_m(Ji))}
+
+    braj = {(Jj, Mj): Matrix([KroneckerDelta(i, j)
+            for j in range(2*Jj+1)]).adjoint()
+            for i, Mj in enumerate(perm_m(Jj))}
+
+    if K not in perm_j(Ji, Jj):
+        raise ValueError("K value is not allowed.")
+    if Q not in perm_m(K):
+        raise ValueError("Q value is not allowed.")
+
+    Ni = 2*Ji+1
+    Nj = 2*Jj+1
+    T = zeros(Ni, Nj)
+    for i, Mi in enumerate(perm_m(Ji)):
+        for j, Mj in enumerate(perm_m(Jj)):
+            T += (-1)**(Jj-Mj)*clebsch_gordan(Ji, Jj, K, Mi, -Mj, Q) * \
+                keti[(Ji, Mi)]*braj[(Jj, Mj)]
+
+    return T
 
 
 if __name__ == "__main__":
