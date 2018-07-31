@@ -49,6 +49,9 @@ def perm_m(J):
     >>> perm_m(S)
     [-1/2, 1/2]
 
+    >>> perm_m(3)
+    [-3, -2, -1, 0, 1, 2, 3]
+
     """
     return [-J+i for i in range(2*J+1)]
 
