@@ -25,7 +25,8 @@ from magnetic_field import (lande_g_factors, zeeman_energies,
 
 from angular_momentum import (coupling_matrix_2j, coupling_matrix_3j,
                               angular_momentum_matrix,
-                              orbital_spin_nuclear_matrices)
+                              orbital_spin_nuclear_matrices,
+                              spherical_tensor)
 
 from misc import (Mu, IJ, find_phase_transformation,
                   formatLij, convolve_with_gaussian, read_result, fprint,
