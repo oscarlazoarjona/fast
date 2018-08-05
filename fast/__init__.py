@@ -26,7 +26,9 @@ from magnetic_field import (lande_g_factors, zeeman_energies,
 from angular_momentum import (coupling_matrix_2j, coupling_matrix_3j,
                               angular_momentum_matrix,
                               orbital_spin_nuclear_matrices,
-                              spherical_tensor)
+                              spherical_tensor, wigner_d_small,
+                              wigner_d, density_matrix_rotation,
+                              perm_j, perm_m)
 
 from misc import (Mu, IJ, find_phase_transformation,
                   formatLij, convolve_with_gaussian, read_result, fprint,
@@ -68,8 +70,7 @@ from symbolic import (define_density_matrix, define_laser_variables,
                       define_frequencies, delta_greater, delta_lesser,
                       ket, bra, ketbra, lindblad_operator, lindblad_terms,
                       define_psi_coefficients, define_rho_vector,
-                      calculate_A_b, vector_element, phase_transformation,
-                      wigner_d_small, wigner_d, density_matrix_rotation)
+                      calculate_A_b, vector_element, phase_transformation)
 
 from error_propagation import Measurement
 
