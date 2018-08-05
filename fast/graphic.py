@@ -151,10 +151,19 @@ def fancy_matrix_plot(ax, mat, states=None, path='', name='default.png',
                       take_log=False, colorbar=False, hyperfine_labels=False,
                       center_on_zero=False, **kwds):
     r"""A function to plot matrices labeling axes with atomic states."""
+    Ne = len(mat[0])
+    # We transform whatever input we are given into a list of the form
+    # [[...]]
+    # made of basic float or complex types.
+    if complex_matrix:
+        mat = [[complex(mat[i][j]) for j in range(Ne)] for i in range(Ne)]
+    else:
+        mat = [[float(mat[i][j]) for j in range(Ne)] for i in range(Ne)]
+
     rmat = [mat[i] for i in reversed(range(len(mat[0])))]
 
-    smallest = min([min([j for j in i]) for i in rmat])
-    largest = max([max([j for j in i]) for i in rmat])
+    smallest = min([min([abs(j) for j in i]) for i in rmat])
+    largest = max([max([abs(j) for j in i]) for i in rmat])
 
     if take_abs:
         # We make the matrix all positive.
@@ -183,7 +192,7 @@ def fancy_matrix_plot(ax, mat, states=None, path='', name='default.png',
     else:
         ax.imshow(rmat, interpolation='none', **kwds)
     pyplot.axis('off')
-    Ne = len(mat[0])
+
     ax.set_xlim([-0.5, Ne-0.5])
     ax.set_ylim([-0.5, Ne-0.5])
 
@@ -276,11 +285,21 @@ def fancy_r_plot(r, states=None, path='', name='default.png', y_labels=True,
                  complex_matrix=False, take_abs=False, take_log=False,
                  hyperfine_labels=False, **kwds):
     r"""Make a nice plot of a 3-dimensional vector of matrices."""
+    # We transform whatever input we are given into a list of the form
+    # [[[...]], [[...]], [[...]]]
+    # made of basic float or complex types.
+    Ne = len(r[0][0])
+    if complex_matrix:
+        r = [[[complex(r[p][i][j]) for j in range(Ne)]
+             for i in range(Ne)] for p in range(3)]
+    else:
+        r = [[[float(r[p][i][j]) for j in range(Ne)]
+             for i in range(Ne)] for p in range(3)]
 
     nn = 3
     size = 5
     corr = 0.95
-    Ne = len(r[0][0])
+
     f, plot = pyplot.subplots(1, nn, sharey=True, figsize=[3*size, size*corr])
     for p in range(nn):
         mat = r[p]
