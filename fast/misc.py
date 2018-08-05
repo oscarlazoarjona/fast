@@ -1154,6 +1154,8 @@ def block_diagonal_matrix(matrices, type=None):
      [ 0.  0.  0.  0.  0.  3.  3.  3.  3.]]
 
     """
+    if type is None:
+        type = np.float64
     sizes = [Ai.shape[0] for Ai in matrices]
     size = sum(sizes)
     symbolic = hasattr(matrices[0][0], "subs")
