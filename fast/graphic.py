@@ -467,6 +467,7 @@ class Arrow3D(FancyArrowPatch):
 
 
 def bar_chart_mf(data, path_name):
+    """Make a bar chart for data on MF quantities."""
     N = len(data)
 
     ind = np.arange(N)  # the x locations for the groups
@@ -484,7 +485,7 @@ def bar_chart_mf(data, path_name):
     def autolabel(rects):
         # attach some text labels
         for rect in rects:
-            height = rect.get_height()
+            rect.get_height()
 
     autolabel(rects1)
     pyplot.savefig(path_name)
@@ -517,148 +518,157 @@ def draw_atom3d(ax):
     ax.plot(v3[0], v3[1], v3[2], 'k-')
 
 
-def draw_plane_wave_3d(ax,beam,dist_to_center=0):
-	Ex=[]; Ey=[]; Ez=[]
+def draw_plane_wave_3d(ax, beam, dist_to_center=0):
+    """Draw the polarization of a plane wave."""
+    Ex = []; Ey = []; Ez = []
 
-	k=[cos(beam.phi)*sin(beam.theta),sin(beam.phi)*sin(beam.theta),cos(beam.theta)]
-	kx,ky,kz=k
+    k = [cos(beam.phi)*sin(beam.theta),
+         sin(beam.phi)*sin(beam.theta),
+         cos(beam.theta)]
+    kx, ky, kz = k
 
-	Nt=1000
-	tstep=7*pi/4/(Nt-1)
+    Nt = 1000
+    tstep = 7*pi/4/(Nt-1)
 
-	alpha=beam.alpha
-	beta =beam.beta
-	phi  =beam.phi
-	theta=beam.theta
-	omega=1
+    alpha = beam.alpha
+    beta = beam.beta
+    phi = beam.phi
+    theta = beam.theta
+    omega = 1
 
-	for i in range(Nt):
-		t=i*tstep
-		#~ Ex+=[(cos(beam.alpha)*cos(beam.phi)*cos(beam.theta) + sin(beam.alpha)*sin(beam.phi))*cos(beam.beta + t) -(cos(beam.phi)*cos(beam.theta)*sin(beam.alpha) - cos(beam.alpha)*sin(beam.phi))*cos(t)-dist_to_center*kx]
-		#~ Ey+=[(cos(beam.alpha)*cos(beam.theta)*sin(beam.phi) - cos(beam.phi)*sin(beam.alpha))*cos(beam.beta + t) -(cos(beam.theta)*sin(beam.alpha)*sin(beam.phi) + cos(beam.alpha)*cos(beam.phi))*cos(t)-dist_to_center*ky]
-		#~ Ez+=[-cos(beam.alpha)*cos(beam.beta + t)*sin(beam.theta) + cos(t)*sin(beam.alpha)*sin(beam.theta)-dist_to_center*kz]
+    for i in range(Nt):
+        t = i*tstep
 
-		Ex+=[(cos(2*alpha)*cos(phi)*cos(theta) - sin(2*alpha)*sin(phi))*cos(omega*t)*cos(2*beta) - (cos(phi)*cos(theta)*sin(2*alpha) + cos(2*alpha)*sin(phi))*sin(omega*t)*sin(2*beta) - dist_to_center*kx]
+        Ex += [(cos(2*alpha)*cos(phi)*cos(theta) -
+                sin(2*alpha)*sin(phi))*cos(omega*t)*cos(2*beta) -
+               (cos(phi)*cos(theta)*sin(2*alpha) +
+                cos(2*alpha)*sin(phi))*sin(omega*t)*sin(2*beta) -
+               dist_to_center*kx]
 
-		Ey+=[(cos(2*alpha)*cos(theta)*sin(phi) + cos(phi)*sin(2*alpha))*cos(omega*t)*cos(2*beta) - (cos(theta)*sin(2*alpha)*sin(phi) - cos(2*alpha)*cos(phi))*sin(omega*t)*sin(2*beta) - dist_to_center*ky]
+        Ey += [(cos(2*alpha)*cos(theta)*sin(phi) +
+               cos(phi)*sin(2*alpha))*cos(omega*t)*cos(2*beta) -
+               (cos(theta)*sin(2*alpha)*sin(phi) -
+               cos(2*alpha)*cos(phi))*sin(omega*t)*sin(2*beta) -
+               dist_to_center*ky]
 
-		Ez+=[-cos(omega*t)*cos(2*alpha)*cos(2*beta)*sin(theta) + sin(omega*t)*sin(2*alpha)*sin(2*beta)*sin(theta) - dist_to_center*kz]
+        Ez += [-cos(omega*t)*cos(2*alpha)*cos(2*beta)*sin(theta) +
+               sin(omega*t)*sin(2*alpha)*sin(2*beta)*sin(theta) -
+               dist_to_center*kz]
 
+    ax.plot(Ex, Ey, Ez, beam.color+'-')
+    ff = dist_to_center-1.0
 
-	ax.plot(Ex,Ey,Ez,beam.color+'-')
-	ff=dist_to_center-1.0
-
-	arrx=[-kx*dist_to_center,-kx*ff]
-	arry=[-ky*dist_to_center,-ky*ff]
-	arrz=[-kz*dist_to_center,-kz*ff]
-	arrow=Arrow3D(arrx,arry,arrz, mutation_scale=20, lw=1, arrowstyle="-|>", color=beam.color)
-	ax.add_artist(arrow)
-	ax.plot([Ex[-1]],[Ey[-1]],[Ez[-1]],'.',markersize=8,color=beam.color)
-
-
-def draw_mot_field_3d(ax,mot_field,dist_to_center=0):
-	for beam in mot_field.beams:
-		draw_plane_wave_3d(ax,beam,dist_to_center=dist_to_center)
-
-
-def draw_lasers_3d(ax,lasers,name='default.png',distances=None,lim=None):
-
-	draw_atom3d(ax)
-
-	if distances==None: distances=[1.0 for i in range(len(lasers))]
-	for i in range(len(lasers)):
-		if type(lasers[i])==PlaneWave:
-			draw_plane_wave_3d( ax,lasers[i],distances[i])
-		elif type(lasers[i])==MotField:
-			draw_mot_field_3d(  ax,lasers[i],distances[i])
-
-	ax.set_xlabel(r"$x$",fontsize=20)
-	ax.set_ylabel(r"$y$",fontsize=20)
-	ax.set_zlabel(r"$z$",fontsize=20)
-
-	if lim==None: lim=sqrt(2.0)
+    arrx = [-kx*dist_to_center, -kx*ff]
+    arry = [-ky*dist_to_center, -ky*ff]
+    arrz = [-kz*dist_to_center, -kz*ff]
+    arrow = Arrow3D(arrx, arry, arrz, mutation_scale=20,
+                    lw=1, arrowstyle="-|>", color=beam.color)
+    ax.add_artist(arrow)
+    ax.plot([Ex[-1]], [Ey[-1]], [Ez[-1]], '.', markersize=8, color=beam.color)
 
 
-	ax.set_xlim(-lim, lim)
-	ax.set_ylim(-lim, lim)
-	ax.set_zlim(-lim, lim)
-	ax.set_aspect("equal")
-
-	pyplot.savefig(name,bbox_inches='tight')
+def draw_mot_field_3d(ax, mot_field, dist_to_center=0):
+    """Draw a MOT field polarization scheme."""
+    for beam in mot_field.beams:
+        draw_plane_wave_3d(ax, beam, dist_to_center=dist_to_center)
 
 
-def plot_eigenvalues(path,name,Ne,Omega=1,filename='a.png'):
-	times=characteristic_times(path,name,Omega=Omega)
+def draw_lasers_3d(ax, lasers, name='default.png', distances=None, lim=None):
+    """Draw MOT lasers in 3d."""
+    draw_atom3d(ax)
 
-	Nd=Ne**2-1
-	for i in range(Nd):
-		if float('inf') in times[1+i]:
-			#print i,times[1+i],times[1+Nd+i],'asd'
-			pass
-		else:
-			#print i,times[1+i],times[1+Nd+i],'ert'
-			if len(times[1+Nd+i])>1:
-				pyplot.loglog(times[1+Nd+i],times[1+i])
-			else:
-				pyplot.loglog(times[1+Nd+i],times[1+i],'+')
-	pyplot.savefig(filename,bbox_inches='tight')
-	pyplot.close('all')
+    if distances is None: distances = [1.0 for i in range(len(lasers))]
+    for i in range(len(lasers)):
+        if type(lasers[i]) == PlaneWave:
+            draw_plane_wave_3d(ax, lasers[i], distances[i])
+        elif type(lasers[i]) == MotField:
+            draw_mot_field_3d(ax, lasers[i], distances[i])
+
+    ax.set_xlabel(r"$x$", fontsize=20)
+    ax.set_ylabel(r"$y$", fontsize=20)
+    ax.set_zlabel(r"$z$", fontsize=20)
+
+    if lim is None: lim = sqrt(2.0)
+
+    ax.set_xlim(-lim, lim)
+    ax.set_ylim(-lim, lim)
+    ax.set_zlim(-lim, lim)
+    ax.set_aspect("equal")
+
+    pyplot.savefig(name, bbox_inches='tight')
 
 
-def plot_populations(path,name,Ne,states=None,filename='a.png',fontsize=12,absolute_frequency=True,
-					save_path='',use_netcdf=True):
-	pyplot.close("all")
-	dat=read_result(path,name,N=Ne,use_netcdf=use_netcdf)
-	x=dat[0]
-	if absolute_frequency:
-		x=[xi/2/pi for xi in x]
-	pop=dat[1:Ne]
-	Nd=len(pop[0]);	Nr=Ne**2-1
+# def plot_eigenvalues(path, name, Ne, Omega=1, filename='a.png'):
+#     """Make a plot of eigenvalues from a file."""
+#     times = characteristic_times(path, name, Omega=Omega)
+#
+#     Nd = Ne**2-1
+#     for i in range(Nd):
+#         if float('inf') in times[1+i]:
+#             pass
+#         else:
+#             if len(times[1+Nd+i]) > 1:
+#                 pyplot.loglog(times[1+Nd+i], times[1+i])
+#             else:
+#                 pyplot.loglog(times[1+Nd+i], times[1+i], '+')
+#     pyplot.savefig(filename, bbox_inches='tight')
+#     pyplot.close('all')
 
-	pop1=[1-sum([pop[j][i] for j in range(Ne-1)]) for i in range(Nd)]
-	pop =[pop1]+pop
 
-	#We do different things depending on what states we are given.
+def plot_populations(path, name, Ne, states=None, filename='a.png',
+                     fontsize=12, absolute_frequency=True,
+                     save_path='', use_netcdf=True):
+    pyplot.close("all")
+    dat = read_result(path, name, N=Ne, use_netcdf=use_netcdf)
+    x = dat[0]
+    if absolute_frequency:
+        x = [xi/2/pi for xi in x]
+    pop = dat[1:Ne]
+    Nd = len(pop[0]); Nr = Ne**2-1
 
-	if states==None:
-		#If we recieve no states all populations are ploted.
-		for i in range(Ne):
-			pyplot.plot(x,pop[i],label=r"$\mathrm{Poblaci\'on} \ " +str(i+1)+"$")
-		pyplot.legend(fontsize=fontsize)
-		pyplot.savefig(save_path+filename,bbox_inches='tight')
-		pyplot.close('all')
+    pop1 = [1-sum([pop[j][i] for j in range(Ne-1)]) for i in range(Nd)]
+    pop = [pop1]+pop
 
-	elif len(states[0].quantum_numbers)>=5:
-		#If we recieve magnetic states we make a plot for each hyperfine state.
-		magnetic_plots=len(states[0].quantum_numbers)==6
+    # We do different things depending on what states we are given.
+    if states is None:
+        # If we recieve no states all populations are ploted.
+        for i in range(Ne):
+            lab = r"$\mathrm{Poblaci\'on} \ " + str(i+1)+"$"
+            pyplot.plot(x, pop[i], label=lab)
+        pyplot.legend(fontsize=fontsize)
+        pyplot.savefig(save_path+filename, bbox_inches='tight')
+        pyplot.close('all')
 
-		if not magnetic_plots:
-			N_plots=len(states)
-			states=split_hyperfine_to_magnetic(states)
-			hyperfine_colors=list(reversed([hsv_to_rgb(m*0.8/(N_plots-1),1.0,1.0) for m in range(N_plots)]))
-			conta=0
+    elif len(states[0].quantum_numbers)>=5:
+        #If we recieve magnetic states we make a plot for each hyperfine state.
+        magnetic_plots=len(states[0].quantum_numbers)==6
 
-		fine_states=find_fine_states(states)
-		boundaries=list(reversed(calculate_boundaries(fine_states,states)[1]))
+        if not magnetic_plots:
+            N_plots=len(states)
+            states=split_hyperfine_to_magnetic(states)
+            hyperfine_colors=list(reversed([hsv_to_rgb(m*0.8/(N_plots-1),1.0,1.0) for m in range(N_plots)]))
+            conta=0
 
-		for pair in boundaries:
-			f=states[pair[0]].f
+        fine_states=find_fine_states(states)
+        boundaries=list(reversed(calculate_boundaries(fine_states,states)[1]))
 
-			if f==0:
-				colors=[(0.8,0.0,1.0)]
-			else:
-				colors=list(reversed([hsv_to_rgb(m*0.8/f,1.0,1.0) for m in range(f+1)]))
+        for pair in boundaries:
+            f=states[pair[0]].f
+            if f==0:
+                colors=[(0.8,0.0,1.0)]
+            else:
+                colors=list(reversed([hsv_to_rgb(m*0.8/f,1.0,1.0) for m in range(f+1)]))
 
-			for i in range(pair[0],pair[1]):
-				m=states[i].m
-				if m<0:
-					color=colors[-m]
-					style=':'
-				else:
-					color=colors[m]
-					style='-'
-				if magnetic_plots:
-					pyplot.plot(x,pop[i],style,label=r"$\mathrm{Poblaci\'on} \ M_F=" +str(states[i].m)+"$",color=color)
+            for i in range(pair[0],pair[1]):
+                m=states[i].m
+                if m<0:
+                    color=colors[-m]
+                    style=':'
+                else:
+                    color=colors[m]
+                    style='-'
+                if magnetic_plots:
+                    pyplot.plot(x,pop[i],style,label=r"$\mathrm{Poblaci\'on} \ M_F=" +str(states[i].m)+"$",color=color)
 
 			if magnetic_plots:
 				if f!=0:
@@ -702,7 +712,7 @@ def plot_populations(path,name,Ne,states=None,filename='a.png',fontsize=12,absol
 			pyplot.close('all')
 
 ########################################################################
-#Drawing of experiment diagrams.
+# Drawing of experiment diagrams.
 ########################################################################
 
 def rotate_and_traslate(cur,alpha,v0):
