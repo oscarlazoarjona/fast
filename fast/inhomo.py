@@ -6,7 +6,7 @@ import numpy as np
 from sympy import symbols
 from scipy.constants import physical_constants
 
-from fast.bloch import (Unfolding, fast_bloch_equations, fast_time_evolution,
+from fast.bloch import (Unfolding, fast_bloch_equations,
                         detunings_code, define_simplification, find_omega_min,
                         detunings_indices, detunings_combinations,
                         detunings_rewrite)
