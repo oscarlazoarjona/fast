@@ -1852,7 +1852,25 @@ def calculate_reduced_matrix_elements(fine_states, convention=1):
 def matrix_element(ji, fi, mi, jj, fj, mj,
                    II, reduced_matrix_element, q=None,
                    numeric=True, convention=1):
-    r"""Calculate a matrix element of the electric dipole."""
+    r"""Calculate a matrix element of the electric dipole (in the helicity
+    basis).
+
+    We calculate the matrix element for the cyclical transition of the D2 line
+    in Rb 87.
+
+    >>> from sympy import symbols
+    >>> red = symbols("r", positive=True)
+    >>> half = 1/Integer(2)
+    >>> II = 3*half
+    >>> matrix_element(3*half, 3, 3, half, 2, 2, II, red, q=1, numeric=False)
+    r/2
+
+    If no polarization component is specified, all are returned.
+
+    >>> matrix_element(3*half, 3, 3, half, 2, 2, II, red, numeric=False)
+    [0, 0, r/2]
+
+    """
     if q is None:
         return [matrix_element(ji, fi, mi, jj, fj, mj,
                                II, reduced_matrix_element, qi,
@@ -1883,6 +1901,197 @@ def matrix_element(ji, fi, mi, jj, fj, mj,
 
 def calculate_r_matrices(fine_states, reduced_matrix_elements, q=None,
                          numeric=True):
+    ur"""Calculate the matrix elements of the electric dipole (in the helicity
+    basis).
+
+    We calculate all matrix elements for the D2 line in Rb 87.
+
+    >>> from sympy import symbols, pprint
+    >>> red = symbols("r", positive=True)
+    >>> reduced_matrix_elements = [[0, -red], [red, 0]]
+    >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
+    >>> e = State("Rb", 87, 5, 1, 3/Integer(2))
+    >>> fine_levels = [g, e]
+    >>> r = calculate_r_matrices(fine_levels, reduced_matrix_elements,
+    ...     numeric=False)
+    >>> pprint(r[0][8:,:8])
+    ⎡                √3⋅r                                  ⎤
+    ⎢ 0       0      ────    0    0       0     0      0   ⎥
+    ⎢                 6                                    ⎥
+    ⎢                                                      ⎥
+    ⎢      -√15⋅r                       √15⋅r              ⎥
+    ⎢ 0    ───────     0     0    0     ─────   0      0   ⎥
+    ⎢         12                          60               ⎥
+    ⎢                                                      ⎥
+    ⎢               -√15⋅r                     √5⋅r        ⎥
+    ⎢ 0       0     ───────  0    0       0    ────    0   ⎥
+    ⎢                  12                       20         ⎥
+    ⎢                                                      ⎥
+    ⎢                                                √10⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ───── ⎥
+    ⎢                                                  20  ⎥
+    ⎢                                                      ⎥
+    ⎢√2⋅r                       -√6⋅r                      ⎥
+    ⎢────     0        0     0  ──────    0     0      0   ⎥
+    ⎢ 4                           12                       ⎥
+    ⎢                                                      ⎥
+    ⎢         r                          -r                ⎥
+    ⎢ 0       ─        0     0    0      ───    0      0   ⎥
+    ⎢         4                           4                ⎥
+    ⎢                                                      ⎥
+    ⎢                √3⋅r                      -r          ⎥
+    ⎢ 0       0      ────    0    0       0    ───     0   ⎥
+    ⎢                 12                        4          ⎥
+    ⎢                                                      ⎥
+    ⎢                                                -√6⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ──────⎥
+    ⎢                                                  12  ⎥
+    ⎢                                                      ⎥
+    ⎢ 0       0        0     0    0       0     0      0   ⎥
+    ⎢                                                      ⎥
+    ⎢                        r                             ⎥
+    ⎢ 0       0        0     ─    0       0     0      0   ⎥
+    ⎢                        2                             ⎥
+    ⎢                                                      ⎥
+    ⎢                            √6⋅r                      ⎥
+    ⎢ 0       0        0     0   ────     0     0      0   ⎥
+    ⎢                             6                        ⎥
+    ⎢                                                      ⎥
+    ⎢                                   √10⋅r              ⎥
+    ⎢ 0       0        0     0    0     ─────   0      0   ⎥
+    ⎢                                     10               ⎥
+    ⎢                                                      ⎥
+    ⎢                                          √5⋅r        ⎥
+    ⎢ 0       0        0     0    0       0    ────    0   ⎥
+    ⎢                                           10         ⎥
+    ⎢                                                      ⎥
+    ⎢                                                √15⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ───── ⎥
+    ⎢                                                  30  ⎥
+    ⎢                                                      ⎥
+    ⎢ 0       0        0     0    0       0     0      0   ⎥
+    ⎢                                                      ⎥
+    ⎣ 0       0        0     0    0       0     0      0   ⎦
+    >>> pprint(r[1][8:,:8])
+    ⎡       -√3⋅r                                                 ⎤
+    ⎢  0    ──────     0      0      0        0       0       0   ⎥
+    ⎢         6                                                   ⎥
+    ⎢                                                             ⎥
+    ⎢√15⋅r                         -√5⋅r                          ⎥
+    ⎢─────    0        0      0    ──────     0       0       0   ⎥
+    ⎢  12                            20                           ⎥
+    ⎢                                                             ⎥
+    ⎢                                      -√15⋅r                 ⎥
+    ⎢  0      0        0      0      0     ───────    0       0   ⎥
+    ⎢                                         30                  ⎥
+    ⎢                                                             ⎥
+    ⎢               -√15⋅r                          -√5⋅r         ⎥
+    ⎢  0      0     ───────   0      0        0     ──────    0   ⎥
+    ⎢                  12                             20          ⎥
+    ⎢                                                             ⎥
+    ⎢                        √3⋅r                                 ⎥
+    ⎢  0      0        0     ────    0        0       0       0   ⎥
+    ⎢                         6                                   ⎥
+    ⎢                                                             ⎥
+    ⎢  r                            √3⋅r                          ⎥
+    ⎢  ─      0        0      0     ────      0       0       0   ⎥
+    ⎢  4                             12                           ⎥
+    ⎢                                                             ⎥
+    ⎢        √3⋅r                                                 ⎥
+    ⎢  0     ────      0      0      0        0       0       0   ⎥
+    ⎢         6                                                   ⎥
+    ⎢                                                             ⎥
+    ⎢                  r                            -√3⋅r         ⎥
+    ⎢  0      0        ─      0      0        0     ──────    0   ⎥
+    ⎢                  4                              12          ⎥
+    ⎢                                                             ⎥
+    ⎢                                                       -√3⋅r ⎥
+    ⎢  0      0        0      0      0        0       0     ──────⎥
+    ⎢                                                         6   ⎥
+    ⎢                                                             ⎥
+    ⎢  0      0        0      0      0        0       0       0   ⎥
+    ⎢                                                             ⎥
+    ⎢                        √3⋅r                                 ⎥
+    ⎢  0      0        0     ────    0        0       0       0   ⎥
+    ⎢                         6                                   ⎥
+    ⎢                                                             ⎥
+    ⎢                              √30⋅r                          ⎥
+    ⎢  0      0        0      0    ─────      0       0       0   ⎥
+    ⎢                                15                           ⎥
+    ⎢                                                             ⎥
+    ⎢                                       √15⋅r                 ⎥
+    ⎢  0      0        0      0      0      ─────     0       0   ⎥
+    ⎢                                         10                  ⎥
+    ⎢                                                             ⎥
+    ⎢                                               √30⋅r         ⎥
+    ⎢  0      0        0      0      0        0     ─────     0   ⎥
+    ⎢                                                 15          ⎥
+    ⎢                                                             ⎥
+    ⎢                                                        √3⋅r ⎥
+    ⎢  0      0        0      0      0        0       0      ──── ⎥
+    ⎢                                                         6   ⎥
+    ⎢                                                             ⎥
+    ⎣  0      0        0      0      0        0       0       0   ⎦
+    >>> pprint(r[2][8:,:8])
+    ⎡√3⋅r                                           ⎤
+    ⎢────     0     0      0     0      0     0    0⎥
+    ⎢ 6                                             ⎥
+    ⎢                                               ⎥
+    ⎢                    √10⋅r                      ⎥
+    ⎢  0      0     0    ─────   0      0     0    0⎥
+    ⎢                      20                       ⎥
+    ⎢                                               ⎥
+    ⎢√15⋅r                      √5⋅r                ⎥
+    ⎢─────    0     0      0    ────    0     0    0⎥
+    ⎢  12                        20                 ⎥
+    ⎢                                               ⎥
+    ⎢       √15⋅r                     √15⋅r         ⎥
+    ⎢  0    ─────   0      0     0    ─────   0    0⎥
+    ⎢         12                        60          ⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢                    √6⋅r                       ⎥
+    ⎢  0      0     0    ────    0      0     0    0⎥
+    ⎢                     12                        ⎥
+    ⎢                                               ⎥
+    ⎢√3⋅r                        r                  ⎥
+    ⎢────     0     0      0     ─      0     0    0⎥
+    ⎢ 12                         4                  ⎥
+    ⎢                                               ⎥
+    ⎢         r                         r           ⎥
+    ⎢  0      ─     0      0     0      ─     0    0⎥
+    ⎢         4                         4           ⎥
+    ⎢                                               ⎥
+    ⎢              √2⋅r                      √6⋅r   ⎥
+    ⎢  0      0    ────    0     0      0    ────  0⎥
+    ⎢               4                         12    ⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢                    √15⋅r                      ⎥
+    ⎢  0      0     0    ─────   0      0     0    0⎥
+    ⎢                      30                       ⎥
+    ⎢                                               ⎥
+    ⎢                           √5⋅r                ⎥
+    ⎢  0      0     0      0    ────    0     0    0⎥
+    ⎢                            10                 ⎥
+    ⎢                                               ⎥
+    ⎢                                 √10⋅r         ⎥
+    ⎢  0      0     0      0     0    ─────   0    0⎥
+    ⎢                                   10          ⎥
+    ⎢                                               ⎥
+    ⎢                                        √6⋅r   ⎥
+    ⎢  0      0     0      0     0      0    ────  0⎥
+    ⎢                                         6     ⎥
+    ⎢                                               ⎥
+    ⎢                                              r⎥
+    ⎢  0      0     0      0     0      0     0    ─⎥
+    ⎣                                              2⎦
+
+    """
     magnetic_states = make_list_of_states(fine_states, 'magnetic', verbose=0)
     aux = calculate_boundaries(fine_states, magnetic_states)
     index_list_fine, index_list_hyperfine = aux
