@@ -1149,6 +1149,12 @@ def hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, omega_laser, xi,
 approximation, as far as I know."
         raise ValueError(s)
 
+    # We check that the epsilonp is a list of vectors.
+    if not isinstance(epsilonp, list):
+        raise ValueError("epsilonp must be a list of polarization vectors.")
+    if not isinstance(epsilonp[0], Matrix):
+        raise ValueError("epsilonp must be a list of polarization vectors.")
+
     Ne = len(omega_level)
     Nl = len(omega_laser)
 
