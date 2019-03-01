@@ -1850,9 +1850,14 @@ def calculate_reduced_matrix_elements(fine_states, convention=1):
 
 
 def matrix_element(ji, fi, mi, jj, fj, mj,
-                   q, II, reduced_matrix_element,
+                   II, reduced_matrix_element, q=None,
                    numeric=True, convention=1):
     r"""Calculate a matrix element of the electric dipole."""
+    if q is None:
+        return [matrix_element(ji, fi, mi, jj, fj, mj,
+                               II, reduced_matrix_element, qi,
+                               numeric=numeric, convention=convention)
+                for qi in [-1, 0, 1]]
     if numeric:
         from numpy import sqrt as numsqrt
         sqrt = numsqrt
@@ -1905,7 +1910,7 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements, q=None,
                     mi = ei.m; mj = ej.m
 
                     rpij = matrix_element(ji, fi, mi, jj, fj, mj,
-                                          p, II, reduced_matrix_elementij,
+                                          II, reduced_matrix_elementij, p,
                                           numeric=numeric)
 
                     if q == 1:
