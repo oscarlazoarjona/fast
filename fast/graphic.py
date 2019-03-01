@@ -675,46 +675,46 @@ def plot_populations(path, name, Ne, states=None, filename='a.png',
                 if magnetic_plots:
                     pyplot.plot(x,pop[i],style,label=r"$\mathrm{Poblaci\'on} \ M_F=" +str(states[i].m)+"$",color=color)
 
-			if magnetic_plots:
-				if f!=0:
-					suma=[ sum([ pop[i][j] for i in range(pair[0],pair[1])]) for j in range(len(pop[0]))]
-					pyplot.plot(x,suma,'k-',label=r'$\mathrm{suma}$')
+            if magnetic_plots:
+                if f!= 0:
+                    suma = [ sum([ pop[i][j] for i in range(pair[0],pair[1])]) for j in range(len(pop[0]))]
+                    pyplot.plot(x,suma,'k-',label=r'$\mathrm{suma}$')
 
-				filenamei=str(states[i]).split()[1].replace('_','').replace('/','_').replace('^','F=')
-				s=filenamei.find(',')
-				filenamei=filenamei[:s]
-				filenamei=name+'_'+filenamei+'.png'
+                filenamei=str(states[i]).split()[1].replace('_','').replace('/','_').replace('^','F=')
+                s=filenamei.find(',')
+                filenamei=filenamei[:s]
+                filenamei=name+'_'+filenamei+'.png'
 
-				title=find_fine_states([states[i]])[0]._latex_()+'\ F='+str(states[i].f)
+                title=find_fine_states([states[i]])[0]._latex_()+'\ F='+str(states[i].f)
 
-				pyplot.title(r"$"+title+"$")
-				pyplot.ylim([0,None])
-				pyplot.xlim([x[0],x[-1]])
-				pyplot.legend(fontsize=fontsize,loc=0)
+                pyplot.title(r"$"+title+"$")
+                pyplot.ylim([0,None])
+                pyplot.xlim([x[0],x[-1]])
+                pyplot.legend(fontsize=fontsize,loc=0)
 
-				pyplot.savefig(save_path+filenamei,bbox_inches='tight')
-				pyplot.close('all')
-			else:
-				suma=[ sum([ pop[i][j] for i in range(pair[0],pair[1])]) for j in range(len(pop[0]))]
-				label=states[i]._latex_()
-				label=label[label.find(' ')+1:]
-				label=label[:label.find('^')]
-				label+=r"\ F="+str(states[i].f)
-				label ="$"+label+"$"
+                pyplot.savefig(save_path+filenamei,bbox_inches='tight')
+                pyplot.close('all')
+            else:
+                suma=[ sum([ pop[i][j] for i in range(pair[0],pair[1])]) for j in range(len(pop[0]))]
+                label=states[i]._latex_()
+                label=label[label.find(' ')+1:]
+                label=label[:label.find('^')]
+                label+=r"\ F="+str(states[i].f)
+                label ="$"+label+"$"
 
-				pyplot.plot(x,suma,'-',color=hyperfine_colors[conta],label=label)
-				#for i in range(len(x)): print i,x[i],suma[i]
-				conta+=1
-				#pyplot.savefig('a.png')
+                pyplot.plot(x,suma,'-',color=hyperfine_colors[conta],label=label)
+                #for i in range(len(x)): print i,x[i],suma[i]
+                conta+=1
+                #pyplot.savefig('a.png')
 
-		if not magnetic_plots:
-			title=states[0]._latex_()
-			title="$"+title[:title.find(' ')-1]+"$"
-			pyplot.title(title,fontsize=20)
-			pyplot.xlim([x[0],x[-1]])
-			pyplot.legend(fontsize=fontsize,loc=0)
-			pyplot.savefig(save_path+name+'_pops.png',bbox_inches='tight')
-			pyplot.close('all')
+        if not magnetic_plots:
+            title=states[0]._latex_()
+            title="$"+title[:title.find(' ')-1]+"$"
+            pyplot.title(title,fontsize=20)
+            pyplot.xlim([x[0],x[-1]])
+            pyplot.legend(fontsize=fontsize,loc=0)
+            pyplot.savefig(save_path+name+'_pops.png',bbox_inches='tight')
+            pyplot.close('all')
 
 ########################################################################
 # Drawing of experiment diagrams.
