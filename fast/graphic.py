@@ -582,8 +582,6 @@ def draw_mot_field_3d(ax, mot_field, dist_to_center=0):
 
 def draw_lasers_3d(ax, lasers, name='default.png', distances=None, lim=None):
     """Draw MOT lasers in 3d."""
-    draw_atom3d(ax)
-
     if distances is None: distances = [1.0 for i in range(len(lasers))]
     for i in range(len(lasers)):
         if type(lasers[i]) == PlaneWave:
