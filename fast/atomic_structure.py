@@ -2645,6 +2645,26 @@ def collision_rate(Temperature, element, isotope):
     return 2*pi*sigma*v*n
 
 
+def doppler_width(transition, Temperature):
+    r"""Return the Doppler width of a transition at a given temperature
+    (in angular frequency).
+
+    The usual Doppler FWHM of the rubidium D2 line (in MHz).
+
+    >>> g = State("Rb", 87, 5, 0, 1/Integer(2), 2)
+    >>> e = State("Rb", 87, 5, 1, 3/Integer(2))
+    >>> t = Transition(e, g)
+    >>> omega = doppler_width(t, 273.15 + 22)
+    >>> "{:2.3f}".format(omega/2/np.pi*1e-6)
+    '522.477'
+
+    """
+    atom = Atom(transition.e1.element, transition.e1.isotope)
+    m = atom.mass
+    omega = transition.omega
+    return omega*np.log(8*np.sqrt(2))*np.sqrt(k_B*Temperature/m/c**2)
+
+
 def thermal_state(omega_level, T, return_diagonal=False):
     r"""Return a thermal state for a given set of levels.
 

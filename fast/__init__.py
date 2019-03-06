@@ -54,7 +54,7 @@ from atomic_structure import (Atom, State, Transition,
                               vapour_pressure, vapour_number_density,
                               vapour_density,
                               speed_likely, speed_average, speed_rms,
-                              collision_rate, matrix_element,
+                              collision_rate, doppler_width, matrix_element,
                               thermal_state)
 
 from sympy.core.numbers import Rational as Integer
