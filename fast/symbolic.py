@@ -49,6 +49,7 @@ from numpy import sqrt as npsqrt
 from sympy import Expr
 from sympy.physics.quantum.qexpr import QExpr
 from sympy.core import Mul
+from time import time
 # from sympy.core.compatibility import u
 
 
@@ -856,6 +857,34 @@ def ketbra(i, j, Ne):
     return ket(i, Ne)*bra(j, Ne)
 
 
+def sigma_operator_indices(A):
+    r"""If A is an outer-product type operator |a><b| return a, b.
+
+    >>> sig = ket(2, 3)*bra(1, 3)
+    >>> sigma_operator_indices(sig)
+    (1, 0)
+    >>> sigma_operator_indices(sig+sig.adjoint())
+    (None, None)
+
+    """
+    Ne = A.shape[0]
+    band = True
+    if sum(A) != 1:
+        band = False
+
+    a = None; b = None
+    for i in range(Ne):
+        for j in range(Ne):
+            if A[i, j] == 1:
+                a = i; b = j
+            elif A[i, j] != 0:
+                band = False
+    if band:
+        return a, b
+    else:
+        return None, None
+
+
 def lindblad_operator(A, rho):
     r"""This function returns the action of a Lindblad operator A on a density\
  matrix rho. This is defined as :
@@ -872,10 +901,25 @@ def lindblad_operator(A, rho):
     [       0, -rho32/2,        0]])
 
     """
-    return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
+    a, b = sigma_operator_indices(A)
+    # print(111, a, b)
+    if a is not None and b is not None:
+        Ne = A.shape[0]
+        L = zeros(Ne, Ne)
+        L[a, a] += rho[b, b]
+
+        for j in range(Ne):
+            L[b, j] += -rho[b, j]/2
+
+        for i in range(Ne):
+            L[i, b] += -rho[i, b]/2
+
+        return L
+    else:
+        return A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
 
 
-def lindblad_terms(gamma, rho, Ne):
+def lindblad_terms(gamma, rho, Ne, verbose=1):
     u"""Return the Lindblad terms for decays gamma in matrix form.
 
     >>> from sympy import pprint
@@ -912,10 +956,29 @@ def lindblad_terms(gamma, rho, Ne):
     gamma_ij*rho_ij/2 for each coherence.
 
     """
-    L = zeros(Ne)
+    # We count the necessary Lindblad operators.
+    Nterms = 0
     for i in range(Ne):
         for j in range(i):
-            L += gamma[i, j]*lindblad_operator(ket(j+1, Ne)*bra(i+1, Ne), rho)
+            if gamma[i, j] != 0:
+                Nterms += 1
+
+    L = zeros(Ne)
+    counter = 0
+    t0 = time()
+    for i in range(Ne):
+        for j in range(i):
+            if gamma[i, j] != 0:
+                counter += 1
+                sig = ket(j+1, Ne)*bra(i+1, Ne)
+                L += gamma[i, j]*lindblad_operator(sig, rho)
+                tn = time()
+                if tn-t0 > 1:
+                    aux = "Calculated up to i={}, j={}, or {}/{} = {:2.2f} %."
+                    if verbose > 0:
+                        print(aux.format(i, j, counter, Nterms,
+                                         float(counter)/Nterms*100))
+                    t0 = tn
     return L
 
 
