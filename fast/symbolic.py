@@ -80,7 +80,7 @@ def define_symbol(name, open_brace, comma, i, j,
 
 
 def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
-                          variables=None):
+                          name="rho", variables=None):
     """Return a symbolic density matrix.
 
     INPUT:
@@ -122,14 +122,14 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
     [rho21(t, z), rho22(t, z)]])
 
     """
+
     if Ne > 9:
         comma = ","
-        name = r"\rho"
+        name = "\\" + name
         open_brace = "_{"
         close_brace = "}"
     else:
         comma = ""
-        name = "rho"
         open_brace = ""
         close_brace = ""
 
@@ -367,14 +367,14 @@ def cartesian_to_helicity(vector, numeric=False):
     ...      [0.0,-1.0]]]
 
     >>> cartesian_to_helicity(r, numeric=True)
-    array([[[ 0.00000000+0.j,  0.00000000+0.j],
-            [ 1.41421356+0.j,  0.00000000+0.j]],
+    array([[[ 0.        +0.j,  0.        +0.j],
+            [ 1.41421356+0.j,  0.        +0.j]],
     <BLANKLINE>
-           [[ 1.00000000+0.j,  0.00000000+0.j],
-            [ 0.00000000+0.j, -1.00000000+0.j]],
+           [[ 1.        +0.j,  0.        +0.j],
+            [ 0.        +0.j, -1.        +0.j]],
     <BLANKLINE>
-           [[-0.00000000+0.j, -1.41421356+0.j],
-            [-0.00000000+0.j, -0.00000000+0.j]]])
+           [[-0.        +0.j, -1.41421356+0.j],
+            [-0.        +0.j, -0.        +0.j]]])
 
     """
     if numeric:
@@ -704,16 +704,16 @@ def define_frequencies(Ne, explicitly_antisymmetric=False):
 
     >>> from sympy import pprint
     >>> pprint(define_frequencies(2), use_unicode=True)
-    ⎛[ω₁, ω₂], ⎡ 0   ω₁₂⎤, ⎡ 0   γ₁₂⎤⎞
-    ⎜          ⎢        ⎥  ⎢        ⎥⎟
+    ⎛          ⎡ 0   ω₁₂⎤  ⎡ 0   γ₁₂⎤⎞
+    ⎜[ω₁, ω₂], ⎢        ⎥, ⎢        ⎥⎟
     ⎝          ⎣ω₂₁   0 ⎦  ⎣γ₂₁   0 ⎦⎠
 
     We can make these matrices explicitly antisymmetric.
 
     >>> pprint(define_frequencies(2, explicitly_antisymmetric=True),
     ...                           use_unicode=True)
-    ⎛[ω₁, ω₂], ⎡ 0   -ω₂₁⎤, ⎡ 0   -γ₂₁⎤⎞
-    ⎜          ⎢         ⎥  ⎢         ⎥⎟
+    ⎛          ⎡ 0   -ω₂₁⎤  ⎡ 0   -γ₂₁⎤⎞
+    ⎜[ω₁, ω₂], ⎢         ⎥, ⎢         ⎥⎟
     ⎝          ⎣ω₂₁   0  ⎦  ⎣γ₂₁   0  ⎦⎠
 
     """
@@ -924,9 +924,9 @@ def define_psi_coefficients(Ne):
 
     >>> from sympy import pprint
     >>> pprint(define_psi_coefficients(3), use_unicode=True)
-    ⎛⎡c₁(t)⎤, ⎡\tilde{c}_{1}(t)⎤, ⎡θ₁⎤⎞
+    ⎛⎡c₁(t)⎤  ⎡\tilde{c}_{1}(t)⎤  ⎡θ₁⎤⎞
     ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
-    ⎜⎢c₂(t)⎥  ⎢\tilde{c}_{2}(t)⎥  ⎢θ₂⎥⎟
+    ⎜⎢c₂(t)⎥, ⎢\tilde{c}_{2}(t)⎥, ⎢θ₂⎥⎟
     ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
     ⎝⎣c₃(t)⎦  ⎣\tilde{c}_{3}(t)⎦  ⎣θ₃⎦⎠
 
