@@ -430,6 +430,7 @@ class Atom(Basic):
 
         transitions = self.transitions()
         states = iterate([fine_state], transitions)
+        states = order_by_energy(states)
 
         return states
 
