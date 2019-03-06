@@ -1900,7 +1900,7 @@ def matrix_element(ji, fi, mi, jj, fj, mj,
 
 
 def calculate_r_matrices(fine_states, reduced_matrix_elements, q=None,
-                         numeric=True):
+                         numeric=True, convention=1):
     ur"""Calculate the matrix elements of the electric dipole (in the helicity
     basis).
 
@@ -2120,7 +2120,8 @@ def calculate_r_matrices(fine_states, reduced_matrix_elements, q=None,
 
                     rpij = matrix_element(ji, fi, mi, jj, fj, mj,
                                           II, reduced_matrix_elementij, p,
-                                          numeric=numeric)
+                                          numeric=numeric,
+                                          convention=convention)
 
                     if q == 1:
                         r[p+1][i][j] = rpij*delta_lesser(i, j)
