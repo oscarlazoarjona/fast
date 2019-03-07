@@ -580,7 +580,7 @@ def draw_mot_field_3d(ax, mot_field, dist_to_center=0):
         draw_plane_wave_3d(ax, beam, dist_to_center=dist_to_center)
 
 
-def draw_lasers_3d(ax, lasers, name='default.png', distances=None, lim=None):
+def draw_lasers_3d(ax, lasers, name=None, distances=None, lim=None):
     """Draw MOT lasers in 3d."""
     if distances is None: distances = [1.0 for i in range(len(lasers))]
     for i in range(len(lasers)):
@@ -600,7 +600,8 @@ def draw_lasers_3d(ax, lasers, name='default.png', distances=None, lim=None):
     ax.set_zlim(-lim, lim)
     ax.set_aspect("equal")
 
-    pyplot.savefig(name, bbox_inches='tight')
+    if name is not None:
+        pyplot.savefig(name, bbox_inches='tight')
 
 
 # def plot_eigenvalues(path, name, Ne, Omega=1, filename='a.png'):
