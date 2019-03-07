@@ -977,7 +977,7 @@ def lindblad_terms(gamma, rho, Ne, verbose=1):
                     aux = "Calculated up to i={}, j={}, or {}/{} = {:2.2f} %."
                     if verbose > 0:
                         print(aux.format(i, j, counter, Nterms,
-                                         float(counter)/Nterms*100))
+                                         float(counter+1)/Nterms*100))
                     t0 = tn
     return L
 
