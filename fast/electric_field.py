@@ -152,6 +152,8 @@ class PlaneWave(object):
             self.color = 'r'
         elif color == 'green':
             self.color = 'g'
+        else:
+            self.color = color
         Ypm1 = 0.5*sqrt(2)*((cos(2*alpha)*cos(phi)*cos(theta) -
                             sin(2*alpha)*sin(phi))*cos(2*beta) -
                             1j*(cos(phi)*cos(theta)*sin(2*alpha) +
