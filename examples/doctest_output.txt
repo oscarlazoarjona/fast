@@ -1,0 +1,5916 @@
+Trying:
+    from fast import __version__
+Expecting nothing
+ok
+Trying:
+    print __version__
+Expecting:
+    1.3
+ok
+Trying:
+    from fast import all_atoms
+Expecting nothing
+ok
+Trying:
+    all_atoms
+Expecting:
+    [85Rb, 87Rb, 133Cs]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    np.set_printoptions(precision=4)
+Expecting nothing
+ok
+1 items passed all tests:
+   6 tests in fast
+6 tests in 1 items.
+6 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=6)
+Trying:
+    State("Cs", 133, 6, 0, 1/Integer(2))
+Expecting:
+    133Cs 6S_1/2
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    np.set_printoptions(precision=4)
+Expecting nothing
+ok
+Trying:
+    atom=Atom("Rb")
+Expecting nothing
+ok
+Trying:
+    print atom
+Expecting:
+    Rb
+ok
+Trying:
+    atom=Atom("Rb")
+Expecting nothing
+ok
+Trying:
+    print atom
+Expecting:
+    Rb
+ok
+Trying:
+    atom.Z
+Expecting:
+    37
+ok
+Trying:
+    atom.isotopes
+Expecting:
+    [85, 87]
+ok
+Trying:
+    print atom.radius
+Expecting:
+    2.35e-10
+ok
+Trying:
+    atom.Tboil
+Expecting:
+    961.15
+ok
+Trying:
+    atom.Tboil
+Expecting:
+    961.15
+ok
+Trying:
+    atom=Atom("Rb",85)
+Expecting nothing
+ok
+Trying:
+    print atom
+Expecting:
+    85Rb
+ok
+Trying:
+    atom.neutrons
+Expecting:
+    48
+ok
+Trying:
+    print atom.abundance
+Expecting:
+    0.7217
+ok
+Trying:
+    print atom.mass
+Expecting:
+    1.40999341816e-25
+ok
+Trying:
+    atom.nuclear_spin
+Expecting:
+    5/2
+ok
+Trying:
+    print atom.ionization_frequency
+Expecting:
+    1.01002474142e+13
+ok
+Trying:
+    atom.mass_nuclear
+Expecting:
+    1.4096563709688232e-25
+ok
+Trying:
+    atom.gL
+Expecting:
+    0.9999935378694074
+ok
+Trying:
+    atom.gS
+Expecting:
+    2.0023193043622
+ok
+Trying:
+    atom.gI
+Expecting:
+    0.00029364
+ok
+Trying:
+    Atom("Rb",85).__repr__()
+Expecting:
+    '85Rb'
+ok
+Trying:
+    Atom("Cs",133).__str__()
+Expecting:
+    '133Cs'
+ok
+Trying:
+    Atom("Rb",87)._latex_()
+Expecting:
+    '^{87}\\mathrm{Rb}'
+ok
+Trying:
+    Atom("Rb",87)._latex_()
+Expecting:
+    '^{87}\\mathrm{Rb}'
+ok
+Trying:
+    atom = Atom("Cs",133)
+Expecting nothing
+ok
+Trying:
+    e = State("Cs", 133, 6, "P", 3/Integer(2))
+Expecting nothing
+ok
+Trying:
+    atom.find_decays(e)
+Expecting:
+    [133Cs 6S_1/2, 133Cs 6P_3/2]
+ok
+Trying:
+    s = State("Cs", 133, 6, "D", 5/Integer(2))
+Expecting nothing
+ok
+Trying:
+    for d in atom.find_decays(s):
+        print(d)
+Expecting:
+    133Cs 6S_1/2
+    133Cs 6P_1/2
+    133Cs 6P_3/2
+    133Cs 5D_3/2
+    133Cs 5D_5/2
+    133Cs 7S_1/2
+    133Cs 7P_3/2
+    133Cs 6D_5/2
+ok
+Trying:
+    atom=Atom("Rb",85)
+Expecting nothing
+ok
+Trying:
+    states=atom.states()
+Expecting nothing
+ok
+Trying:
+    print states
+Expecting:
+    [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 6S_1/2, 85Rb 6P_1/2, 85Rb 6P_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2, 85Rb 7S_1/2, 85Rb 7P_1/2, 85Rb 7P_3/2, 85Rb 6D_3/2, 85Rb 7D_3/2, 85Rb 14S_1/2, 85Rb 15S_1/2, 85Rb 16S_1/2, 85Rb 17S_1/2, 85Rb 18S_1/2, 85Rb 19S_1/2, 85Rb 20S_1/2, 85Rb 21S_1/2, 85Rb 22S_1/2, 85Rb 23S_1/2, 85Rb 24S_1/2, 85Rb 25S_1/2, 85Rb 26S_1/2, 85Rb 27S_1/2, 85Rb 28S_1/2, 85Rb 29S_1/2, 85Rb 30S_1/2, 85Rb 31S_1/2, 85Rb 32S_1/2, 85Rb 33S_1/2, 85Rb 34S_1/2, 85Rb 35S_1/2, 85Rb 36S_1/2, 85Rb 37S_1/2, 85Rb 38S_1/2, 85Rb 39S_1/2, 85Rb 40S_1/2, 85Rb 41S_1/2, 85Rb 42S_1/2, 85Rb 43S_1/2, 85Rb 44S_1/2, 85Rb 45S_1/2, 85Rb 46S_1/2, 85Rb 47S_1/2, 85Rb 48S_1/2, 85Rb 49S_1/2, 85Rb 50S_1/2]
+ok
+Trying:
+    atom.states(omega_min=1.00845e15*2*pi, omega_max=1.0086e+15*2*pi)
+Expecting:
+    [85Rb 49S_1/2, 85Rb 50S_1/2]
+ok
+Trying:
+    available,not_available=atom.states(Nmax=5,return_missing=True)
+Expecting nothing
+ok
+Trying:
+    print available
+Expecting:
+    [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2]
+ok
+Trying:
+    print not_available
+Expecting:
+    [('Rb', 85, 1, 0, 1/2), ('Rb', 85, 2, 0, 1/2), ('Rb', 85, 2, 1, 1/2), ('Rb', 85, 2, 1, 3/2), ('Rb', 85, 3, 0, 1/2), ('Rb', 85, 3, 1, 1/2), ('Rb', 85, 3, 1, 3/2), ('Rb', 85, 3, 2, 3/2), ('Rb', 85, 3, 2, 5/2), ('Rb', 85, 4, 0, 1/2), ('Rb', 85, 4, 1, 1/2), ('Rb', 85, 4, 1, 3/2), ('Rb', 85, 4, 3, 5/2), ('Rb', 85, 4, 3, 7/2), ('Rb', 85, 5, 3, 5/2), ('Rb', 85, 5, 3, 7/2), ('Rb', 85, 5, 4, 7/2), ('Rb', 85, 5, 4, 9/2)]
+ok
+Trying:
+    atom=Atom("Rb",85)
+Expecting nothing
+ok
+Trying:
+    transitions=atom.transitions()
+Expecting nothing
+ok
+Trying:
+    print len(transitions)
+Expecting:
+    270
+ok
+Trying:
+    from scipy.constants import c
+Expecting nothing
+ok
+Trying:
+    wavelength_min=770e-9
+Expecting nothing
+ok
+Trying:
+    wavelength_max=790e-9
+Expecting nothing
+ok
+Trying:
+    omega_min=2*pi*c/wavelength_max
+Expecting nothing
+ok
+Trying:
+    omega_max=2*pi*c/wavelength_min
+Expecting nothing
+ok
+Trying:
+    easy_transitions=atom.transitions(omega_min=omega_min,
+                                      omega_max=omega_max)
+Expecting nothing
+ok
+Trying:
+    for ti in easy_transitions:
+        print abs(ti.wavelength)*1e9, ti
+Expecting:
+    780.241476935 85Rb 5S_1/2 -----> 85Rb 5P_3/2
+    776.157015322 85Rb 5P_3/2 -----> 85Rb 5D_3/2
+    775.978619616 85Rb 5P_3/2 -----> 85Rb 5D_5/2
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2))
+Expecting:
+    85Rb 5S_1/2
+ok
+Trying:
+    State("Cs", 133, 6, 0, 1/Integer(2), 3)
+Expecting:
+    133Cs 6S_1/2^3
+ok
+Trying:
+    State("Rb", 87, 5, 0, 1/Integer(2), 2, -1)
+Expecting:
+    87Rb 5S_1/2^2,-1
+ok
+Trying:
+    g2=State("Cs", 133, 6, 0, 1/Integer(2), 4, 4)
+Expecting nothing
+ok
+Trying:
+    e =State("Cs", 133, 6, 1, 3/Integer(2), 5, 5)
+Expecting nothing
+ok
+Trying:
+    g2.element, g2.isotope, g2.n, g2.l, g2.j, g2.f, g2.m
+Expecting:
+    ('Cs', 133, 6, 0, 1/2, 4, 4)
+ok
+Trying:
+    g2.Z
+Expecting:
+    55
+ok
+Trying:
+    g2.neutrons
+Expecting:
+    78
+ok
+Trying:
+    print g2.mass
+Expecting:
+    2.2069469161e-25
+ok
+Trying:
+    print g2.nu
+Expecting:
+    4021776399.38
+ok
+Trying:
+    print g2.omega
+Expecting:
+    25269566381.3
+ok
+Trying:
+    print e.Ahfs, e.Bhfs, e.Chfs
+Expecting:
+    50288250.0 -494000.0 560.0
+ok
+Trying:
+    print g2._latex_()
+Expecting:
+    ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
+ok
+Trying:
+    g1=State("Rb",87,5,0,1/Integer(2),1,1)
+Expecting nothing
+ok
+Trying:
+    g2=State("Rb",87,5,0,1/Integer(2),2,2)
+Expecting nothing
+ok
+Trying:
+    g1 == g2
+Expecting:
+    False
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2))
+Expecting:
+    85Rb 5S_1/2
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2)).__repr__()
+Expecting:
+    '85Rb 5S_1/2'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2),2).__repr__()
+Expecting:
+    '85Rb 5S_1/2^2'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2),2,2).__repr__()
+Expecting:
+    '85Rb 5S_1/2^2,2'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2)).__str__()
+Expecting:
+    '85Rb 5S_1/2'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2),2).__str__()
+Expecting:
+    '85Rb 5S_1/2^2'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2),2,2).__str__()
+Expecting:
+    '85Rb 5S_1/2^2,2'
+ok
+Trying:
+    from sympy import latex
+Expecting nothing
+ok
+Trying:
+    latex(State("Rb",85,5,0,1/Integer(2)))
+Expecting:
+    '^{85}\\mathrm{Rb}\\ 5S_{1/2}'
+ok
+Trying:
+    latex(State("Rb",85,5,0,1/Integer(2),2))
+Expecting:
+    '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2}'
+ok
+Trying:
+    latex(State("Rb",85,5,0,1/Integer(2),2,2))
+Expecting:
+    '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2,2}'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2))._latex_()
+Expecting:
+    '^{85}\\mathrm{Rb}\\ 5S_{1/2}'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2),2)._latex_()
+Expecting:
+    '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2}'
+ok
+Trying:
+    State("Rb",85,5,0,1/Integer(2),2,2)._latex_()
+Expecting:
+    '^{85}\\mathrm{Rb}\\ 5S_{1/2}^{2,2}'
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    clock =Transition(g2,g1)
+Expecting nothing
+ok
+Trying:
+    clock
+Expecting:
+    133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3
+ok
+Trying:
+    clock.nu
+Expecting:
+    9192631770.0
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    t1=Transition(g2,g1)._latex_()
+Expecting nothing
+ok
+Trying:
+    G1 = State("Rb",  85, 5, 0, 1/Integer(2),2)
+Expecting nothing
+ok
+Trying:
+    G2 = State("Rb",  85, 5, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    t2=Transition(G2,G1)._latex_()
+Expecting nothing
+ok
+Trying:
+    t1 == t2
+Expecting:
+    False
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    clock =Transition(g2,g1)
+Expecting nothing
+ok
+Trying:
+    clock
+Expecting:
+    133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3
+ok
+Trying:
+    clock.allowed
+Expecting:
+    False
+ok
+Trying:
+    print clock.nu
+Expecting:
+    9192631770.0
+ok
+Trying:
+    print clock.omega
+Expecting:
+    57759008871.6
+ok
+Trying:
+    print clock.wavelength
+Expecting:
+    0.0326122557175
+ok
+Trying:
+    print clock.einsteinA
+Expecting:
+    0.0
+ok
+Trying:
+    clock.e1, clock.e2
+Expecting:
+    (133Cs 6S_1/2^4, 133Cs 6S_1/2^3)
+ok
+Trying:
+    g2Rb85 = State("Rb", 85, 5, 0, 1/Integer(2), 3)
+Expecting nothing
+ok
+Trying:
+    Transition(g2Rb85, g1)
+Expecting:
+    Traceback (most recent call last):
+    ...
+    NotImplementedError: Transition between different elements.
+ok
+Trying:
+    g1Rb87 = State("Rb", 87, 5, 0, 1/Integer(2), 1)
+Expecting nothing
+ok
+Trying:
+    Transition(g2Rb85, g1Rb87)
+Expecting:
+    Traceback (most recent call last):
+    ...
+    NotImplementedError: Transition between different isotopes.
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    Transition(g2,g1).__repr__()
+Expecting:
+    '133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3'
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    Transition(g2,g1).__str__()
+Expecting:
+    '133Cs 6S_1/2^4 --/--> 133Cs 6S_1/2^3'
+ok
+Trying:
+    from sympy import latex
+Expecting nothing
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    latex(Transition(g2,g1))
+Expecting:
+    '^{133}\\mathrm{Cs}\\ 6S_{1/2}^{4}\\ \\nrightarrow \\ ^{133}\\mathrm{Cs}\\ 6S_{1/2}^{3}'
+ok
+Trying:
+    g1 = State("Cs", 133, 6, 0, 1/Integer(2),3)
+Expecting nothing
+ok
+Trying:
+    g2 = State("Cs", 133, 6, 0, 1/Integer(2),4)
+Expecting nothing
+ok
+Trying:
+    Transition(g2,g1)._latex_()
+Expecting:
+    '^{133}\\mathrm{Cs}\\ 6S_{1/2}^{4}\\ \\nrightarrow \\ ^{133}\\mathrm{Cs}\\ 6S_{1/2}^{3}'
+ok
+Trying:
+    g=State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    full_magnetic_states=make_list_of_states([g],"magnetic")
+Expecting nothing
+ok
+Trying:
+    calculate_boundaries([g], full_magnetic_states)
+Expecting:
+    ([(0, 8)], [(0, 3), (3, 8)])
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    g = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    e = State("Rb", 87, 5, 1, 3/Integer(2))
+Expecting nothing
+ok
+Trying:
+    magnetic_states = make_list_of_states([g, e], "magnetic")
+Expecting nothing
+ok
+Trying:
+    gamma = np.array(calculate_gamma_matrix(magnetic_states, Omega=1e6))
+Expecting nothing
+ok
+Trying:
+    print gamma[8:, :8]/2/np.pi
+Expecting:
+    [[2.0217 2.0217 2.0217 0.     0.     0.     0.     0.    ]
+     [2.5271 2.5271 0.     0.6065 0.3033 0.1011 0.     0.    ]
+     [2.5271 0.     2.5271 0.     0.3033 0.4043 0.3033 0.    ]
+     [0.     2.5271 2.5271 0.     0.     0.1011 0.3033 0.6065]
+     [3.0325 0.     0.     2.0217 1.0108 0.     0.     0.    ]
+     [1.5163 1.5163 0.     1.0108 0.5054 1.5163 0.     0.    ]
+     [0.5054 2.0217 0.5054 0.     1.5163 0.     1.5163 0.    ]
+     [0.     1.5163 1.5163 0.     0.     1.5163 0.5054 1.0108]
+     [0.     0.     3.0325 0.     0.     0.     1.0108 2.0217]
+     [0.     0.     0.     6.065  0.     0.     0.     0.    ]
+     [0.     0.     0.     2.0217 4.0433 0.     0.     0.    ]
+     [0.     0.     0.     0.4043 3.2347 2.426  0.     0.    ]
+     [0.     0.     0.     0.     1.213  3.639  1.213  0.    ]
+     [0.     0.     0.     0.     0.     2.426  3.2347 0.4043]
+     [0.     0.     0.     0.     0.     0.     4.0433 2.0217]
+     [0.     0.     0.     0.     0.     0.     0.     6.065 ]]
+ok
+Trying:
+    Gamma =[sum([gamma[i][j] for j in range(i)])/2/pi
+            for i in range(len(magnetic_states))][8:]
+Expecting nothing
+ok
+Trying:
+    for Gammai in Gamma: print "{:2.3f}".format(Gammai)
+Expecting:
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+    6.065
+ok
+Trying:
+    from sympy import Matrix, pprint, symbols
+Expecting nothing
+ok
+Trying:
+    Gamma = symbols("Gamma", positive=True)
+Expecting nothing
+ok
+Trying:
+    einsteinA = Matrix([[0, -Gamma], [Gamma, 0]])
+Expecting nothing
+ok
+Trying:
+    gamma = calculate_gamma_matrix(magnetic_states, einsteinA=einsteinA,
+                                   numeric=False)
+Expecting nothing
+ok
+Trying:
+    pprint(Matrix(gamma)[8:, :8])
+Expecting:
+    ⎡ Γ    Γ    Γ                        ⎤
+    ⎢ ─    ─    ─   0    0    0    0   0 ⎥
+    ⎢ 3    3    3                        ⎥
+    ⎢                                    ⎥
+    ⎢5⋅Γ  5⋅Γ       Γ   Γ    Γ           ⎥
+    ⎢───  ───   0   ──  ──   ──    0   0 ⎥
+    ⎢ 12   12       10  20   60          ⎥
+    ⎢                                    ⎥
+    ⎢5⋅Γ       5⋅Γ      Γ    Γ    Γ      ⎥
+    ⎢───   0   ───  0   ──   ──   ──   0 ⎥
+    ⎢ 12        12      20   15   20     ⎥
+    ⎢                                    ⎥
+    ⎢     5⋅Γ  5⋅Γ           Γ    Γ    Γ ⎥
+    ⎢ 0   ───  ───  0    0   ──   ──   ──⎥
+    ⎢      12   12           60   20   10⎥
+    ⎢                                    ⎥
+    ⎢ Γ             Γ    Γ               ⎥
+    ⎢ ─    0    0   ─    ─    0    0   0 ⎥
+    ⎢ 2             3    6               ⎥
+    ⎢                                    ⎥
+    ⎢ Γ    Γ        Γ   Γ     Γ          ⎥
+    ⎢ ─    ─    0   ─   ──    ─    0   0 ⎥
+    ⎢ 4    4        6   12    4          ⎥
+    ⎢                                    ⎥
+    ⎢Γ     Γ   Γ         Γ         Γ     ⎥
+    ⎢──    ─   ──   0    ─    0    ─   0 ⎥
+    ⎢12    3   12        4         4     ⎥
+    ⎢                                    ⎥
+    ⎢      Γ    Γ             Γ   Γ    Γ ⎥
+    ⎢ 0    ─    ─   0    0    ─   ──   ─ ⎥
+    ⎢      4    4             4   12   6 ⎥
+    ⎢                                    ⎥
+    ⎢           Γ                  Γ   Γ ⎥
+    ⎢ 0    0    ─   0    0    0    ─   ─ ⎥
+    ⎢           2                  6   3 ⎥
+    ⎢                                    ⎥
+    ⎢ 0    0    0   Γ    0    0    0   0 ⎥
+    ⎢                                    ⎥
+    ⎢               Γ   2⋅Γ              ⎥
+    ⎢ 0    0    0   ─   ───   0    0   0 ⎥
+    ⎢               3    3               ⎥
+    ⎢                                    ⎥
+    ⎢               Γ   8⋅Γ  2⋅Γ         ⎥
+    ⎢ 0    0    0   ──  ───  ───   0   0 ⎥
+    ⎢               15   15   5          ⎥
+    ⎢                                    ⎥
+    ⎢                    Γ   3⋅Γ   Γ     ⎥
+    ⎢ 0    0    0   0    ─   ───   ─   0 ⎥
+    ⎢                    5    5    5     ⎥
+    ⎢                                    ⎥
+    ⎢                        2⋅Γ  8⋅Γ  Γ ⎥
+    ⎢ 0    0    0   0    0   ───  ───  ──⎥
+    ⎢                         5    15  15⎥
+    ⎢                                    ⎥
+    ⎢                             2⋅Γ  Γ ⎥
+    ⎢ 0    0    0   0    0    0   ───  ─ ⎥
+    ⎢                              3   3 ⎥
+    ⎢                                    ⎥
+    ⎣ 0    0    0   0    0    0    0   Γ ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1559, in fast.atomic_structure.calculate_gamma_matrix
+Failed example:
+    pprint(Matrix(gamma)[8:, :8])
+Expected:
+    ⎡ Γ    Γ    Γ                        ⎤
+    ⎢ ─    ─    ─   0    0    0    0   0 ⎥
+    ⎢ 3    3    3                        ⎥
+    ⎢                                    ⎥
+    ⎢5⋅Γ  5⋅Γ       Γ   Γ    Γ           ⎥
+    ⎢───  ───   0   ──  ──   ──    0   0 ⎥
+    ⎢ 12   12       10  20   60          ⎥
+    ⎢                                    ⎥
+    ⎢5⋅Γ       5⋅Γ      Γ    Γ    Γ      ⎥
+    ⎢───   0   ───  0   ──   ──   ──   0 ⎥
+    ⎢ 12        12      20   15   20     ⎥
+    ⎢                                    ⎥
+    ⎢     5⋅Γ  5⋅Γ           Γ    Γ    Γ ⎥
+    ⎢ 0   ───  ───  0    0   ──   ──   ──⎥
+    ⎢      12   12           60   20   10⎥
+    ⎢                                    ⎥
+    ⎢ Γ             Γ    Γ               ⎥
+    ⎢ ─    0    0   ─    ─    0    0   0 ⎥
+    ⎢ 2             3    6               ⎥
+    ⎢                                    ⎥
+    ⎢ Γ    Γ        Γ   Γ     Γ          ⎥
+    ⎢ ─    ─    0   ─   ──    ─    0   0 ⎥
+    ⎢ 4    4        6   12    4          ⎥
+    ⎢                                    ⎥
+    ⎢Γ     Γ   Γ         Γ         Γ     ⎥
+    ⎢──    ─   ──   0    ─    0    ─   0 ⎥
+    ⎢12    3   12        4         4     ⎥
+    ⎢                                    ⎥
+    ⎢      Γ    Γ             Γ   Γ    Γ ⎥
+    ⎢ 0    ─    ─   0    0    ─   ──   ─ ⎥
+    ⎢      4    4             4   12   6 ⎥
+    ⎢                                    ⎥
+    ⎢           Γ                  Γ   Γ ⎥
+    ⎢ 0    0    ─   0    0    0    ─   ─ ⎥
+    ⎢           2                  6   3 ⎥
+    ⎢                                    ⎥
+    ⎢ 0    0    0   Γ    0    0    0   0 ⎥
+    ⎢                                    ⎥
+    ⎢               Γ   2⋅Γ              ⎥
+    ⎢ 0    0    0   ─   ───   0    0   0 ⎥
+    ⎢               3    3               ⎥
+    ⎢                                    ⎥
+    ⎢               Γ   8⋅Γ  2⋅Γ         ⎥
+    ⎢ 0    0    0   ──  ───  ───   0   0 ⎥
+    ⎢               15   15   5          ⎥
+    ⎢                                    ⎥
+    ⎢                    Γ   3⋅Γ   Γ     ⎥
+    ⎢ 0    0    0   0    ─   ───   ─   0 ⎥
+    ⎢                    5    5    5     ⎥
+    ⎢                                    ⎥
+    ⎢                        2⋅Γ  8⋅Γ  Γ ⎥
+    ⎢ 0    0    0   0    0   ───  ───  ──⎥
+    ⎢                         5    15  15⎥
+    ⎢                                    ⎥
+    ⎢                             2⋅Γ  Γ ⎥
+    ⎢ 0    0    0   0    0    0   ───  ─ ⎥
+    ⎢                              3   3 ⎥
+    ⎢                                    ⎥
+    ⎣ 0    0    0   0    0    0    0   Γ ⎦
+Got:
+    [ Gamma    Gamma    Gamma                                          ]
+    [ -----    -----    -----     0       0        0        0       0  ]
+    [   3        3        3                                            ]
+    [                                                                  ]
+    [5*Gamma  5*Gamma           Gamma   Gamma    Gamma                 ]
+    [-------  -------     0     -----   -----    -----      0       0  ]
+    [   12       12               10      20       60                  ]
+    [                                                                  ]
+    [5*Gamma           5*Gamma          Gamma    Gamma    Gamma        ]
+    [-------     0     -------    0     -----    -----    -----     0  ]
+    [   12                12              20       15       20         ]
+    [                                                                  ]
+    [         5*Gamma  5*Gamma                   Gamma    Gamma   Gamma]
+    [   0     -------  -------    0       0      -----    -----   -----]
+    [            12       12                       60       20      10 ]
+    [                                                                  ]
+    [ Gamma                     Gamma   Gamma                          ]
+    [ -----      0        0     -----   -----      0        0       0  ]
+    [   2                         3       6                            ]
+    [                                                                  ]
+    [ Gamma    Gamma            Gamma   Gamma    Gamma                 ]
+    [ -----    -----      0     -----   -----    -----      0       0  ]
+    [   4        4                6       12       4                   ]
+    [                                                                  ]
+    [ Gamma    Gamma    Gamma           Gamma             Gamma        ]
+    [ -----    -----    -----     0     -----      0      -----     0  ]
+    [   12       3        12              4                 4          ]
+    [                                                                  ]
+    [          Gamma    Gamma                    Gamma    Gamma   Gamma]
+    [   0      -----    -----     0       0      -----    -----   -----]
+    [            4        4                        4        12      6  ]
+    [                                                                  ]
+    [                   Gamma                             Gamma   Gamma]
+    [   0        0      -----     0       0        0      -----   -----]
+    [                     2                                 6       3  ]
+    [                                                                  ]
+    [   0        0        0     Gamma     0        0        0       0  ]
+    [                                                                  ]
+    [                           Gamma  2*Gamma                         ]
+    [   0        0        0     -----  -------     0        0       0  ]
+    [                             3       3                            ]
+    [                                                                  ]
+    [                           Gamma  8*Gamma  2*Gamma                ]
+    [   0        0        0     -----  -------  -------     0       0  ]
+    [                             15      15       5                   ]
+    [                                                                  ]
+    [                                   Gamma   3*Gamma   Gamma        ]
+    [   0        0        0       0     -----   -------   -----     0  ]
+    [                                     5        5        5          ]
+    [                                                                  ]
+    [                                           2*Gamma  8*Gamma  Gamma]
+    [   0        0        0       0       0     -------  -------  -----]
+    [                                              5        15      15 ]
+    [                                                                  ]
+    [                                                    2*Gamma  Gamma]
+    [   0        0        0       0       0        0     -------  -----]
+    [                                                       3       3  ]
+    [                                                                  ]
+    [   0        0        0       0       0        0        0     Gamma]
+Trying:
+    Gamma =Matrix([sum([gamma[i][j] for j in range(i)])
+            for i in range(len(magnetic_states))][8:])
+Expecting nothing
+ok
+Trying:
+    pprint(Gamma)
+Expecting:
+    ⎡Γ⎤
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎣Γ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1623, in fast.atomic_structure.calculate_gamma_matrix
+Failed example:
+    pprint(Gamma)
+Expected:
+    ⎡Γ⎤
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎢Γ⎥
+    ⎢ ⎥
+    ⎣Γ⎦
+Got:
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+    [     ]
+    [Gamma]
+Trying:
+    from sympy import symbols, pprint
+Expecting nothing
+ok
+Trying:
+    red = symbols("r", positive=True)
+Expecting nothing
+ok
+Trying:
+    reduced_matrix_elements = [[0, -red], [red, 0]]
+Expecting nothing
+ok
+Trying:
+    g = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    e = State("Rb", 87, 5, 1, 3/Integer(2))
+Expecting nothing
+ok
+Trying:
+    fine_levels = [g, e]
+Expecting nothing
+ok
+Trying:
+    r = calculate_r_matrices(fine_levels, reduced_matrix_elements,
+        numeric=False)
+Expecting nothing
+ok
+Trying:
+    pprint(r[0][8:,:8])
+Expecting:
+    ⎡                √3⋅r                                  ⎤
+    ⎢ 0       0      ────    0    0       0     0      0   ⎥
+    ⎢                 6                                    ⎥
+    ⎢                                                      ⎥
+    ⎢      -√15⋅r                       √15⋅r              ⎥
+    ⎢ 0    ───────     0     0    0     ─────   0      0   ⎥
+    ⎢         12                          60               ⎥
+    ⎢                                                      ⎥
+    ⎢               -√15⋅r                     √5⋅r        ⎥
+    ⎢ 0       0     ───────  0    0       0    ────    0   ⎥
+    ⎢                  12                       20         ⎥
+    ⎢                                                      ⎥
+    ⎢                                                √10⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ───── ⎥
+    ⎢                                                  20  ⎥
+    ⎢                                                      ⎥
+    ⎢√2⋅r                       -√6⋅r                      ⎥
+    ⎢────     0        0     0  ──────    0     0      0   ⎥
+    ⎢ 4                           12                       ⎥
+    ⎢                                                      ⎥
+    ⎢         r                          -r                ⎥
+    ⎢ 0       ─        0     0    0      ───    0      0   ⎥
+    ⎢         4                           4                ⎥
+    ⎢                                                      ⎥
+    ⎢                √3⋅r                      -r          ⎥
+    ⎢ 0       0      ────    0    0       0    ───     0   ⎥
+    ⎢                 12                        4          ⎥
+    ⎢                                                      ⎥
+    ⎢                                                -√6⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ──────⎥
+    ⎢                                                  12  ⎥
+    ⎢                                                      ⎥
+    ⎢ 0       0        0     0    0       0     0      0   ⎥
+    ⎢                                                      ⎥
+    ⎢                        r                             ⎥
+    ⎢ 0       0        0     ─    0       0     0      0   ⎥
+    ⎢                        2                             ⎥
+    ⎢                                                      ⎥
+    ⎢                            √6⋅r                      ⎥
+    ⎢ 0       0        0     0   ────     0     0      0   ⎥
+    ⎢                             6                        ⎥
+    ⎢                                                      ⎥
+    ⎢                                   √10⋅r              ⎥
+    ⎢ 0       0        0     0    0     ─────   0      0   ⎥
+    ⎢                                     10               ⎥
+    ⎢                                                      ⎥
+    ⎢                                          √5⋅r        ⎥
+    ⎢ 0       0        0     0    0       0    ────    0   ⎥
+    ⎢                                           10         ⎥
+    ⎢                                                      ⎥
+    ⎢                                                √15⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ───── ⎥
+    ⎢                                                  30  ⎥
+    ⎢                                                      ⎥
+    ⎢ 0       0        0     0    0       0     0      0   ⎥
+    ⎢                                                      ⎥
+    ⎣ 0       0        0     0    0       0     0      0   ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1913, in fast.atomic_structure.calculate_r_matrices
+Failed example:
+    pprint(r[0][8:,:8])
+Expected:
+    ⎡                √3⋅r                                  ⎤
+    ⎢ 0       0      ────    0    0       0     0      0   ⎥
+    ⎢                 6                                    ⎥
+    ⎢                                                      ⎥
+    ⎢      -√15⋅r                       √15⋅r              ⎥
+    ⎢ 0    ───────     0     0    0     ─────   0      0   ⎥
+    ⎢         12                          60               ⎥
+    ⎢                                                      ⎥
+    ⎢               -√15⋅r                     √5⋅r        ⎥
+    ⎢ 0       0     ───────  0    0       0    ────    0   ⎥
+    ⎢                  12                       20         ⎥
+    ⎢                                                      ⎥
+    ⎢                                                √10⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ───── ⎥
+    ⎢                                                  20  ⎥
+    ⎢                                                      ⎥
+    ⎢√2⋅r                       -√6⋅r                      ⎥
+    ⎢────     0        0     0  ──────    0     0      0   ⎥
+    ⎢ 4                           12                       ⎥
+    ⎢                                                      ⎥
+    ⎢         r                          -r                ⎥
+    ⎢ 0       ─        0     0    0      ───    0      0   ⎥
+    ⎢         4                           4                ⎥
+    ⎢                                                      ⎥
+    ⎢                √3⋅r                      -r          ⎥
+    ⎢ 0       0      ────    0    0       0    ───     0   ⎥
+    ⎢                 12                        4          ⎥
+    ⎢                                                      ⎥
+    ⎢                                                -√6⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ──────⎥
+    ⎢                                                  12  ⎥
+    ⎢                                                      ⎥
+    ⎢ 0       0        0     0    0       0     0      0   ⎥
+    ⎢                                                      ⎥
+    ⎢                        r                             ⎥
+    ⎢ 0       0        0     ─    0       0     0      0   ⎥
+    ⎢                        2                             ⎥
+    ⎢                                                      ⎥
+    ⎢                            √6⋅r                      ⎥
+    ⎢ 0       0        0     0   ────     0     0      0   ⎥
+    ⎢                             6                        ⎥
+    ⎢                                                      ⎥
+    ⎢                                   √10⋅r              ⎥
+    ⎢ 0       0        0     0    0     ─────   0      0   ⎥
+    ⎢                                     10               ⎥
+    ⎢                                                      ⎥
+    ⎢                                          √5⋅r        ⎥
+    ⎢ 0       0        0     0    0       0    ────    0   ⎥
+    ⎢                                           10         ⎥
+    ⎢                                                      ⎥
+    ⎢                                                √15⋅r ⎥
+    ⎢ 0       0        0     0    0       0     0    ───── ⎥
+    ⎢                                                  30  ⎥
+    ⎢                                                      ⎥
+    ⎢ 0       0        0     0    0       0     0      0   ⎥
+    ⎢                                                      ⎥
+    ⎣ 0       0        0     0    0       0     0      0   ⎦
+Got:
+    [                        ___                                                ]
+    [                      \/ 3 *r                                              ]
+    [   0         0        -------    0      0         0         0         0    ]
+    [                         6                                                 ]
+    [                                                                           ]
+    [            ____                                 ____                      ]
+    [         -\/ 15 *r                             \/ 15 *r                    ]
+    [   0     ----------      0       0      0      --------     0         0    ]
+    [             12                                   60                       ]
+    [                                                                           ]
+    [                        ____                               ___             ]
+    [                     -\/ 15 *r                           \/ 5 *r           ]
+    [   0         0       ----------  0      0         0      -------      0    ]
+    [                         12                                 20             ]
+    [                                                                           ]
+    [                                                                    ____   ]
+    [                                                                  \/ 10 *r ]
+    [   0         0           0       0      0         0         0     -------- ]
+    [                                                                     20    ]
+    [                                                                           ]
+    [  ___                                  ___                                 ]
+    [\/ 2 *r                             -\/ 6 *r                               ]
+    [-------      0           0       0  ---------     0         0         0    ]
+    [   4                                    12                                 ]
+    [                                                                           ]
+    [             r                                   -r                        ]
+    [   0         -           0       0      0        ---        0         0    ]
+    [             4                                    4                        ]
+    [                                                                           ]
+    [                        ___                                                ]
+    [                      \/ 3 *r                              -r              ]
+    [   0         0        -------    0      0         0        ---        0    ]
+    [                         12                                 4              ]
+    [                                                                           ]
+    [                                                                     ___   ]
+    [                                                                  -\/ 6 *r ]
+    [   0         0           0       0      0         0         0     ---------]
+    [                                                                      12   ]
+    [                                                                           ]
+    [   0         0           0       0      0         0         0         0    ]
+    [                                                                           ]
+    [                                 r                                         ]
+    [   0         0           0       -      0         0         0         0    ]
+    [                                 2                                         ]
+    [                                                                           ]
+    [                                       ___                                 ]
+    [                                     \/ 6 *r                               ]
+    [   0         0           0       0   -------      0         0         0    ]
+    [                                        6                                  ]
+    [                                                                           ]
+    [                                                 ____                      ]
+    [                                               \/ 10 *r                    ]
+    [   0         0           0       0      0      --------     0         0    ]
+    [                                                  10                       ]
+    [                                                                           ]
+    [                                                           ___             ]
+    [                                                         \/ 5 *r           ]
+    [   0         0           0       0      0         0      -------      0    ]
+    [                                                            10             ]
+    [                                                                           ]
+    [                                                                    ____   ]
+    [                                                                  \/ 15 *r ]
+    [   0         0           0       0      0         0         0     -------- ]
+    [                                                                     30    ]
+    [                                                                           ]
+    [   0         0           0       0      0         0         0         0    ]
+    [                                                                           ]
+    [   0         0           0       0      0         0         0         0    ]
+Trying:
+    pprint(r[1][8:,:8])
+Expecting:
+    ⎡       -√3⋅r                                                 ⎤
+    ⎢  0    ──────     0      0      0        0       0       0   ⎥
+    ⎢         6                                                   ⎥
+    ⎢                                                             ⎥
+    ⎢√15⋅r                         -√5⋅r                          ⎥
+    ⎢─────    0        0      0    ──────     0       0       0   ⎥
+    ⎢  12                            20                           ⎥
+    ⎢                                                             ⎥
+    ⎢                                      -√15⋅r                 ⎥
+    ⎢  0      0        0      0      0     ───────    0       0   ⎥
+    ⎢                                         30                  ⎥
+    ⎢                                                             ⎥
+    ⎢               -√15⋅r                          -√5⋅r         ⎥
+    ⎢  0      0     ───────   0      0        0     ──────    0   ⎥
+    ⎢                  12                             20          ⎥
+    ⎢                                                             ⎥
+    ⎢                        √3⋅r                                 ⎥
+    ⎢  0      0        0     ────    0        0       0       0   ⎥
+    ⎢                         6                                   ⎥
+    ⎢                                                             ⎥
+    ⎢  r                            √3⋅r                          ⎥
+    ⎢  ─      0        0      0     ────      0       0       0   ⎥
+    ⎢  4                             12                           ⎥
+    ⎢                                                             ⎥
+    ⎢        √3⋅r                                                 ⎥
+    ⎢  0     ────      0      0      0        0       0       0   ⎥
+    ⎢         6                                                   ⎥
+    ⎢                                                             ⎥
+    ⎢                  r                            -√3⋅r         ⎥
+    ⎢  0      0        ─      0      0        0     ──────    0   ⎥
+    ⎢                  4                              12          ⎥
+    ⎢                                                             ⎥
+    ⎢                                                       -√3⋅r ⎥
+    ⎢  0      0        0      0      0        0       0     ──────⎥
+    ⎢                                                         6   ⎥
+    ⎢                                                             ⎥
+    ⎢  0      0        0      0      0        0       0       0   ⎥
+    ⎢                                                             ⎥
+    ⎢                        √3⋅r                                 ⎥
+    ⎢  0      0        0     ────    0        0       0       0   ⎥
+    ⎢                         6                                   ⎥
+    ⎢                                                             ⎥
+    ⎢                              √30⋅r                          ⎥
+    ⎢  0      0        0      0    ─────      0       0       0   ⎥
+    ⎢                                15                           ⎥
+    ⎢                                                             ⎥
+    ⎢                                       √15⋅r                 ⎥
+    ⎢  0      0        0      0      0      ─────     0       0   ⎥
+    ⎢                                         10                  ⎥
+    ⎢                                                             ⎥
+    ⎢                                               √30⋅r         ⎥
+    ⎢  0      0        0      0      0        0     ─────     0   ⎥
+    ⎢                                                 15          ⎥
+    ⎢                                                             ⎥
+    ⎢                                                        √3⋅r ⎥
+    ⎢  0      0        0      0      0        0       0      ──── ⎥
+    ⎢                                                         6   ⎥
+    ⎢                                                             ⎥
+    ⎣  0      0        0      0      0        0       0       0   ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1971, in fast.atomic_structure.calculate_r_matrices
+Failed example:
+    pprint(r[1][8:,:8])
+Expected:
+    ⎡       -√3⋅r                                                 ⎤
+    ⎢  0    ──────     0      0      0        0       0       0   ⎥
+    ⎢         6                                                   ⎥
+    ⎢                                                             ⎥
+    ⎢√15⋅r                         -√5⋅r                          ⎥
+    ⎢─────    0        0      0    ──────     0       0       0   ⎥
+    ⎢  12                            20                           ⎥
+    ⎢                                                             ⎥
+    ⎢                                      -√15⋅r                 ⎥
+    ⎢  0      0        0      0      0     ───────    0       0   ⎥
+    ⎢                                         30                  ⎥
+    ⎢                                                             ⎥
+    ⎢               -√15⋅r                          -√5⋅r         ⎥
+    ⎢  0      0     ───────   0      0        0     ──────    0   ⎥
+    ⎢                  12                             20          ⎥
+    ⎢                                                             ⎥
+    ⎢                        √3⋅r                                 ⎥
+    ⎢  0      0        0     ────    0        0       0       0   ⎥
+    ⎢                         6                                   ⎥
+    ⎢                                                             ⎥
+    ⎢  r                            √3⋅r                          ⎥
+    ⎢  ─      0        0      0     ────      0       0       0   ⎥
+    ⎢  4                             12                           ⎥
+    ⎢                                                             ⎥
+    ⎢        √3⋅r                                                 ⎥
+    ⎢  0     ────      0      0      0        0       0       0   ⎥
+    ⎢         6                                                   ⎥
+    ⎢                                                             ⎥
+    ⎢                  r                            -√3⋅r         ⎥
+    ⎢  0      0        ─      0      0        0     ──────    0   ⎥
+    ⎢                  4                              12          ⎥
+    ⎢                                                             ⎥
+    ⎢                                                       -√3⋅r ⎥
+    ⎢  0      0        0      0      0        0       0     ──────⎥
+    ⎢                                                         6   ⎥
+    ⎢                                                             ⎥
+    ⎢  0      0        0      0      0        0       0       0   ⎥
+    ⎢                                                             ⎥
+    ⎢                        √3⋅r                                 ⎥
+    ⎢  0      0        0     ────    0        0       0       0   ⎥
+    ⎢                         6                                   ⎥
+    ⎢                                                             ⎥
+    ⎢                              √30⋅r                          ⎥
+    ⎢  0      0        0      0    ─────      0       0       0   ⎥
+    ⎢                                15                           ⎥
+    ⎢                                                             ⎥
+    ⎢                                       √15⋅r                 ⎥
+    ⎢  0      0        0      0      0      ─────     0       0   ⎥
+    ⎢                                         10                  ⎥
+    ⎢                                                             ⎥
+    ⎢                                               √30⋅r         ⎥
+    ⎢  0      0        0      0      0        0     ─────     0   ⎥
+    ⎢                                                 15          ⎥
+    ⎢                                                             ⎥
+    ⎢                                                        √3⋅r ⎥
+    ⎢  0      0        0      0      0        0       0      ──── ⎥
+    ⎢                                                         6   ⎥
+    ⎢                                                             ⎥
+    ⎣  0      0        0      0      0        0       0       0   ⎦
+Got:
+    [             ___                                                             
+    [          -\/ 3 *r                                                           
+    [   0      ---------      0          0         0          0           0       
+    [              6                                                              
+    [                                                                             
+    [  ____                                       ___                             
+    [\/ 15 *r                                  -\/ 5 *r                           
+    [--------      0          0          0     ---------      0           0       
+    [   12                                         20                             
+    [                                                                             
+    [                                                        ____                 
+    [                                                     -\/ 15 *r               
+    [   0          0          0          0         0      ----------      0       
+    [                                                         30                  
+    [                                                                             
+    [                        ____                                        ___      
+    [                     -\/ 15 *r                                   -\/ 5 *r    
+    [   0          0      ----------     0         0          0       ---------   
+    [                         12                                          20      
+    [                                                                             
+    [                                   ___                                       
+    [                                 \/ 3 *r                                     
+    [   0          0          0       -------      0          0           0       
+    [                                    6                                        
+    [                                                                             
+    [                                             ___                             
+    [   r                                       \/ 3 *r                           
+    [   -          0          0          0      -------       0           0       
+    [   4                                          12                             
+    [                                                                             
+    [             ___                                                             
+    [           \/ 3 *r                                                           
+    [   0       -------       0          0         0          0           0       
+    [              6                                                              
+    [                                                                             
+    [                                                                    ___      
+    [                         r                                       -\/ 3 *r    
+    [   0          0          -          0         0          0       ---------   
+    [                         4                                           12      
+    [                                                                             
+    [                                                                             
+    [                                                                            -
+    [   0          0          0          0         0          0           0      -
+    [                                                                             
+    [                                                                             
+    [   0          0          0          0         0          0           0       
+    [                                                                             
+    [                                   ___                                       
+    [                                 \/ 3 *r                                     
+    [   0          0          0       -------      0          0           0       
+    [                                    6                                        
+    [                                                                             
+    [                                            ____                             
+    [                                          \/ 30 *r                           
+    [   0          0          0          0     --------       0           0       
+    [                                             15                              
+    [                                                                             
+    [                                                        ____                 
+    [                                                      \/ 15 *r               
+    [   0          0          0          0         0       --------       0       
+    [                                                         10                  
+    [                                                                             
+    [                                                                   ____      
+    [                                                                 \/ 30 *r    
+    [   0          0          0          0         0          0       --------    
+    [                                                                    15       
+    [                                                                             
+    [                                                                             
+    [                                                                             
+    [   0          0          0          0         0          0           0       
+    [                                                                             
+    [                                                                             
+    [   0          0          0          0         0          0           0       
+    <BLANKLINE>
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+      ___   ]
+    \/ 3 *r ]
+    --------]
+       6    ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+            ]
+            ]
+       0    ]
+            ]
+            ]
+      ___   ]
+    \/ 3 *r ]
+    ------- ]
+       6    ]
+            ]
+       0    ]
+Trying:
+    pprint(r[2][8:,:8])
+Expecting:
+    ⎡√3⋅r                                           ⎤
+    ⎢────     0     0      0     0      0     0    0⎥
+    ⎢ 6                                             ⎥
+    ⎢                                               ⎥
+    ⎢                    √10⋅r                      ⎥
+    ⎢  0      0     0    ─────   0      0     0    0⎥
+    ⎢                      20                       ⎥
+    ⎢                                               ⎥
+    ⎢√15⋅r                      √5⋅r                ⎥
+    ⎢─────    0     0      0    ────    0     0    0⎥
+    ⎢  12                        20                 ⎥
+    ⎢                                               ⎥
+    ⎢       √15⋅r                     √15⋅r         ⎥
+    ⎢  0    ─────   0      0     0    ─────   0    0⎥
+    ⎢         12                        60          ⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢                    √6⋅r                       ⎥
+    ⎢  0      0     0    ────    0      0     0    0⎥
+    ⎢                     12                        ⎥
+    ⎢                                               ⎥
+    ⎢√3⋅r                        r                  ⎥
+    ⎢────     0     0      0     ─      0     0    0⎥
+    ⎢ 12                         4                  ⎥
+    ⎢                                               ⎥
+    ⎢         r                         r           ⎥
+    ⎢  0      ─     0      0     0      ─     0    0⎥
+    ⎢         4                         4           ⎥
+    ⎢                                               ⎥
+    ⎢              √2⋅r                      √6⋅r   ⎥
+    ⎢  0      0    ────    0     0      0    ────  0⎥
+    ⎢               4                         12    ⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢                    √15⋅r                      ⎥
+    ⎢  0      0     0    ─────   0      0     0    0⎥
+    ⎢                      30                       ⎥
+    ⎢                                               ⎥
+    ⎢                           √5⋅r                ⎥
+    ⎢  0      0     0      0    ────    0     0    0⎥
+    ⎢                            10                 ⎥
+    ⎢                                               ⎥
+    ⎢                                 √10⋅r         ⎥
+    ⎢  0      0     0      0     0    ─────   0    0⎥
+    ⎢                                   10          ⎥
+    ⎢                                               ⎥
+    ⎢                                        √6⋅r   ⎥
+    ⎢  0      0     0      0     0      0    ────  0⎥
+    ⎢                                         6     ⎥
+    ⎢                                               ⎥
+    ⎢                                              r⎥
+    ⎢  0      0     0      0     0      0     0    ─⎥
+    ⎣                                              2⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 2031, in fast.atomic_structure.calculate_r_matrices
+Failed example:
+    pprint(r[2][8:,:8])
+Expected:
+    ⎡√3⋅r                                           ⎤
+    ⎢────     0     0      0     0      0     0    0⎥
+    ⎢ 6                                             ⎥
+    ⎢                                               ⎥
+    ⎢                    √10⋅r                      ⎥
+    ⎢  0      0     0    ─────   0      0     0    0⎥
+    ⎢                      20                       ⎥
+    ⎢                                               ⎥
+    ⎢√15⋅r                      √5⋅r                ⎥
+    ⎢─────    0     0      0    ────    0     0    0⎥
+    ⎢  12                        20                 ⎥
+    ⎢                                               ⎥
+    ⎢       √15⋅r                     √15⋅r         ⎥
+    ⎢  0    ─────   0      0     0    ─────   0    0⎥
+    ⎢         12                        60          ⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢                    √6⋅r                       ⎥
+    ⎢  0      0     0    ────    0      0     0    0⎥
+    ⎢                     12                        ⎥
+    ⎢                                               ⎥
+    ⎢√3⋅r                        r                  ⎥
+    ⎢────     0     0      0     ─      0     0    0⎥
+    ⎢ 12                         4                  ⎥
+    ⎢                                               ⎥
+    ⎢         r                         r           ⎥
+    ⎢  0      ─     0      0     0      ─     0    0⎥
+    ⎢         4                         4           ⎥
+    ⎢                                               ⎥
+    ⎢              √2⋅r                      √6⋅r   ⎥
+    ⎢  0      0    ────    0     0      0    ────  0⎥
+    ⎢               4                         12    ⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢  0      0     0      0     0      0     0    0⎥
+    ⎢                                               ⎥
+    ⎢                    √15⋅r                      ⎥
+    ⎢  0      0     0    ─────   0      0     0    0⎥
+    ⎢                      30                       ⎥
+    ⎢                                               ⎥
+    ⎢                           √5⋅r                ⎥
+    ⎢  0      0     0      0    ────    0     0    0⎥
+    ⎢                            10                 ⎥
+    ⎢                                               ⎥
+    ⎢                                 √10⋅r         ⎥
+    ⎢  0      0     0      0     0    ─────   0    0⎥
+    ⎢                                   10          ⎥
+    ⎢                                               ⎥
+    ⎢                                        √6⋅r   ⎥
+    ⎢  0      0     0      0     0      0    ────  0⎥
+    ⎢                                         6     ⎥
+    ⎢                                               ⎥
+    ⎢                                              r⎥
+    ⎢  0      0     0      0     0      0     0    ─⎥
+    ⎣                                              2⎦
+Got:
+    [  ___                                                               ]
+    [\/ 3 *r                                                             ]
+    [-------      0         0        0         0        0         0     0]
+    [   6                                                                ]
+    [                                                                    ]
+    [                               ____                                 ]
+    [                             \/ 10 *r                               ]
+    [   0         0         0     --------     0        0         0     0]
+    [                                20                                  ]
+    [                                                                    ]
+    [  ____                                   ___                        ]
+    [\/ 15 *r                               \/ 5 *r                      ]
+    [--------     0         0        0      -------     0         0     0]
+    [   12                                     20                        ]
+    [                                                                    ]
+    [            ____                                  ____              ]
+    [          \/ 15 *r                              \/ 15 *r            ]
+    [   0      --------     0        0         0     --------     0     0]
+    [             12                                    60               ]
+    [                                                                    ]
+    [   0         0         0        0         0        0         0     0]
+    [                                                                    ]
+    [                               ___                                  ]
+    [                             \/ 6 *r                                ]
+    [   0         0         0     -------      0        0         0     0]
+    [                                12                                  ]
+    [                                                                    ]
+    [  ___                                                               ]
+    [\/ 3 *r                                   r                         ]
+    [-------      0         0        0         -        0         0     0]
+    [   12                                     4                         ]
+    [                                                                    ]
+    [             r                                     r                ]
+    [   0         -         0        0         0        -         0     0]
+    [             4                                     4                ]
+    [                                                                    ]
+    [                      ___                                   ___     ]
+    [                    \/ 2 *r                               \/ 6 *r   ]
+    [   0         0      -------     0         0        0      -------  0]
+    [                       4                                     12     ]
+    [                                                                    ]
+    [   0         0         0        0         0        0         0     0]
+    [                                                                    ]
+    [   0         0         0        0         0        0         0     0]
+    [                                                                    ]
+    [                               ____                                 ]
+    [                             \/ 15 *r                               ]
+    [   0         0         0     --------     0        0         0     0]
+    [                                30                                  ]
+    [                                                                    ]
+    [                                         ___                        ]
+    [                                       \/ 5 *r                      ]
+    [   0         0         0        0      -------     0         0     0]
+    [                                          10                        ]
+    [                                                                    ]
+    [                                                  ____              ]
+    [                                                \/ 10 *r            ]
+    [   0         0         0        0         0     --------     0     0]
+    [                                                   10               ]
+    [                                                                    ]
+    [                                                            ___     ]
+    [                                                          \/ 6 *r   ]
+    [   0         0         0        0         0        0      -------  0]
+    [                                                             6      ]
+    [                                                                    ]
+    [                                                                   r]
+    [   0         0         0        0         0        0         0     -]
+    [                                                                   2]
+Trying:
+    g = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    e1 = State("Rb", 87, 5, 1, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    e2 = State("Rb", 87,5 , 1, 3/Integer(2))
+Expecting nothing
+ok
+Trying:
+    red = calculate_reduced_matrix_elements([g, e1, e2], convention=2)
+Expecting nothing
+ok
+Trying:
+    print red[0][1]
+Expecting:
+    2.99207750426
+ok
+Trying:
+    print red[0][2]
+Expecting:
+    4.22698361868
+ok
+Trying:
+    print collision_rate(25 + 273.15, "Cs", 133)/2/pi
+Expecting:
+    9.0607260277
+ok
+Trying:
+    print collision_rate(120 + 273.15, "Cs", 133)/2/pi
+Expecting:
+    10519.235289
+ok
+Trying:
+    g = State("Rb", 87, 5, 0, 1/Integer(2), 2)
+Expecting nothing
+ok
+Trying:
+    e = State("Rb", 87, 5, 1, 3/Integer(2))
+Expecting nothing
+ok
+Trying:
+    t = Transition(e, g)
+Expecting nothing
+ok
+Trying:
+    omega = doppler_width(t, 273.15 + 22)
+Expecting nothing
+ok
+Trying:
+    "{:2.3f}".format(omega/2/np.pi*1e-6)
+Expecting:
+    '522.477'
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    red = symbols("r", positive=True)
+Expecting nothing
+ok
+Trying:
+    half = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    II = 3*half
+Expecting nothing
+ok
+Trying:
+    matrix_element(3*half, 3, 3, half, 2, 2, II, red, q=1, numeric=False)
+Expecting:
+    r/2
+ok
+Trying:
+    matrix_element(3*half, 3, 3, half, 2, 2, II, red, numeric=False)
+Expecting:
+    [0, 0, r/2]
+ok
+Trying:
+    g = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    e = State("Rb", 87, 5, 1, 3/Integer(2))
+Expecting nothing
+ok
+Trying:
+    print reduced_matrix_element(g, e)
+Expecting:
+    5.97785756147
+ok
+Trying:
+    print reduced_matrix_element(e, g)
+Expecting:
+    -5.97785756146761
+ok
+Trying:
+    print reduced_matrix_element(g, e, convention=2)
+Expecting:
+    4.22698361868
+ok
+Trying:
+    print reduced_matrix_element(e, g, convention=2)
+Expecting:
+    -2.11349180934051
+ok
+Trying:
+    print speed_average(25+273.15,"Rb",85)
+Expecting:
+    272.65940782
+ok
+Trying:
+    print speed_average(25+273.15,"Cs",133)
+Expecting:
+    217.938062809
+ok
+Trying:
+    print speed_likely(25+273.15,"Rb",85)
+Expecting:
+    241.638108688
+ok
+Trying:
+    print speed_likely(25+273.15,"Cs",133)
+Expecting:
+    193.142579342
+ok
+Trying:
+    print speed_rms(25+273.15,"Rb",85)
+Expecting:
+    295.945034349
+ok
+Trying:
+    print speed_rms(25+273.15,"Cs",133)
+Expecting:
+    236.550383496
+ok
+Trying:
+    ground = State("Rb", 85, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    magnetic_states = make_list_of_states([ground], "magnetic")
+Expecting nothing
+ok
+Trying:
+    omega_level = [ei.omega for ei in magnetic_states]
+Expecting nothing
+ok
+Trying:
+    T = 273.15 + 20
+Expecting nothing
+ok
+Trying:
+    print thermal_state(omega_level, T, return_diagonal=True)
+Expecting:
+    [0.0834 0.0834 0.0834 0.0834 0.0834 0.0833 0.0833 0.0833 0.0833 0.0833
+     0.0833 0.0833]
+ok
+Trying:
+    g = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    magnetic_states = make_list_of_states([g], "magnetic")
+Expecting nothing
+ok
+Trying:
+    print np.diag(unperturbed_hamiltonian(magnetic_states))/hbar/2/pi*1e-9
+Expecting:
+    [-4.2717+0.j -4.2717+0.j -4.2717+0.j  2.563 +0.j  2.563 +0.j  2.563 +0.j
+      2.563 +0.j  2.563 +0.j]
+ok
+Trying:
+    print vapour_density(90.0 + 273.15,"Cs",133)
+Expecting:
+    1.85318869181e-06
+ok
+Trying:
+    print vapour_density(25.0 + 273.15,"Rb")
+Expecting:
+    1.83339788085e-09
+ok
+Trying:
+    print vapour_number_density(90.0 + 273.15,"Cs")
+Expecting:
+    8.39706962725e+18
+ok
+Trying:
+    print vapour_pressure(25.0 + 273.15,"Rb")
+Expecting:
+    5.31769896107e-05
+ok
+Trying:
+    print vapour_pressure(39.3 + 273.15,"Rb")
+Expecting:
+    0.000244249795696
+ok
+Trying:
+    print vapour_pressure(90.0 + 273.15,"Rb")
+Expecting:
+    0.0155963687128
+ok
+Trying:
+    print vapour_pressure(25.0 + 273.15,"Cs")
+Expecting:
+    0.000201461144963
+ok
+Trying:
+    print vapour_pressure(28.5 + 273.15,"Cs")
+Expecting:
+    0.000297898928349
+ok
+Trying:
+    print vapour_pressure(90.0 + 273.15,"Cs")
+Expecting:
+    0.0421014384667
+ok
+Trying:
+    print vapour_pressure(90.0 + 273.15,"Ca")
+Expecting:
+    Traceback (most recent call last):
+    ...
+    ValueError: Ca is not an element in the database for this function.
+ok
+11 items had no tests:
+    fast.atomic_structure.calculate_matrices
+    fast.atomic_structure.calculate_omega_matrix
+    fast.atomic_structure.find_fine_states
+    fast.atomic_structure.fine_index
+    fast.atomic_structure.get_einstein_A_matrix
+    fast.atomic_structure.make_list_of_states
+    fast.atomic_structure.order_by_energy
+    fast.atomic_structure.quaver
+    fast.atomic_structure.split_fine_to_hyperfine
+    fast.atomic_structure.split_fine_to_magnetic
+    fast.atomic_structure.split_hyperfine_to_magnetic
+38 items passed all tests:
+   3 tests in fast.atomic_structure
+   2 tests in fast.atomic_structure.Atom
+  18 tests in fast.atomic_structure.Atom.__init__
+   1 tests in fast.atomic_structure.Atom.__repr__
+   1 tests in fast.atomic_structure.Atom.__str__
+   1 tests in fast.atomic_structure.Atom._latex
+   1 tests in fast.atomic_structure.Atom._latex_
+   5 tests in fast.atomic_structure.Atom.find_decays
+   7 tests in fast.atomic_structure.Atom.states
+  10 tests in fast.atomic_structure.Atom.transitions
+  13 tests in fast.atomic_structure.State
+   3 tests in fast.atomic_structure.State.__eq__
+   1 tests in fast.atomic_structure.State.__init__
+   3 tests in fast.atomic_structure.State.__repr__
+   3 tests in fast.atomic_structure.State.__str__
+   4 tests in fast.atomic_structure.State._latex
+   3 tests in fast.atomic_structure.State._latex_
+   5 tests in fast.atomic_structure.Transition
+   7 tests in fast.atomic_structure.Transition.__eq__
+  14 tests in fast.atomic_structure.Transition.__init__
+   3 tests in fast.atomic_structure.Transition.__repr__
+   3 tests in fast.atomic_structure.Transition.__str__
+   4 tests in fast.atomic_structure.Transition._latex
+   3 tests in fast.atomic_structure.Transition._latex_
+   3 tests in fast.atomic_structure.calculate_boundaries
+   6 tests in fast.atomic_structure.calculate_reduced_matrix_elements
+   2 tests in fast.atomic_structure.collision_rate
+   5 tests in fast.atomic_structure.doppler_width
+   6 tests in fast.atomic_structure.matrix_element
+   6 tests in fast.atomic_structure.reduced_matrix_element
+   2 tests in fast.atomic_structure.speed_average
+   2 tests in fast.atomic_structure.speed_likely
+   2 tests in fast.atomic_structure.speed_rms
+   5 tests in fast.atomic_structure.thermal_state
+   3 tests in fast.atomic_structure.unperturbed_hamiltonian
+   2 tests in fast.atomic_structure.vapour_density
+   1 tests in fast.atomic_structure.vapour_number_density
+   7 tests in fast.atomic_structure.vapour_pressure
+**********************************************************************
+2 items had failures:
+   2 of  15 in fast.atomic_structure.calculate_gamma_matrix
+   3 of  10 in fast.atomic_structure.calculate_r_matrices
+195 tests in 51 items.
+190 passed and 5 failed.
+***Test Failed*** 5 failures.
+TestResults(failed=5, attempted=195)
+Trying:
+    MotField([1, 1, 1, 1, 1, 1])
+Expecting:
+    MotField with relative intensities [1, 1, 1, 1, 1, 1]
+ok
+Trying:
+    lasers = MotField([1, 1, 1, 1, 1, 1])
+Expecting nothing
+ok
+Trying:
+    lasers.__repr__()
+Expecting:
+    'MotField with relative intensities [1, 1, 1, 1, 1, 1]'
+ok
+Trying:
+    lasers = MotField([1, 1, 1, 1, 1, 1])
+Expecting nothing
+ok
+Trying:
+    lasers.__str__()
+Expecting:
+    'MotField with relative intensities [1, 1, 1, 1, 1, 1]'
+ok
+Trying:
+    from sympy import symbols, Matrix, I, exp, sin, cos, pprint
+Expecting nothing
+ok
+Trying:
+    E0=symbols("E0",real=True)
+Expecting nothing
+ok
+Trying:
+    t,x,y,z,omega,kx,ky,kz=symbols("t,x,y,z,omega,kx,ky,kz",real=True)
+Expecting nothing
+ok
+Trying:
+    phi, theta, alpha, beta = symbols("phi, theta, alpha, beta",real=True)
+Expecting nothing
+ok
+Trying:
+    ep=Matrix([cos(2*beta),I*sin(2*beta),0])
+Expecting nothing
+ok
+Trying:
+    pprint(ep,use_unicode=False)
+Expecting:
+    [ cos(2*beta) ]
+    [             ]
+    [I*sin(2*beta)]
+    [             ]
+    [      0      ]
+ok
+Trying:
+    R1=Matrix([[cos(2*alpha), -sin(2*alpha), 0],
+               [sin(2*alpha), cos(2*alpha), 0], [0, 0, 1]])
+Expecting nothing
+ok
+Trying:
+    pprint(R1, use_unicode=False)
+Expecting:
+    [cos(2*alpha)  -sin(2*alpha)  0]
+    [                              ]
+    [sin(2*alpha)  cos(2*alpha)   0]
+    [                              ]
+    [     0              0        1]
+ok
+Trying:
+    R2=Matrix([[cos(theta), 0, sin(theta)],
+              [0, 1, 0], [-sin(theta),0,cos(theta)]])
+Expecting nothing
+ok
+Trying:
+    pprint(R2, use_unicode=False)
+Expecting:
+    [cos(theta)   0  sin(theta)]
+    [                          ]
+    [     0       1      0     ]
+    [                          ]
+    [-sin(theta)  0  cos(theta)]
+ok
+Trying:
+    R3=Matrix([[cos(phi), -sin(theta), 0],
+              [sin(theta), cos(theta), 0], [0, 0, 1]])
+Expecting nothing
+ok
+Trying:
+    pprint(R3, use_unicode=False)
+Expecting:
+    [ cos(phi)   -sin(theta)  0]
+    [                          ]
+    [sin(theta)  cos(theta)   0]
+    [                          ]
+    [    0            0       1]
+ok
+Trying:
+    epsilonp=R3*R2*R1*ep
+Expecting nothing
+ok
+Trying:
+    plane_wave=E0/2 * exp(I*(kx*x+ky*y+kz*z-omega*t)) * epsilonp
+Expecting nothing
+ok
+Trying:
+    plane_wave=plane_wave + plane_wave.conjugate()
+Expecting nothing
+ok
+Trying:
+    PlaneWave(0, 0, 0, 0)
+Expecting:
+    PlaneWave with phi=0, theta=0, alpha=0, beta=0, E0=1
+ok
+Trying:
+    w = PlaneWave(0, 0, 0, 0)
+Expecting nothing
+ok
+Trying:
+    w.__repr__()
+Expecting:
+    'PlaneWave with phi=0, theta=0, alpha=0, beta=0, E0=1'
+ok
+Trying:
+    w = PlaneWave(0, 0, 0, 0)
+Expecting nothing
+ok
+Trying:
+    w.__str__()
+Expecting:
+    'PlaneWave with phi=0, theta=0, alpha=0, beta=0, E0=1'
+ok
+Trying:
+    print electric_field_amplitude_gaussian(0.001, 0.001)
+Expecting:
+    19.6861467587
+ok
+Trying:
+    print electric_field_amplitude_intensity(1.0, units="ad-hoc")
+Expecting:
+    9.0152984553
+ok
+Trying:
+    print electric_field_amplitude_intensity(1.0, Omega=1.0, units="SI")
+Expecting:
+    112.135917207
+ok
+Trying:
+    print electric_field_amplitude_intensity(1.0, units="SI")
+Expecting:
+    0.000112135917207
+ok
+Trying:
+    print electric_field_amplitude_top(0.001, 0.001)
+Expecting:
+    27.8404157371
+ok
+3 items had no tests:
+    fast.electric_field
+    fast.electric_field.MotField
+    fast.electric_field.MotField.plot
+10 items passed all tests:
+   1 tests in fast.electric_field.MotField.__init__
+   2 tests in fast.electric_field.MotField.__repr__
+   2 tests in fast.electric_field.MotField.__str__
+  15 tests in fast.electric_field.PlaneWave
+   1 tests in fast.electric_field.PlaneWave.__init__
+   2 tests in fast.electric_field.PlaneWave.__repr__
+   2 tests in fast.electric_field.PlaneWave.__str__
+   1 tests in fast.electric_field.electric_field_amplitude_gaussian
+   3 tests in fast.electric_field.electric_field_amplitude_intensity
+   1 tests in fast.electric_field.electric_field_amplitude_top
+30 tests in 13 items.
+30 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=30)
+Trying:
+    element = "Rb"
+Expecting nothing
+ok
+Trying:
+    isotope = 87
+Expecting nothing
+ok
+Trying:
+    print lande_g_factors(element, isotope)
+Expecting:
+    [ 9.9999e-01  2.0023e+00 -9.9514e-04]
+ok
+Trying:
+    print lande_g_factors(element, isotope, L=0, J=1/Integer(2))
+Expecting:
+    [0.9999936864200584 2.0023193043622 -0.0009951414 2.00231930436220]
+ok
+Trying:
+    print lande_g_factors(element, isotope, L=0, J=1/Integer(2), F=1)
+Expecting:
+    [0.9999936864200584 2.0023193043622 -0.0009951414 2.00231930436220
+     -0.501823752840550]
+ok
+Trying:
+    ground_state = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    Bz = 200.0
+Expecting nothing
+ok
+Trying:
+    Bz = Bz/10000
+Expecting nothing
+ok
+Trying:
+    for f_group in paschen_back_energies(ground_state, Bz):
+        print f_group
+Expecting:
+    [1.51284728917866e-24 3.80485568127324e-25 -7.51876152924007e-25
+     -1.88423787397534e-24]
+    [-1.51229355210131e-24 -3.80300989101543e-25 7.51691573898227e-25
+     1.88368413689800e-24]
+ok
+Trying:
+    ground_state = State("Rb", 87, 5, 0, 1/Integer(2))
+Expecting nothing
+ok
+Trying:
+    Bz = 200.0
+Expecting nothing
+ok
+Trying:
+    Bz = Bz/10000
+Expecting nothing
+ok
+Trying:
+    for f_group in zeeman_energies(ground_state, Bz):
+        print f_group
+Expecting:
+    [-2.73736448508248e-24 -2.83044285506388e-24 -2.92352122504527e-24]
+    [1.51284728917866e-24 1.60555650110849e-24 1.69826571303833e-24
+     1.79097492496816e-24 1.88368413689800e-24]
+ok
+1 items had no tests:
+    fast.magnetic_field
+3 items passed all tests:
+   5 tests in fast.magnetic_field.lande_g_factors
+   4 tests in fast.magnetic_field.paschen_back_energies
+   4 tests in fast.magnetic_field.zeeman_energies
+13 tests in 4 items.
+13 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=13)
+Trying:
+    define_density_matrix(2)
+Expecting:
+    Matrix([
+    [rho11, rho12],
+    [rho21, rho22]])
+ok
+Trying:
+    bra(2,4)
+Expecting:
+    Matrix([[0, 1, 0, 0]])
+ok
+Trying:
+    bra(5,3)
+Expecting:
+    Traceback (most recent call last):
+    ...
+    ValueError: i must be in [1 .. Ne].
+ok
+Trying:
+    from sympy import symbols, pprint, I
+Expecting nothing
+ok
+Trying:
+    rho = define_density_matrix(2, explicitly_hermitian=True,
+                                normalized=True)
+Expecting nothing
+ok
+Trying:
+    Omega = symbols("Omega")
+Expecting nothing
+ok
+Trying:
+    delta = symbols("delta", real=True)
+Expecting nothing
+ok
+Trying:
+    hbar = symbols("hbar", positive=True)
+Expecting nothing
+ok
+Trying:
+    H = hbar*Matrix([[0, Omega.conjugate()/2], [Omega/2, -delta]])
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    aux = define_frequencies(Ne, explicitly_antisymmetric=True)
+Expecting nothing
+ok
+Trying:
+    omega_level, omega, gamma = aux
+Expecting nothing
+ok
+Trying:
+    eqs = I/hbar*(rho*H-H*rho) + lindblad_terms(gamma, rho, 2)
+Expecting nothing
+ok
+Trying:
+    from fast import Unfolding
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    A, b = calculate_A_b(eqs, unfolding)
+Expecting nothing
+ok
+Trying:
+    pprint(A, use_unicode=True)
+Expecting:
+    ⎡ -γ₂₁   im(Ω)  -re(Ω)⎤
+    ⎢                     ⎥
+    ⎢        -γ₂₁         ⎥
+    ⎢-im(Ω)  ─────    -δ  ⎥
+    ⎢          2          ⎥
+    ⎢                     ⎥
+    ⎢               -γ₂₁  ⎥
+    ⎢re(Ω)     δ    ───── ⎥
+    ⎣                 2   ⎦
+ok
+Trying:
+    pprint(b, use_unicode=True)
+Expecting:
+    ⎡   0   ⎤
+    ⎢       ⎥
+    ⎢-im(Ω) ⎥
+    ⎢───────⎥
+    ⎢   2   ⎥
+    ⎢       ⎥
+    ⎢ re(Ω) ⎥
+    ⎢ ───── ⎥
+    ⎣   2   ⎦
+ok
+Trying:
+    Ne = 3
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    r = define_r_components(Ne, helicity=True, explicitly_hermitian=True)
+Expecting nothing
+ok
+Trying:
+    r = [ri.subs({r[0][2,0]:0,r[1][2,0]:0,r[2][2,0]:0}) for ri in r]
+Expecting nothing
+ok
+Trying:
+    Lij = [[1,2,[1]],[2,3,[2]]]
+Expecting nothing
+ok
+Trying:
+    from fast.misc import formatLij
+Expecting nothing
+ok
+Trying:
+    Lij = formatLij(Lij,Ne)
+Expecting nothing
+ok
+Trying:
+    E0, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    c, ctilde, phase = define_psi_coefficients(Ne)
+Expecting nothing
+ok
+Trying:
+    print phase_transformation(Ne, Nl, r, Lij, omega_laser, phase)
+Expecting:
+    {theta2: varpi_2, theta3: 0, theta1: varpi_1 + varpi_2}
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    u = Matrix(symbols("u_x, u_y, u_z"))
+Expecting nothing
+ok
+Trying:
+    v = Matrix(symbols("v_x, v_y, v_z"))
+Expecting nothing
+ok
+Trying:
+    cartesian_dot_product(u, v)
+Expecting:
+    u_x*v_x + u_y*v_y + u_z*v_z
+ok
+Trying:
+    from sympy import pi
+Expecting nothing
+ok
+Trying:
+    em=polarization_vector(phi=0, theta= 0, alpha=0, beta=-pi/8,p= 1)
+Expecting nothing
+ok
+Trying:
+    em
+Expecting:
+    Matrix([
+    [   sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+ok
+Trying:
+    cartesian_to_helicity(em)
+Expecting:
+    Matrix([
+    [ 0],
+    [ 0],
+    [-1]])
+ok
+Trying:
+    e0=polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta=0,p=1)
+Expecting nothing
+ok
+Trying:
+    e0
+Expecting:
+    Matrix([
+    [0],
+    [0],
+    [1]])
+ok
+Trying:
+    cartesian_to_helicity(e0)
+Expecting:
+    Matrix([
+    [0],
+    [1],
+    [0]])
+ok
+Trying:
+    ep=polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p= 1)
+Expecting nothing
+ok
+Trying:
+    ep
+Expecting:
+    Matrix([
+    [  -sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+ok
+Trying:
+    cartesian_to_helicity(ep)
+Expecting:
+    Matrix([
+    [-1],
+    [ 0],
+    [ 0]])
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    am,a0,ap = symbols("am a0 ap")
+Expecting nothing
+ok
+Trying:
+    a=-ap*em +a0*e0 -am*ep
+Expecting nothing
+ok
+Trying:
+    a
+Expecting:
+    Matrix([
+    [    sqrt(2)*am/2 - sqrt(2)*ap/2],
+    [sqrt(2)*I*am/2 + sqrt(2)*I*ap/2],
+    [                             a0]])
+ok
+Trying:
+    cartesian_to_helicity(a).expand()
+Expecting:
+    Matrix([
+    [am],
+    [a0],
+    [ap]])
+ok
+Trying:
+    r =[[[0.0, 1.0],
+         [1.0, 0.0]],
+        [[0.0, -1j],
+         [ 1j, 0.0]],
+        [[1.0, 0.0],
+         [0.0,-1.0]]]
+Expecting nothing
+ok
+Trying:
+    cartesian_to_helicity(r, numeric=True)
+Expecting:
+    array([[[ 0.    +0.j,  0.    +0.j],
+            [ 1.4142+0.j,  0.    +0.j]],
+    <BLANKLINE>
+           [[ 1.    +0.j,  0.    +0.j],
+            [ 0.    +0.j, -1.    +0.j]],
+    <BLANKLINE>
+           [[-0.    +0.j, -1.4142+0.j],
+            [-0.    +0.j, -0.    +0.j]]])
+ok
+Trying:
+    define_density_matrix(2)
+Expecting:
+    Matrix([
+    [rho11, rho12],
+    [rho21, rho22]])
+ok
+Trying:
+    define_density_matrix(2, explicitly_hermitian=True)
+Expecting:
+    Matrix([
+    [rho11, conjugate(rho21)],
+    [rho21,            rho22]])
+ok
+Trying:
+    define_density_matrix(2, normalized=True)
+Expecting:
+    Matrix([
+    [-rho22 + 1, rho12],
+    [     rho21, rho22]])
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    t, z = symbols("t, z", positive=True)
+Expecting nothing
+ok
+Trying:
+    define_density_matrix(2, variables=[t, z])
+Expecting:
+    Matrix([
+    [rho11(t, z), rho12(t, z)],
+    [rho21(t, z), rho22(t, z)]])
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    pprint(define_frequencies(2), use_unicode=True)
+Expecting:
+    ⎛          ⎡ 0   ω₁₂⎤  ⎡ 0   γ₁₂⎤⎞
+    ⎜[ω₁, ω₂], ⎢        ⎥, ⎢        ⎥⎟
+    ⎝          ⎣ω₂₁   0 ⎦  ⎣γ₂₁   0 ⎦⎠
+ok
+Trying:
+    pprint(define_frequencies(2, explicitly_antisymmetric=True),
+                              use_unicode=True)
+Expecting:
+    ⎛          ⎡ 0   -ω₂₁⎤  ⎡ 0   -γ₂₁⎤⎞
+    ⎜[ω₁, ω₂], ⎢         ⎥, ⎢         ⎥⎟
+    ⎝          ⎣ω₂₁   0  ⎦  ⎣γ₂₁   0  ⎦⎠
+ok
+Trying:
+    E0, omega_laser = define_laser_variables(2)
+Expecting nothing
+ok
+Trying:
+    E0, omega_laser
+Expecting:
+    ([E_{01}, E_{02}], [varpi_1, varpi_2])
+ok
+Trying:
+    conjugate(E0[0])
+Expecting:
+    conjugate(E_{01})
+ok
+Trying:
+    E0, omega_laser = define_laser_variables(2, real_amplitudes=True)
+Expecting nothing
+ok
+Trying:
+    conjugate(E0[0])
+Expecting:
+    E_{01}
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    t, z = symbols("t, z", real=True)
+Expecting nothing
+ok
+Trying:
+    E0, omega_laser = define_laser_variables(2, variables=[t, z])
+Expecting nothing
+ok
+Trying:
+    E0
+Expecting:
+    [E_{01}(t, z), E_{02}(t, z)]
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    pprint(define_psi_coefficients(3), use_unicode=True)
+Expecting:
+    ⎛⎡c₁(t)⎤  ⎡\tilde{c}_{1}(t)⎤  ⎡θ₁⎤⎞
+    ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
+    ⎜⎢c₂(t)⎥, ⎢\tilde{c}_{2}(t)⎥, ⎢θ₂⎥⎟
+    ⎜⎢     ⎥  ⎢                ⎥  ⎢  ⎥⎟
+    ⎝⎣c₃(t)⎦  ⎣\tilde{c}_{3}(t)⎦  ⎣θ₃⎦⎠
+ok
+Trying:
+    define_r_components(2)
+Expecting:
+    [Matrix([
+    [     0, x_{12}],
+    [x_{21},      0]]), Matrix([
+    [     0, y_{12}],
+    [y_{21},      0]]), Matrix([
+    [     0, z_{12}],
+    [z_{21},      0]])]
+ok
+Trying:
+    define_r_components(2, explicitly_hermitian=True)
+Expecting:
+    [Matrix([
+    [     0, x_{21}],
+    [x_{21},      0]]), Matrix([
+    [     0, y_{21}],
+    [y_{21},      0]]), Matrix([
+    [     0, z_{21}],
+    [z_{21},      0]])]
+ok
+Trying:
+    r = define_r_components(2, real=True, explicitly_hermitian=True)
+Expecting nothing
+ok
+Trying:
+    print [r[p]-r[p].transpose() for p in range(3)]
+Expecting:
+    [Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]])]
+ok
+Trying:
+    define_r_components(2, helicity=True)
+Expecting:
+    [Matrix([
+    [        0, r_{-1;12}],
+    [r_{-1;21},         0]]), Matrix([
+    [       0, r_{0;12}],
+    [r_{0;21},        0]]), Matrix([
+    [        0, r_{+1;12}],
+    [r_{+1;21},         0]])]
+ok
+Trying:
+    r_helicity = define_r_components(2, helicity=True,
+                                     explicitly_hermitian=True)
+Expecting nothing
+ok
+Trying:
+    r_cartesian = helicity_to_cartesian(r_helicity)
+Expecting nothing
+ok
+Trying:
+    r_cartesian[0]
+Expecting:
+    Matrix([
+    [                                 0, sqrt(2)*(-r_{+1;21} + r_{-1;21})/2],
+    [sqrt(2)*(-r_{+1;21} + r_{-1;21})/2,                                  0]])
+ok
+Trying:
+    [(r_cartesian[p]-r_cartesian[p].adjoint()).expand() for p in range(3)]
+Expecting:
+    [Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]]), Matrix([
+    [0, 0],
+    [0, 0]])]
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    rho = define_density_matrix(3)
+Expecting nothing
+ok
+Trying:
+    pprint(define_rho_vector(rho, 3), use_unicode=True)
+Expecting:
+    ⎡  ρ₂₂  ⎤
+    ⎢       ⎥
+    ⎢  ρ₃₃  ⎥
+    ⎢       ⎥
+    ⎢re(ρ₂₁)⎥
+    ⎢       ⎥
+    ⎢re(ρ₃₁)⎥
+    ⎢       ⎥
+    ⎢re(ρ₃₂)⎥
+    ⎢       ⎥
+    ⎢im(ρ₂₁)⎥
+    ⎢       ⎥
+    ⎢im(ρ₃₁)⎥
+    ⎢       ⎥
+    ⎣im(ρ₃₂)⎦
+ok
+Trying:
+    name = "rho"
+Expecting nothing
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    t, x, y, z = symbols("t, x, y, z", positive=True)
+Expecting nothing
+ok
+Trying:
+    variables = [t, x, y, z]
+Expecting nothing
+ok
+Trying:
+    open_brace = ""
+Expecting nothing
+ok
+Trying:
+    comma = ""
+Expecting nothing
+ok
+Trying:
+    close_brace = ""
+Expecting nothing
+ok
+Trying:
+    i = 0
+Expecting nothing
+ok
+Trying:
+    j = 1
+Expecting nothing
+ok
+Trying:
+    f = define_symbol(name, open_brace, comma, i, j, close_brace,
+                      variables, positive=True)
+Expecting nothing
+ok
+Trying:
+    print f
+Expecting:
+    rho12(t, x, y, z)
+ok
+Trying:
+    delta_greater(2, 1)
+Expecting:
+    1
+ok
+Trying:
+    delta_greater(1, 2)
+Expecting:
+    0
+ok
+Trying:
+    delta_lesser(2, 1)
+Expecting:
+    0
+ok
+Trying:
+    delta_lesser(1, 2)
+Expecting:
+    1
+ok
+Trying:
+    from sympy import zeros, pi, pprint, symbols
+Expecting nothing
+ok
+Trying:
+    Ne = 3
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonp = [polarization_vector(0, -pi/2, 0, 0, 1) for l in range(Nl)]
+Expecting nothing
+ok
+Trying:
+    detuning_knob = symbols("delta1 delta2", real=True)
+Expecting nothing
+ok
+Trying:
+    xi = [zeros(Ne, Ne) for l in range(Nl)]
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0)], [(2, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l][pair[0], pair[1]] = 1
+            xi[l][pair[1], pair[0]] = 1
+Expecting nothing
+ok
+Trying:
+    rm = define_r_components(Ne, xi, explicitly_hermitian=True,
+                             helicity=True, p=-1)
+Expecting nothing
+ok
+Trying:
+    rm = helicity_to_cartesian(rm)
+Expecting nothing
+ok
+Trying:
+    omega_level, omega, gamma = define_frequencies(Ne, True)
+Expecting nothing
+ok
+Trying:
+    H = hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level,
+                    omega_laser, xi, RWA=True, RF=False)
+Expecting nothing
+ok
+Trying:
+    print H[1, 0]
+Expecting:
+    -E_{01}*e*r_{0;21}*exp(-I*t*varpi_1)/2
+ok
+Trying:
+    print H[2, 0]
+Expecting:
+    -E_{02}*e*r_{0;31}*exp(-I*t*varpi_2)/2
+ok
+Trying:
+    print H[2, 2]
+Expecting:
+    hbar*omega_3
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    u = Matrix(symbols("u_{-1}, u_0, u_{+1}"))
+Expecting nothing
+ok
+Trying:
+    v = Matrix(symbols("v_{-1}, v_0, v_{+1}"))
+Expecting nothing
+ok
+Trying:
+    helicity_dot_product(u, v)
+Expecting:
+    u_0*v_0 - u_{+1}*v_{-1} - u_{-1}*v_{+1}
+ok
+Trying:
+    u = Matrix(symbols("u_x, u_y, u_z"))
+Expecting nothing
+ok
+Trying:
+    v = Matrix(symbols("v_x, v_y, v_z"))
+Expecting nothing
+ok
+Trying:
+    u_helicity = cartesian_to_helicity(u)
+Expecting nothing
+ok
+Trying:
+    v_helicity = cartesian_to_helicity(v)
+Expecting nothing
+ok
+Trying:
+    helicity_dot_product(u_helicity, v_helicity).expand()
+Expecting:
+    u_x*v_x + u_y*v_y + u_z*v_z
+ok
+Trying:
+    rp = define_r_components(2, helicity=True, p=1,
+                             explicitly_hermitian=True)
+Expecting nothing
+ok
+Trying:
+    rm = define_r_components(2, helicity=True, p=-1,
+                             explicitly_hermitian=True)
+Expecting nothing
+ok
+Trying:
+    from sympy import pi
+Expecting nothing
+ok
+Trying:
+    em = polarization_vector(0, 0, 0, pi/8, -1)
+Expecting nothing
+ok
+Trying:
+    ep = polarization_vector(0, 0, 0, pi/8, 1)
+Expecting nothing
+ok
+Trying:
+    ep = cartesian_to_helicity(ep)
+Expecting nothing
+ok
+Trying:
+    em = cartesian_to_helicity(em)
+Expecting nothing
+ok
+Trying:
+    H = helicity_dot_product(ep, rm) + helicity_dot_product(em, rp)
+Expecting nothing
+ok
+Trying:
+    H
+Expecting:
+    Matrix([
+    [         0, -r_{+1;21}],
+    [-r_{+1;21},          0]])
+ok
+Trying:
+    sigmam = [1, 0, 0]
+Expecting nothing
+ok
+Trying:
+    helicity_to_cartesian(sigmam)
+Expecting:
+    Matrix([
+    [  sqrt(2)/2],
+    [sqrt(2)*I/2],
+    [          0]])
+ok
+Trying:
+    r = define_r_components(2, helicity=True)
+Expecting nothing
+ok
+Trying:
+    r[0][0, 1] = 0
+Expecting nothing
+ok
+Trying:
+    r[1][0, 1] = 0
+Expecting nothing
+ok
+Trying:
+    r[2][0, 1] = 0
+Expecting nothing
+ok
+Trying:
+    r
+Expecting:
+    [Matrix([
+    [        0, 0],
+    [r_{-1;21}, 0]]), Matrix([
+    [       0, 0],
+    [r_{0;21}, 0]]), Matrix([
+    [        0, 0],
+    [r_{+1;21}, 0]])]
+ok
+Trying:
+    helicity_to_cartesian(r)
+Expecting:
+    [Matrix([
+    [                                 0, 0],
+    [sqrt(2)*(-r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
+    [                                  0, 0],
+    [sqrt(2)*I*(r_{+1;21} + r_{-1;21})/2, 0]]), Matrix([
+    [       0, 0],
+    [r_{0;21}, 0]])]
+ok
+Trying:
+    r =[[[0.0        ,        0.0 ],
+         [npsqrt(2.0),        0.0 ]],
+        [[1.0        ,        0.0 ],
+         [0.0        ,       -1.0 ]],
+        [[0.0        ,-npsqrt(2.0)],
+         [0.0        ,        0.0 ]]]
+Expecting nothing
+ok
+Trying:
+    helicity_to_cartesian(r, numeric=True)
+Expecting:
+    array([[[ 0.+0.j,  1.+0.j],
+            [ 1.+0.j,  0.+0.j]],
+    <BLANKLINE>
+           [[ 0.+0.j, -0.-1.j],
+            [ 0.+1.j,  0.+0.j]],
+    <BLANKLINE>
+           [[ 1.+0.j,  0.+0.j],
+            [ 0.+0.j, -1.+0.j]]])
+ok
+Trying:
+    ket(2,4)
+Expecting:
+    Matrix([
+    [0],
+    [1],
+    [0],
+    [0]])
+ok
+Trying:
+    ket(5,3)
+Expecting:
+    Traceback (most recent call last):
+    ...
+    ValueError: i must be in [1 .. Ne].
+ok
+Trying:
+    ketbra(2, 3, 3)
+Expecting:
+    Matrix([
+    [0, 0, 0],
+    [0, 0, 1],
+    [0, 0, 0]])
+ok
+Trying:
+    rho=define_density_matrix(3)
+Expecting nothing
+ok
+Trying:
+    lindblad_operator( ketbra(1,2,3) ,rho )
+Expecting:
+    Matrix([
+    [   rho22, -rho12/2,        0],
+    [-rho21/2,   -rho22, -rho23/2],
+    [       0, -rho32/2,        0]])
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    aux = define_frequencies(4, explicitly_antisymmetric=True)
+Expecting nothing
+ok
+Trying:
+    omega_level, omega, gamma = aux
+Expecting nothing
+ok
+Trying:
+    gamma = gamma.subs({gamma[2, 0]:0, gamma[3, 0]:0, gamma[3, 1]:0})
+Expecting nothing
+ok
+Trying:
+    pprint(gamma, use_unicode=True)
+Expecting:
+    ⎡ 0   -γ₂₁   0     0  ⎤
+    ⎢                     ⎥
+    ⎢γ₂₁   0    -γ₃₂   0  ⎥
+    ⎢                     ⎥
+    ⎢ 0   γ₃₂    0    -γ₄₃⎥
+    ⎢                     ⎥
+    ⎣ 0    0    γ₄₃    0  ⎦
+ok
+Trying:
+    rho = define_density_matrix(4)
+Expecting nothing
+ok
+Trying:
+    pprint(lindblad_terms(gamma, rho, 4), use_unicode=True)
+Expecting:
+    ⎡                -γ₂₁⋅ρ₁₂             -γ₃₂⋅ρ₁₃             -γ₄₃⋅ρ₁₄      ⎤
+    ⎢ γ₂₁⋅ρ₂₂        ─────────            ─────────            ─────────     ⎥
+    ⎢                    2                    2                    2         ⎥
+    ⎢                                                                        ⎥
+    ⎢-γ₂₁⋅ρ₂₁                          γ₂₁⋅ρ₂₃   γ₃₂⋅ρ₂₃    γ₂₁⋅ρ₂₄   γ₄₃⋅ρ₂₄⎥
+    ⎢─────────  -γ₂₁⋅ρ₂₂ + γ₃₂⋅ρ₃₃   - ─────── - ───────  - ─────── - ───────⎥
+    ⎢    2                                2         2          2         2   ⎥
+    ⎢                                                                        ⎥
+    ⎢-γ₃₂⋅ρ₃₁     γ₂₁⋅ρ₃₂   γ₃₂⋅ρ₃₂                         γ₃₂⋅ρ₃₄   γ₄₃⋅ρ₃₄⎥
+    ⎢─────────  - ─────── - ───────  -γ₃₂⋅ρ₃₃ + γ₄₃⋅ρ₄₄   - ─────── - ───────⎥
+    ⎢    2           2         2                               2         2   ⎥
+    ⎢                                                                        ⎥
+    ⎢-γ₄₃⋅ρ₄₁     γ₂₁⋅ρ₄₂   γ₄₃⋅ρ₄₂    γ₃₂⋅ρ₄₃   γ₄₃⋅ρ₄₃                     ⎥
+    ⎢─────────  - ─────── - ───────  - ─────── - ───────       -γ₄₃⋅ρ₄₄      ⎥
+    ⎣    2           2         2          2         2                        ⎦
+ok
+Trying:
+    rho = define_density_matrix(2)
+Expecting nothing
+ok
+Trying:
+    part_symbolic(rho[1, 1], -1)
+Expecting:
+    0
+ok
+Trying:
+    part_symbolic(rho[1, 0], 1)
+Expecting:
+    re(rho21)
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    from sympy import pi
+Expecting nothing
+ok
+Trying:
+    polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta= 0,p=1)
+Expecting:
+    Matrix([
+    [0],
+    [0],
+    [1]])
+ok
+Trying:
+    polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p=1)
+Expecting:
+    Matrix([
+    [  -sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+ok
+Trying:
+    polarization_vector(phi=0, theta=pi, alpha=   0, beta=-pi/8,p=1)
+Expecting:
+    Matrix([
+    [  -sqrt(2)/2],
+    [-sqrt(2)*I/2],
+    [           0]])
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    phi, theta, alpha, beta = symbols("phi theta alpha beta", real=True)
+Expecting nothing
+ok
+Trying:
+    ep = polarization_vector(phi,theta,alpha,beta, 1)
+Expecting nothing
+ok
+Trying:
+    em = polarization_vector(phi,theta,alpha,beta,-1)
+Expecting nothing
+ok
+Trying:
+    ep-em.conjugate()
+Expecting:
+    Matrix([
+    [0],
+    [0],
+    [0]])
+ok
+Trying:
+    polarization_vector(0, 0, 0, 0, 1, abstract=True)
+Expecting:
+    epsilonp
+ok
+Trying:
+    polarization_vector(0, 0, 0, 0, -1, abstract=True)
+Expecting:
+    epsilonm
+ok
+Trying:
+    sig = ket(2, 3)*bra(1, 3)
+Expecting nothing
+ok
+Trying:
+    sigma_operator_indices(sig)
+Expecting:
+    (1, 0)
+ok
+Trying:
+    sigma_operator_indices(sig+sig.adjoint())
+Expecting:
+    (None, None)
+ok
+Trying:
+    r = define_r_components(2)
+Expecting nothing
+ok
+Trying:
+    vector_element(r, 1, 0)
+Expecting:
+    Matrix([
+    [x_{21}],
+    [y_{21}],
+    [z_{21}]])
+ok
+22 items had no tests:
+    fast.symbolic.CrossProduct
+    fast.symbolic.CrossProduct.__new__
+    fast.symbolic.CrossProduct._latex
+    fast.symbolic.CrossProduct._sympystr
+    fast.symbolic.CrossProduct.v1
+    fast.symbolic.CrossProduct.v2
+    fast.symbolic.DotProduct
+    fast.symbolic.DotProduct.__new__
+    fast.symbolic.DotProduct._latex
+    fast.symbolic.DotProduct._sympystr
+    fast.symbolic.DotProduct.v1
+    fast.symbolic.DotProduct.v2
+    fast.symbolic.Vector3D
+    fast.symbolic.Vector3D.__getitem__
+    fast.symbolic.Vector3D.__mul__
+    fast.symbolic.Vector3D._latex
+    fast.symbolic.Vector3D._sympystr
+    fast.symbolic.Vector3D.cross
+    fast.symbolic.Vector3D.default_args
+    fast.symbolic.Vector3D.dot
+    fast.symbolic.cross
+    fast.symbolic.dot
+27 items passed all tests:
+   1 tests in fast.symbolic
+   2 tests in fast.symbolic.bra
+  15 tests in fast.symbolic.calculate_A_b
+  10 tests in fast.symbolic.calculate_boundaries
+   4 tests in fast.symbolic.cartesian_dot_product
+  17 tests in fast.symbolic.cartesian_to_helicity
+   6 tests in fast.symbolic.define_density_matrix
+   3 tests in fast.symbolic.define_frequencies
+   9 tests in fast.symbolic.define_laser_variables
+   2 tests in fast.symbolic.define_psi_coefficients
+   9 tests in fast.symbolic.define_r_components
+   3 tests in fast.symbolic.define_rho_vector
+  11 tests in fast.symbolic.define_symbol
+   2 tests in fast.symbolic.delta_greater
+   2 tests in fast.symbolic.delta_lesser
+  16 tests in fast.symbolic.hamiltonian
+  18 tests in fast.symbolic.helicity_dot_product
+  10 tests in fast.symbolic.helicity_to_cartesian
+   2 tests in fast.symbolic.ket
+   1 tests in fast.symbolic.ketbra
+   2 tests in fast.symbolic.lindblad_operator
+   7 tests in fast.symbolic.lindblad_terms
+   3 tests in fast.symbolic.part_symbolic
+   1 tests in fast.symbolic.phase_transformation
+  11 tests in fast.symbolic.polarization_vector
+   3 tests in fast.symbolic.sigma_operator_indices
+   2 tests in fast.symbolic.vector_element
+172 tests in 49 items.
+172 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=172)
+16 items had no tests:
+    fast.error_propagation
+    fast.error_propagation.Measurement
+    fast.error_propagation.Measurement.__add__
+    fast.error_propagation.Measurement.__div__
+    fast.error_propagation.Measurement.__init__
+    fast.error_propagation.Measurement.__mul__
+    fast.error_propagation.Measurement.__neg__
+    fast.error_propagation.Measurement.__pow__
+    fast.error_propagation.Measurement.__radd__
+    fast.error_propagation.Measurement.__rdiv__
+    fast.error_propagation.Measurement.__rmul__
+    fast.error_propagation.Measurement.__rpow__
+    fast.error_propagation.Measurement.__rsub__
+    fast.error_propagation.Measurement.__str__
+    fast.error_propagation.Measurement.__sub__
+    fast.error_propagation.rel
+0 tests in 16 items.
+0 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=0)
+6 items had no tests:
+    fast.evolution
+    fast.evolution.analyze_eigenvalues
+    fast.evolution.characteristic_times
+    fast.evolution.get_eigenvalues
+    fast.evolution.run_evolution
+    fast.evolution.write_evolution
+0 tests in 6 items.
+0 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=0)
+39 items had no tests:
+    fast.graphic
+    fast.graphic.Arrow3D
+    fast.graphic.Arrow3D.__init__
+    fast.graphic.Arrow3D.draw
+    fast.graphic.bar_chart_mf
+    fast.graphic.beam_splitter
+    fast.graphic.cable
+    fast.graphic.cloud
+    fast.graphic.complex_matrix_plot
+    fast.graphic.complex_to_color
+    fast.graphic.decay
+    fast.graphic.draw_arith
+    fast.graphic.draw_atom3d
+    fast.graphic.draw_beam
+    fast.graphic.draw_box
+    fast.graphic.draw_for
+    fast.graphic.draw_laser
+    fast.graphic.draw_lasers_3d
+    fast.graphic.draw_mot_field_3d
+    fast.graphic.draw_multiplet
+    fast.graphic.draw_plane_wave_3d
+    fast.graphic.draw_state
+    fast.graphic.excitation
+    fast.graphic.eye
+    fast.graphic.fancy_matrix_plot
+    fast.graphic.fancy_r_plot
+    fast.graphic.fit_lorentizan
+    fast.graphic.fit_lorentizan_with_background
+    fast.graphic.fmt
+    fast.graphic.fmt_log
+    fast.graphic.lens
+    fast.graphic.make_video
+    fast.graphic.mirror
+    fast.graphic.plot_Lij
+    fast.graphic.plot_disc
+    fast.graphic.plot_populations
+    fast.graphic.rotate_and_traslate
+    fast.graphic.simple_beam_splitter
+    fast.graphic.vacuum_chamber
+0 tests in 39 items.
+0 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=0)
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    import sympy as sy
+Expecting nothing
+ok
+Trying:
+    lis = [sy.ones(2), 2*sy.ones(3), 3*sy.ones(4)]
+Expecting nothing
+ok
+Trying:
+    sy.pprint(block_diagonal_matrix(lis))
+Expecting:
+    ⎡1  1  0  0  0  0  0  0  0⎤
+    ⎢                         ⎥
+    ⎢1  1  0  0  0  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎣0  0  0  0  0  3  3  3  3⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/misc.py", line 1125, in fast.misc.block_diagonal_matrix
+Failed example:
+    sy.pprint(block_diagonal_matrix(lis))
+Expected:
+    ⎡1  1  0  0  0  0  0  0  0⎤
+    ⎢                         ⎥
+    ⎢1  1  0  0  0  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  2  2  2  0  0  0  0⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎢0  0  0  0  0  3  3  3  3⎥
+    ⎢                         ⎥
+    ⎣0  0  0  0  0  3  3  3  3⎦
+Got:
+    [1  1  0  0  0  0  0  0  0]
+    [                         ]
+    [1  1  0  0  0  0  0  0  0]
+    [                         ]
+    [0  0  2  2  2  0  0  0  0]
+    [                         ]
+    [0  0  2  2  2  0  0  0  0]
+    [                         ]
+    [0  0  2  2  2  0  0  0  0]
+    [                         ]
+    [0  0  0  0  0  3  3  3  3]
+    [                         ]
+    [0  0  0  0  0  3  3  3  3]
+    [                         ]
+    [0  0  0  0  0  3  3  3  3]
+    [                         ]
+    [0  0  0  0  0  3  3  3  3]
+Trying:
+    lis = [np.ones((2, 2)), 2*np.ones((3, 3)), 3*np.ones((4, 4))]
+Expecting nothing
+ok
+Trying:
+    print block_diagonal_matrix(lis)
+Expecting:
+    [[1. 1. 0. 0. 0. 0. 0. 0. 0.]
+     [1. 1. 0. 0. 0. 0. 0. 0. 0.]
+     [0. 0. 2. 2. 2. 0. 0. 0. 0.]
+     [0. 0. 2. 2. 2. 0. 0. 0. 0.]
+     [0. 0. 2. 2. 2. 0. 0. 0. 0.]
+     [0. 0. 0. 0. 0. 3. 3. 3. 3.]
+     [0. 0. 0. 0. 0. 3. 3. 3. 3.]
+     [0. 0. 0. 0. 0. 3. 3. 3. 3.]
+     [0. 0. 0. 0. 0. 3. 3. 3. 3.]]
+ok
+Trying:
+    from sympy import cos
+Expecting nothing
+ok
+Trying:
+    omega=Symbol("omega")
+Expecting nothing
+ok
+Trying:
+    fprint(cos(omega),print_ascii=True)
+Expecting:
+    cos(omega)
+ok
+19 items had no tests:
+    fast.misc
+    fast.misc.IJ
+    fast.misc.Mu
+    fast.misc.Theta
+    fast.misc.calculate_iI_correspondence
+    fast.misc.compile_code
+    fast.misc.convolve_with_gaussian
+    fast.misc.detuning_combinations
+    fast.misc.dft
+    fast.misc.dot_product
+    fast.misc.find_omega_min
+    fast.misc.find_phase_transformation
+    fast.misc.formatLij
+    fast.misc.format_double
+    fast.misc.laser_detunings
+    fast.misc.part
+    fast.misc.read_result
+    fast.misc.symbolic_part
+    fast.misc.write_equations_code
+1 items passed all tests:
+   3 tests in fast.misc.fprint
+**********************************************************************
+1 items had failures:
+   1 of   6 in fast.misc.block_diagonal_matrix
+9 tests in 21 items.
+8 passed and 1 failed.
+***Test Failed*** 1 failures.
+TestResults(failed=1, attempted=9)
+4 items had no tests:
+    fast.rk4
+    fast.rk4.add_line
+    fast.rk4.run_rk4
+    fast.rk4.write_rk4
+0 tests in 4 items.
+0 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=0)
+4 items had no tests:
+    fast.stationary
+    fast.stationary.analyze_zeros
+    fast.stationary.run_stationary
+    fast.stationary.write_stationary
+0 tests in 4 items.
+0 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=0)
+Trying:
+    import fast
+Expecting nothing
+ok
+Trying:
+    element = "Rb"; isotope = 87; N = 5
+Expecting nothing
+ok
+Trying:
+    fine_states = [fast.State(element, isotope, N, 0, 1/fast.Integer(2)),
+                   fast.State(element, isotope, N, 1, 3/fast.Integer(2))]
+Expecting nothing
+ok
+Trying:
+    magnetic_states = fast.make_list_of_states(fine_states, "magnetic")
+Expecting nothing
+ok
+Trying:
+    Ne = len(magnetic_states)
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    E0 = [1e2, 1e2]
+Expecting nothing
+ok
+Trying:
+    epsilonp = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+Expecting nothing
+ok
+Trying:
+    omega, gamma, r = fast.calculate_matrices(magnetic_states)
+Expecting nothing
+ok
+Trying:
+    omega_level = [omega[i][0] for i in range(Ne)]
+Expecting nothing
+ok
+Trying:
+    r = fast.helicity_to_cartesian(r, numeric=True)
+Expecting nothing
+ok
+Trying:
+    rm = np.array([[[r[p, i, j]*fast.symbolic.delta_greater(i, j)*a0
+                   for j in range(Ne)] for i in range(Ne)]
+                   for p in range(3)])
+Expecting nothing
+ok
+Trying:
+    def coupled2(l, i, j):
+        if r[0, i, j] != 0 or \
+           r[1, i, j] != 0 or \
+           r[2, i, j] != 0:
+            if i < j:
+                i, j = j, i
+            if magnetic_states[j].f == 1 and l == 0:
+                return 1.0
+            if magnetic_states[j].f == 2 and l == 1:
+                return 1.0
+            else:
+                return 0.0
+        else:
+            return 0.0
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[coupled2(l, i, j)
+                   for j in range(Ne)] for i in range(Ne)]
+                   for l in range(Nl)])
+Expecting nothing
+ok
+Trying:
+    phase = phase_transformation(Ne, Nl, rm, xi, return_equations=False)
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [fast.symbols("delta"+str(i+1)) for i in range(Nl)]
+Expecting nothing
+ok
+Trying:
+    hamiltonian = fast_hamiltonian(E0, epsilonp, detuning_knob, rm,
+                                   omega_level, xi, phase)
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [0.0, 0.0]
+Expecting nothing
+ok
+Trying:
+    print hamiltonian(detuning_knob)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j -1.2343e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j -9.5612e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       1.1040e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j -1.1040e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  1.2343e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j -9.5612e-01+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  7.2222e+01+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+      -1.1040e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j -1.1040e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       7.2222e+01+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  4.2759e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j -5.5201e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j -1.3965e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  7.2222e+01+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  4.9374e-01+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+      -1.4812e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  7.2222e+01+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  4.2759e-01+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  5.5201e-01+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j -1.3965e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  7.2222e+01+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       1.1040e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j -1.1040e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  1.1040e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [-1.2343e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       4.2759e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  7.2222e+01+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  4.9374e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  7.2222e+01+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  1.2343e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  4.2759e-01+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  7.2222e+01+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j -1.1040e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       2.2916e+02+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [-9.5612e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+      -5.5201e-01+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  2.2916e+02+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j -1.1040e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  2.2916e+02+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j -9.5612e-01+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  5.5201e-01+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  2.2916e+02+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  1.1040e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       2.2916e+02+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  4.9581e+02+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j -1.1040e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  4.9581e+02+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+      -1.3965e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  4.9581e+02+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j -1.4812e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       4.9581e+02+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j -1.3965e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  4.9581e+02+0.j  0.0000e+00+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j -1.1040e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  4.9581e+02+0.j  0.0000e+00+0.j]
+     [ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
+       0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  4.9581e+02+0.j]]
+ok
+Trying:
+    unfolding = Unfolding(2, real=True, lower_triangular=True,
+                          normalized=True)
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 1+2j], [1-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    print unfolding(rhos)
+Expecting:
+    [ 0.4  1.  -2. ]
+ok
+Trying:
+    from fast import define_density_matrix
+Expecting nothing
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    rho = define_density_matrix(2)
+Expecting nothing
+ok
+Trying:
+    pprint(unfolding(rho), use_unicode=False)
+Expecting:
+    [  rho22  ]
+    [         ]
+    [re(rho21)]
+    [         ]
+    [im(rho21)]
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nv = 1
+Expecting nothing
+ok
+Trying:
+    unf = Unfolding(Ne, real=True, lower_triangular=True,
+                          normalized=True)
+Expecting nothing
+ok
+Trying:
+    unf.Mu(1, 1, 1), unf.Mu(1, 1, 0), unf.Mu(-1, 1, 0)
+Expecting:
+    (0, 1, 2)
+ok
+Trying:
+    unf.IJ(0), unf.IJ(1), unf.IJ(2)
+Expecting:
+    ((1, 1, 1), (1, 1, 0), (-1, 1, 0))
+ok
+Trying:
+    Ne = 3
+Expecting nothing
+ok
+Trying:
+    Nv = 3
+Expecting nothing
+ok
+Trying:
+    def test_unfolding(Ne, real=False,
+                       lower_triangular=True, normalized=False):
+
+        vect = Unfolding(Ne, real, lower_triangular,
+                             normalized)
+        if normalized:
+            j0 = 1
+        else:
+            j0 = 0
+        for j in range(j0, Ne):
+            if real:
+                muu = vect.Mu(1, j, j)
+                ss, ii, jj = vect.IJ(muu)
+                print j, j, muu, j-ii, j-jj, 1-ss
+            else:
+                muu = vect.Mu(0, j, j)
+                ss, ii, jj = vect.IJ(muu)
+                print j, j, muu, j-ii, j-jj
+        for j in range(Ne):
+            for i in range(j+1, Ne):
+                if real:
+                    muu = vect.Mu(1, i, j)
+                    ss, ii, jj = vect.IJ(muu)
+                    print i, j, muu, i-ii, j-jj, 1-ss
+                    muu = vect.Mu(-1, i, j)
+                    ss, ii, jj = vect.IJ(muu)
+                    print i, j, muu, i-ii, j-jj, -1-ss
+                else:
+                    muu = vect.Mu(0, i, j)
+                    ss, ii, jj = vect.IJ(muu)
+                    print i, j, muu, i-ii, j-jj
+                if not lower_triangular:
+                    if real:
+                        muu = vect.Mu(1, j, i)
+                        ss, ii, jj = vect.IJ(muu)
+                        print j, i, muu, j-ii, i-jj, 1-ss
+                        muu = vect.Mu(-1, j, i)
+                        ss, ii, jj = vect.IJ(muu)
+                        print j, i, muu, j-ii, i-jj, -1-ss
+                    else:
+                        muu = vect.Mu(0, j, i)
+                        ss, ii, jj = vect.IJ(muu)
+                        print i, j, muu, j-ii, i-jj
+Expecting nothing
+ok
+Trying:
+    test_unfolding(Ne, False, False, False)
+Expecting:
+    0 0 0 0 0
+    1 1 1 0 0
+    2 2 2 0 0
+    1 0 3 0 0
+    1 0 4 0 0
+    2 0 5 0 0
+    2 0 6 0 0
+    2 1 7 0 0
+    2 1 8 0 0
+ok
+Trying:
+    test_unfolding(Ne, False, False, True)
+Expecting:
+    1 1 0 0 0
+    2 2 1 0 0
+    1 0 2 0 0
+    1 0 3 0 0
+    2 0 4 0 0
+    2 0 5 0 0
+    2 1 6 0 0
+    2 1 7 0 0
+ok
+Trying:
+    test_unfolding(Ne, False, True, False)
+Expecting:
+    0 0 0 0 0
+    1 1 1 0 0
+    2 2 2 0 0
+    1 0 3 0 0
+    2 0 4 0 0
+    2 1 5 0 0
+ok
+Trying:
+    test_unfolding(Ne, False, True, True)
+Expecting:
+    1 1 0 0 0
+    2 2 1 0 0
+    1 0 2 0 0
+    2 0 3 0 0
+    2 1 4 0 0
+ok
+Trying:
+    test_unfolding(Ne, True, False, False)
+Expecting:
+    0 0 0 0 0 0
+    1 1 1 0 0 0
+    2 2 2 0 0 0
+    1 0 3 0 0 0
+    1 0 4 0 0 0
+    0 1 5 0 0 0
+    0 1 6 0 0 0
+    2 0 7 0 0 0
+    2 0 8 0 0 0
+    0 2 9 0 0 0
+    0 2 10 0 0 0
+    2 1 11 0 0 0
+    2 1 12 0 0 0
+    1 2 13 0 0 0
+    1 2 14 0 0 0
+ok
+Trying:
+    test_unfolding(Ne, True, False, True)
+Expecting:
+    1 1 0 0 0 0
+    2 2 1 0 0 0
+    1 0 2 0 0 0
+    1 0 3 0 0 0
+    0 1 4 0 0 0
+    0 1 5 0 0 0
+    2 0 6 0 0 0
+    2 0 7 0 0 0
+    0 2 8 0 0 0
+    0 2 9 0 0 0
+    2 1 10 0 0 0
+    2 1 11 0 0 0
+    1 2 12 0 0 0
+    1 2 13 0 0 0
+ok
+Trying:
+    test_unfolding(Ne, True, True, False)
+Expecting:
+    0 0 0 0 0 0
+    1 1 1 0 0 0
+    2 2 2 0 0 0
+    1 0 3 0 0 0
+    1 0 4 0 0 0
+    2 0 5 0 0 0
+    2 0 6 0 0 0
+    2 1 7 0 0 0
+    2 1 8 0 0 0
+ok
+Trying:
+    test_unfolding(Ne, True, True, True)
+Expecting:
+    1 1 0 0 0 0
+    2 2 1 0 0 0
+    1 0 2 0 0 0
+    1 0 3 0 0 0
+    2 0 4 0 0 0
+    2 0 5 0 0 0
+    2 1 6 0 0 0
+    2 1 7 0 0 0
+ok
+Trying:
+    unfolding = Unfolding(2, real=True, lower_triangular=True,
+                          normalized=True)
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 1+2j], [1-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    print rhos == unfolding.inverse(unfolding(rhos))
+Expecting:
+    [[ True  True]
+     [ True  True]]
+ok
+Trying:
+    from fast import define_density_matrix
+Expecting nothing
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    rho = define_density_matrix(2)
+Expecting nothing
+ok
+Trying:
+    pprint(unfolding.inverse(unfolding(rho)), use_unicode=False)
+Expecting:
+    [      -rho22 + 1         re(rho21) - I*im(rho21)]
+    [                                                ]
+    [re(rho21) + I*im(rho21)           rho22         ]
+ok
+Trying:
+    rhops = np.array([[0.0, 0.0],
+                      [0.0, 0.0]])
+Expecting nothing
+ok
+Trying:
+    print unfolding.inverse(unfolding(rhops), True)
+Expecting:
+    [[-0.-0.j  0.-0.j]
+     [ 0.+0.j  0.+0.j]]
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    aux = define_simplification(omega_level, xi, Nl)
+Expecting nothing
+ok
+Trying:
+    u, invu, omega_levelu, Neu, xiu = aux
+Expecting nothing
+ok
+Trying:
+    print omega_levelu
+Expecting:
+    [0.0, 100.0, 200.0, 300.0]
+ok
+Trying:
+    print Neu
+Expecting:
+    4
+ok
+Trying:
+    print xiu
+Expecting:
+    [[[0. 1. 0. 0.]
+      [1. 0. 0. 0.]
+      [0. 0. 0. 0.]
+      [0. 0. 0. 0.]]
+    <BLANKLINE>
+     [[0. 0. 1. 1.]
+      [0. 0. 0. 0.]
+      [1. 0. 0. 0.]
+      [1. 0. 0. 0.]]]
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    aux = define_simplification(omega_level, xi, Nl)
+Expecting nothing
+ok
+Trying:
+    u, invu, omega_levelu, Neu, xiu = aux
+Expecting nothing
+ok
+Trying:
+    omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+Expecting nothing
+ok
+Trying:
+    pairs = detunings_indices(Neu, Nl, xiu)
+Expecting nothing
+ok
+Trying:
+    print detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+Expecting:
+        delta1_2_1 = detuning_knob[0]
+        delta2_3_1 = detuning_knob[1]
+        delta2_4_1 = detuning_knob[1] + (-100.0)
+    <BLANKLINE>
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    aux = define_simplification(omega_level, xi, Nl)
+Expecting nothing
+ok
+Trying:
+    u, invu, omega_levelu, Neu, xiu = aux
+Expecting nothing
+ok
+Trying:
+    pairs = detunings_indices(Neu, Nl, xiu)
+Expecting nothing
+ok
+Trying:
+    detunings_combinations(pairs)
+Expecting:
+    [[(1, 0), (2, 0)], [(1, 0), (3, 0)]]
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    aux = define_simplification(omega_level, xi, Nl)
+Expecting nothing
+ok
+Trying:
+    u, invu, omega_levelu, Neu, xiu = aux
+Expecting nothing
+ok
+Trying:
+    detunings_indices(Neu, Nl, xiu)
+Expecting:
+    [[(1, 0)], [(2, 0), (3, 0)]]
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    aux = define_simplification(omega_level, xi, Nl)
+Expecting nothing
+ok
+Trying:
+    u, invu, omega_levelu, Neu, xiu = aux
+Expecting nothing
+ok
+Trying:
+    omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
+Expecting nothing
+ok
+Trying:
+    pairs = detunings_indices(Neu, Nl, xiu)
+Expecting nothing
+ok
+Trying:
+    combs = detunings_combinations(pairs)
+Expecting nothing
+ok
+Trying:
+    symb_omega_levelu, omega, gamma = define_frequencies(Neu)
+Expecting nothing
+ok
+Trying:
+    E0, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    expr = +(omega_laser[0]-(symb_omega_levelu[1]-symb_omega_levelu[0]))
+Expecting nothing
+ok
+Trying:
+    expr += -(omega_laser[1]-(symb_omega_levelu[3]-symb_omega_levelu[0]))
+Expecting nothing
+ok
+Trying:
+    expr
+Expecting:
+    -omega_2 + omega_4 + varpi_1 - varpi_2
+ok
+Trying:
+    detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
+                      omega_levelu, iu0, ju0)
+Expecting:
+    '+delta1_2_1-delta2_4_1'
+ok
+Trying:
+    expr = +(omega_laser[1]-(symb_omega_levelu[1]-symb_omega_levelu[0]))
+Expecting nothing
+ok
+Trying:
+    expr += -(omega_laser[0]-(symb_omega_levelu[3]-symb_omega_levelu[0]))
+Expecting nothing
+ok
+Trying:
+    expr
+Expecting:
+    -omega_2 + omega_4 - varpi_1 + varpi_2
+ok
+Trying:
+    detunings_rewrite(expr, combs, omega_laser, symb_omega_levelu,
+                      omega_levelu, iu0, ju0)
+Expecting:
+    '300.000000000000-detuning_knob[0]+detuning_knob[1]'
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from fast import vapour_number_density
+Expecting nothing
+ok
+Trying:
+    e_num = physical_constants["elementary charge"][0]
+Expecting nothing
+ok
+Trying:
+    hbar_num = physical_constants["Planck constant over 2 pi"][0]
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    Ep = [-1.0]
+Expecting nothing
+ok
+Trying:
+    epsilonp = np.array([[0, 0, 1.0]])
+Expecting nothing
+ok
+Trying:
+    delta = symbols("delta")
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [delta]
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
+Expecting nothing
+ok
+Trying:
+    omega_level = np.array([0.0, 100.0])
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
+          for p in range(3)]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    sweep_steady_state = fast_sweep_steady_state(Ep, epsilonp, gamma,
+                                                 omega_level, rm, xi,
+                                                 theta)
+Expecting nothing
+ok
+Trying:
+    deltas, rho = sweep_steady_state([[-20, 20, 11]])
+Expecting nothing
+ok
+Trying:
+    n = vapour_number_density(273.15+20, "Rb")
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    chire = electric_succeptibility(0, Ep, epsilonp, rm, n,
+                                    rho, unfolding)
+Expecting nothing
+ok
+Trying:
+    print chire
+Expecting:
+    [ 4.4824e-09-1.1206e-10j  5.5971e-09-1.7491e-10j  7.4459e-09-3.1024e-10j
+      1.1097e-08-6.9356e-10j  2.1449e-08-2.6811e-09j  0.0000e+00-5.9877e-08j
+     -2.1449e-08-2.6811e-09j -1.1097e-08-6.9356e-10j -7.4459e-09-3.1024e-10j
+     -5.5971e-09-1.7491e-10j -4.4824e-09-1.1206e-10j]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from sympy import Matrix, symbols
+Expecting nothing
+ok
+Trying:
+    from fast.electric_field import electric_field_amplitude_top
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import (define_laser_variables,
+                               polarization_vector)
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0, 0], [a0, 0]]),
+          np.array([[0, 0], [0, 0]]),
+          np.array([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    omega_level = [0, 1.0e9]
+Expecting nothing
+ok
+Trying:
+    gamma21 = 2*np.pi*6e6
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0, -gamma21], [gamma21, 0]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [symbols("delta1", real=True)]
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    aux = (Ep, epsilonps, detuning_knob, gamma,
+           omega_level, rm, xi, theta,
+           unfolding, False, None)
+Expecting nothing
+ok
+Trying:
+    bloch_equations = fast_bloch_equations(*aux)
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 3+2j],
+                     [3-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    rhosv = unfolding(rhos)
+Expecting nothing
+ok
+Trying:
+    detuning_knobs = [100e6]
+Expecting nothing
+ok
+Trying:
+    Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+Expecting nothing
+ok
+Trying:
+    Eps *= np.exp(1j*np.pi)
+Expecting nothing
+ok
+Trying:
+    Eps = [Eps]
+Expecting nothing
+ok
+Trying:
+    print bloch_equations(rhosv, Eps, detuning_knobs)
+Expecting:
+    [4.0601e+07 1.4345e+08 3.3492e+08]
+ok
+Trying:
+    from sympy import Matrix, symbols
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [Matrix([[0, 0], [a0, 0]]),
+          Matrix([[0, 0], [0, 0]]),
+          Matrix([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    omega_level = [1, 100]
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 3+2j],
+                     [3-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    rhosv = unfolding(rhos)
+Expecting nothing
+ok
+Trying:
+    detuning_knobs = [1.0]
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [symbols("delta1")]
+Expecting nothing
+ok
+Trying:
+    detuning_terms = fast_detuning_terms(detuning_knob, omega_level,
+                                         xi, theta,
+                                         unfolding)
+Expecting nothing
+ok
+Trying:
+    print detuning_terms(rhosv, detuning_knobs)
+Expecting:
+    [0. 2. 3.]
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = np.array([0.0, 100.0, 100.0, 200.0, 200.0, 300.0])
+Expecting nothing
+ok
+Trying:
+    omega_level = omega_level*1e6*2*np.pi
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = np.zeros((3, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for i in range(Ne):
+            for j in range(i):
+                if xi[l, i, j] != 0:
+                    rm[2, i, j] = float(i)*a0
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    from sympy import symbols, pi
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import polarization_vector
+Expecting nothing
+ok
+Trying:
+    detuning_knob = symbols("delta1 delta2")
+Expecting nothing
+ok
+Trying:
+    detuning_knob_vals = np.array([-1.0, 3.0])*1e6*2*np.pi
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    Ep_vals = [1e2, 1e2]
+Expecting nothing
+ok
+Trying:
+    alpha = symbols("alpha")
+Expecting nothing
+ok
+Trying:
+    epsilon = polarization_vector(0, pi/2, alpha, 0, 1)
+Expecting nothing
+ok
+Trying:
+    epsilonp = [epsilon, epsilon]
+Expecting nothing
+ok
+Trying:
+    epsilonp_vals = [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]
+Expecting nothing
+ok
+Trying:
+    H1 = fast_hamiltonian(Ep, epsilonp, detuning_knob, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H2 = fast_hamiltonian(Ep, epsilonp, detuning_knob_vals, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H3 = fast_hamiltonian(Ep_vals, epsilonp, detuning_knob, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H4 = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H5 = fast_hamiltonian(Ep_vals, epsilonp_vals, detuning_knob, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H6 = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob_vals, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H7 = fast_hamiltonian(Ep_vals, epsilonp, detuning_knob_vals, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    H8 = fast_hamiltonian(Ep_vals, epsilonp_vals, detuning_knob_vals, rm,
+                          omega_level, xi, theta)
+Expecting nothing
+ok
+Trying:
+    print H1(Ep_vals, epsilonp_vals, detuning_knob_vals) \
+        /hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H2(Ep_vals, epsilonp_vals)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H3(epsilonp_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H4(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H5(detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H6(Ep_vals)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H7(epsilonp_vals)/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    print H8()/hbar_num/2/np.pi*1e-6
+Expecting:
+    [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
+     [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
+     [ 1.9193+0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j  0.    +0.j]
+     [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
+     [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from sympy import Matrix, symbols
+Expecting nothing
+ok
+Trying:
+    from fast.electric_field import electric_field_amplitude_top
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import define_laser_variables, polarization_vector
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0, 0], [a0, 0]]),
+          np.array([[0, 0], [0, 0]]),
+          np.array([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    omega_level = [0, 1.0e9]
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [symbols("delta1", real=True)]
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    aux = (Ep, epsilonps, detuning_knob, omega_level, rm, xi, theta,
+           unfolding, False, None)
+Expecting nothing
+ok
+Trying:
+    hamiltonian_terms = fast_hamiltonian_terms(*aux)
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 3+2j],
+                     [3-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    rhosv = unfolding(rhos)
+Expecting nothing
+ok
+Trying:
+    detuning_knobs = [100e6]
+Expecting nothing
+ok
+Trying:
+    Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+Expecting nothing
+ok
+Trying:
+    Eps *= np.exp(1j*np.pi)
+Expecting nothing
+ok
+Trying:
+    Eps = [Eps]
+Expecting nothing
+ok
+Trying:
+    print hamiltonian_terms(rhosv, Eps, detuning_knobs)
+Expecting:
+    [5.5681e+07 2.0000e+08 2.9722e+08]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    gamma21 = 2*np.pi*6e6
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0.0, -gamma21],
+                      [gamma21, 0.0]])
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 3+2j],
+                     [3-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    lindblad_terms = fast_lindblad_terms(gamma, unfolding)
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 3+2j],
+                     [3-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    rhosv = unfolding(rhos)
+Expecting nothing
+ok
+Trying:
+    rhs_lindblad = lindblad_terms(rhosv)
+Expecting nothing
+ok
+Trying:
+    print rhs_lindblad
+Expecting:
+    [-15079644.7372 -56548667.7646  37699111.8431]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from sympy import Matrix
+Expecting nothing
+ok
+Trying:
+    from fast.electric_field import electric_field_amplitude_top
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import define_laser_variables, polarization_vector
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0, 0], [a0, 0]]),
+          np.array([[0, 0], [0, 0]]),
+          np.array([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    Eps = [electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")]
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    rabi_terms = fast_rabi_terms(Ep, epsilonps, rm, xi, theta, unfolding)
+Expecting nothing
+ok
+Trying:
+    rhos = np.array([[0.6, 3+2j],
+                     [3-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    rhosv = unfolding(rhos)
+Expecting nothing
+ok
+Trying:
+    rhs_rabi = rabi_terms(rhosv, Eps)
+Expecting nothing
+ok
+Trying:
+    print rhs_rabi
+Expecting:
+    [-55680831.474          0.       2784041.5737]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from sympy import Matrix, symbols
+Expecting nothing
+ok
+Trying:
+    from fast.electric_field import electric_field_amplitude_top
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import (define_laser_variables,
+                               polarization_vector)
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0, 0], [a0, 0]]),
+          np.array([[0, 0], [0, 0]]),
+          np.array([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    omega_level = [0, 1.0e9]
+Expecting nothing
+ok
+Trying:
+    gamma21 = 2*np.pi*6e6
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0, -gamma21], [gamma21, 0]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [symbols("delta1", real=True)]
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    aux = (Ep, epsilonps, detuning_knob, gamma,
+           omega_level, rm, xi, theta)
+Expecting nothing
+ok
+Trying:
+    steady_state = fast_steady_state(*aux)
+Expecting nothing
+ok
+Trying:
+    detuning_knobs = [100e6]
+Expecting nothing
+ok
+Trying:
+    Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+Expecting nothing
+ok
+Trying:
+    Eps *= np.exp(1j*np.pi)
+Expecting nothing
+ok
+Trying:
+    Eps = [Eps]
+Expecting nothing
+ok
+Trying:
+    print steady_state(Eps, detuning_knobs)
+Expecting:
+    [ 0.018   0.1296 -0.0244]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    e_num = physical_constants["elementary charge"][0]
+Expecting nothing
+ok
+Trying:
+    hbar_num = physical_constants["Planck constant over 2 pi"][0]
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    Ep = [-1.0]
+Expecting nothing
+ok
+Trying:
+    epsilonp = [np.array([0, 0, 1.0])]
+Expecting nothing
+ok
+Trying:
+    delta = symbols("delta")
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [delta]
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
+Expecting nothing
+ok
+Trying:
+    omega_level = np.array([0.0, 100.0])
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
+          for p in range(3)]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    sweep_steady_state = fast_sweep_steady_state(Ep, epsilonp, gamma,
+                                                 omega_level, rm, xi,
+                                                 theta)
+Expecting nothing
+ok
+Trying:
+    deltas, rho = sweep_steady_state([[-20, 20, 11]])
+Expecting nothing
+ok
+Trying:
+    print rho
+Expecting:
+    [[ 0.0006 -0.025  -0.0006]
+     [ 0.001  -0.0312 -0.001 ]
+     [ 0.0017 -0.0415 -0.0017]
+     [ 0.0039 -0.0618 -0.0039]
+     [ 0.0149 -0.1194 -0.0149]
+     [ 0.3333 -0.     -0.3333]
+     [ 0.0149  0.1194 -0.0149]
+     [ 0.0039  0.0618 -0.0039]
+     [ 0.0017  0.0415 -0.0017]
+     [ 0.001   0.0312 -0.001 ]
+     [ 0.0006  0.025  -0.0006]]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from sympy import symbols
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    e_num = physical_constants["elementary charge"][0]
+Expecting nothing
+ok
+Trying:
+    hbar_num = physical_constants["Planck constant over 2 pi"][0]
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    Ep = [-1.0]
+Expecting nothing
+ok
+Trying:
+    epsilonp = [np.array([0, 0, 1.0])]
+Expecting nothing
+ok
+Trying:
+    delta = symbols("delta")
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [delta]
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0.0, -1.0], [1.0, 0.0]])
+Expecting nothing
+ok
+Trying:
+    omega_level = np.array([0.0, 100.0])
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0.0, 0.0], [1.0, 0.0]])*hbar_num/e_num
+          for p in range(3)]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    sweep_time_evolution = fast_sweep_time_evolution(Ep, epsilonp, gamma,
+                                                     omega_level, rm, xi,
+                                                     theta)
+Expecting nothing
+ok
+Trying:
+    t = np.linspace(0, 1e1, 11)
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    rho0 = np.array([[1, 0], [0, 0]])
+Expecting nothing
+ok
+Trying:
+    rho0 = unfolding(rho0)
+Expecting nothing
+ok
+Trying:
+    deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 5]])
+Expecting nothing
+ok
+Trying:
+    print rho.shape
+Expecting:
+    (5, 11, 3)
+ok
+Trying:
+    print rho
+Expecting:
+    [[[ 0.0000e+00  0.0000e+00  0.0000e+00]
+      [ 5.6205e-04 -1.8774e-02 -1.4437e-02]
+      [ 1.0302e-03 -3.1226e-02 -7.3031e-03]
+      [ 9.1218e-04 -3.0149e-02  1.3325e-03]
+      [ 6.3711e-04 -2.5073e-02  2.7437e-03]
+      [ 5.3438e-04 -2.3100e-02  2.2977e-04]
+      [ 5.8098e-04 -2.4044e-02 -1.4626e-03]
+      [ 6.3808e-04 -2.5209e-02 -1.3291e-03]
+      [ 6.4675e-04 -2.5407e-02 -6.4498e-04]
+      [ 6.2948e-04 -2.5071e-02 -3.7457e-04]
+      [ 6.1812e-04 -2.4841e-02 -4.9967e-04]]
+    <BLANKLINE>
+     [[ 0.0000e+00  0.0000e+00  0.0000e+00]
+      [ 5.8142e-03 -7.4650e-02  1.3859e-02]
+      [ 2.2458e-03 -4.3027e-02 -1.9436e-02]
+      [ 2.2788e-03 -4.6867e-02  8.1709e-03]
+      [ 3.0571e-03 -5.4724e-02 -6.7300e-03]
+      [ 2.0980e-03 -4.5626e-02 -2.2121e-03]
+      [ 2.6866e-03 -5.1685e-02 -1.1906e-03]
+      [ 2.4351e-03 -4.9072e-02 -3.8467e-03]
+      [ 2.4572e-03 -4.9419e-02 -1.6141e-03]
+      [ 2.5241e-03 -5.0036e-02 -2.8327e-03]
+      [ 2.4491e-03 -4.9304e-02 -2.4541e-03]]
+    <BLANKLINE>
+     [[ 0.0000e+00  0.0000e+00  0.0000e+00]
+      [ 1.4361e-01  0.0000e+00 -3.4458e-01]
+      [ 3.0613e-01  0.0000e+00 -4.1373e-01]
+      [ 3.6110e-01  0.0000e+00 -3.7387e-01]
+      [ 3.5427e-01  0.0000e+00 -3.3710e-01]
+      [ 3.3835e-01  0.0000e+00 -3.2630e-01]
+      [ 3.3135e-01  0.0000e+00 -3.2873e-01]
+      [ 3.3115e-01  0.0000e+00 -3.3244e-01]
+      [ 3.3261e-01  0.0000e+00 -3.3388e-01]
+      [ 3.3343e-01  0.0000e+00 -3.3383e-01]
+      [ 3.3355e-01  0.0000e+00 -3.3348e-01]]
+    <BLANKLINE>
+     [[ 0.0000e+00  0.0000e+00  0.0000e+00]
+      [ 5.8142e-03  7.4650e-02  1.3859e-02]
+      [ 2.2458e-03  4.3027e-02 -1.9436e-02]
+      [ 2.2788e-03  4.6867e-02  8.1709e-03]
+      [ 3.0571e-03  5.4724e-02 -6.7300e-03]
+      [ 2.0980e-03  4.5626e-02 -2.2121e-03]
+      [ 2.6866e-03  5.1685e-02 -1.1906e-03]
+      [ 2.4351e-03  4.9072e-02 -3.8467e-03]
+      [ 2.4572e-03  4.9419e-02 -1.6141e-03]
+      [ 2.5241e-03  5.0036e-02 -2.8327e-03]
+      [ 2.4491e-03  4.9304e-02 -2.4541e-03]]
+    <BLANKLINE>
+     [[ 0.0000e+00  0.0000e+00  0.0000e+00]
+      [ 5.6205e-04  1.8774e-02 -1.4437e-02]
+      [ 1.0302e-03  3.1226e-02 -7.3031e-03]
+      [ 9.1218e-04  3.0149e-02  1.3325e-03]
+      [ 6.3711e-04  2.5073e-02  2.7437e-03]
+      [ 5.3438e-04  2.3100e-02  2.2977e-04]
+      [ 5.8098e-04  2.4044e-02 -1.4626e-03]
+      [ 6.3808e-04  2.5209e-02 -1.3291e-03]
+      [ 6.4675e-04  2.5407e-02 -6.4498e-04]
+      [ 6.2948e-04  2.5071e-02 -3.7457e-04]
+      [ 6.1812e-04  2.4841e-02 -4.9967e-04]]]
+ok
+Trying:
+    deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 11]],
+                                       average=True)
+Expecting nothing
+ok
+Trying:
+    print rho
+Expecting:
+    [[ 0.0006 -0.024  -0.0021]
+     [ 0.0011 -0.0308 -0.0007]
+     [ 0.0016 -0.0375  0.0024]
+     [ 0.0041 -0.0604 -0.0061]
+     [ 0.016  -0.1175 -0.0118]
+     [ 0.2999  0.     -0.3291]
+     [ 0.016   0.1175 -0.0118]
+     [ 0.0041  0.0604 -0.0061]
+     [ 0.0016  0.0375  0.0024]
+     [ 0.0011  0.0308 -0.0007]
+     [ 0.0006  0.024  -0.0021]]
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from sympy import Matrix, symbols
+Expecting nothing
+ok
+Trying:
+    from fast.electric_field import electric_field_amplitude_top
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import (define_laser_variables,
+                               polarization_vector)
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0, 0], [a0, 0]]),
+          np.array([[0, 0], [0, 0]]),
+          np.array([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    omega_level = [0, 1.0e9]
+Expecting nothing
+ok
+Trying:
+    gamma21 = 2*np.pi*6e6
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0, -gamma21], [gamma21, 0]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonp = [polarization_vector(0, 0, 0, 0, 1)]
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [symbols("delta1", real=True)]
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    aux = (Ep, epsilonp, detuning_knob, gamma,
+           omega_level, rm, xi, theta)
+Expecting nothing
+ok
+Trying:
+    time_evolution = fast_time_evolution(*aux)
+Expecting nothing
+ok
+Trying:
+    detuning_knobs = [100e6]
+Expecting nothing
+ok
+Trying:
+    Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+Expecting nothing
+ok
+Trying:
+    Eps *= np.exp(1j*np.pi)
+Expecting nothing
+ok
+Trying:
+    Eps = [Eps]
+Expecting nothing
+ok
+Trying:
+    t = np.linspace(0, 1e-6, 11)
+Expecting nothing
+ok
+Trying:
+    rho0 = np.array([[1, 0], [0, 0]])
+Expecting nothing
+ok
+Trying:
+    rho0 = unfolding(rho0)
+Expecting nothing
+ok
+Trying:
+    print time_evolution(t, rho0, Eps, detuning_knobs)
+Expecting:
+    [[ 0.      0.      0.    ]
+     [ 0.0215  0.1428 -0.0116]
+     [ 0.0183  0.1299 -0.0271]
+     [ 0.0179  0.1293 -0.0242]
+     [ 0.018   0.1296 -0.0244]
+     [ 0.018   0.1296 -0.0244]
+     [ 0.018   0.1296 -0.0244]
+     [ 0.018   0.1296 -0.0244]
+     [ 0.018   0.1296 -0.0244]
+     [ 0.018   0.1296 -0.0244]
+     [ 0.018   0.1296 -0.0244]]
+ok
+Trying:
+    print time_evolution(t, rho0, Eps, detuning_knobs, average=True)
+Expecting:
+    [ 0.0175  0.1244 -0.0222]
+ok
+Trying:
+    Ne = 6
+Expecting nothing
+ok
+Trying:
+    Nl = 2
+Expecting nothing
+ok
+Trying:
+    omega_level = [0.0, 100.0, 100.0, 200.0, 200.0, 300.0]
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((Nl, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    coup = [[(1, 0), (2, 0)], [(3, 0), (4, 0), (5, 0)]]
+Expecting nothing
+ok
+Trying:
+    for l in range(Nl):
+        for pair in coup[l]:
+            xi[l, pair[0], pair[1]] = 1.0
+            xi[l, pair[1], pair[0]] = 1.0
+Expecting nothing
+ok
+Trying:
+    aux = define_simplification(omega_level, xi, Nl)
+Expecting nothing
+ok
+Trying:
+    u, invu, omega_levelu, Neu, xiu = aux
+Expecting nothing
+ok
+Trying:
+    find_omega_min(omega_levelu, Neu, Nl, xiu)
+Expecting:
+    ([100.0, 200.0], [1, 2], [0, 0])
+ok
+Trying:
+    from fast.symbolic import define_density_matrix
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    coef = 1+2j
+Expecting nothing
+ok
+Trying:
+    rhouv = define_density_matrix(Ne)[1, 1]
+Expecting nothing
+ok
+Trying:
+    s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, real=True, normalized=True)
+Expecting nothing
+ok
+Trying:
+    independent_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+                                 unfolding, False)
+Expecting:
+    [[1, None, -2.00000000000000, False, False]]
+ok
+Trying:
+    from fast.symbolic import define_density_matrix
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    coef = 1+2j
+Expecting nothing
+ok
+Trying:
+    rhouv = define_density_matrix(Ne)[1, 1]
+Expecting nothing
+ok
+Trying:
+    s, i, j, k, u, v = (1, 1, 0, 1, 1, 1)
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, real=True, normalized=True)
+Expecting nothing
+ok
+Trying:
+    linear_get_coefficients(coef, rhouv, s, i, j, k, u, v,
+                                 unfolding, False)
+Expecting:
+    [[1, 0, -2.00000000000000, False, False]]
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    rho = np.array([[0.6, 1+2j], [1-2j, 0.4]])
+Expecting nothing
+ok
+Trying:
+    rho = unfolding(rho)
+Expecting nothing
+ok
+Trying:
+    sx = np.array([[0, 1], [1, 0]])
+Expecting nothing
+ok
+Trying:
+    print observable(sx, rho, unfolding)
+Expecting:
+    2.0
+ok
+Trying:
+    xi = np.zeros((1, 2, 2))
+Expecting nothing
+ok
+Trying:
+    xi[0, 1, 0] = 1.0
+Expecting nothing
+ok
+Trying:
+    xi[0, 0, 1] = 1.0
+Expecting nothing
+ok
+Trying:
+    rm = np.zeros((3, 2, 2))
+Expecting nothing
+ok
+Trying:
+    rm[0, 1, 0] = 1.0
+Expecting nothing
+ok
+Trying:
+    rm[1, 1, 0] = 1.0
+Expecting nothing
+ok
+Trying:
+    rm[2, 1, 0] = 1.0
+Expecting nothing
+ok
+Trying:
+    phase_transformation(2, 1, rm, xi)
+Expecting:
+    [-omega_1, -omega_1 - varpi_1]
+ok
+Trying:
+    from fast import State, Integer, split_hyperfine_to_magnetic
+Expecting nothing
+ok
+Trying:
+    g = State("Rb", 87, 5, 1, 3/Integer(2), 0)
+Expecting nothing
+ok
+Trying:
+    e = State("Rb", 87, 4, 2, 5/Integer(2), 1)
+Expecting nothing
+ok
+Trying:
+    magnetic_states = split_hyperfine_to_magnetic([g, e])
+Expecting nothing
+ok
+Trying:
+    omega0 = magnetic_states[0].omega
+Expecting nothing
+ok
+Trying:
+    omega_level = [ei.omega - omega0 for ei in magnetic_states]
+Expecting nothing
+ok
+Trying:
+    Ne = len(magnetic_states)
+Expecting nothing
+ok
+Trying:
+    N = 4e6
+Expecting nothing
+ok
+Trying:
+    D = 0.1
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    rho = np.zeros((Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    rho[0, 0] = 0.8
+Expecting nothing
+ok
+Trying:
+    rho[3, 3] = 0.2
+Expecting nothing
+ok
+Trying:
+    rho[3, 0] = 0.3
+Expecting nothing
+ok
+Trying:
+    rho[0, 3] = 0.3
+Expecting nothing
+ok
+Trying:
+    rho = unfolding(rho)
+Expecting nothing
+ok
+Trying:
+    ep = np.array([1, 1j, 0])/np.sqrt(2.0)
+Expecting nothing
+ok
+Trying:
+    ex = np.array([1, 0, 0])
+Expecting nothing
+ok
+Trying:
+    r0 = 4.75278521538619e-11
+Expecting nothing
+ok
+Trying:
+    rm = np.zeros((3, Ne, Ne), complex)
+Expecting nothing
+ok
+Trying:
+    rm[0, 1, 0] = -r0
+Expecting nothing
+ok
+Trying:
+    rm[0, 3, 0] = r0
+Expecting nothing
+ok
+Trying:
+    rm[1, 1, 0] = -1j*r0
+Expecting nothing
+ok
+Trying:
+    rm[1, 3, 0] = -1j*r0
+Expecting nothing
+ok
+Trying:
+    rm[1, 2, 0] = -np.sqrt(2)*r0
+Expecting nothing
+ok
+Trying:
+    xi = np.zeros((1, Ne, Ne))
+Expecting nothing
+ok
+Trying:
+    xi[0, 1, 0] = 1
+Expecting nothing
+ok
+Trying:
+    xi[0, 2, 0] = 1
+Expecting nothing
+ok
+Trying:
+    xi[0, 3, 0] = 1
+Expecting nothing
+ok
+Trying:
+    xi[0, :, :] += xi[0, :, :].transpose()
+Expecting nothing
+ok
+Trying:
+    print radiated_intensity(rho, 1, 0, ex, rm,
+                             omega_level, xi, N, D, unfolding)
+Expecting:
+    4.60125990174e-22
+ok
+Trying:
+    term_code(1, 0, 33, False, False, True)
+Expecting:
+    '    rhs[1] += (33)*rho[0]\n'
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    from scipy.constants import physical_constants
+Expecting nothing
+ok
+Trying:
+    from sympy import Matrix, symbols
+Expecting nothing
+ok
+Trying:
+    from fast.electric_field import electric_field_amplitude_top
+Expecting nothing
+ok
+Trying:
+    from fast.symbolic import (define_laser_variables,
+                               polarization_vector)
+Expecting nothing
+ok
+Trying:
+    Ne = 2
+Expecting nothing
+ok
+Trying:
+    Nl = 1
+Expecting nothing
+ok
+Trying:
+    a0 = physical_constants["Bohr radius"][0]
+Expecting nothing
+ok
+Trying:
+    rm = [np.array([[0, 0], [a0, 0]]),
+          np.array([[0, 0], [0, 0]]),
+          np.array([[0, 0], [0, 0]])]
+Expecting nothing
+ok
+Trying:
+    xi = np.array([[[0, 1], [1, 0]]])
+Expecting nothing
+ok
+Trying:
+    omega_level = [0, 1.0e9]
+Expecting nothing
+ok
+Trying:
+    gamma21 = 2*np.pi*6e6
+Expecting nothing
+ok
+Trying:
+    gamma = np.array([[0, -gamma21], [gamma21, 0]])
+Expecting nothing
+ok
+Trying:
+    theta = phase_transformation(Ne, Nl, rm, xi)
+Expecting nothing
+ok
+Trying:
+    Ep, omega_laser = define_laser_variables(Nl)
+Expecting nothing
+ok
+Trying:
+    epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
+Expecting nothing
+ok
+Trying:
+    detuning_knob = [symbols("delta1", real=True)]
+Expecting nothing
+ok
+Trying:
+    unfolding = Unfolding(Ne, True, True, True)
+Expecting nothing
+ok
+Trying:
+    aux = (Ep, epsilonps, detuning_knob, gamma,
+           omega_level, rm, xi, theta)
+Expecting nothing
+ok
+Trying:
+    time_evolution = fast_time_evolution(*aux)
+Expecting nothing
+ok
+Trying:
+    detuning_knobs = [100e6]
+Expecting nothing
+ok
+Trying:
+    Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
+Expecting nothing
+ok
+Trying:
+    Eps *= np.exp(1j*np.pi)
+Expecting nothing
+ok
+Trying:
+    Eps = [Eps]
+Expecting nothing
+ok
+Trying:
+    t = np.linspace(0, 1e-6, 11)
+Expecting nothing
+ok
+Trying:
+    rho0 = np.array([[1, 0], [0, 0]])
+Expecting nothing
+ok
+Trying:
+    rho0 = unfolding(rho0)
+Expecting nothing
+ok
+Trying:
+    rho = time_evolution(t, rho0, Eps, detuning_knobs)
+Expecting nothing
+ok
+Trying:
+    print time_average(rho, t)
+Expecting:
+    [ 0.0175  0.1244 -0.0222]
+ok
+1 items had no tests:
+    fast.bloch.Unfolding
+28 items passed all tests:
+  19 tests in fast.bloch
+   7 tests in fast.bloch.Unfolding.__call__
+  16 tests in fast.bloch.Unfolding.__init__
+   9 tests in fast.bloch.Unfolding.inverse
+  11 tests in fast.bloch.define_simplification
+  11 tests in fast.bloch.detunings_code
+  10 tests in fast.bloch.detunings_combinations
+   9 tests in fast.bloch.detunings_indices
+  21 tests in fast.bloch.detunings_rewrite
+  23 tests in fast.bloch.electric_succeptibility
+  27 tests in fast.bloch.fast_bloch_equations
+  16 tests in fast.bloch.fast_detuning_terms
+  38 tests in fast.bloch.fast_hamiltonian
+  25 tests in fast.bloch.fast_hamiltonian_terms
+  11 tests in fast.bloch.fast_lindblad_terms
+  20 tests in fast.bloch.fast_rabi_terms
+  25 tests in fast.bloch.fast_steady_state
+  19 tests in fast.bloch.fast_sweep_steady_state
+  26 tests in fast.bloch.fast_sweep_time_evolution
+  29 tests in fast.bloch.fast_time_evolution
+   9 tests in fast.bloch.find_omega_min
+   7 tests in fast.bloch.independent_get_coefficients
+   7 tests in fast.bloch.linear_get_coefficients
+   6 tests in fast.bloch.observable
+   8 tests in fast.bloch.phase_transformation
+  31 tests in fast.bloch.radiated_intensity
+   1 tests in fast.bloch.term_code
+  29 tests in fast.bloch.time_average
+470 tests in 29 items.
+470 passed and 0 failed.
+Test passed.
+TestResults(failed=0, attempted=470)

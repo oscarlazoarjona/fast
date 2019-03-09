@@ -1,0 +1,772 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Optical Bloch Equations &#8212; FAST 1.2 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Symbolic Routines" href="symbolic.html" />
+    <link rel="prev" title="Atomic Structure" href="atomic_structure.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-fast.bloch">
+<span id="optical-bloch-equations"></span><h1>Optical Bloch Equations<a class="headerlink" href="#module-fast.bloch" title="Permalink to this headline">¶</a></h1>
+<p>This module contains all the fast routines for optical Bloch equations.</p>
+<p>Here is an example with rubidum 87.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">fast</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">element</span> <span class="o">=</span> <span class="s2">&quot;Rb&quot;</span><span class="p">;</span> <span class="n">isotope</span> <span class="o">=</span> <span class="mi">87</span><span class="p">;</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fine_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">fast</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">isotope</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="o">/</span><span class="n">fast</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">)),</span>
+<span class="gp">... </span>               <span class="n">fast</span><span class="o">.</span><span class="n">State</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">isotope</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="o">/</span><span class="n">fast</span><span class="o">.</span><span class="n">Integer</span><span class="p">(</span><span class="mi">2</span><span class="p">))]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">magnetic_states</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="n">make_list_of_states</span><span class="p">(</span><span class="n">fine_states</span><span class="p">,</span> <span class="s2">&quot;magnetic&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">magnetic_states</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e2</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epsilonp</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">omega</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="n">calculate_matrices</span><span class="p">(</span><span class="n">magnetic_states</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="n">omega</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="n">helicity_to_cartesian</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="n">r</span><span class="p">[</span><span class="n">p</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="n">fast</span><span class="o">.</span><span class="n">symbolic</span><span class="o">.</span><span class="n">delta_greater</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">a0</span>
+<span class="gp">... </span>               <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">)]</span>
+<span class="gp">... </span>               <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">coupled2</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> \
+<span class="gp">... </span>       <span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> \
+<span class="gp">... </span>       <span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">magnetic_states</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">f</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">magnetic_states</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">f</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">l</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="k">return</span> <span class="mf">0.0</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="n">coupled2</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+<span class="gp">... </span>               <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">)]</span>
+<span class="gp">... </span>               <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">)])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">phase</span> <span class="o">=</span> <span class="n">phase_transformation</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">return_equations</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detuning_knob</span> <span class="o">=</span> <span class="p">[</span><span class="n">fast</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;delta&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hamiltonian</span> <span class="o">=</span> <span class="n">fast_hamiltonian</span><span class="p">(</span><span class="n">E0</span><span class="p">,</span> <span class="n">epsilonp</span><span class="p">,</span> <span class="n">detuning_knob</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span>
+<span class="gp">... </span>                               <span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">phase</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detuning_knob</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">hamiltonian</span><span class="p">(</span><span class="n">detuning_knob</span><span class="p">)</span><span class="o">/</span><span class="n">hbar_num</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e-6</span>
+<span class="go">[[   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    1.74562297+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    1.35215374+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">    -1.56133265+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    1.56133265+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   -1.74562297+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.35215374+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   72.22180189+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     1.56133265+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    1.56133265+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">    72.22180189+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j   -0.60470154+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.78066633+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.97494695+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j   72.22180189+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j   -0.69824919+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     2.09474757+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j   72.22180189+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   -0.60470154+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   -0.78066633+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    1.97494695+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   72.22180189+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">    -1.56133265+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    1.56133265+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j   -1.56133265+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   1.74562297+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">    -0.60470154+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j   72.22180189+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j   -0.69824919+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j   72.22180189+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j   -1.74562297+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j   -0.60470154+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   72.22180189+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.56133265+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">   229.16195450+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   1.35215374+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.78066633+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j  229.16195450+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    1.56133265+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j  229.16195450+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    1.35215374+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j   -0.78066633+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j  229.16195450+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j   -1.56133265+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">   229.16195450+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.56133265+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     1.97494695+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    2.09474757+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    1.97494695+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    1.56133265+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]</span>
+<span class="go"> [   0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j</span>
+<span class="go">     0.00000000+0.j    0.00000000+0.j    0.00000000+0.j    0.00000000+0.j]]</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="fast.bloch.define_simplification">
+<code class="descclassname">fast.bloch.</code><code class="descname">define_simplification</code><span class="sig-paren">(</span><em>omega_level</em>, <em>xi</em>, <em>Nl</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.define_simplification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a simplifying function, its inverse, and simplified frequencies.</p>
+<p>This implements an index iu that labels energies in a non-degenerate
+way.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_simplification</span><span class="p">(</span><span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">,</span> <span class="n">invu</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">xiu</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">omega_levelu</span>
+<span class="go">[0.0, 100.0, 200.0, 300.0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">Neu</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">xiu</span>
+<span class="go">[[[ 0.  1.  0.  0.]</span>
+<span class="go">  [ 1.  0.  0.  0.]</span>
+<span class="go">  [ 0.  0.  0.  0.]</span>
+<span class="go">  [ 0.  0.  0.  0.]]</span>
+
+<span class="go"> [[ 0.  0.  1.  1.]</span>
+<span class="go">  [ 0.  0.  0.  0.]</span>
+<span class="go">  [ 1.  0.  0.  0.]</span>
+<span class="go">  [ 1.  0.  0.  0.]]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.detunings_code">
+<code class="descclassname">fast.bloch.</code><code class="descname">detunings_code</code><span class="sig-paren">(</span><em>Neu</em>, <em>Nl</em>, <em>pairs</em>, <em>omega_levelu</em>, <em>iu0</em>, <em>ju0</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.detunings_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the code to calculate the simplified detunings.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_simplification</span><span class="p">(</span><span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">,</span> <span class="n">invu</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">xiu</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_min</span><span class="p">,</span> <span class="n">iu0</span><span class="p">,</span> <span class="n">ju0</span> <span class="o">=</span> <span class="n">find_omega_min</span><span class="p">(</span><span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pairs</span> <span class="o">=</span> <span class="n">detunings_indices</span><span class="p">(</span><span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">detunings_code</span><span class="p">(</span><span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">pairs</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">iu0</span><span class="p">,</span> <span class="n">ju0</span><span class="p">)</span>
+<span class="go">    delta1_2_1 = detuning_knob[0]</span>
+<span class="go">    delta2_3_1 = detuning_knob[1]</span>
+<span class="go">    delta2_4_1 = detuning_knob[1] + (-100.0)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.detunings_combinations">
+<code class="descclassname">fast.bloch.</code><code class="descname">detunings_combinations</code><span class="sig-paren">(</span><em>pairs</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.detunings_combinations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all combinations of detunings.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_simplification</span><span class="p">(</span><span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">,</span> <span class="n">invu</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">xiu</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pairs</span> <span class="o">=</span> <span class="n">detunings_indices</span><span class="p">(</span><span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detunings_combinations</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
+<span class="go">[[(1, 0), (2, 0)], [(1, 0), (3, 0)]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.detunings_indices">
+<code class="descclassname">fast.bloch.</code><code class="descname">detunings_indices</code><span class="sig-paren">(</span><em>Neu</em>, <em>Nl</em>, <em>xiu</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.detunings_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the indices of the transitions of all fields.</p>
+<p>They are returned in the form
+[[(i1, j1), (i2, j2)], …,[(i1, j1)]].
+that is, one list of pairs of indices for each field.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_simplification</span><span class="p">(</span><span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">,</span> <span class="n">invu</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">xiu</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detunings_indices</span><span class="p">(</span><span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="go">[[(1, 0)], [(2, 0), (3, 0)]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.detunings_rewrite">
+<code class="descclassname">fast.bloch.</code><code class="descname">detunings_rewrite</code><span class="sig-paren">(</span><em>expr</em>, <em>combs</em>, <em>omega_laser</em>, <em>symb_omega_levelu</em>, <em>omega_levelu</em>, <em>iu0</em>, <em>ju0</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.detunings_rewrite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rewrite a symbolic expression in terms of allowed transition detunings.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_simplification</span><span class="p">(</span><span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">,</span> <span class="n">invu</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">xiu</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_min</span><span class="p">,</span> <span class="n">iu0</span><span class="p">,</span> <span class="n">ju0</span> <span class="o">=</span> <span class="n">find_omega_min</span><span class="p">(</span><span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pairs</span> <span class="o">=</span> <span class="n">detunings_indices</span><span class="p">(</span><span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">combs</span> <span class="o">=</span> <span class="n">detunings_combinations</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">symb_omega_levelu</span><span class="p">,</span> <span class="n">omega</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">define_frequencies</span><span class="p">(</span><span class="n">Neu</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">E0</span><span class="p">,</span> <span class="n">omega_laser</span> <span class="o">=</span> <span class="n">define_laser_variables</span><span class="p">(</span><span class="n">Nl</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Most times it is possible to express these combinations of optical
+frequencies in terms of allowed transition detunings.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">expr</span> <span class="o">=</span> <span class="o">+</span><span class="p">(</span><span class="n">omega_laser</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expr</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="n">omega_laser</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expr</span>
+<span class="go">-omega_2 + omega_4 + varpi_1 - varpi_2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detunings_rewrite</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">combs</span><span class="p">,</span> <span class="n">omega_laser</span><span class="p">,</span> <span class="n">symb_omega_levelu</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">iu0</span><span class="p">,</span> <span class="n">ju0</span><span class="p">)</span>
+<span class="go">&#39;+delta1_2_1-delta2_4_1&#39;</span>
+</pre></div>
+</div>
+<p>But some times it is not possible:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">expr</span> <span class="o">=</span> <span class="o">+</span><span class="p">(</span><span class="n">omega_laser</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expr</span> <span class="o">+=</span> <span class="o">-</span><span class="p">(</span><span class="n">omega_laser</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">-</span><span class="n">symb_omega_levelu</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expr</span>
+<span class="go">-omega_2 + omega_4 - varpi_1 + varpi_2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detunings_rewrite</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">combs</span><span class="p">,</span> <span class="n">omega_laser</span><span class="p">,</span> <span class="n">symb_omega_levelu</span><span class="p">,</span>
+<span class="gp">... </span>                  <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">iu0</span><span class="p">,</span> <span class="n">ju0</span><span class="p">)</span>
+<span class="go">&#39;-detuning_knob[0]+detuning_knob[1]&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.fast_hamiltonian">
+<code class="descclassname">fast.bloch.</code><code class="descname">fast_hamiltonian</code><span class="sig-paren">(</span><em>Ep</em>, <em>epsilonp</em>, <em>detuning_knob</em>, <em>rm</em>, <em>omega_level</em>, <em>xi</em>, <em>theta</em>, <em>file_name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.fast_hamiltonian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a fast function that returns a Hamiltonian as a numerical array.</p>
+<p>The arguments Ep, epsilonp, and detuning_knob represent the electric field
+amplitudes, field polarizations, and the detunings of each field from the
+numerical values.</p>
+<p>Eventually, the way this will work is that the returned function will take
+these Ep, epsilonp, and detuning_knob as numerical arguments if symbolic
+expressions were used, or use the given numerical values by default. At the
+moment however, only variable detuning_knob is supported.</p>
+<p>All quantities should be in SI units.</p>
+<p>The argument rm should be numerical values of the below-diagonal components
+of the position operator in the cartesian basis:</p>
+<div class="math">
+\[\vec{r}^{(-)}_{i j} = [ x_{ij}, y_{ij}, z_{ij} ]
+\hspace{1cm} \forall \hspace{1cm} 0 &lt; j &lt; i\]</div>
+<p>The argument omega_level should be numerical values of the energy levels.
+theta should be a phase transformation returned by the phase_transformation
+function. xi should be an array of ones and zeros such that <code class="docutils literal"><span class="pre">xi[l,</span> <span class="pre">i,</span> <span class="pre">j]</span></code>
+represents whether the <span class="math">\(|i\rangle \rightarrow |j\rangle\)</span> transition
+is driven by field l.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="n">omega_level</span><span class="o">*</span><span class="mf">1e6</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ep_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e2</span><span class="p">,</span> <span class="mf">1e2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">epsilonp_vals</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">rm</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">a0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">theta</span> <span class="o">=</span> <span class="n">phase_transformation</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sympy</span> <span class="k">import</span> <span class="n">symbols</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">detuning_knob</span> <span class="o">=</span> <span class="n">symbols</span><span class="p">(</span><span class="s2">&quot;delta1 delta2&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">H</span> <span class="o">=</span> <span class="n">fast_hamiltonian</span><span class="p">(</span><span class="n">Ep_vals</span><span class="p">,</span> <span class="n">epsilonp_vals</span><span class="p">,</span> <span class="n">detuning_knob</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span>
+<span class="gp">... </span>                     <span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">theta</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">detuning_knob_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">])</span><span class="o">*</span><span class="mf">1e6</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">H</span><span class="p">(</span><span class="n">detuning_knob_vals</span><span class="p">)</span><span class="o">/</span><span class="n">hbar_num</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e-6</span>
+<span class="go">[[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j</span>
+<span class="go">    2.55908963+0.j   3.19886203+0.j]</span>
+<span class="go"> [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">   -3.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j  97.00000000+0.j]]</span>
+</pre></div>
+</div>
+<p>We can also make the electric field amplitudes variable:
+&gt;&gt;&gt; Ep, omega_laser = define_laser_variables(Nl)
+&gt;&gt;&gt; H = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob, rm,
+…                      omega_level, xi, theta)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">H</span><span class="p">(</span><span class="n">Ep_vals</span><span class="p">,</span> <span class="n">detuning_knob_vals</span><span class="p">)</span><span class="o">/</span><span class="n">hbar_num</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e-6</span>
+<span class="go">[[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j</span>
+<span class="go">    2.55908963+0.j   3.19886203+0.j]</span>
+<span class="go"> [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">   -3.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j  97.00000000+0.j]]</span>
+</pre></div>
+</div>
+<p>Or we can make only the electric field amplitudes variable:
+&gt;&gt;&gt; H = fast_hamiltonian(Ep, epsilonp_vals, detuning_knob_vals, rm,
+…                      omega_level, xi, theta)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span> <span class="n">H</span><span class="p">(</span><span class="n">Ep_vals</span><span class="p">)</span><span class="o">/</span><span class="n">hbar_num</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="mf">1e-6</span>
+<span class="go">[[  0.00000000+0.j   0.63977241+0.j   1.27954481+0.j   1.91931722+0.j</span>
+<span class="go">    2.55908963+0.j   3.19886203+0.j]</span>
+<span class="go"> [  0.63977241+0.j   1.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  1.27954481+0.j   0.00000000+0.j   1.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  1.91931722+0.j   0.00000000+0.j   0.00000000+0.j  -3.00000000+0.j</span>
+<span class="go">    0.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  2.55908963+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">   -3.00000000+0.j   0.00000000+0.j]</span>
+<span class="go"> [  3.19886203+0.j   0.00000000+0.j   0.00000000+0.j   0.00000000+0.j</span>
+<span class="go">    0.00000000+0.j  97.00000000+0.j]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.find_omega_min">
+<code class="descclassname">fast.bloch.</code><code class="descname">find_omega_min</code><span class="sig-paren">(</span><em>omega_levelu</em>, <em>Neu</em>, <em>Nl</em>, <em>xiu</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.find_omega_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the smallest transition frequency for each field.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Nl</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">omega_level</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">200.0</span><span class="p">,</span> <span class="mf">300.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Nl</span><span class="p">,</span> <span class="n">Ne</span><span class="p">,</span> <span class="n">Ne</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coup</span> <span class="o">=</span> <span class="p">[[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span> <span class="p">[(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nl</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">coup</span><span class="p">[</span><span class="n">l</span><span class="p">]:</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">... </span>        <span class="n">xi</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">aux</span> <span class="o">=</span> <span class="n">define_simplification</span><span class="p">(</span><span class="n">omega_level</span><span class="p">,</span> <span class="n">xi</span><span class="p">,</span> <span class="n">Nl</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span><span class="p">,</span> <span class="n">invu</span><span class="p">,</span> <span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">xiu</span> <span class="o">=</span> <span class="n">aux</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">find_omega_min</span><span class="p">(</span><span class="n">omega_levelu</span><span class="p">,</span> <span class="n">Neu</span><span class="p">,</span> <span class="n">Nl</span><span class="p">,</span> <span class="n">xiu</span><span class="p">)</span>
+<span class="go">([100.0, 200.0], [1, 2], [0, 0])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.phase_transformation">
+<code class="descclassname">fast.bloch.</code><code class="descname">phase_transformation</code><span class="sig-paren">(</span><em>Ne</em>, <em>Nl</em>, <em>rm</em>, <em>xi</em>, <em>return_equations=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.phase_transformation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a phase transformation theta_i.</p>
+<dl class="docutils">
+<dt>The phase transformation is defined in a way such that</dt>
+<dd>theta1 + omega_level1 = 0.</dd>
+</dl>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xi</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rm</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">phase_transformation</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rm</span><span class="p">,</span> <span class="n">xi</span><span class="p">)</span>
+<span class="go">[-omega_1, -omega_1 - varpi_1]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fast.bloch.vectorization">
+<code class="descclassname">fast.bloch.</code><code class="descname">vectorization</code><span class="sig-paren">(</span><em>Ne</em>, <em>real=False</em>, <em>lower_triangular=True</em>, <em>normalized=False</em><span class="sig-paren">)</span><a class="headerlink" href="#fast.bloch.vectorization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return functions to map matrix element indices to vectorized indices.</p>
+<p>This function returns a function Mu that takes a pair of indices i, j
+spanning Ne states, and returns an index mu spanning the elements of the
+vectorized density matrix. If complex=True.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="gp">... </span>                       <span class="n">lower_triangular</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="n">Mu</span><span class="p">,</span> <span class="n">IJ</span> <span class="o">=</span> <span class="n">vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">lower_triangular</span><span class="p">,</span> <span class="n">normalized</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">normalized</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">j0</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">j0</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j0</span><span class="p">,</span> <span class="n">Ne</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">if</span> <span class="n">real</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="nb">print</span> <span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">jj</span><span class="p">,</span> <span class="n">ss</span>
+<span class="gp">... </span>        <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>            <span class="nb">print</span> <span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">jj</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ne</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">Ne</span><span class="p">):</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="n">real</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="nb">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">jj</span><span class="p">,</span> <span class="n">ss</span>
+<span class="gp">... </span>                <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="nb">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">jj</span><span class="p">,</span> <span class="n">ss</span>
+<span class="gp">... </span>            <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>                <span class="nb">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">jj</span>
+<span class="gp">... </span>            <span class="k">if</span> <span class="ow">not</span> <span class="n">lower_triangular</span><span class="p">:</span>
+<span class="gp">... </span>                <span class="k">if</span> <span class="n">real</span><span class="p">:</span>
+<span class="gp">... </span>                    <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="nb">print</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="n">jj</span><span class="p">,</span> <span class="n">ss</span>
+<span class="gp">... </span>                    <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ss</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="nb">print</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="n">jj</span><span class="p">,</span> <span class="n">ss</span>
+<span class="gp">... </span>                <span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>                    <span class="n">muu</span> <span class="o">=</span> <span class="n">Mu</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="n">ii</span><span class="p">,</span> <span class="n">jj</span> <span class="o">=</span> <span class="n">IJ</span><span class="p">(</span><span class="n">muu</span><span class="p">)</span>
+<span class="gp">... </span>                    <span class="nb">print</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">muu</span><span class="p">,</span> <span class="n">j</span><span class="o">-</span><span class="n">ii</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="n">jj</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Ne</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="go">0 0 0 0 0</span>
+<span class="go">1 1 1 0 0</span>
+<span class="go">2 2 2 0 0</span>
+<span class="go">1 0 3 0 0</span>
+<span class="go">1 0 4 0 0</span>
+<span class="go">2 0 5 0 0</span>
+<span class="go">2 0 6 0 0</span>
+<span class="go">2 1 7 0 0</span>
+<span class="go">2 1 8 0 0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="go">1 1 0 0 0</span>
+<span class="go">2 2 1 0 0</span>
+<span class="go">1 0 2 0 0</span>
+<span class="go">1 0 3 0 0</span>
+<span class="go">2 0 4 0 0</span>
+<span class="go">2 0 5 0 0</span>
+<span class="go">2 1 6 0 0</span>
+<span class="go">2 1 7 0 0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="go">0 0 0 0 0</span>
+<span class="go">1 1 1 0 0</span>
+<span class="go">2 2 2 0 0</span>
+<span class="go">1 0 3 0 0</span>
+<span class="go">2 0 4 0 0</span>
+<span class="go">2 1 5 0 0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="go">1 1 0 0 0</span>
+<span class="go">2 2 1 0 0</span>
+<span class="go">1 0 2 0 0</span>
+<span class="go">2 0 3 0 0</span>
+<span class="go">2 1 4 0 0</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="go">0 0 0 0 0 1</span>
+<span class="go">1 1 1 0 0 1</span>
+<span class="go">2 2 2 0 0 1</span>
+<span class="go">1 0 3 0 0 1</span>
+<span class="go">1 0 4 0 0 -1</span>
+<span class="go">0 1 5 0 0 1</span>
+<span class="go">0 1 6 0 0 -1</span>
+<span class="go">2 0 7 0 0 1</span>
+<span class="go">2 0 8 0 0 -1</span>
+<span class="go">0 2 9 0 0 1</span>
+<span class="go">0 2 10 0 0 -1</span>
+<span class="go">2 1 11 0 0 1</span>
+<span class="go">2 1 12 0 0 -1</span>
+<span class="go">1 2 13 0 0 1</span>
+<span class="go">1 2 14 0 0 -1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="go">1 1 0 0 0 1</span>
+<span class="go">2 2 1 0 0 1</span>
+<span class="go">1 0 2 0 0 1</span>
+<span class="go">1 0 3 0 0 -1</span>
+<span class="go">0 1 4 0 0 1</span>
+<span class="go">0 1 5 0 0 -1</span>
+<span class="go">2 0 6 0 0 1</span>
+<span class="go">2 0 7 0 0 -1</span>
+<span class="go">0 2 8 0 0 1</span>
+<span class="go">0 2 9 0 0 -1</span>
+<span class="go">2 1 10 0 0 1</span>
+<span class="go">2 1 11 0 0 -1</span>
+<span class="go">1 2 12 0 0 1</span>
+<span class="go">1 2 13 0 0 -1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+<span class="go">0 0 0 0 0 1</span>
+<span class="go">1 1 1 0 0 1</span>
+<span class="go">2 2 2 0 0 1</span>
+<span class="go">1 0 3 0 0 1</span>
+<span class="go">1 0 4 0 0 -1</span>
+<span class="go">2 0 5 0 0 1</span>
+<span class="go">2 0 6 0 0 -1</span>
+<span class="go">2 1 7 0 0 1</span>
+<span class="go">2 1 8 0 0 -1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test_vectorization</span><span class="p">(</span><span class="n">Ne</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="go">1 1 0 0 0 1</span>
+<span class="go">2 2 1 0 0 1</span>
+<span class="go">1 0 2 0 0 1</span>
+<span class="go">1 0 3 0 0 -1</span>
+<span class="go">2 0 4 0 0 1</span>
+<span class="go">2 0 5 0 0 -1</span>
+<span class="go">2 1 6 0 0 1</span>
+<span class="go">2 1 7 0 0 -1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">FAST</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atomic_structure.html">Atomic Structure</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optical Bloch Equations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="symbolic.html">Symbolic Routines</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="atomic_structure.html" title="previous chapter">Atomic Structure</a></li>
+      <li>Next: <a href="symbolic.html" title="next chapter">Symbolic Routines</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Oscar Gerardo Lazo Arjona.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/modules/bloch.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
