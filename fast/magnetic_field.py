@@ -38,15 +38,15 @@ def lande_g_factors(element, isotope, L=None, J=None, F=None):
 
     >>> element = "Rb"
     >>> isotope = 87
-    >>> print lande_g_factors(element, isotope)
+    >>> print(lande_g_factors(element, isotope))
     [ 9.9999e-01  2.0023e+00 -9.9514e-04]
 
     The spin-orbit g-factor for a certain J
-    >>> print lande_g_factors(element, isotope, L=0, J=1/Integer(2))
+    >>> print(lande_g_factors(element, isotope, L=0, J=1/Integer(2)))
     [0.9999936864200584 2.0023193043622 -0.0009951414 2.00231930436220]
 
     The nuclear-coupled g-factor for a certain F
-    >>> print lande_g_factors(element, isotope, L=0, J=1/Integer(2), F=1)
+    >>> print(lande_g_factors(element, isotope, L=0, J=1/Integer(2), F=1))
     [0.9999936864200584 2.0023193043622 -0.0009951414 2.00231930436220
      -0.501823752840550]
 
@@ -84,7 +84,7 @@ def zeeman_energies(fine_state, Bz):
     >>> Bz = 200.0
     >>> Bz = Bz/10000
     >>> for f_group in zeeman_energies(ground_state, Bz):
-    ...     print f_group
+    ...     print(f_group)
     [-2.73736448508248e-24 -2.83044285506388e-24 -2.92352122504527e-24]
     [1.51284728917866e-24 1.60555650110849e-24 1.69826571303833e-24
      1.79097492496816e-24 1.88368413689800e-24]
@@ -118,7 +118,7 @@ def paschen_back_energies(fine_state, Bz):
     >>> Bz = 200.0
     >>> Bz = Bz/10000
     >>> for f_group in paschen_back_energies(ground_state, Bz):
-    ...     print f_group
+    ...     print(f_group)
     [1.51284728917866e-24 3.80485568127324e-25 -7.51876152924007e-25
      -1.88423787397534e-24]
     [-1.51229355210131e-24 -3.80300989101543e-25 7.51691573898227e-25
@@ -161,4 +161,4 @@ def paschen_back_energies(fine_state, Bz):
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))
