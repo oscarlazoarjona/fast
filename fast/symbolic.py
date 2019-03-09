@@ -126,7 +126,6 @@ def define_density_matrix(Ne, explicitly_hermitian=False, normalized=False,
     [rho21(t, z), rho22(t, z)]])
 
     """
-
     if Ne > 9:
         comma = ","
         name = "\\" + name
@@ -208,8 +207,7 @@ def define_laser_variables(Nl, real_amplitudes=False, variables=None):
 
 def polarization_vector(phi, theta, alpha, beta, p,
                         numeric=False, abstract=False):
-    """
-    This function returns a unitary vector describing the polarization
+    """This function returns a unitary vector describing the polarization
     of plane waves.:
 
     INPUT:
