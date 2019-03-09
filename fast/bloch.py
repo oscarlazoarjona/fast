@@ -69,6 +69,7 @@ Here is an example with rubidum 87.
 ...                                omega_level, xi, phase)
 
 >>> detuning_knob = [0.0, 0.0]
+
 >>> np.set_printoptions(precision=4)
 >>> print hamiltonian(detuning_knob)/hbar_num/2/np.pi*1e-6
 [[ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j

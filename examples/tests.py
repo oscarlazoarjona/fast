@@ -6,16 +6,16 @@ r"""This script runs all doctests in FAST."""
 from doctest import testmod
 import fast
 
-import doctest_01___Two_level_atom
-import doctest_02___Three_level_atom_ladder
-import doctest_03___Rb87_one_photon
-import doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
-import doctest_05___Two_level_atom_symbolic
-import doctest_06___Three_level_atom_ladder_symbolic
-import doctest_07___Three_level_atom_Lambda_symbolic
-import doctest_08___Three_level_atom_V_symbolic
-import doctest_09___Thermal_States
-import doctest_10___States_database
+# import doctest_01___Two_level_atom
+# import doctest_02___Three_level_atom_ladder
+# import doctest_03___Rb87_one_photon
+# import doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
+# import doctest_05___Two_level_atom_symbolic
+# import doctest_06___Three_level_atom_ladder_symbolic
+# import doctest_07___Three_level_atom_Lambda_symbolic
+# import doctest_08___Three_level_atom_V_symbolic
+# import doctest_09___Thermal_States
+# import doctest_10___States_database
 
 verbose = True
 # verbose = False

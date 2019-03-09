@@ -44,4 +44,4 @@ coverage = (1.0 - float(sum(items_without_tests))/sum(items_total))*100
 success = float(sum(tests_passed))/(sum(tests_total))*100
 
 print "The coverage of doctests is", coverage, "%."
-print "The sucess of the doctests is", success, "%."
+# print "The sucess of the doctests is", success, "%."

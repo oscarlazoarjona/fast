@@ -29,6 +29,9 @@ Matrix([
 [rho11, rho12],
 [rho21, rho22]])
 
+>>> import numpy as np
+>>> np.set_printoptions(precision=4)
+
 References
 ~~~~~~~~~~
 .. [Edmonds74] A. R. Edmonds. Angular momentum in quantum mechanics.
@@ -368,14 +371,14 @@ def cartesian_to_helicity(vector, numeric=False):
     ...      [0.0,-1.0]]]
 
     >>> cartesian_to_helicity(r, numeric=True)
-    array([[[ 0.        +0.j,  0.        +0.j],
-            [ 1.41421356+0.j,  0.        +0.j]],
+    array([[[ 0.    +0.j,  0.    +0.j],
+            [ 1.4142+0.j,  0.    +0.j]],
     <BLANKLINE>
-           [[ 1.        +0.j,  0.        +0.j],
-            [ 0.        +0.j, -1.        +0.j]],
+           [[ 1.    +0.j,  0.    +0.j],
+            [ 0.    +0.j, -1.    +0.j]],
     <BLANKLINE>
-           [[-0.        +0.j, -1.41421356+0.j],
-            [-0.        +0.j, -0.        +0.j]]])
+           [[-0.    +0.j, -1.4142+0.j],
+            [-0.    +0.j, -0.    +0.j]]])
 
     """
     if numeric:

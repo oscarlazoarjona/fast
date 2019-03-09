@@ -13,6 +13,9 @@ rubidium, and cesium using an arbitrary number of states and radiation fields.
 >>> all_atoms
 [85Rb, 87Rb, 133Cs]
 
+>>> import numpy as np
+>>> np.set_printoptions(precision=4)
+
 """
 
 from electric_field import (PlaneWave, MotField,
