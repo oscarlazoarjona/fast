@@ -88,7 +88,7 @@ class Atom(Basic):
     The atoms can be identified by element and optionally by isotope.
 
     >>> atom=Atom("Rb")
-    >>> print atom
+    >>> print(atom)
     Rb
     """
 
@@ -98,7 +98,7 @@ class Atom(Basic):
         The atoms can be identified by element and optionally by isotope.
 
         >>> atom=Atom("Rb")
-        >>> print atom
+        >>> print(atom)
         Rb
 
         We can get the atomic number
@@ -110,7 +110,7 @@ class Atom(Basic):
         [85, 87]
 
         The atomic radius (in meters)
-        >>> print atom.radius
+        >>> print(atom.radius)
         2.35e-10
 
         The melting temperature
@@ -123,7 +123,7 @@ class Atom(Basic):
 
         If we also specify an isotope, new information becomes available
         >>> atom=Atom("Rb",85)
-        >>> print atom
+        >>> print(atom)
         85Rb
 
         The number of neutrons
@@ -131,11 +131,11 @@ class Atom(Basic):
         48
 
         The abundance of the isotope
-        >>> print atom.abundance
+        >>> print(atom.abundance)
         0.7217
 
         The mass of the atom (in kilograms)
-        >>> print atom.mass
+        >>> print(atom.mass)
         1.40999341816e-25
 
         The nuclear spin of the atom
@@ -143,7 +143,7 @@ class Atom(Basic):
         5/2
 
         The frequency of the ionization limit (in Hz)
-        >>> print atom.ionization_frequency
+        >>> print(atom.ionization_frequency)
         1.01002474142e+13
 
         The nuclear mass
@@ -291,7 +291,7 @@ class Atom(Basic):
 
         >>> atom=Atom("Rb",85)
         >>> states=atom.states()
-        >>> print states
+        >>> print(states)
         [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 6S_1/2, 85Rb 6P_1/2, 85Rb 6P_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2, 85Rb 7S_1/2, 85Rb 7P_1/2, 85Rb 7P_3/2, 85Rb 6D_3/2, 85Rb 7D_3/2, 85Rb 14S_1/2, 85Rb 15S_1/2, 85Rb 16S_1/2, 85Rb 17S_1/2, 85Rb 18S_1/2, 85Rb 19S_1/2, 85Rb 20S_1/2, 85Rb 21S_1/2, 85Rb 22S_1/2, 85Rb 23S_1/2, 85Rb 24S_1/2, 85Rb 25S_1/2, 85Rb 26S_1/2, 85Rb 27S_1/2, 85Rb 28S_1/2, 85Rb 29S_1/2, 85Rb 30S_1/2, 85Rb 31S_1/2, 85Rb 32S_1/2, 85Rb 33S_1/2, 85Rb 34S_1/2, 85Rb 35S_1/2, 85Rb 36S_1/2, 85Rb 37S_1/2, 85Rb 38S_1/2, 85Rb 39S_1/2, 85Rb 40S_1/2, 85Rb 41S_1/2, 85Rb 42S_1/2, 85Rb 43S_1/2, 85Rb 44S_1/2, 85Rb 45S_1/2, 85Rb 46S_1/2, 85Rb 47S_1/2, 85Rb 48S_1/2, 85Rb 49S_1/2, 85Rb 50S_1/2]
 
         If an omega_max is provided any state with an energy higher than
@@ -306,9 +306,9 @@ class Atom(Basic):
         available.
 
         >>> available,not_available=atom.states(Nmax=5,return_missing=True)
-        >>> print available
+        >>> print(available)
         [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2]
-        >>> print not_available
+        >>> print(not_available)
         [('Rb', 85, 1, 0, 1/2), ('Rb', 85, 2, 0, 1/2), ('Rb', 85, 2, 1, 1/2), ('Rb', 85, 2, 1, 3/2), ('Rb', 85, 3, 0, 1/2), ('Rb', 85, 3, 1, 1/2), ('Rb', 85, 3, 1, 3/2), ('Rb', 85, 3, 2, 3/2), ('Rb', 85, 3, 2, 5/2), ('Rb', 85, 4, 0, 1/2), ('Rb', 85, 4, 1, 1/2), ('Rb', 85, 4, 1, 3/2), ('Rb', 85, 4, 3, 5/2), ('Rb', 85, 4, 3, 7/2), ('Rb', 85, 5, 3, 5/2), ('Rb', 85, 5, 3, 7/2), ('Rb', 85, 5, 4, 7/2), ('Rb', 85, 5, 4, 9/2)]
 
 
@@ -354,7 +354,7 @@ class Atom(Basic):
 
         >>> atom=Atom("Rb",85)
         >>> transitions=atom.transitions()
-        >>> print len(transitions)
+        >>> print(len(transitions))
         270
 
         Arguments omega_min and omega_max can be used to make filter out the
@@ -369,7 +369,7 @@ class Atom(Basic):
         >>> easy_transitions=atom.transitions(omega_min=omega_min,
         ...                                   omega_max=omega_max)
         >>> for ti in easy_transitions:
-        ...     print abs(ti.wavelength)*1e9, ti
+        ...     print("{} {}".format(abs(ti.wavelength)*1e9, ti))
         780.241476935 85Rb 5S_1/2 -----> 85Rb 5P_3/2
         776.157015322 85Rb 5P_3/2 -----> 85Rb 5D_3/2
         775.978619616 85Rb 5P_3/2 -----> 85Rb 5D_5/2
@@ -489,28 +489,28 @@ class State(Basic):
 
     The mass of the atom (in kilograms):
 
-    >>> print g2.mass
+    >>> print(g2.mass)
     2.2069469161e-25
 
     The absolute frequency of the state relative to the groundstate energy
     (in Hz):
 
-    >>> print g2.nu
+    >>> print(g2.nu)
     4021776399.38
 
     The angular frequency of the state (in rad/s):
 
-    >>> print g2.omega
+    >>> print(g2.omega)
     25269566381.3
 
     The hyperfine constants Ahfs, Bhfs, Chfs:
 
-    >>> print e.Ahfs, e.Bhfs, e.Chfs
+    >>> print("{} {} {}".format(e.Ahfs, e.Bhfs, e.Chfs))
     50288250.0 -494000.0 560.0
 
     A latex representation:
 
-    >>> print g2._latex_()
+    >>> print(g2._latex_())
     ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
     """
 
@@ -900,7 +900,6 @@ class State(Basic):
         # We find the energy of the state up to fine structure.
         in_database = False
         for ii in range(len(nivfin)):
-            # print [n,l,j],nivfin[ii][:3]
             if [n, l, j] == nivfin[ii][:3]:
                 nufin = nivfin[ii][3]
                 A = nivfin[ii][4]; B = nivfin[ii][5]; C = nivfin[ii][6]
@@ -1115,19 +1114,19 @@ class Transition(Basic):
         False
 
         The absolute frequency of the transition (in Hz):
-        >>> print clock.nu
+        >>> print(clock.nu)
         9192631770.0
 
         The angular frequency of the transition (in rad/s):
-        >>> print clock.omega
+        >>> print(clock.omega)
         57759008871.6
 
         The wavelength of the transition (in m):
-        >>> print clock.wavelength
+        >>> print(clock.wavelength)
         0.0326122557175
 
         The Einstein A coefficient at the fine structure level (in Hz):
-        >>> print clock.einsteinA
+        >>> print(clock.einsteinA)
         0.0
 
         The states that form the transition:
@@ -1259,12 +1258,11 @@ class Transition(Basic):
             if pair[:-1] == ord1 or pair[:-1] == ord2:
                 self.einsteinA = pair[-1]*self.omega/abs(self.omega)
 
-        # print self.allowed, self.einsteinA
         if self.allowed and self.einsteinA is None and verbose > 0:
             s = "Warning: the transition" + str(self)
             s += "is electric dipole-allowed, but the Einstein A is not in "
             s += "the database."
-            print s
+            print(s)
             self.einsteinA = "Unknown, but different from zero!"
 
     def __repr__(self):
@@ -1410,7 +1408,7 @@ def make_list_of_states(states, structure=None, verbose=1):
             if verbose > 0:
                 s = 'Warning: the ordering of the hyperfine states has been'
                 s += ' changed to ensure they are ordered by ascending energy.'
-                print s
+                print(s)
         return l3
     elif structure == 'magnetic':
         l1 = order_by_energy(states)
@@ -1425,7 +1423,7 @@ def make_list_of_states(states, structure=None, verbose=1):
             if verbose > 0:
                 s = 'Warning: the ordering of the hyperfine states has been'
                 s += ' changed to ensure they are ordered by ascending energy.'
-                print
+                print(s)
 
         if len(states[0].quantum_numbers) == 4:
             l4 = split_hyperfine_to_magnetic(l3)
@@ -1440,7 +1438,7 @@ def unperturbed_hamiltonian(states):
     rubidium 87 (in GHz).
     >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
     >>> magnetic_states = make_list_of_states([g], "magnetic")
-    >>> print np.diag(unperturbed_hamiltonian(magnetic_states))/hbar/2/pi*1e-9
+    >>> print(np.diag(unperturbed_hamiltonian(magnetic_states))/hbar/2/pi*1e-9)
     [-4.2717+0.j -4.2717+0.j -4.2717+0.j  2.563 +0.j  2.563 +0.j  2.563 +0.j
       2.563 +0.j  2.563 +0.j]
 
@@ -1508,7 +1506,7 @@ def calculate_gamma_matrix(magnetic_states, Omega=1, einsteinA=None,
 
     The :math:`5P_{3/2}, 5S_{1/2}` block of this matrix is
 
-    >>> print gamma[8:, :8]/2/np.pi
+    >>> print(gamma[8:, :8]/2/np.pi)
     [[2.0217 2.0217 2.0217 0.     0.     0.     0.     0.    ]
      [2.5271 2.5271 0.     0.6065 0.3033 0.1011 0.     0.    ]
      [2.5271 0.     2.5271 0.     0.3033 0.4043 0.3033 0.    ]
@@ -1528,9 +1526,9 @@ def calculate_gamma_matrix(magnetic_states, Omega=1, einsteinA=None,
 
     Let us test if all D2 lines decay at the expected rate (6.065 MHz):
 
-    >>> Gamma =[sum([gamma[i][j] for j in range(i)])/2/pi
-    ...         for i in range(len(magnetic_states))][8:]
-    >>> for Gammai in Gamma: print "{:2.3f}".format(Gammai)
+    >>> Gamma = [sum([gamma[i][j] for j in range(i)])/2/pi
+    ...          for i in range(len(magnetic_states))][8:]
+    >>> for Gammai in Gamma: print("{:2.3f}".format(Gammai))
     6.065
     6.065
     6.065
@@ -1776,13 +1774,13 @@ def reduced_matrix_element(fine_statei, fine_statej, convention=1):
 
     >>> g = State("Rb", 87, 5, 0, 1/Integer(2))
     >>> e = State("Rb", 87, 5, 1, 3/Integer(2))
-    >>> print reduced_matrix_element(g, e)
+    >>> print(reduced_matrix_element(g, e))
     5.97785756147
-    >>> print reduced_matrix_element(e, g)
+    >>> print(reduced_matrix_element(e, g))
     -5.97785756146761
-    >>> print reduced_matrix_element(g, e, convention=2)
+    >>> print(reduced_matrix_element(g, e, convention=2))
     4.22698361868
-    >>> print reduced_matrix_element(e, g, convention=2)
+    >>> print(reduced_matrix_element(e, g, convention=2))
     -2.11349180934051
 
     """
@@ -1802,7 +1800,6 @@ def reduced_matrix_element(fine_statei, fine_statej, convention=1):
         rij = reduced_matrix_element(fine_statej, fine_statei,
                                      convention=convention)
         rij *= (-1)**(Jj-Ji)
-    # print omega0, einsteinAij
 
     # We return the Brink matrix element.
     if convention == 2:
@@ -1831,9 +1828,9 @@ def calculate_reduced_matrix_elements(fine_states, convention=1):
     >>> e1 = State("Rb", 87, 5, 1, 1/Integer(2))
     >>> e2 = State("Rb", 87,5 , 1, 3/Integer(2))
     >>> red = calculate_reduced_matrix_elements([g, e1, e2], convention=2)
-    >>> print red[0][1]
+    >>> print(red[0][1])
     2.99207750426
-    >>> print red[0][2]
+    >>> print(red[0][2])
     4.22698361868
 
     """
@@ -2457,22 +2454,22 @@ def vapour_pressure(Temperature, element):
     This is calculated using the formulas in [SteckRb85]_, [SteckRb87]_,
     [SteckCs]_.
 
-    >>> print vapour_pressure(25.0 + 273.15,"Rb")
+    >>> print(vapour_pressure(25.0 + 273.15,"Rb"))
     5.31769896107e-05
-    >>> print vapour_pressure(39.3 + 273.15,"Rb")
+    >>> print(vapour_pressure(39.3 + 273.15,"Rb"))
     0.000244249795696
-    >>> print vapour_pressure(90.0 + 273.15,"Rb")
+    >>> print(vapour_pressure(90.0 + 273.15,"Rb"))
     0.0155963687128
-    >>> print vapour_pressure(25.0 + 273.15,"Cs")
+    >>> print(vapour_pressure(25.0 + 273.15,"Cs"))
     0.000201461144963
-    >>> print vapour_pressure(28.5 + 273.15,"Cs")
+    >>> print(vapour_pressure(28.5 + 273.15,"Cs"))
     0.000297898928349
-    >>> print vapour_pressure(90.0 + 273.15,"Cs")
+    >>> print(vapour_pressure(90.0 + 273.15,"Cs"))
     0.0421014384667
 
     The element must be in the database.
 
-    >>> print vapour_pressure(90.0 + 273.15,"Ca")
+    >>> print(vapour_pressure(90.0 + 273.15,"Ca"))
     Traceback (most recent call last):
     ...
     ValueError: Ca is not an element in the database for this function.
@@ -2508,7 +2505,7 @@ def vapour_number_density(Temperature, element):
     This is calculated using the formulas in [SteckRb85]_, [SteckRb87]_,
     [SteckCs]_.
 
-    >>> print vapour_number_density(90.0 + 273.15,"Cs")
+    >>> print(vapour_number_density(90.0 + 273.15,"Cs"))
     8.39706962725e+18
 
     """
@@ -2525,13 +2522,13 @@ def vapour_density(Temperature, element, isotope=None):
     This is calculated using the formulas in [SteckRb85]_, [SteckRb87]_,
     [SteckCs]_.
 
-    >>> print vapour_density(90.0 + 273.15,"Cs",133)
+    >>> print(vapour_density(90.0 + 273.15,"Cs",133))
     1.85318869181e-06
 
     If no isotope is specified, the natural abundances are used to calculate
     the density.
 
-    >>> print vapour_density(25.0 + 273.15,"Rb")
+    >>> print(vapour_density(25.0 + 273.15,"Rb"))
     1.83339788085e-09
 
     """
@@ -2555,10 +2552,10 @@ def speed_likely(Temperature, element, isotope):
     where :math:`k_B` is Boltzmann's constant, T is the temperature
     (in Kelvins) and m is the mass of the atom (in kilograms).
 
-    >>> print speed_likely(25+273.15,"Rb",85)
+    >>> print(speed_likely(25+273.15,"Rb",85))
     241.638108688
 
-    >>> print speed_likely(25+273.15,"Cs",133)
+    >>> print(speed_likely(25+273.15,"Cs",133))
     193.142579342
 
     """
@@ -2574,10 +2571,10 @@ def speed_average(Temperature, element, isotope):
     where :math:`k_B` is Boltzmann's constant, T is the temperature
     (in Kelvins) and m is the mass of the atom (in kilograms).
 
-    >>> print speed_average(25+273.15,"Rb",85)
+    >>> print(speed_average(25+273.15,"Rb",85))
     272.65940782
 
-    >>> print speed_average(25+273.15,"Cs",133)
+    >>> print(speed_average(25+273.15,"Cs",133))
     217.938062809
 
     """
@@ -2593,10 +2590,10 @@ def speed_rms(Temperature, element, isotope):
     where :math:`k_B` is Boltzmann's constant, T is the temperature
     (in Kelvins) and m is the mass of the atom (in kilograms).
 
-    >>> print speed_rms(25+273.15,"Rb",85)
+    >>> print(speed_rms(25+273.15,"Rb",85))
     295.945034349
 
-    >>> print speed_rms(25+273.15,"Cs",133)
+    >>> print(speed_rms(25+273.15,"Cs",133))
     236.550383496
 
     """
@@ -2624,12 +2621,12 @@ def collision_rate(Temperature, element, isotope):
 
     A few examples (in Hz):
 
-    >>> print collision_rate(25 + 273.15, "Cs", 133)/2/pi
+    >>> print(collision_rate(25 + 273.15, "Cs", 133)/2/pi)
     9.0607260277
 
     For cesium collisions become important for temperatures above 120 Celsius.
 
-    >>> print collision_rate(120 + 273.15, "Cs", 133)/2/pi
+    >>> print(collision_rate(120 + 273.15, "Cs", 133)/2/pi)
     10519.235289
 
     """
@@ -2675,7 +2672,7 @@ def thermal_state(omega_level, T, return_diagonal=False):
     >>> omega_level = [ei.omega for ei in magnetic_states]
     >>> T = 273.15 + 20
 
-    >>> print thermal_state(omega_level, T, return_diagonal=True)
+    >>> print(thermal_state(omega_level, T, return_diagonal=True))
     [0.0834 0.0834 0.0834 0.0834 0.0834 0.0833 0.0833 0.0833 0.0833 0.0833
      0.0833 0.0833]
 
@@ -2723,7 +2720,7 @@ def thermal_state(omega_level, T, return_diagonal=False):
 #        http://dx.doi.org/10.1063/1.1725697
 #
 # },
-# eprint = {
+# eprint= {
 #        http://dx.doi.org/10.1063/1.1725697
 # }
 # }
@@ -2748,4 +2745,4 @@ def thermal_state(omega_level, T, return_diagonal=False):
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))
