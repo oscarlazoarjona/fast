@@ -34,6 +34,7 @@ print testmod(fast.misc, verbose=verbose)
 print testmod(fast.rk4, verbose=verbose)
 print testmod(fast.stationary, verbose=verbose)
 print testmod(fast.bloch, verbose=verbose)
+print testmod(fast.angular_momentum, verbose=verbose)
 
 ########################################################################
 # Run all codes from notebook-generated doctests.
