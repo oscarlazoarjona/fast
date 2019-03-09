@@ -71,7 +71,7 @@ Here is an example with rubidum 87.
 >>> detuning_knob = [0.0, 0.0]
 
 >>> np.set_printoptions(precision=4)
->>> print hamiltonian(detuning_knob)/hbar_num/2/np.pi*1e-6
+>>> print(hamiltonian(detuning_knob)/hbar_num/2/np.pi*1e-6)
 [[ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
    0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
    0.0000e+00+0.j -1.2343e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
@@ -281,10 +281,7 @@ def phase_transformation(Ne, Nl, rm, xi, return_equations=False):
         return eqs
 
     # We solve the system of equations.
-    # print eqs
-    # print theta
     sol = sympy.solve(eqs, theta, dict=True)
-    # print sol
     sol = sol[0]
     # We add any missing theta that may be left outside if the system is
     # under determined.
@@ -332,11 +329,11 @@ def define_simplification(omega_level, xi, Nl):
 
     >>> aux = define_simplification(omega_level, xi, Nl)
     >>> u, invu, omega_levelu, Neu, xiu = aux
-    >>> print omega_levelu
+    >>> print(omega_levelu)
     [0.0, 100.0, 200.0, 300.0]
-    >>> print Neu
+    >>> print(Neu)
     4
-    >>> print xiu
+    >>> print(xiu)
     [[[0. 1. 0. 0.]
       [1. 0. 0. 0.]
       [0. 0. 0. 0.]
@@ -468,7 +465,7 @@ def detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0):
     >>> u, invu, omega_levelu, Neu, xiu = aux
     >>> omega_min, iu0, ju0 = find_omega_min(omega_levelu, Neu, Nl, xiu)
     >>> pairs = detunings_indices(Neu, Nl, xiu)
-    >>> print detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+    >>> print(detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0))
         delta1_2_1 = detuning_knob[0]
         delta2_3_1 = detuning_knob[1]
         delta2_4_1 = detuning_knob[1] + (-100.0)
@@ -755,8 +752,8 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
 
 
     We test all of these combinations.
-    >>> print H1(Ep_vals, epsilonp_vals, detuning_knob_vals) \
-    ...     /hbar_num/2/np.pi*1e-6
+    >>> print(H1(Ep_vals, epsilonp_vals, detuning_knob_vals) \
+    ...     /hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -764,7 +761,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H2(Ep_vals, epsilonp_vals)/hbar_num/2/np.pi*1e-6
+    >>> print(H2(Ep_vals, epsilonp_vals)/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -772,7 +769,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H3(epsilonp_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    >>> print(H3(epsilonp_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -780,7 +777,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H4(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    >>> print(H4(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -788,7 +785,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H5(detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    >>> print(H5(detuning_knob_vals)/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -796,7 +793,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H6(Ep_vals)/hbar_num/2/np.pi*1e-6
+    >>> print(H6(Ep_vals)/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -804,7 +801,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H7(epsilonp_vals)/hbar_num/2/np.pi*1e-6
+    >>> print(H7(epsilonp_vals)/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -812,7 +809,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
      [ 2.5591+0.j  0.    +0.j  0.    +0.j  0.    +0.j -3.    +0.j  0.    +0.j]
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 
-    >>> print H8()/hbar_num/2/np.pi*1e-6
+    >>> print(H8()/hbar_num/2/np.pi*1e-6)
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
      [ 1.2795+0.j  0.    +0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -949,7 +946,6 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         f.close()
 
     hamiltonian = code
-    # print code
     exec hamiltonian
     return hamiltonian
 
@@ -1025,36 +1021,44 @@ class Unfolding(object):
         ...         if real:
         ...             muu = vect.Mu(1, j, j)
         ...             ss, ii, jj = vect.IJ(muu)
-        ...             print j, j, muu, j-ii, j-jj, 1-ss
+        ...             aux = (j, j, muu, j-ii, j-jj, 1-ss)
+        ...             print("{} {} {} {} {} {}".format(*aux))
         ...         else:
         ...             muu = vect.Mu(0, j, j)
         ...             ss, ii, jj = vect.IJ(muu)
-        ...             print j, j, muu, j-ii, j-jj
+        ...             aux = (j, j, muu, j-ii, j-jj)
+        ...             print("{} {} {} {} {}".format(*aux))
         ...     for j in range(Ne):
         ...         for i in range(j+1, Ne):
         ...             if real:
         ...                 muu = vect.Mu(1, i, j)
         ...                 ss, ii, jj = vect.IJ(muu)
-        ...                 print i, j, muu, i-ii, j-jj, 1-ss
+        ...                 aux = (i, j, muu, i-ii, j-jj, 1-ss)
+        ...                 print("{} {} {} {} {} {}".format(*aux))
         ...                 muu = vect.Mu(-1, i, j)
         ...                 ss, ii, jj = vect.IJ(muu)
-        ...                 print i, j, muu, i-ii, j-jj, -1-ss
+        ...                 aux = (i, j, muu, i-ii, j-jj, -1-ss)
+        ...                 print("{} {} {} {} {} {}".format(*aux))
         ...             else:
         ...                 muu = vect.Mu(0, i, j)
         ...                 ss, ii, jj = vect.IJ(muu)
-        ...                 print i, j, muu, i-ii, j-jj
+        ...                 aux = (i, j, muu, i-ii, j-jj)
+        ...                 print("{} {} {} {} {}".format(*aux))
         ...             if not lower_triangular:
         ...                 if real:
         ...                     muu = vect.Mu(1, j, i)
         ...                     ss, ii, jj = vect.IJ(muu)
-        ...                     print j, i, muu, j-ii, i-jj, 1-ss
+        ...                     aux = (j, i, muu, j-ii, i-jj, 1-ss)
+        ...                     print("{} {} {} {} {} {}".format(*aux))
         ...                     muu = vect.Mu(-1, j, i)
         ...                     ss, ii, jj = vect.IJ(muu)
-        ...                     print j, i, muu, j-ii, i-jj, -1-ss
+        ...                     aux = (j, i, muu, j-ii, i-jj, -1-ss)
+        ...                     print("{} {} {} {} {} {}".format(*aux))
         ...                 else:
         ...                     muu = vect.Mu(0, j, i)
         ...                     ss, ii, jj = vect.IJ(muu)
-        ...                     print i, j, muu, j-ii, i-jj
+        ...                     aux = (i, j, muu, j-ii, i-jj)
+        ...                     print("{} {} {} {} {}".format(*aux))
         ...
 
 
@@ -1236,7 +1240,7 @@ class Unfolding(object):
         >>> unfolding = Unfolding(2, real=True, lower_triangular=True,
         ...                       normalized=True)
         >>> rhos = np.array([[0.6, 1+2j], [1-2j, 0.4]])
-        >>> print unfolding(rhos)
+        >>> print(unfolding(rhos))
         [ 0.4  1.  -2. ]
 
         >>> from fast import define_density_matrix
@@ -1285,7 +1289,7 @@ class Unfolding(object):
         >>> unfolding = Unfolding(2, real=True, lower_triangular=True,
         ...                       normalized=True)
         >>> rhos = np.array([[0.6, 1+2j], [1-2j, 0.4]])
-        >>> print rhos == unfolding.inverse(unfolding(rhos))
+        >>> print(rhos == unfolding.inverse(unfolding(rhos)))
         [[ True  True]
          [ True  True]]
 
@@ -1301,7 +1305,7 @@ class Unfolding(object):
         >>> rhops = np.array([[0.0, 0.0],
         ...                   [0.0, 0.0]])
 
-        >>> print unfolding.inverse(unfolding(rhops), True)
+        >>> print(unfolding.inverse(unfolding(rhops), True))
         [[-0.-0.j  0.-0.j]
          [ 0.+0.j  0.+0.j]]
 
@@ -1562,7 +1566,7 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
     ...                  [3-2j, 0.4]])
     >>> rhosv = unfolding(rhos)
     >>> rhs_rabi = rabi_terms(rhosv, Eps)
-    >>> print rhs_rabi
+    >>> print(rhs_rabi)
     [-55680831.474          0.       2784041.5737]
 
     """
@@ -1769,7 +1773,7 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
     ...                                      xi, theta,
     ...                                      unfolding)
 
-    >>> print detuning_terms(rhosv, detuning_knobs)
+    >>> print(detuning_terms(rhosv, detuning_knobs))
     [0. 2. 3.]
 
     """
@@ -1939,7 +1943,7 @@ def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
     ...                  [3-2j, 0.4]])
     >>> rhosv = unfolding(rhos)
     >>> rhs_lindblad = lindblad_terms(rhosv)
-    >>> print rhs_lindblad
+    >>> print(rhs_lindblad)
     [-15079644.7372 -56548667.7646  37699111.8431]
 
     """
@@ -2097,7 +2101,7 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
     >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
     >>> Eps *= np.exp(1j*np.pi)
     >>> Eps = [Eps]
-    >>> print hamiltonian_terms(rhosv, Eps, detuning_knobs)
+    >>> print(hamiltonian_terms(rhosv, Eps, detuning_knobs))
     [5.5681e+07 2.0000e+08 2.9722e+08]
 
 
@@ -2308,7 +2312,7 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
     >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
     >>> Eps *= np.exp(1j*np.pi)
     >>> Eps = [Eps]
-    >>> print bloch_equations(rhosv, Eps, detuning_knobs)
+    >>> print(bloch_equations(rhosv, Eps, detuning_knobs))
     [4.0601e+07 1.4345e+08 3.3492e+08]
 
     """
@@ -2534,7 +2538,7 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     >>> Eps = electric_field_amplitude_top(1e-3, 1e-3, 1, "SI")
     >>> Eps *= np.exp(1j*np.pi)
     >>> Eps = [Eps]
-    >>> print steady_state(Eps, detuning_knobs)
+    >>> print(steady_state(Eps, detuning_knobs))
     [ 0.018   0.1296 -0.0244]
 
     """
@@ -2667,7 +2671,7 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
     >>> rho0 = np.array([[1, 0], [0, 0]])
     >>> rho0 = unfolding(rho0)
 
-    >>> print time_evolution(t, rho0, Eps, detuning_knobs)
+    >>> print(time_evolution(t, rho0, Eps, detuning_knobs))
     [[ 0.      0.      0.    ]
      [ 0.0215  0.1428 -0.0116]
      [ 0.0183  0.1299 -0.0271]
@@ -2680,7 +2684,7 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
      [ 0.018   0.1296 -0.0244]
      [ 0.018   0.1296 -0.0244]]
 
-    >>> print time_evolution(t, rho0, Eps, detuning_knobs, average=True)
+    >>> print(time_evolution(t, rho0, Eps, detuning_knobs, average=True))
     [ 0.0175  0.1244 -0.0222]
 
     """
@@ -2828,7 +2832,7 @@ def time_average(rho, t):
     >>> rho0 = unfolding(rho0)
 
     >>> rho = time_evolution(t, rho0, Eps, detuning_knobs)
-    >>> print time_average(rho, t)
+    >>> print(time_average(rho, t))
     [ 0.0175  0.1244 -0.0222]
 
     """
@@ -2870,7 +2874,7 @@ def fast_sweep_steady_state(Ep, epsilonp, gamma,
     ...                                              omega_level, rm, xi,
     ...                                              theta)
     >>> deltas, rho = sweep_steady_state([[-20, 20, 11]])
-    >>> print rho
+    >>> print(rho)
     [[ 0.0006 -0.025  -0.0006]
      [ 0.001  -0.0312 -0.001 ]
      [ 0.0017 -0.0415 -0.0017]
@@ -2998,9 +3002,9 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
     >>> rho0 = unfolding(rho0)
 
     >>> deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 5]])
-    >>> print rho.shape
+    >>> print(rho.shape)
     (5, 11, 3)
-    >>> print rho
+    >>> print(rho)
     [[[ 0.0000e+00  0.0000e+00  0.0000e+00]
       [ 5.6205e-04 -1.8774e-02 -1.4437e-02]
       [ 1.0302e-03 -3.1226e-02 -7.3031e-03]
@@ -3063,7 +3067,7 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
 
     >>> deltas, rho = sweep_time_evolution(t, rho0, [[-20, 20, 11]],
     ...                                    average=True)
-    >>> print rho
+    >>> print(rho)
     [[ 0.0006 -0.024  -0.0021]
      [ 0.0011 -0.0308 -0.0007]
      [ 0.0016 -0.0375  0.0024]
@@ -3172,7 +3176,7 @@ def observable(operator, rho, unfolding, complex=False):
     >>> rho = np.array([[0.6, 1+2j], [1-2j, 0.4]])
     >>> rho = unfolding(rho)
     >>> sx = np.array([[0, 1], [1, 0]])
-    >>> print observable(sx, rho, unfolding)
+    >>> print(observable(sx, rho, unfolding))
     2.0
 
     """
@@ -3260,7 +3264,7 @@ def electric_succeptibility(l, Ep, epsilonp, rm, n, rho, unfolding, part=0):
     >>> unfolding = Unfolding(Ne, True, True, True)
     >>> chire = electric_succeptibility(0, Ep, epsilonp, rm, n,
     ...                                 rho, unfolding)
-    >>> print chire
+    >>> print(chire)
     [ 4.4824e-09-1.1206e-10j  5.5971e-09-1.7491e-10j  7.4459e-09-3.1024e-10j
       1.1097e-08-6.9356e-10j  2.1449e-08-2.6811e-09j  0.0000e+00-5.9877e-08j
      -2.1449e-08-2.6811e-09j -1.1097e-08-6.9356e-10j -7.4459e-09-3.1024e-10j
@@ -3326,8 +3330,8 @@ def radiated_intensity(rho, i, j, epsilonp, rm, omega_level, xi,
     >>> xi[0, 3, 0] = 1
     >>> xi[0, :, :] += xi[0, :, :].transpose()
 
-    >>> print radiated_intensity(rho, 1, 0, ex, rm,
-    ...                          omega_level, xi, N, D, unfolding)
+    >>> print(radiated_intensity(rho, 1, 0, ex, rm,
+    ...                          omega_level, xi, N, D, unfolding))
     4.60125990174e-22
 
     """
@@ -3377,4 +3381,4 @@ def radiated_intensity(rho, i, j, epsilonp, rm, omega_level, xi,
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))
