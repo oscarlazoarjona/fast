@@ -3,6 +3,7 @@ r"""This script runs all doctests in FAST."""
 
 ########################################################################
 # Run all doctests for the core code:
+import sys
 from doctest import testmod
 import fast
 
@@ -17,8 +18,10 @@ import fast
 # import doctest_09___Thermal_States
 # import doctest_10___States_database
 
-verbose = True
-# verbose = False
+if len(sys.argv) > 1 and sys.argv[1] == "verbose":
+    verbose = True
+else:
+    verbose = False
 print testmod(fast, verbose=verbose)
 print testmod(fast.atomic_structure, verbose=verbose)
 print testmod(fast.electric_field, verbose=verbose)
