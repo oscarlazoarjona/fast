@@ -83,7 +83,7 @@ def write_stationary(path,name,laser,omega,gamma,r,Lij,
 	N_excluded_mu=len(excluded_mu)
 
 	from config import use_netcdf
-	
+
 	code0="""program stationary_rho
     implicit none
     real*8, dimension("""+str(Nl)+""") :: E0,detuning_knob,detuning_knobi
@@ -93,7 +93,7 @@ def write_stationary(path,name,laser,omega,gamma,r,Lij,
     real*8 :: ddelta
     logical :: print_steps,save_systems,specific_deltas,use_netcdf
     real*4 :: start_time, end_time
-    
+
     !We load the parameters\n"""
 	# We break the path name into several lines if it is needed.
 	long_line="""open(unit=2,file='"""+path+name+"""_params.dat',status='unknown')\n"""
@@ -127,21 +127,21 @@ def write_stationary(path,name,laser,omega,gamma,r,Lij,
 
 	allocate(rho(ndelta,"""+str(Ne**2-1)+"""),stat=info)
 
-	nerrors=0	
+	nerrors=0
 
 	call cpu_time(start_time)
 
 	!$OMP PARALLEL PRIVATE(detuning_knobi)
 	!$OMP DO
 	do i=1,ndelta
-		
+
 		detuning_knobi=detuning_knob
 		detuning_knobi(ldelta)=delta(i)
-		
+
 		call solve(E0,detuning_knobi,rho(i,:),save_systems)
 
 		if (print_steps) print*,'delta=',detuning_knobi(ldelta)
-		
+
 	end do
 	!$OMP END DO
 	!$OMP END PARALLEL
@@ -167,7 +167,7 @@ def write_stationary(path,name,laser,omega,gamma,r,Lij,
 
 end program
 """
-	
+
 	if use_netcdf:
 		code0+="""
 subroutine save_matrix_and_vector(file_name,m,n,matrix,vector)
@@ -177,10 +177,10 @@ subroutine save_matrix_and_vector(file_name,m,n,matrix,vector)
 	integer, intent(in) :: m,n
 	real*8, dimension(m,n), intent(in) :: matrix
 	real*8, dimension(m), intent(in) :: vector
-	
+
 	integer :: ncid, varid_matrix, varid_vector, dimids(2)
 	integer :: x_dimid, y_dimid
-	
+
 	call check( nf90_create(file_name, NF90_CLOBBER, ncid) )
 	call check( nf90_def_dim(ncid, "x", n, x_dimid) )
 	call check( nf90_def_dim(ncid, "y", m, y_dimid) )
@@ -188,7 +188,7 @@ subroutine save_matrix_and_vector(file_name,m,n,matrix,vector)
 	call check( nf90_def_var(ncid, "matrix", NF90_DOUBLE, dimids,  varid_matrix) )
 	call check( nf90_def_var(ncid, "vector", NF90_DOUBLE, y_dimid, varid_vector) )
 	call check( nf90_enddef(ncid) )
-	
+
 	call check( nf90_put_var(ncid, varid_matrix, matrix) )
 	call check( nf90_put_var(ncid, varid_vector, vector) )
 	call check( nf90_close(ncid) )
@@ -199,7 +199,7 @@ subroutine check(status)
 	implicit none
 	integer, intent ( in) :: status
 
-	if(status /= nf90_noerr) then 
+	if(status /= nf90_noerr) then
 		print *, trim(nf90_strerror(status))
 		stop "Stopped"
 	end if
@@ -208,7 +208,7 @@ end subroutine check
 	code0+="""
 subroutine solve(E0,detuning_knob,B,save_systems)
 	implicit none
-	
+
 	real*8, dimension("""+str(Nl)+"""), intent(in) :: E0,detuning_knob
 	real*8, dimension("""+str(Ne**2-1-N_excluded_mu)+""",1), intent(out) :: B
 	logical, intent(in) :: save_systems
@@ -222,7 +222,7 @@ subroutine solve(E0,detuning_knob,B,save_systems)
 	####################################################################
 	code0+="""
 	real*8, dimension("""+str(Nd)+""") :: detuning
-	
+
 	integer :: INFO,j
 	real*8, dimension("""+str(Ne**2-1-N_excluded_mu)+""","""+str(Ne**2-1-N_excluded_mu)+""") :: A
 	integer, dimension("""+str(Ne**2-1-N_excluded_mu)+""") :: IPIV
@@ -248,14 +248,14 @@ subroutine solve(E0,detuning_knob,B,save_systems)
 	code+="		end do\n"
 	code+="		close(4)\n"
 	code+="	end if\n\n"
-	
+
 	code+='	call dgesv('+str(Ne**2-1-N_excluded_mu)+', 1, A, '+str(Ne**2-1-N_excluded_mu)+', IPIV, B, '+str(Ne**2-1-N_excluded_mu)+', INFO)\n'
 	#code+="	print*,'INFO',INFO\n"
 	code+="""	if (INFO>0) B=-11\n"""
 	#code+="""	if (INFO>0) print*, 'For frequencies',detuning_knob,'The system could not be solved, exit code:',INFO\n"""
 	#code+="""	if (INFO>0) then\n"""
 	#code+="""		do j="""+str(Ne**2-1)+"""\n"""
-	#code+="""			print*,\n"""	
+	#code+="""			print*,\n"""
 	#code+="""		end do\n"""
 	#code+="""	endif\n"""
 	####################################################################
@@ -267,34 +267,34 @@ subroutine solve(E0,detuning_knob,B,save_systems)
 		t0=time()-t0
 		t_extra=write_stationary(path,name,laser,omega,gamma,r,Lij,
 				use_symbolic_phase_transformation=True,states=states,excluded_mu=excluded_mu)
-		
+
 		return t_extra+t0
-	else:		
+	else:
 		f=file(path+name+'.f90','w')
 		code=code0+code+'end subroutine\n'
 		f.write(code)
 		f.close()
-		
+
 		return time()-t0
 
 def run_stationary(path,name,E0,laser_frequencies, spectrum_of_laser,N_delta,
 				frequency_step=None,frequency_end=None,print_steps=False,
 				specific_deltas=None, save_systems=False,clone=None,use_netcdf=True):
 	t0=time()
-	
+
 	params=''.join([str(i)+' ' for i in E0])+'\n'
 	params+=''.join([str(i)+' ' for i in laser_frequencies])+'\n'
 	params+=str(spectrum_of_laser)+'\n'
 	params+=str(N_delta)+'\n'
-	
+
 	if frequency_end !=None:
 		if frequency_step !=None:
 			raise ValueError,'both frequency_end and frequency_step were specified.'
 		if N_delta==1:
 			frequency_step=0.0
 		else:
-			frequency_step=(frequency_end-laser_frequencies[spectrum_of_laser-1])/(N_delta-1)	
-	
+			frequency_step=(frequency_end-laser_frequencies[spectrum_of_laser-1])/(N_delta-1)
+
 	params+=str(frequency_step)+'\n'
 	if print_steps:
 		params+='.true.\n'
@@ -316,16 +316,16 @@ def run_stationary(path,name,E0,laser_frequencies, spectrum_of_laser,N_delta,
 	else:
 		params+='.true.\n'
 		params+=''.join([str(delta)+' ' for delta in specific_deltas])
-	
+
 	if clone!=None:
 		clone='_'+str(clone)
 	else:
 		clone=''
-	
+
 	f=file(path+name+'_params'+clone+'.dat','w')
 	f.write(params)
 	f.close()
-	
+
 	com=path+name+clone
 	#print 'running',com
 	exit_code=os.system(com)
@@ -334,3 +334,7 @@ def run_stationary(path,name,E0,laser_frequencies, spectrum_of_laser,N_delta,
 		raise RuntimeError,s
 	return time()-t0
 
+
+if __name__ == "__main__":
+    import doctest
+    print doctest.testmod(verbose=False)

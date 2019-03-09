@@ -41,7 +41,7 @@ def add_line(Ne,mu,musign,laser,l,epsilonsign,r,ir,jr,irho,jrho,conj=False):
 		line+='('+format_double(real(dp))+','+format_double(imag(dp))+')*'
 	else:
 		line+='('+format_double(dp.real)+','+format_double(dp.imag)+')*'
-	
+
 	nu=Mu(irho,jrho,s=1,N=Ne)
 	if nu==0:
 		#We have a term proportional to rho11
@@ -50,7 +50,7 @@ def add_line(Ne,mu,musign,laser,l,epsilonsign,r,ir,jr,irho,jrho,conj=False):
 		line+='conjg(x('+str(nu)+'))'
 	else:
 		line+='x('+str(nu)+')'
-	
+
 	return line+'\n'
 
 def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
@@ -63,26 +63,26 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
     - ``path`` - A string with the working directory where all files will be stored. It must end with ``/``.
 
     - ``name`` - A string with the name of the experiment. All files produced will begin with this name.
-    
+
     - ``laser`` - A list of Laser objects (see the Laser class).
-    
+
     - ``omega`` - A matrix or list of lists containing the frequency differences `\omega_{ij}`.
-    
+
     - ``gamma`` - A matrix or list of lists containing the spontaneous decay frequencies `\gamma_{ij}`.
-    
+
     - ``r`` - A list of three matrices or lists of lists containing the components of the position operator `r_{-1ij},r_{0ij},r_{1ij}`.
-    
+
     - ``Lij`` - A list with elements of the form ``[i,j,[l1,l2,...]]`` representing the sets `L_{ij}` of which lasers excite wich transitions. It does not need to contain an element for all ``i,j`` pairs, but only those which have a laser that excites them.
-    
+
     - ``Omega`` - A floating point number indicating the frequency scale for the equations. The frequencies ``omega`` and ``gamma`` are divided by this number. If ``None`` the equations and the input are taken in SI units.
 
     OUTPUT:
-    
+
     - A file ``name.f90`` is created in ``path``.
     """
 
 	global omega_rescaled
-	
+
 	t0=time()
 	Ne=len(omega[0])
 	Nl=len(laser)
@@ -104,7 +104,7 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
 	#~ else:
 		#~ omega_rescaled=omega[:]
 	omega_rescaled=omega[:]
-		
+
 
 	#We determine wether it is possible to eliminate explicit time-dependance
 	theta=find_phase_transformation(Ne,Nl,r,Lij)
@@ -114,13 +114,13 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
 	i_d,I_nd,Nnd=calculate_iI_correspondence(omega)
 	#We get wich transitions each laser induces
 	detunings,detuningsij=laser_detunings(Lij,Nl,i_d,I_nd,Nnd)
-	
+
 	#We get how many transitions each  laser induces
 	detuning_indices=[len(detunings[i]) for i in range(Nl)]
-	
+
 	#The number of detunings
 	Nd=sum([len(detunings[l]) for l in range(Nl)])
-	combinations=detuning_combinations(detuning_indices)	
+	combinations=detuning_combinations(detuning_indices)
 
 	code0='''program evolution_rk4
 	implicit none
@@ -135,7 +135,7 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
 	code0+="    open(unit=1,file='"+path+name+".dat',status='unknown')\n\n"
 	code0+='    n_aprox=1500\n'
 	code0+='    !We load the parameters\n'
-	code0+="    open(unit=2,file='"+path+name+"_params.dat',status='unknown')\n" 
+	code0+="    open(unit=2,file='"+path+name+"_params.dat',status='unknown')\n"
 	code0+='''    read(2,*) n
     read(2,*) dt
     read(2,*) print_steps
@@ -163,7 +163,7 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
 	code0+='	!We calculate the initial detunings.\n'
 	#We find the minimal frequency corresponding to each laser.
 	omega_min,omega_min_indices=find_omega_min(omega_rescaled,Nl,detuningsij,i_d,I_nd)
-	
+
 	det_index=1
 	for l in range(Nl):
 		omega0=omega_min[l]
@@ -190,33 +190,33 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
 	code0+='''			x= x+(k1+2*k2+2*k3+k4)*dt/6
 			if (print_steps.and. .not. run_spectrum) print*,'t=',t,'delta=',delta
 			t= t+ dt
-			
+
 			if (isnan(real(x(1)))) stop 1
 			if (.not. run_spectrum .and. mod(i,n_mod)==0) WRITE(1,*) t,real(x),imag(x('''+str(Ne)+''':))
 		end do
 		if (print_steps) print*, 'delta=',delta,'percentage=',100*(delta-delta0)/(ddelta*ndelta)
-		
+
 		!We recalculate the detunings
 		if (run_spectrum) then
 			if (mod(j,n_mod)==0) WRITE(1,*) delta,real(x),imag(x('''+str(Ne)+''':))
 			delta=delta+ddelta
 			detuning_knob(ldelta)=detuning_knob(ldelta)+ddelta\n'''
-	
+
 
 
 	#We add the code to caculate all detunings for each laser
 	#This way of assigining a global index ll to the detunings ammounts to
-	#   ll=   number_of_previous_detunings 
+	#   ll=   number_of_previous_detunings
 	#       + number_of_detuning_ordered_by_row_and_from_left_to_right_column
 	#like this
 	#->
 	#-> ->
 	#-> -> ->
 	#for each l
-	
-	#We find the minimal frequency corresponding to each laser		
+
+	#We find the minimal frequency corresponding to each laser
 	omega_min,omega_min_indices=find_omega_min(omega_rescaled,Nl,detuningsij,i_d,I_nd)
-	
+
 	det_index=1
 	for l in range(Nl):
 		omega0=omega_min[l]
@@ -227,19 +227,19 @@ def write_rk4(path,name,laser,omega,gamma,r,Lij,states=None,verbose=1):
 			code0+='+ddelta\n'
 			det_index+=1
 		code0+='			end if\n'
-	
+
 	code0+='''		end if
-	
-	
+
+
 	end do
-	
+
     close(1)
-    
+
 end program\n\n'''
 
 
 	code0+='subroutine f(x,t,y,    E0, detuning,detuning_knob)\n'
-	
+
 	code0+='''    implicit none
     real*8, intent(in) :: t\n'''
 	code0+='    complex*16, dimension('+str(Ne*(Ne+1)/2-1)+'), intent(in)  :: x\n'
@@ -250,7 +250,7 @@ end program\n\n'''
 	code0+='    complex*16 :: I,fact,aux\n'
 	code0+='    real*8 :: rho11\n\n'
 	code0+='    I=(0,1D0)\n'
-	
+
 	#We establish the scaling of the equations
 	#~ if Omega==None:
 		#~ h  =1.054571726e-34; e=1.602176565e-19
@@ -260,14 +260,14 @@ end program\n\n'''
 		#~ code0+='    fact=I*'+str(float(1/sqrt(2)))+'\n'
 		#~ #code0+='    fact=I*'+str(float(1/(sqrt(2)*Omega)))+'\n'
 	code0+='    fact=I*'+format_double(float(1/sqrt(2)))+'\n'
-	
+
 	#We give the code to calculate rho11
 	code0+='    rho11=1\n'
 	for i in range(1,Ne):
 		code0+='    rho11=rho11 -x('+str(i)+')\n'
 	code0+='\n\n'
-	
-	
+
+
 	####################################################################
 	#We produce the code for the first order equations.
 	####################################################################
@@ -277,11 +277,11 @@ end program\n\n'''
 			i,j,s=IJ(mu,Ne)
 			#print 'ecuacion mu=',mu,',i,j=',i,j
 			eqmu='    y('+str(mu)+')= 0\n'
-			
+
 			####################################################################
 			#We add the terms associated with the effective hamiltonian
 			#other than those associated with the phase transformation.
-			
+
 			for k in range(1,Ne+1):
 				#Case 1
 				if k>=j:
@@ -292,7 +292,7 @@ end program\n\n'''
 						elif k<i:
 							#print 'E0^',l, 1,'r',i,k,'rho',k,j,'case 1.2'
 							eqmu+=add_line(Ne,mu,'+',laser,l, 1,  r,i,k,  k,j)
-							
+
 				#Case 2
 				elif k<j:
 					for l in Lij[i-1][k-1]:
@@ -322,7 +322,7 @@ end program\n\n'''
 							eqmu+=add_line(Ne,mu,'-',laser,l, 1,  r,k,j,  k,i,True)
 
 			eqmu+='    y('+str(mu)+')=y('+str(mu)+')*fact\n'
-			
+
 			####################################################################
 			#We add the terms associated with the phase transformation.
 
@@ -334,7 +334,7 @@ end program\n\n'''
 				eqmu+='    y('+str(mu)+')=y('+str(mu)+') + I*('+extra+')*x('+str(mu)+')\n'
 
 			####################################################################
-			
+
 			#~ if i==j:
 				#~ for k in range(1,Ne+1):
 					#~ if k < i:
@@ -346,12 +346,12 @@ end program\n\n'''
 				#~ eqmu+='\n'
 			#~ else:
 				#~ eqmu+='    y('+str(mu)+')= y('+str(mu)+') - ('+format_double(gamma[i-1][j-1]/2)+')*x('+str(mu)+')\n'
-#~ 
+#~
 
 			####################################################################
 			code+=eqmu+'\n'
 
-		#We add the terms associated with spontaneous decay.		
+		#We add the terms associated with spontaneous decay.
 		#First for populations.
 		for i in range(2,Ne+1):
 			mu=Mu(i,i,1,Ne)
@@ -369,7 +369,7 @@ end program\n\n'''
 					code+='    y('+str(mu)+')=y('+str(mu)+')'
 					code+='-('+format_double(gams)+')*x('+str(mu)+')\n'
 
-		#And now for coherences	
+		#And now for coherences
 		for i in range(1,Ne+1):
 			for j in range(1,i):
 				gams=gamma[i-1][j-1]/2
@@ -395,17 +395,17 @@ end program\n\n'''
 
 
 
-		
+
 		####################################################################
 		####################################################################
 		####################################################################
 		#code+='    y=y/'+str(Omega)+'\n'
-		
+
 		f=file(path+name+'.f90','w')
 		code=code0+code+'end subroutine\n'
 		f.write(code)
 		f.close()
-				
+
 		return time()-t0
 	else:
 		print 'There was no phase transformation capable of eliminating explicit time dependance.'
@@ -424,7 +424,7 @@ def run_rk4(path,name,E0,laser_frequencies,  N_iter,dt,N_states,
 		params+='.true.\n'
 	else:
 		params+='.false.\n'
-	
+
 	#We give the initial value of rho
 	N_vars=N_states*(N_states+1)/2-1
 	if rho0==None:
@@ -441,7 +441,7 @@ def run_rk4(path,name,E0,laser_frequencies,  N_iter,dt,N_states,
 	params+='\n'
 	#We give the amplitude of the electrical fields.
 	params+=''.join([str(i)+' ' for i in E0])+'\n'
-	
+
 	#We give the detuning of each laser (taken from the lowest frequency transition).
 	params+=''.join([str(i)+' ' for i in laser_frequencies])+'\n'
 
@@ -456,21 +456,22 @@ def run_rk4(path,name,E0,laser_frequencies,  N_iter,dt,N_states,
 				frequency_step=0.0
 			else:
 				frequency_step=(frequency_end-laser_frequencies[spectrum_of_laser-1])/(N_delta-1)
-			
+
 		#frequency_step=frequency_end
 		params+='.true.\n'
 		params+=str(spectrum_of_laser)+'\n'
 		params+=str(N_delta)+'\n'
 		params+=str(frequency_step)
 	#print params
-	
+
 	f=file(path+name+'_params.dat','w')
 	f.write(params)
 	f.close()
-	
+
 	os.system(path+name)
-	
+
 	return time()-t0
 
-
-
+if __name__ == "__main__":
+    import doctest
+    print doctest.testmod(verbose=False)

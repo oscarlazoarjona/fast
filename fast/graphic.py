@@ -1188,3 +1188,7 @@ cdict2 = {'red': ((0.0, 1.0, 1.0),
           }
 
 yellow_purple1 = LinearSegmentedColormap('BlueRed1', cdict2)
+
+if __name__ == "__main__":
+    import doctest
+    print doctest.testmod(verbose=False)
