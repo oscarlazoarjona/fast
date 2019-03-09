@@ -568,4 +568,4 @@ def density_matrix_rotation(J_values, alpha, beta, gamma):
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))
