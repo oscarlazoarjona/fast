@@ -92,9 +92,6 @@ def Mu(i, j, s, N, excluded_mu=[]):
         raise ValueError(mes)
 
     if excluded_mu != []:
-        # if mu in excluded_mu:
-        # print i,j,s
-        # raise ValueError,'mu = '+str(mu)+' appeared among the excluded mu.'
         mu = mu-len([ii for ii in excluded_mu if ii < mu])
     return mu
 
@@ -135,7 +132,6 @@ def read_result(path, name, i=None, j=None, s=0, N=None,
         clone = ''
 
     if use_netcdf:
-        # print 'reading from',path+name+clone+'.nc'
         ncfile = Dataset(path+name+clone+'.nc', 'r')
         matrix = ncfile.variables['matrix'][:]
         vector = ncfile.variables['vector'][:]
@@ -159,10 +155,10 @@ def read_result(path, name, i=None, j=None, s=0, N=None,
         try:
             ln = [[float(num) for num in li.split()] for li in l]
         except:
-            print num
-            print [l[0]]
-            print [l[-2]]
-            print [l[-1]]
+            print(num)
+            print([l[0]])
+            print([l[-2]])
+            print([l[-1]])
             raise ValueError
 
         if i is not None:
@@ -262,18 +258,12 @@ def find_phase_transformation(Ne, Nl, r, Lij, verbose=0,
     if return_equations:
         return eqs
 
-    # print _theta
     sol = solve(eqs, _theta, dict=True)[0]
     for i in range(Ne):
         if _theta[i] not in sol.keys():
             sol.update({_theta[i]: _theta[i]})
-    # print sol.keys()
-    # print len(sol)
-    # print sol[_theta[23]]
+
     sol_simple = {_theta[i]: sol[_theta[i]]-sol[_theta[-1]] for i in range(Ne)}
-    # print sol
-    # for i in range(Ne):
-    #     print i+1,sol_simple[_theta[i]]
 
     sol = []
     for i in range(Ne):
@@ -413,7 +403,6 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
                     s += ' and in  L'+str(j)+','+str(k)+'='+str(Lij[j-1][k-1])
                     s += '\n'
 
-                    # print s
                     band1 = True
                     break
             if band1:
@@ -436,7 +425,6 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
                         s += str(Lij[i-1][k-1])
                         s += ' and in  L'+str(j)+','+str(k)+'='
                         s += str(Lij[j-1][k-1])+'\n'
-                        # print s
                         band2 = True
                         break
 
@@ -480,7 +468,7 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
                 s = 'WARNING: Optical frequencies will be used '
                 s += 'instead for -omega_'+str(i)+","+str(j)
                 s += '=' + str(omega_rescaled[i-1][j-1]) + '\n'
-                print s
+                print(s)
             return format_double(-omega_rescaled[i-1][j-1])
     ###########################################################################
     # This part is about finding detunings that reduce to
@@ -507,10 +495,10 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
             s = 'We will see if it is possible to express Theta_'+str(i)
             s += ','+str(j)+'=theta_'+str(j)+'-theta_'+str(i)+'-omega_'
             s += str(i)+','+str(j)
-            print s
+            print(s)
             s = 'in terms of other indices a,b such that omega_ab=omega_ij'
             s += ' and transition i -> j is allowed by Lij.'
-            print s
+            print(s)
 
         band3 = False
         for a in range(Ne):
@@ -521,33 +509,29 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
                     break
             if band3: break
         if verbose > 1:
-            print band3, a, b, i, j
+            print(band3, a, b, i, j)
 
         a = a+1; b = b+1
         if band3 and (i != a or j != b):
             if verbose > 1:
-                print omega_rescaled[i-1][j-1], omega_rescaled[a-1][b-1]
-                print the
-                print 'This was possible for omega_'+str(a)+','+str(b)
+                print(omega_rescaled[i-1][j-1], omega_rescaled[a-1][b-1])
+                print(the)
+                print('This was possible for omega_'+str(a)+','+str(b))
 
             return Theta(a, b, theta, omega_rescaled, omega_min, detunings,
                          detuningsij, combinations, detuning_indices, Lij,
                          other_the=the, verbose=verbose, states=states)
         else:
-            # verbose=2
-            # print 111
-            # qi=states[i-1].quantum_numbers
-            # qj=states[j-1].quantum_numbers
-            # print verbose
             if verbose > 0:
-                print 'WARNING: It was impossible to express frequencies',
-                print 'the and atomic transition -omega_', i, j, '=',
-                print -omega_rescaled[i-1][j-1],
-                print 'in terms of detunings from the transitions given by Lij'
-            # for i in range(Ne):
-            # 	print i+1,Lij[i]
-            # print
-            if verbose > 0: print 'I Will use optical frequencies instead.'
+                aux = 'WARNING: It was impossible to express frequencies',
+                aux += 'the and atomic transition -omega_'
+                aux += str(i)+" "+str(j)+'='
+                aux += str(-omega_rescaled[i-1][j-1],)
+                aux += 'in terms of detunings from the'
+                aux += 'transitions given by Lij'
+                print(aux)
+
+            if verbose > 0: print('I Will use optical frequencies instead.')
             The = ''
             # We give the optical frequencies
             for l in range(Nl):
@@ -569,8 +553,8 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
 
             # We substract omega_ij
             The += format_double(-omega_rescaled[i-1][j-1])
-            if verbose > 1: print The
-            if verbose > 1: print
+            if verbose > 1: print(The)
+            if verbose > 1: print()
             return The
 
     # For each optical frequency in the, we write the corresponding detuning.
@@ -580,7 +564,6 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
     The = ''
     acum = 0
     ###########################################################################
-    # print 'comb',comb,'the',the,'i,j',i,j
     for l in range(Nl):
         if the[l] == 1:
             The += '+detuning('+str(acum+comb[l]+1)+')'
@@ -598,7 +581,6 @@ def Theta(i, j, theta, omega_rescaled, omega_min,
         The = The[1:]
 
     ###########################################################################
-    # print 'The',The
     return The
 
 
@@ -719,7 +701,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
     for i in range(2, Ne+1-N_excluded_mu):
         for s in [1, -1]:
             nu = Mu(i, 1, s, Ne, excluded_mu)
-            # print 'There is an independent term with nu=',nu
             rhs_check[nu-1] = True
 
             for l in Lij[i-1][0]:
@@ -797,12 +778,10 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
         for j in range(1, i):
             for s in [1, -1]:
                 mu = Mu(i, j, s, Ne, excluded_mu)
-                # print '................ mu=',mu
                 for k in range(1, Ne+1):
                     for l in Lij[k-1][j-1]:
                         if k < i:
                             if k < j:
-                                # print 111#Row 1
                                 dp = s*dot_product(laser[l-1], -1, r, k, j)
                                 dp1 = part(dp, -s)
                                 dp2 = part(s*dp, +s)
@@ -823,7 +802,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
                                     row_check[mu-1] = True
                                     col_check[nu-1] = True
                             elif k > j:
-                                # print 222#Row 2
                                 dp = s*dot_product(laser[l-1], +1, r, k, j)
                                 dp1 = part(dp, -s)
                                 dp2 = part(s*dp, s)
@@ -844,7 +822,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
                                     row_check[mu-1] = True
                                     col_check[nu-1] = True
                         elif k > i:
-                            # print 333#Row 3
                             dp = s*dot_product(laser[l-1], 1, r, k, j)
                             dp1 = part(dp, -s)
                             dp2 = part(-s*dp, s)
@@ -865,7 +842,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
                     for l in Lij[i-1][k-1]:
                         if k > j:
                             if k > i:
-                                # print 444#Row 4
                                 dp = -s*dot_product(laser[l-1], -1, r, i, k)
                                 dp1 = part(dp, -s)
                                 dp2 = part(s*dp, s)
@@ -886,7 +862,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
                                     row_check[mu-1] = True
                                     col_check[nu-1] = True
                             elif k < i:
-                                # print 555#Row 5
                                 dp = -s*dot_product(laser[l-1], 1, r, i, k)
                                 dp1 = part(dp, -s)
                                 dp2 = part(s*dp, s)
@@ -907,7 +882,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
                                     row_check[mu-1] = True
                                     col_check[nu-1] = True
                         elif k < j:
-                            # print 666#Row 6
                             dp = -s*dot_product(laser[l-1], 1, r, i, k)
                             dp1 = part(dp, -s)
                             dp2 = part(-s*dp, s)
@@ -926,7 +900,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
                                 code += ')\n'
                                 row_check[mu-1] = True; col_check[nu-1] = True
                 for l in Lij[i-1][j-1]:
-                    # print 777#Row 7
                     dp = s*part(dot_product(laser[l-1], 1, r, i, j), -s)
                     nu = Mu(i, i, 1, Ne, excluded_mu)
                     if dp != 0:
@@ -962,8 +935,6 @@ def write_equations_code(path, name, laser, omega, gamma, r, Lij, states=None,
             extra = Theta(i, j, theta, omega_rescaled, omega_min, detunings,
                           detuningsij, combinations, detuning_indices, Lij,
                           i_d, I_nd, Nnd, verbose=verbose, states=states)
-
-            # print i, j, [extra]
 
             if extra != '':
                 for s in [1, -1]:
@@ -1079,7 +1050,7 @@ def compile_code(path, name, optimization_flag=' -O3',
     com += path+name+clone+'.f90 -o '+path+name+clone
     com += end_flags
     if verbose > 0:
-        print com
+        print(com)
     exit_code = os.system(com)
     if exit_code != 0:
         s = 'command: '+com+' returned exit_code '+str(exit_code)
@@ -1142,7 +1113,7 @@ def block_diagonal_matrix(matrices, type=None):
     ⎣0  0  0  0  0  3  3  3  3⎦
 
     >>> lis = [np.ones((2, 2)), 2*np.ones((3, 3)), 3*np.ones((4, 4))]
-    >>> print block_diagonal_matrix(lis)
+    >>> print(block_diagonal_matrix(lis))
     [[1. 1. 0. 0. 0. 0. 0. 0. 0.]
      [1. 1. 0. 0. 0. 0. 0. 0. 0.]
      [0. 0. 2. 2. 2. 0. 0. 0. 0.]
@@ -1174,4 +1145,4 @@ def block_diagonal_matrix(matrices, type=None):
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))
