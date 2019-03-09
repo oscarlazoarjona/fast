@@ -624,13 +624,14 @@ def draw_lasers_3d(ax, lasers, name=None, distances=None, lim=None):
 def plot_populations(path, name, Ne, states=None, filename='a.png',
                      fontsize=12, absolute_frequency=True,
                      save_path='', use_netcdf=True):
+    r"""Plot the populations of a density matrix."""
     pyplot.close("all")
     dat = read_result(path, name, N=Ne, use_netcdf=use_netcdf)
     x = dat[0]
     if absolute_frequency:
         x = [xi/2/pi for xi in x]
     pop = dat[1:Ne]
-    Nd = len(pop[0]); Nr = Ne**2-1
+    Nd = len(pop[0])
 
     pop1 = [1-sum([pop[j][i] for j in range(Ne-1)]) for i in range(Nd)]
     pop = [pop1]+pop
@@ -645,377 +646,401 @@ def plot_populations(path, name, Ne, states=None, filename='a.png',
         pyplot.savefig(save_path+filename, bbox_inches='tight')
         pyplot.close('all')
 
-    elif len(states[0].quantum_numbers)>=5:
-        #If we recieve magnetic states we make a plot for each hyperfine state.
-        magnetic_plots=len(states[0].quantum_numbers)==6
+    elif len(states[0].quantum_numbers) >= 5:
+        # If we recieve magnetic states we make a plot
+        # for each hyperfine state.
+        magnetic_plots = len(states[0].quantum_numbers) == 6
 
         if not magnetic_plots:
-            N_plots=len(states)
-            states=split_hyperfine_to_magnetic(states)
-            hyperfine_colors=list(reversed([hsv_to_rgb(m*0.8/(N_plots-1),1.0,1.0) for m in range(N_plots)]))
-            conta=0
+            N_plots = len(states)
+            states = split_hyperfine_to_magnetic(states)
+            aux = [hsv_to_rgb(m*0.8/(N_plots-1), 1.0, 1.0)
+                   for m in range(N_plots)]
+            hyperfine_colors = list(reversed(aux))
+            conta = 0
 
-        fine_states=find_fine_states(states)
-        boundaries=list(reversed(calculate_boundaries(fine_states,states)[1]))
+        fine_states = find_fine_states(states)
+        boundaries = reversed(calculate_boundaries(fine_states, states)[1])
+        boundaries = list(boundaries)
 
         for pair in boundaries:
-            f=states[pair[0]].f
-            if f==0:
-                colors=[(0.8,0.0,1.0)]
+            f = states[pair[0]].f
+            if f == 0:
+                colors = [(0.8, 0.0, 1.0)]
             else:
-                colors=list(reversed([hsv_to_rgb(m*0.8/f,1.0,1.0) for m in range(f+1)]))
+                aux = [hsv_to_rgb(m*0.8/f, 1.0, 1.0) for m in range(f+1)]
+                colors = list(reversed(aux))
 
-            for i in range(pair[0],pair[1]):
-                m=states[i].m
-                if m<0:
-                    color=colors[-m]
-                    style=':'
+            for i in range(pair[0], pair[1]):
+                m = states[i].m
+                if m < 0:
+                    color = colors[-m]
+                    style = ':'
                 else:
-                    color=colors[m]
-                    style='-'
+                    color = colors[m]
+                    style = '-'
                 if magnetic_plots:
-                    pyplot.plot(x,pop[i],style,label=r"$\mathrm{Poblaci\'on} \ M_F=" +str(states[i].m)+"$",color=color)
+                    aux = r"$\mathrm{Poblaci\'on} \ M_F="
+                    aux += str(states[i].m)+"$"
+                    pyplot.plot(x, pop[i], style, label=aux, color=color)
 
             if magnetic_plots:
-                if f!= 0:
-                    suma = [ sum([ pop[i][j] for i in range(pair[0],pair[1])]) for j in range(len(pop[0]))]
-                    pyplot.plot(x,suma,'k-',label=r'$\mathrm{suma}$')
+                if f != 0:
+                    suma = [sum([pop[i][j] for i in range(pair[0], pair[1])])
+                            for j in range(len(pop[0]))]
+                    pyplot.plot(x, suma, 'k-', label=r'$\mathrm{suma}$')
 
-                filenamei=str(states[i]).split()[1].replace('_','').replace('/','_').replace('^','F=')
-                s=filenamei.find(',')
-                filenamei=filenamei[:s]
-                filenamei=name+'_'+filenamei+'.png'
+                aux = str(states[i]).split()[1].replace('_', '')
+                filenamei = aux.replace('/', '_').replace('^', 'F=')
+                s = filenamei.find(',')
+                filenamei = filenamei[:s]
+                filenamei = name+'_'+filenamei+'.png'
 
-                title=find_fine_states([states[i]])[0]._latex_()+'\ F='+str(states[i].f)
+                aux = find_fine_states([states[i]])[0]
+                title = aux._latex_()+'\ F='+str(states[i].f)
 
                 pyplot.title(r"$"+title+"$")
-                pyplot.ylim([0,None])
-                pyplot.xlim([x[0],x[-1]])
-                pyplot.legend(fontsize=fontsize,loc=0)
+                pyplot.ylim([0, None])
+                pyplot.xlim([x[0], x[-1]])
+                pyplot.legend(fontsize=fontsize, loc=0)
 
-                pyplot.savefig(save_path+filenamei,bbox_inches='tight')
+                pyplot.savefig(save_path+filenamei, bbox_inches='tight')
                 pyplot.close('all')
             else:
-                suma=[ sum([ pop[i][j] for i in range(pair[0],pair[1])]) for j in range(len(pop[0]))]
-                label=states[i]._latex_()
-                label=label[label.find(' ')+1:]
-                label=label[:label.find('^')]
-                label+=r"\ F="+str(states[i].f)
-                label ="$"+label+"$"
+                suma = [sum([pop[i][j] for i in range(pair[0], pair[1])])
+                        for j in range(len(pop[0]))]
+                label = states[i]._latex_()
+                label = label[label.find(' ')+1:]
+                label = label[:label.find('^')]
+                label += r"\ F="+str(states[i].f)
+                label = "$"+label+"$"
 
-                pyplot.plot(x,suma,'-',color=hyperfine_colors[conta],label=label)
-                #for i in range(len(x)): print i,x[i],suma[i]
-                conta+=1
-                #pyplot.savefig('a.png')
+                pyplot.plot(x, suma, '-', color=hyperfine_colors[conta],
+                            label=label)
+                conta += 1
 
         if not magnetic_plots:
-            title=states[0]._latex_()
-            title="$"+title[:title.find(' ')-1]+"$"
-            pyplot.title(title,fontsize=20)
-            pyplot.xlim([x[0],x[-1]])
-            pyplot.legend(fontsize=fontsize,loc=0)
-            pyplot.savefig(save_path+name+'_pops.png',bbox_inches='tight')
+            title = states[0]._latex_()
+            title = "$"+title[:title.find(' ')-1]+"$"
+            pyplot.title(title, fontsize=20)
+            pyplot.xlim([x[0], x[-1]])
+            pyplot.legend(fontsize=fontsize, loc=0)
+            pyplot.savefig(save_path+name+'_pops.png', bbox_inches='tight')
             pyplot.close('all')
 
 ########################################################################
 # Drawing of experiment diagrams.
 ########################################################################
 
-def rotate_and_traslate(cur,alpha,v0):
-	if len(cur)>2 or (type(cur[0][0]) in [list,tuple]):
-		cur_list=cur[:]
-		for i in range(len(cur_list)):
-			curi=cur_list[i]
-			curi=rotate_and_traslate(curi,alpha,v0)
-			cur_list[i]=curi
-		return cur_list
-	else:
-		x0,y0=cur
-		#print v0,111
-		rot=np.matrix([[cos(alpha),-sin(alpha)],[sin(alpha),cos(alpha)]])
-		xn=[]; yn=[]
-		for i in range(len(x0)):
-			v=np.matrix([[x0[i]],[y0[i]]])
 
-			vi=np.dot(rot,v)
-			xn+=[float(vi[0][0])+v0[0]]; yn+=[float(vi[1][0])+v0[1]]
+def rotate_and_traslate(cur, alpha, v0):
+    r"""Rotate and translate a curve."""
+    if len(cur) > 2 or (type(cur[0][0]) in [list, tuple]):
+        cur_list = cur[:]
+        for i in range(len(cur_list)):
+            curi = cur_list[i]
+            curi = rotate_and_traslate(curi, alpha, v0)
+            cur_list[i] = curi
+        return cur_list
+    else:
+        x0, y0 = cur
+        rot = np.matrix([[cos(alpha), -sin(alpha)], [sin(alpha), cos(alpha)]])
+        xn = []; yn = []
+        for i in range(len(x0)):
+            v = np.matrix([[x0[i]], [y0[i]]])
 
-		return xn,yn
+            vi = np.dot(rot, v)
+            xn += [float(vi[0][0])+v0[0]]; yn += [float(vi[1][0])+v0[1]]
 
-
-def mirror(ax,p0,alpha=0,size=2.54,width=0.5,format=None):
-	if format==None: format='k-'
-
-	x0=[size/2,-size/2, -size/2,  size/2,size/2]
-	y0=[0   ,    0,-width,-width,   0]
-
-	x1=[size/2,size/2-width];                             y1=[0,-width]
-	x2=[-size/2+width,-size/2];                           y2=[0,-width]
-	x3=[(size/2-size/2+width)/2,(size/2-width-size/2)/2]; y3=[0,-width]
-
-	cur_list=[(x0,y0),(x1,y1),(x2,y2),(x3,y3)]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
-	for curi in cur_list: ax.plot(curi[0],curi[1],format)
+        return xn, yn
 
 
-def vacuum_chamber(ax,p0,size=4.5,alpha=0,format=None):
-	if format==None: format='k-'
-	a=size
-	b=2.5*size/4.5
-	r=sqrt(a**2+b**2)
+def mirror(ax, p0, alpha=0, size=2.54, width=0.5, format=None):
+    r"""Draw a mirror."""
+    if format is None: format = 'k-'
 
-	x0=[a,a]; y0=[-b,b]
+    x0 = [size/2, -size/2, -size/2, size/2, size/2]
+    y0 = [0, 0, -width, -width, 0]
 
-	cur_list0=[(x0,y0)]
-	for i in range(1,4):
-		cur_list0+=[rotate_and_traslate(cur_list0[0],pi/2*i,(0,0))]
-	cur_list0=rotate_and_traslate(cur_list0,alpha,p0)
+    x1 = [size/2, size/2-width]; y1 = [0, -width]
+    x2 = [-size/2+width, -size/2]; y2 = [0, -width]
+    x3 = [(size/2-size/2+width)/2, (size/2-width-size/2)/2]; y3 = [0, -width]
 
-
-	N=100
-	ang=atan2(b,a)
-	ang0=ang; angf=pi/2-ang
-	angstep=(angf-ang0)/(N-1)
-	x1=[ r*cos(i*angstep+ang0) for i in range(N)]
-	y1=[ r*sin(i*angstep+ang0) for i in range(N)]
-
-	cur_list=[(x1,y1)]
-	for i in range(1,4):
-		cur_list+=[rotate_and_traslate(cur_list[0],pi/2*i,(0,0))]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
-
-	for curi in cur_list0: ax.plot(curi[0],curi[1],'c-')
-	for curi in cur_list : ax.plot(curi[0],curi[1],format)
+    cur_list = [(x0, y0), (x1, y1), (x2, y2), (x3, y3)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
+    for curi in cur_list: ax.plot(curi[0], curi[1], format)
 
 
-def cloud(ax,p0,size=1.0,alpha=0,format=None,**kwds):
-	if format==None: format='k-'
-	size=size/4.0
-	n=8
-	ang=2*pi/n
+def vacuum_chamber(ax, p0, size=4.5, alpha=0, format=None):
+    r"""Draw a vacuum chamber."""
+    if format is None: format = 'k-'
+    a = size
+    b = 2.5*size/4.5
+    r = sqrt(a**2+b**2)
 
-	N=100
-	ang0=-pi/4-0.4; angf= pi/4+0.4
-	angstep=(angf-ang0)/(N-1)
-	x1=[ size*(cos(angstep*i+ang0)+1) for i in range(N)]
-	y1=[ size*sin(angstep*i+ang0) for i in range(N)]
+    x0 = [a, a]; y0 = [-b, b]
 
-	cur_list=[(x1,y1)]
-	for i in range(1,n):
-		cur_list+=[rotate_and_traslate(cur_list[0],ang*i,(0,0))]
+    cur_list0 = [(x0, y0)]
+    for i in range(1, 4):
+        cur_list0 += [rotate_and_traslate(cur_list0[0], pi/2*i, (0, 0))]
+    cur_list0 = rotate_and_traslate(cur_list0, alpha, p0)
 
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+    N = 100
+    ang = atan2(b, a)
+    ang0 = ang; angf = pi/2-ang
+    angstep = (angf-ang0)/(N-1)
+    x1 = [r*cos(i*angstep+ang0) for i in range(N)]
+    y1 = [r*sin(i*angstep+ang0) for i in range(N)]
 
+    cur_list = [(x1, y1)]
+    for i in range(1, 4):
+        cur_list += [rotate_and_traslate(cur_list[0], pi/2*i, (0, 0))]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
 
-def lens(ax,p0,size,focus,format=None,join_with_focus=False,**kwds):
-	if format==None: format='k-'
-	alpha=atan2(p0[1]-focus[1],p0[0]-focus[0])+pi/2
-
-	f=sqrt((p0[0]-focus[0])**2 + (p0[1]-focus[1])**2)
-	r=sqrt((size/2)**2 + f**2)
-	ang=atan2(size/2,f)
-
-	N=100
-	ang0=-ang; angf= ang
-	angstep=(angf-ang0)/(N-1)
-	x1=[ r*sin(i*angstep+ang0) for i in range(N)]
-	y1=[ r*cos(i*angstep+ang0)-f for i in range(N)]
-	y2=[ -y1[i] for i in range(N)]
+    for curi in cur_list0: ax.plot(curi[0], curi[1], 'c-')
+    for curi in cur_list: ax.plot(curi[0], curi[1], format)
 
 
-	cur_list=[(x1,y1),(x1,y2)]
-	#print cur_list[0]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+def cloud(ax, p0, size=1.0, alpha=0, format=None, **kwds):
+    r"""Draw an atom cloud."""
+    if format is None: format = 'k-'
+    size = size/4.0
+    n = 8
+    ang = 2*pi/n
 
-	if join_with_focus:
-		x1,y1=[p0[0]+size/2*cos(alpha),p0[1]+size/2*sin(alpha)]
-		x2,y2=[p0[0]-size/2*cos(alpha),p0[1]-size/2*sin(alpha)]
-		ax.plot([x1,focus[0]],[y1,focus[1]],':',**kwds)
-		ax.plot([x2,focus[0]],[y2,focus[1]],':',**kwds)
+    N = 100
+    ang0 = -pi/4-0.4; angf = pi/4+0.4
+    angstep = (angf-ang0)/(N-1)
+    x1 = [size*(cos(angstep*i+ang0)+1) for i in range(N)]
+    y1 = [size*sin(angstep*i+ang0) for i in range(N)]
 
+    cur_list = [(x1, y1)]
+    for i in range(1, n):
+        cur_list += [rotate_and_traslate(cur_list[0], ang*i, (0, 0))]
 
-def eye(ax,p0,size=1.0,alpha=0,format=None,**kwds):
-	if format==None: format='k-'
-
-	N=100
-	ang0=pi-3*pi/16; angf= pi+3*pi/16
-	angstep=(angf-ang0)/(N-1)
-	x1=[ size*(cos(i*angstep+ang0)+1) for i in range(N)]
-	y1=[ size*sin(i*angstep+ang0) for i in range(N)]
-
-	ang2=ang0+pi/16
-	x2=[size,     size*(1.2*cos(ang2) +1 )]
-	y2=[0,        1.2*size*(sin(ang2)  )]
-	y3=[0,       -1.2*size*(sin(ang2)  )]
-
-	N=100
-	ang0=ang2; angf= ang2+4*pi/16
-	angstep=(angf-ang0)/(N-1)
-	x4=[ size*(0.85*cos(i*angstep+ang0)+1) for i in range(N)]
-	y4=[ size*0.85*sin(i*angstep+ang0) for i in range(N)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
 
 
-	cur_list=[(x1,y1),(x2,y2),(x2,y3),(x4,y4)]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
+def lens(ax, p0, size, focus, format=None, join_with_focus=False, **kwds):
+    r"""Draw a lens."""
+    if format is None: format = 'k-'
+    alpha = atan2(p0[1]-focus[1], p0[0]-focus[0])+pi/2
 
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+    f = sqrt((p0[0]-focus[0])**2 + (p0[1]-focus[1])**2)
+    r = sqrt((size/2)**2 + f**2)
+    ang = atan2(size/2, f)
 
+    N = 100
+    ang0 = -ang; angf = ang
+    angstep = (angf-ang0)/(N-1)
+    x1 = [r*sin(i*angstep+ang0) for i in range(N)]
+    y1 = [r*cos(i*angstep+ang0)-f for i in range(N)]
+    y2 = [-y1[i] for i in range(N)]
 
-def beam_splitter(ax,p0,size=2.54,alpha=0,format=None,**kwds):
-	if format==None: format='k-'
-	a=size/2
-	x0=[ a,-a,-a, a, a,-a]
-	y0=[ a, a,-a,-a, a,-a]
+    cur_list = [(x1, y1), (x1, y2)]
 
-	cur_list=[(x0,y0)]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
 
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
-
-
-def draw_beam(ax,p1,p2,width=0,beta1=None,beta2=None,format=None,**kwds):
-	if format==None: format='k-'
-
-	if width==0:
-		x0=[p1[0],p2[0]]
-		y0=[p1[1],p2[1]]
-		ax.plot(x0,y0,format,**kwds)
-	else:
-		alpha=atan2(p2[1]-p1[1],p2[0]-p1[0])
-		a=width/2
-
-		x1,y1=p1
-		x2,y2=p2
-
-		x11 = (a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) + a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 - (x1*y1*cos(beta1) - x1**2*sin(beta1) + x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
-		y11 = (a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 - (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
-
-		x21 = (a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) - (2*a*y1*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 - (x2*y1*cos(beta2) - x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
-		y21 = (a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) + a*y1**2*sin(beta2) + (a*sin(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 - (2*a*y1*sin(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))*y2)/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
-
-		ax.plot([x11,x21],[y11,y21],format,**kwds)
-
-		x12 = -(a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) - (2*a*y1*cos(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 + (x2*y1*cos(beta2) - x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
-		y12 = -(a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) + a*y1**2*sin(beta2) + (a*sin(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 - (2*a*y1*sin(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))*y2)/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
-
-		x22 = -(a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) + a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 + (x1*y1*cos(beta1) - x1**2*sin(beta1) + x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
-		y22 = -(a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 + (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
-
-		ax.plot([x12,x22],[y12,y22],format,**kwds)
+    if join_with_focus:
+        x1, y1 = [p0[0]+size/2*cos(alpha), p0[1]+size/2*sin(alpha)]
+        x2, y2 = [p0[0]-size/2*cos(alpha), p0[1]-size/2*sin(alpha)]
+        ax.plot([x1, focus[0]], [y1, focus[1]], ':', **kwds)
+        ax.plot([x2, focus[0]], [y2, focus[1]], ':', **kwds)
 
 
-def simple_beam_splitter(ax,p0,size=2.54,width=0.1,alpha=0,format=None,**kwds):
-	if format==None: format='k-'
-	a=size/2
-	b=width/2
-	x0=[ a,-a,-a, a,a]
-	y0=[ b, b,-b,-b,b]
+def eye(ax, p0, size=1.0, alpha=0, format=None, **kwds):
+    r"""Draw an eye."""
+    if format is None: format = 'k-'
 
-	cur_list=[(x0,y0)]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
+    N = 100
+    ang0 = pi-3*pi/16; angf = pi+3*pi/16
+    angstep = (angf-ang0)/(N-1)
+    x1 = [size*(cos(i*angstep+ang0)+1) for i in range(N)]
+    y1 = [size*sin(i*angstep+ang0) for i in range(N)]
 
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+    ang2 = ang0+pi/16
+    x2 = [size, size*(1.2*cos(ang2)+1)]
+    y2 = [0, 1.2*size*(sin(ang2))]
+    y3 = [0, -1.2*size*(sin(ang2))]
+
+    N = 100
+    ang0 = ang2; angf = ang2+4*pi/16
+    angstep = (angf-ang0)/(N-1)
+    x4 = [size*(0.85*cos(i*angstep+ang0)+1) for i in range(N)]
+    y4 = [size*0.85*sin(i*angstep+ang0) for i in range(N)]
+
+    cur_list = [(x1, y1), (x2, y2), (x2, y3), (x4, y4)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
+
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
 
 
-def draw_laser(ax,p0,width,height,alpha=0,format=None,**kwds):
-	if format==None: format='k-'
-	simple_beam_splitter(ax,p0,size=width,width=height,alpha=alpha,format=format,**kwds)
+def beam_splitter(ax, p0, size=2.54, alpha=0, format=None, **kwds):
+    r"""Draw a beam splitter."""
+    if format is None: format = 'k-'
+    a = size/2
+    x0 = [a, -a, -a, a, a, -a]
+    y0 = [a, a, -a, -a, a, -a]
+
+    cur_list = [(x0, y0)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
+
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
 
 
-def cable(ax,p1,p2,format=None,**kwds):
-	if format==None: format='k-'
-	pyplot.plot([p1[0],p2[0]],[p1[1],p2[1]],format,**kwds)
+def draw_beam(ax, p1, p2, width=0, beta1=None, beta2=None,
+              format=None, **kwds):
+    r"""Draw a laser beam."""
+    if format is None: format = 'k-'
+
+    if width == 0:
+        x0 = [p1[0], p2[0]]
+        y0 = [p1[1], p2[1]]
+        ax.plot(x0, y0, format, **kwds)
+    else:
+        a = width/2
+
+        x1, y1 = p1
+        x2, y2 = p2
+
+        x11 = (a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) + a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 - (x1*y1*cos(beta1) - x1**2*sin(beta1) + x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+        y11 = (a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 - (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+
+        x21 = (a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) - (2*a*y1*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 - (x2*y1*cos(beta2) - x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
+        y21 = (a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) + a*y1**2*sin(beta2) + (a*sin(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 - (2*a*y1*sin(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))*y2)/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
+
+        ax.plot([x11, x21], [y11, y21], format, **kwds)
+
+        x12 = -(a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) - (2*a*y1*cos(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 + (x2*y1*cos(beta2) - x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
+        y12 = -(a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) + a*y1**2*sin(beta2) + (a*sin(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 - (2*a*y1*sin(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))*y2)/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
+
+        x22 = -(a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) + a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 + (x1*y1*cos(beta1) - x1**2*sin(beta1) + x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+        y22 = -(a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 + (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+
+        ax.plot([x12, x22], [y12, y22], format, **kwds)
+
+
+def simple_beam_splitter(ax, p0, size=2.54, width=0.1, alpha=0,
+                         format=None, **kwds):
+    r"""Draw a simple beam splitter."""
+    if format is None: format = 'k-'
+    a = size/2
+    b = width/2
+    x0 = [a, -a, -a, a, a]
+    y0 = [b, b, -b, -b, b]
+
+    cur_list = [(x0, y0)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
+
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
+
+
+def draw_laser(ax, p0, width, height, alpha=0, format=None, **kwds):
+    r"""Draw a laser."""
+    if format is None: format = 'k-'
+    simple_beam_splitter(ax, p0, size=width, width=height, alpha=alpha,
+                         format=format, **kwds)
+
+
+def cable(ax, p1, p2, format=None, **kwds):
+    r"""Draw a cable."""
+    if format is None: format = 'k-'
+    pyplot.plot([p1[0], p2[0]], [p1[1], p2[1]], format, **kwds)
 
 
 ########################################################################
-#Drawing DAQ.
+# Drawing DAQ.
 ########################################################################
 
 
-def draw_box(ax,p0,width,height,alpha=0,format=None,**kwds):
-	if format==None: format='k-'
-	simple_beam_splitter(ax,p0,size=width,width=height,alpha=alpha,format=format,**kwds)
+def draw_box(ax, p0, width, height, alpha=0, format=None, **kwds):
+    r"""Draw a box."""
+    if format is None: format = 'k-'
+    simple_beam_splitter(ax, p0, size=width, width=height, alpha=alpha,
+                         format=format, **kwds)
 
 
-def draw_for(ax,p0,pf,r=10,format=None,**kwds):
-	if format==None: format='k-'
+def draw_for(ax, p0, pf, r=10, format=None, **kwds):
+    r"""Draw a for loop."""
+    if format is None: format = 'k-'
 
-	#We draw lines
-	x0,y0=p0
-	xf,yf=pf
+    # We draw lines
+    x0, y0 = p0
+    xf, yf = pf
 
-	xtop=[x0+r,xf-r]
-	ytop=[y0  ,y0  ]
+    xtop = [x0+r, xf-r]
+    ytop = [y0, y0]
 
-	xbot=[x0+r,xf-r]
-	ybot=[yf  ,yf  ]
+    xbot = [x0+r, xf-r]
+    ybot = [yf, yf]
 
-	xl  =[x0  ,x0  ]
-	yl  =[y0-r,yf+r]
+    xl = [x0, x0]
+    yl = [y0-r, yf+r]
 
-	xr  =[xf  ,xf  ]
-	yr  =[y0-r,yf+r]
+    xr = [xf, xf]
+    yr = [y0-r, yf+r]
 
-	cur_list=[(xtop,ytop),(xbot,ybot),(xl,yl),(xr,yr)]
-	cur_list=rotate_and_traslate(cur_list,0.0,(0,0))
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
+    cur_list = [(xtop, ytop), (xbot, ybot), (xl, yl), (xr, yr)]
+    cur_list = rotate_and_traslate(cur_list, 0.0, (0, 0))
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
+
+    # We draw a round corner.
+
+    p1 = [xf-r, y0-r]
+    p2 = [x0+r, y0-r]
+    p3 = [x0+r, yf+r]
+    p4 = [xf-r, yf+r]
+
+    dtheta = pi/2/(100-1)
+    theta = [i*dtheta for i in range(100+1)]
+    xc = [r*cos(thetai) for thetai in theta]
+    yc = [r*sin(thetai) for thetai in theta]
+
+    cur_list1 = [(xc, yc)]
+    cur_list1 = rotate_and_traslate(cur_list1, 0.0, p1)
+    for curi in cur_list1: ax.plot(curi[0], curi[1], format, **kwds)
+
+    cur_list2 = [(xc, yc)]
+    cur_list2 = rotate_and_traslate(cur_list2, pi/2, p2)
+    for curi in cur_list2: ax.plot(curi[0], curi[1], format, **kwds)
+
+    cur_list3 = [(xc, yc)]
+    cur_list3 = rotate_and_traslate(cur_list3, pi, p3)
+    for curi in cur_list3: ax.plot(curi[0], curi[1], format, **kwds)
+
+    cur_list4 = [(xc, yc)]
+    cur_list4 = rotate_and_traslate(cur_list4, -pi/2, p4)
+    for curi in cur_list4: ax.plot(curi[0], curi[1], format, **kwds)
 
 
-	#We draw a round corner
+def draw_arith(ax, p0, size=1, alpha=0, arith=None, format=None,
+               fontsize=10, **kwds):
+    r"""Draw an arithmetic operator."""
+    if format is None: format = 'k-'
+    a = size/2.0
+    x0 = [0, 2.5*a, 0, 0]
+    y0 = [a, 0, -a, a]
 
-	p1=[xf-r,y0-r]
-	p2=[x0+r,y0-r]
-	p3=[x0+r,yf+r]
-	p4=[xf-r,yf+r]
+    cur_list = [(x0, y0)]
+    cur_list = rotate_and_traslate(cur_list, alpha, p0)
 
-	dtheta=pi/2/(100-1)
-	theta=[i*dtheta for i in range(100+1)]
-	xc=[r*cos(thetai) for thetai in theta]
-	yc=[r*sin(thetai) for thetai in theta]
+    for curi in cur_list: ax.plot(curi[0], curi[1], format, **kwds)
 
-	cur_list1=[(xc,yc)]
-	cur_list1=rotate_and_traslate(cur_list1,0.0,p1)
-	for curi in cur_list1 : ax.plot(curi[0],curi[1],format,**kwds)
-
-	cur_list2=[(xc,yc)]
-	cur_list2=rotate_and_traslate(cur_list2,pi/2,p2)
-	for curi in cur_list2 : ax.plot(curi[0],curi[1],format,**kwds)
-
-	cur_list3=[(xc,yc)]
-	cur_list3=rotate_and_traslate(cur_list3,pi  ,p3)
-	for curi in cur_list3 : ax.plot(curi[0],curi[1],format,**kwds)
-
-	cur_list4=[(xc,yc)]
-	cur_list4=rotate_and_traslate(cur_list4,-pi/2,p4)
-	for curi in cur_list4 : ax.plot(curi[0],curi[1],format,**kwds)
-
-
-def draw_arith(ax,p0,size=1,alpha=0,arith=None,format=None,fontsize=10,**kwds):
-	if format==None: format='k-'
-	a=size/2.0
-	x0=[ 0,2.5*a, 0, 0]
-	y0=[ a,  0,-a, a]
-
-	cur_list=[(x0,y0)]
-	cur_list=rotate_and_traslate(cur_list,alpha,p0)
-
-	for curi in cur_list : ax.plot(curi[0],curi[1],format,**kwds)
-
-	if arith!=None:
-		pyplot.text( p0[0]+0.75*a,p0[1],arith,horizontalalignment='center',verticalalignment='center',fontsize=fontsize)
+    if arith is not None:
+        pyplot.text(p0[0]+0.75*a, p0[1], arith, horizontalalignment='center',
+                    verticalalignment='center', fontsize=fontsize)
 
 
 ########################################################################
-#Drawing energy levels.
+# Drawing energy levels.
 ########################################################################
 
 
 def draw_state(ax, p, text='', l=0.5, alignment='left', label_displacement=1.0,
                fontsize=25, atoms=None, atoms_h=0.125, atoms_size=5, **kwds):
     r"""Draw a quantum state for energy level diagrams."""
-
     ax.plot([p[0]-l/2.0, p[0]+l/2.0], [p[1], p[1]],
             color='black', **kwds)
     if text != '':
@@ -1036,76 +1061,88 @@ def draw_state(ax, p, text='', l=0.5, alignment='left', label_displacement=1.0,
         ax.plot(atoms_x, atoms_y, "ko", ms=atoms_size)
 
 
-def draw_multiplet(ax,fine_state,p,hmin,w, fside='right',label_separation=1,label_fontsize=15,fsize=10,deltanu_fontsize=6,
-					proportional=False,text='',text_pos='top',magnetic_lines=False,**kwds):
-	#We determine the vertical positions, calculated from p[1] up.
-	hyperfine_states=make_list_of_states([fine_state],'hyperfine')
+def draw_multiplet(ax, fine_state, p, hmin, w, fside='right',
+                   label_separation=1, label_fontsize=15, fsize=10,
+                   deltanu_fontsize=6, proportional=False, text='',
+                   text_pos='top', magnetic_lines=False, **kwds):
+    r"""We draw a multiplet."""
+    # We determine the vertical positions, calculated from p[1] up.
+    hyperfine_states = make_list_of_states([fine_state], 'hyperfine')
 
-	h_list=[ ei.nu -hyperfine_states[0].nu for ei in hyperfine_states]
-	h_list=[ i/h_list[-1]      for i in h_list]
-	h_min=min([h_list[i+1]-h_list[i] for i in range(len(h_list)-1)])
-	h_list=[ hmin*i/h_min + p[1]  for i in h_list]
+    h_list = [ei.nu - hyperfine_states[0].nu for ei in hyperfine_states]
+    h_list = [i/h_list[-1] for i in h_list]
+    h_min = min([h_list[i+1]-h_list[i] for i in range(len(h_list)-1)])
+    h_list = [hmin*i/h_min + p[1] for i in h_list]
 
-	if proportional:
-		h_list=[p[1]+i*hmin for i in range(len(hyperfine_states))]
+    if proportional:
+        h_list = [p[1]+i*hmin for i in range(len(hyperfine_states))]
 
-	omegaij=[ (hyperfine_states[i+1].nu-hyperfine_states[i].nu)/1e6 for i in range(len(hyperfine_states)-1)]
+    omegaij = [(hyperfine_states[i+1].nu-hyperfine_states[i].nu)/1e6
+               for i in range(len(hyperfine_states)-1)]
 
-	for i in range(len(h_list)):
-		label='$\mathrm{F}='+str(hyperfine_states[i].f)+'$'
-		if magnetic_lines:
-			maxf=max([eee.f for eee in hyperfine_states])
-			f=hyperfine_states[i].f
-			nm=2*maxf+1
-			for mf in range(-f,f+1):
-				draw_state(ax,[p[0]+mf*w/nm,h_list[i]],"",w/nm*0.5,alignment=fside,fontsize=fsize)
+    for i in range(len(h_list)):
+        label = '$\mathrm{F}='+str(hyperfine_states[i].f)+'$'
+        if magnetic_lines:
+            maxf = max([eee.f for eee in hyperfine_states])
+            f = hyperfine_states[i].f
+            nm = 2*maxf+1
+            for mf in range(-f, f+1):
+                draw_state(ax, [p[0]+mf*w/nm, h_list[i]], "", w/nm*0.5,
+                           alignment=fside, fontsize=fsize)
 
-			if fside=='right':
-				ax.text(p[0]+w+label_separation,h_list[i],label,fontsize=fsize,horizontalalignment="right",verticalalignment="center")
-			elif fside=='left':
-				ax.text(p[0]-w-label_separation,h_list[i],label,fontsize=fsize,horizontalalignment="left",verticalalignment="center")
-		else:
-			draw_state(ax,[p[0],h_list[i]],label,w,alignment=fside,fontsize=fsize)
+            if fside == 'right':
+                ax.text(p[0]+w+label_separation, h_list[i], label,
+                        fontsize=fsize, horizontalalignment="right",
+                        verticalalignment="center")
+            elif fside == 'left':
+                ax.text(p[0]-w-label_separation, h_list[i], label,
+                        fontsize=fsize, horizontalalignment="left",
+                        verticalalignment="center")
+        else:
+            draw_state(ax, [p[0], h_list[i]], label, w,
+                       alignment=fside, fontsize=fsize)
 
-	for i in range(len(h_list)-1):
-		hmid=(h_list[i+1]+h_list[i])/2.0-0.5
-		nu=str(omegaij[i])[:5]
-		if fside=='left':
-			ax.text(p[0]-w/2.0,hmid,r'$'+nu+' \ \mathrm{MHz}$',fontsize=deltanu_fontsize,
-					horizontalalignment=fside,verticalalignment='bottom')
-		else:
-			ax.text(p[0]+w/2.0,hmid,r'$'+nu+' \ \mathrm{MHz}$',fontsize=deltanu_fontsize,
-					horizontalalignment=fside,verticalalignment='bottom')
+    for i in range(len(h_list)-1):
+        hmid = (h_list[i+1]+h_list[i])/2.0-0.5
+        nu = str(omegaij[i])[:5]
+        if fside == 'left':
+            ax.text(p[0]-w/2.0, hmid, r'$'+nu+' \ \mathrm{MHz}$',
+                    fontsize=deltanu_fontsize,
+                    horizontalalignment=fside, verticalalignment='bottom')
+        else:
+            ax.text(p[0]+w/2.0, hmid, r'$'+nu+' \ \mathrm{MHz}$',
+                    fontsize=deltanu_fontsize,
+                    horizontalalignment=fside, verticalalignment='bottom')
 
-	a=label_separation
+    a = label_separation
 
-	if text !='':
-		if text_pos=='top':
-			labelx=p[0]
-			labely=h_list[-1]+a
+    if text != '':
+        if text_pos == 'top':
+            labelx = p[0]
+            labely = h_list[-1]+a
 
-			ax.text(labelx,labely,'$'+text+'$',
-					verticalalignment='bottom',
-					horizontalalignment='center',fontsize=label_fontsize)
-		elif text_pos=='right':
-			labelx=p[0]+w/2+2.0*a
-			if fside=='right': labelx=labelx+a*5.0
-			labely=(h_list[-1]+h_list[0])/2.0
+            ax.text(labelx, labely, '$'+text+'$',
+                    verticalalignment='bottom',
+                    horizontalalignment='center', fontsize=label_fontsize)
+        elif text_pos == 'right':
+            labelx = p[0]+w/2+2.0*a
+            if fside == 'right': labelx = labelx+a*5.0
+            labely = (h_list[-1]+h_list[0])/2.0
 
-			ax.text(labelx,labely,'$'+text+'$',
-					verticalalignment='center',
-					horizontalalignment='left',fontsize=label_fontsize)
+            ax.text(labelx, labely, '$'+text+'$',
+                    verticalalignment='center',
+                    horizontalalignment='left', fontsize=label_fontsize)
 
-		elif text_pos=='left':
-			labelx=p[0]-w/2-2.0*a
-			if fside=='left': labelx=labelx-a*5.0
-			labely=(h_list[-1]+h_list[0])/2.0
+        elif text_pos == 'left':
+            labelx = p[0]-w/2-2.0*a
+            if fside == 'left': labelx = labelx-a*5.0
+            labely = (h_list[-1]+h_list[0])/2.0
 
-			ax.text(labelx,labely,'$'+text+'$',
-					verticalalignment='center',
-					horizontalalignment='right',fontsize=label_fontsize)
+            ax.text(labelx, labely, '$'+text+'$',
+                    verticalalignment='center',
+                    horizontalalignment='right', fontsize=label_fontsize)
 
-	return [[p[0],i] for i in h_list]
+    return [[p[0], i] for i in h_list]
 
 
 def excitation(ax, p1, p2, **kwargs):
