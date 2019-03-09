@@ -19,7 +19,12 @@
 #  along with FAST.  If not, see <http://www.gnu.org/licenses/>.        *
 #                                                                       *
 # ***********************************************************************
-"""This module contains all routines related to magnetic field interaction."""
+"""This module contains all routines related to magnetic field interaction.
+
+>>> import numpy as np
+>>> np.set_printoptions(precision=4)
+
+"""
 from atomic_structure import Atom, State
 from sympy import Integer
 from numpy import array, pi
@@ -34,7 +39,7 @@ def lande_g_factors(element, isotope, L=None, J=None, F=None):
     >>> element = "Rb"
     >>> isotope = 87
     >>> print lande_g_factors(element, isotope)
-    [  9.99993686e-01   2.00231930e+00  -9.95141400e-04]
+    [ 9.9999e-01  2.0023e+00 -9.9514e-04]
 
     The spin-orbit g-factor for a certain J
     >>> print lande_g_factors(element, isotope, L=0, J=1/Integer(2))
