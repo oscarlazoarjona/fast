@@ -324,7 +324,7 @@ def electric_field_amplitude_gaussian(P, sigmax, sigmay=None, Omega=1.0e6,
  frequency scale  Omega (in Hertz) understood as absolute frequency\
  (as opposed to angular frequency).
 
-    >>> print electric_field_amplitude_gaussian(0.001, 0.001)
+    >>> print(electric_field_amplitude_gaussian(0.001, 0.001))
     19.6861467587
 
     """
@@ -345,7 +345,7 @@ def electric_field_amplitude_top(P, a, Omega=1e6, units="ad-hoc"):
  rescaled units according to the frequency scale  Omega (in Hertz)\
  understood as absolute frequency (as opposed to angular frequency).
 
-    >>> print electric_field_amplitude_top(0.001, 0.001)
+    >>> print(electric_field_amplitude_top(0.001, 0.001))
     27.8404157371
 
     """
@@ -365,11 +365,11 @@ Isat=16.6889462814 m/m^2 is the saturation intensity of the D2 line of \
 rubidium for circularly polarized light. Optionally, a frequency scale \
 `Omega` can be provided.
 
-    >>> print electric_field_amplitude_intensity(1.0, units="ad-hoc")
+    >>> print(electric_field_amplitude_intensity(1.0, units="ad-hoc"))
     9.0152984553
-    >>> print electric_field_amplitude_intensity(1.0, Omega=1.0, units="SI")
+    >>> print(electric_field_amplitude_intensity(1.0, Omega=1.0, units="SI"))
     112.135917207
-    >>> print electric_field_amplitude_intensity(1.0, units="SI")
+    >>> print(electric_field_amplitude_intensity(1.0, units="SI"))
     0.000112135917207
 
     """
@@ -384,4 +384,4 @@ rubidium for circularly polarized light. Optionally, a frequency scale \
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))
