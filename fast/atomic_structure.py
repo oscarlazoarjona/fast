@@ -398,14 +398,22 @@ class Atom(Basic):
         This function finds all the states to which a given fine structure
         state can decay (through electric dipole selection rules).
 
-        >>> atom=Atom("Cs",133)
-        >>> e=State("Cs",133,6,"P",3/Integer(2))
+        >>> atom = Atom("Cs",133)
+        >>> e = State("Cs", 133, 6, "P", 3/Integer(2))
         >>> atom.find_decays(e)
-        [133Cs 6P_3/2, 133Cs 6S_1/2]
+        [133Cs 6S_1/2, 133Cs 6P_3/2]
 
-        >>> s=State("Cs",133,6,"D",5/Integer(2))
-        >>> atom.find_decays(s)
-        [133Cs 6D_5/2, 133Cs 6P_3/2, 133Cs 7P_3/2, 133Cs 6S_1/2, 133Cs 5D_3/2, 133Cs 5D_5/2, 133Cs 7S_1/2, 133Cs 6P_1/2]
+        >>> s = State("Cs", 133, 6, "D", 5/Integer(2))
+        >>> for d in atom.find_decays(s):
+        ...     print(d)
+        133Cs 6S_1/2
+        133Cs 6P_1/2
+        133Cs 6P_3/2
+        133Cs 5D_3/2
+        133Cs 5D_5/2
+        133Cs 7S_1/2
+        133Cs 7P_3/2
+        133Cs 6D_5/2
 
         """
         def decays_from(fine_state, transitions):

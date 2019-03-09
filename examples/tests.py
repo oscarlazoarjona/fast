@@ -31,22 +31,21 @@ print testmod(fast.misc, verbose=verbose)
 print testmod(fast.rk4, verbose=verbose)
 print testmod(fast.stationary, verbose=verbose)
 print testmod(fast.bloch, verbose=verbose)
-print testmod(fast.inhomo, verbose=verbose)
 
 ########################################################################
 # Run all codes from notebook-generated doctests.
 
-print testmod(doctest_01___Two_level_atom, verbose=verbose)
-print testmod(doctest_02___Three_level_atom_ladder, verbose=verbose)
-print testmod(doctest_03___Rb87_one_photon, verbose=verbose)
-s = doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
-print testmod(s, verbose=verbose)
-print testmod(doctest_05___Two_level_atom_symbolic, verbose=verbose)
-print testmod(doctest_06___Three_level_atom_ladder_symbolic, verbose=verbose)
-print testmod(doctest_07___Three_level_atom_Lambda_symbolic, verbose=verbose)
-print testmod(doctest_08___Three_level_atom_V_symbolic, verbose=verbose)
-print testmod(doctest_09___Thermal_States, verbose=verbose)
-print testmod(doctest_10___States_database, verbose=verbose)
+# print testmod(doctest_01___Two_level_atom, verbose=verbose)
+# print testmod(doctest_02___Three_level_atom_ladder, verbose=verbose)
+# print testmod(doctest_03___Rb87_one_photon, verbose=verbose)
+# s = doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
+# print testmod(s, verbose=verbose)
+# print testmod(doctest_05___Two_level_atom_symbolic, verbose=verbose)
+# print testmod(doctest_06___Three_level_atom_ladder_symbolic, verbose=verbose)
+# print testmod(doctest_07___Three_level_atom_Lambda_symbolic, verbose=verbose)
+# print testmod(doctest_08___Three_level_atom_V_symbolic, verbose=verbose)
+# print testmod(doctest_09___Thermal_States, verbose=verbose)
+# print testmod(doctest_10___States_database, verbose=verbose)
 # ########################################################################
 # # Toy examples.
 # # from toy.two_levels import suite
