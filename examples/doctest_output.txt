@@ -48,7 +48,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print atom
+    print(atom)
 Expecting:
     Rb
 ok
@@ -57,7 +57,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print atom
+    print(atom)
 Expecting:
     Rb
 ok
@@ -72,7 +72,7 @@ Expecting:
     [85, 87]
 ok
 Trying:
-    print atom.radius
+    print(atom.radius)
 Expecting:
     2.35e-10
 ok
@@ -91,7 +91,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print atom
+    print(atom)
 Expecting:
     85Rb
 ok
@@ -101,12 +101,12 @@ Expecting:
     48
 ok
 Trying:
-    print atom.abundance
+    print(atom.abundance)
 Expecting:
     0.7217
 ok
 Trying:
-    print atom.mass
+    print(atom.mass)
 Expecting:
     1.40999341816e-25
 ok
@@ -116,7 +116,7 @@ Expecting:
     5/2
 ok
 Trying:
-    print atom.ionization_frequency
+    print(atom.ionization_frequency)
 Expecting:
     1.01002474142e+13
 ok
@@ -199,7 +199,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print states
+    print(states)
 Expecting:
     [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 6S_1/2, 85Rb 6P_1/2, 85Rb 6P_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2, 85Rb 7S_1/2, 85Rb 7P_1/2, 85Rb 7P_3/2, 85Rb 6D_3/2, 85Rb 7D_3/2, 85Rb 14S_1/2, 85Rb 15S_1/2, 85Rb 16S_1/2, 85Rb 17S_1/2, 85Rb 18S_1/2, 85Rb 19S_1/2, 85Rb 20S_1/2, 85Rb 21S_1/2, 85Rb 22S_1/2, 85Rb 23S_1/2, 85Rb 24S_1/2, 85Rb 25S_1/2, 85Rb 26S_1/2, 85Rb 27S_1/2, 85Rb 28S_1/2, 85Rb 29S_1/2, 85Rb 30S_1/2, 85Rb 31S_1/2, 85Rb 32S_1/2, 85Rb 33S_1/2, 85Rb 34S_1/2, 85Rb 35S_1/2, 85Rb 36S_1/2, 85Rb 37S_1/2, 85Rb 38S_1/2, 85Rb 39S_1/2, 85Rb 40S_1/2, 85Rb 41S_1/2, 85Rb 42S_1/2, 85Rb 43S_1/2, 85Rb 44S_1/2, 85Rb 45S_1/2, 85Rb 46S_1/2, 85Rb 47S_1/2, 85Rb 48S_1/2, 85Rb 49S_1/2, 85Rb 50S_1/2]
 ok
@@ -213,12 +213,12 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print available
+    print(available)
 Expecting:
     [85Rb 5S_1/2, 85Rb 5P_1/2, 85Rb 5P_3/2, 85Rb 4D_5/2, 85Rb 4D_3/2, 85Rb 5D_3/2, 85Rb 5D_5/2]
 ok
 Trying:
-    print not_available
+    print(not_available)
 Expecting:
     [('Rb', 85, 1, 0, 1/2), ('Rb', 85, 2, 0, 1/2), ('Rb', 85, 2, 1, 1/2), ('Rb', 85, 2, 1, 3/2), ('Rb', 85, 3, 0, 1/2), ('Rb', 85, 3, 1, 1/2), ('Rb', 85, 3, 1, 3/2), ('Rb', 85, 3, 2, 3/2), ('Rb', 85, 3, 2, 5/2), ('Rb', 85, 4, 0, 1/2), ('Rb', 85, 4, 1, 1/2), ('Rb', 85, 4, 1, 3/2), ('Rb', 85, 4, 3, 5/2), ('Rb', 85, 4, 3, 7/2), ('Rb', 85, 5, 3, 5/2), ('Rb', 85, 5, 3, 7/2), ('Rb', 85, 5, 4, 7/2), ('Rb', 85, 5, 4, 9/2)]
 ok
@@ -231,7 +231,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print len(transitions)
+    print(len(transitions))
 Expecting:
     270
 ok
@@ -262,7 +262,7 @@ Expecting nothing
 ok
 Trying:
     for ti in easy_transitions:
-        print abs(ti.wavelength)*1e9, ti
+        print("{} {}".format(abs(ti.wavelength)*1e9, ti))
 Expecting:
     780.241476935 85Rb 5S_1/2 -----> 85Rb 5P_3/2
     776.157015322 85Rb 5P_3/2 -----> 85Rb 5D_3/2
@@ -307,27 +307,27 @@ Expecting:
     78
 ok
 Trying:
-    print g2.mass
+    print(g2.mass)
 Expecting:
     2.2069469161e-25
 ok
 Trying:
-    print g2.nu
+    print(g2.nu)
 Expecting:
     4021776399.38
 ok
 Trying:
-    print g2.omega
+    print(g2.omega)
 Expecting:
     25269566381.3
 ok
 Trying:
-    print e.Ahfs, e.Bhfs, e.Chfs
+    print("{} {} {}".format(e.Ahfs, e.Bhfs, e.Chfs))
 Expecting:
     50288250.0 -494000.0 560.0
 ok
 Trying:
-    print g2._latex_()
+    print(g2._latex_())
 Expecting:
     ^{133}\mathrm{Cs}\ 6S_{1/2}^{4,4}
 ok
@@ -487,22 +487,22 @@ Expecting:
     False
 ok
 Trying:
-    print clock.nu
+    print(clock.nu)
 Expecting:
     9192631770.0
 ok
 Trying:
-    print clock.omega
+    print(clock.omega)
 Expecting:
     57759008871.6
 ok
 Trying:
-    print clock.wavelength
+    print(clock.wavelength)
 Expecting:
     0.0326122557175
 ok
 Trying:
-    print clock.einsteinA
+    print(clock.einsteinA)
 Expecting:
     0.0
 ok
@@ -623,7 +623,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print gamma[8:, :8]/2/np.pi
+    print(gamma[8:, :8]/2/np.pi)
 Expecting:
     [[2.0217 2.0217 2.0217 0.     0.     0.     0.     0.    ]
      [2.5271 2.5271 0.     0.6065 0.3033 0.1011 0.     0.    ]
@@ -643,12 +643,12 @@ Expecting:
      [0.     0.     0.     0.     0.     0.     0.     6.065 ]]
 ok
 Trying:
-    Gamma =[sum([gamma[i][j] for j in range(i)])/2/pi
-            for i in range(len(magnetic_states))][8:]
+    Gamma = [sum([gamma[i][j] for j in range(i)])/2/pi
+             for i in range(len(magnetic_states))][8:]
 Expecting nothing
 ok
 Trying:
-    for Gammai in Gamma: print "{:2.3f}".format(Gammai)
+    for Gammai in Gamma: print("{:2.3f}".format(Gammai))
 Expecting:
     6.065
     6.065
@@ -747,7 +747,7 @@ Expecting:
     ⎢                                    ⎥
     ⎣ 0    0    0   0    0    0    0   Γ ⎦
 **********************************************************************
-File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1559, in fast.atomic_structure.calculate_gamma_matrix
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1557, in fast.atomic_structure.calculate_gamma_matrix
 Failed example:
     pprint(Matrix(gamma)[8:, :8])
 Expected:
@@ -910,7 +910,7 @@ Expecting:
     ⎢ ⎥
     ⎣Γ⎦
 **********************************************************************
-File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1623, in fast.atomic_structure.calculate_gamma_matrix
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1621, in fast.atomic_structure.calculate_gamma_matrix
 Failed example:
     pprint(Gamma)
 Expected:
@@ -1067,7 +1067,7 @@ Expecting:
     ⎢                                                      ⎥
     ⎣ 0       0        0     0    0       0     0      0   ⎦
 **********************************************************************
-File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1913, in fast.atomic_structure.calculate_r_matrices
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1910, in fast.atomic_structure.calculate_r_matrices
 Failed example:
     pprint(r[0][8:,:8])
 Expected:
@@ -1260,7 +1260,7 @@ Expecting:
     ⎢                                                             ⎥
     ⎣  0      0        0      0      0        0       0       0   ⎦
 **********************************************************************
-File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1971, in fast.atomic_structure.calculate_r_matrices
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 1968, in fast.atomic_structure.calculate_r_matrices
 Failed example:
     pprint(r[1][8:,:8])
 Expected:
@@ -1532,7 +1532,7 @@ Expecting:
     ⎢  0      0     0      0     0      0     0    ─⎥
     ⎣                                              2⎦
 **********************************************************************
-File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 2031, in fast.atomic_structure.calculate_r_matrices
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/atomic_structure.py", line 2028, in fast.atomic_structure.calculate_r_matrices
 Failed example:
     pprint(r[2][8:,:8])
 Expected:
@@ -1679,22 +1679,22 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print red[0][1]
+    print(red[0][1])
 Expecting:
     2.99207750426
 ok
 Trying:
-    print red[0][2]
+    print(red[0][2])
 Expecting:
     4.22698361868
 ok
 Trying:
-    print collision_rate(25 + 273.15, "Cs", 133)/2/pi
+    print(collision_rate(25 + 273.15, "Cs", 133)/2/pi)
 Expecting:
     9.0607260277
 ok
 Trying:
-    print collision_rate(120 + 273.15, "Cs", 133)/2/pi
+    print(collision_rate(120 + 273.15, "Cs", 133)/2/pi)
 Expecting:
     10519.235289
 ok
@@ -1754,52 +1754,52 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print reduced_matrix_element(g, e)
+    print(reduced_matrix_element(g, e))
 Expecting:
     5.97785756147
 ok
 Trying:
-    print reduced_matrix_element(e, g)
+    print(reduced_matrix_element(e, g))
 Expecting:
     -5.97785756146761
 ok
 Trying:
-    print reduced_matrix_element(g, e, convention=2)
+    print(reduced_matrix_element(g, e, convention=2))
 Expecting:
     4.22698361868
 ok
 Trying:
-    print reduced_matrix_element(e, g, convention=2)
+    print(reduced_matrix_element(e, g, convention=2))
 Expecting:
     -2.11349180934051
 ok
 Trying:
-    print speed_average(25+273.15,"Rb",85)
+    print(speed_average(25+273.15,"Rb",85))
 Expecting:
     272.65940782
 ok
 Trying:
-    print speed_average(25+273.15,"Cs",133)
+    print(speed_average(25+273.15,"Cs",133))
 Expecting:
     217.938062809
 ok
 Trying:
-    print speed_likely(25+273.15,"Rb",85)
+    print(speed_likely(25+273.15,"Rb",85))
 Expecting:
     241.638108688
 ok
 Trying:
-    print speed_likely(25+273.15,"Cs",133)
+    print(speed_likely(25+273.15,"Cs",133))
 Expecting:
     193.142579342
 ok
 Trying:
-    print speed_rms(25+273.15,"Rb",85)
+    print(speed_rms(25+273.15,"Rb",85))
 Expecting:
     295.945034349
 ok
 Trying:
-    print speed_rms(25+273.15,"Cs",133)
+    print(speed_rms(25+273.15,"Cs",133))
 Expecting:
     236.550383496
 ok
@@ -1820,7 +1820,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print thermal_state(omega_level, T, return_diagonal=True)
+    print(thermal_state(omega_level, T, return_diagonal=True))
 Expecting:
     [0.0834 0.0834 0.0834 0.0834 0.0834 0.0833 0.0833 0.0833 0.0833 0.0833
      0.0833 0.0833]
@@ -1834,58 +1834,58 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print np.diag(unperturbed_hamiltonian(magnetic_states))/hbar/2/pi*1e-9
+    print(np.diag(unperturbed_hamiltonian(magnetic_states))/hbar/2/pi*1e-9)
 Expecting:
     [-4.2717+0.j -4.2717+0.j -4.2717+0.j  2.563 +0.j  2.563 +0.j  2.563 +0.j
       2.563 +0.j  2.563 +0.j]
 ok
 Trying:
-    print vapour_density(90.0 + 273.15,"Cs",133)
+    print(vapour_density(90.0 + 273.15,"Cs",133))
 Expecting:
     1.85318869181e-06
 ok
 Trying:
-    print vapour_density(25.0 + 273.15,"Rb")
+    print(vapour_density(25.0 + 273.15,"Rb"))
 Expecting:
     1.83339788085e-09
 ok
 Trying:
-    print vapour_number_density(90.0 + 273.15,"Cs")
+    print(vapour_number_density(90.0 + 273.15,"Cs"))
 Expecting:
     8.39706962725e+18
 ok
 Trying:
-    print vapour_pressure(25.0 + 273.15,"Rb")
+    print(vapour_pressure(25.0 + 273.15,"Rb"))
 Expecting:
     5.31769896107e-05
 ok
 Trying:
-    print vapour_pressure(39.3 + 273.15,"Rb")
+    print(vapour_pressure(39.3 + 273.15,"Rb"))
 Expecting:
     0.000244249795696
 ok
 Trying:
-    print vapour_pressure(90.0 + 273.15,"Rb")
+    print(vapour_pressure(90.0 + 273.15,"Rb"))
 Expecting:
     0.0155963687128
 ok
 Trying:
-    print vapour_pressure(25.0 + 273.15,"Cs")
+    print(vapour_pressure(25.0 + 273.15,"Cs"))
 Expecting:
     0.000201461144963
 ok
 Trying:
-    print vapour_pressure(28.5 + 273.15,"Cs")
+    print(vapour_pressure(28.5 + 273.15,"Cs"))
 Expecting:
     0.000297898928349
 ok
 Trying:
-    print vapour_pressure(90.0 + 273.15,"Cs")
+    print(vapour_pressure(90.0 + 273.15,"Cs"))
 Expecting:
     0.0421014384667
 ok
 Trying:
-    print vapour_pressure(90.0 + 273.15,"Ca")
+    print(vapour_pressure(90.0 + 273.15,"Ca"))
 Expecting:
     Traceback (most recent call last):
     ...
@@ -2124,6 +2124,14 @@ ok
 Test passed.
 TestResults(failed=0, attempted=30)
 Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    np.set_printoptions(precision=4)
+Expecting nothing
+ok
+Trying:
     element = "Rb"
 Expecting nothing
 ok
@@ -2188,22 +2196,29 @@ Expecting:
     [1.51284728917866e-24 1.60555650110849e-24 1.69826571303833e-24
      1.79097492496816e-24 1.88368413689800e-24]
 ok
-1 items had no tests:
-    fast.magnetic_field
-3 items passed all tests:
+4 items passed all tests:
+   2 tests in fast.magnetic_field
    5 tests in fast.magnetic_field.lande_g_factors
    4 tests in fast.magnetic_field.paschen_back_energies
    4 tests in fast.magnetic_field.zeeman_energies
-13 tests in 4 items.
-13 passed and 0 failed.
+15 tests in 4 items.
+15 passed and 0 failed.
 Test passed.
-TestResults(failed=0, attempted=13)
+TestResults(failed=0, attempted=15)
 Trying:
     define_density_matrix(2)
 Expecting:
     Matrix([
     [rho11, rho12],
     [rho21, rho22]])
+ok
+Trying:
+    import numpy as np
+Expecting nothing
+ok
+Trying:
+    np.set_printoptions(precision=4)
+Expecting nothing
 ok
 Trying:
     bra(2,4)
@@ -3181,7 +3196,7 @@ ok
     fast.symbolic.cross
     fast.symbolic.dot
 27 items passed all tests:
-   1 tests in fast.symbolic
+   3 tests in fast.symbolic
    2 tests in fast.symbolic.bra
   15 tests in fast.symbolic.calculate_A_b
   10 tests in fast.symbolic.calculate_boundaries
@@ -3208,10 +3223,10 @@ ok
   11 tests in fast.symbolic.polarization_vector
    3 tests in fast.symbolic.sigma_operator_indices
    2 tests in fast.symbolic.vector_element
-172 tests in 49 items.
-172 passed and 0 failed.
+174 tests in 49 items.
+174 passed and 0 failed.
 Test passed.
-TestResults(failed=0, attempted=172)
+TestResults(failed=0, attempted=174)
 16 items had no tests:
     fast.error_propagation
     fast.error_propagation.Measurement
@@ -3529,7 +3544,11 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print hamiltonian(detuning_knob)/hbar_num/2/np.pi*1e-6
+    np.set_printoptions(precision=4)
+Expecting nothing
+ok
+Trying:
+    print(hamiltonian(detuning_knob)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
        0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j  0.0000e+00+0.j
@@ -3686,7 +3705,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print unfolding(rhos)
+    print(unfolding(rhos))
 Expecting:
     [ 0.4  1.  -2. ]
 ok
@@ -3756,36 +3775,44 @@ Trying:
             if real:
                 muu = vect.Mu(1, j, j)
                 ss, ii, jj = vect.IJ(muu)
-                print j, j, muu, j-ii, j-jj, 1-ss
+                aux = (j, j, muu, j-ii, j-jj, 1-ss)
+                print("{} {} {} {} {} {}".format(*aux))
             else:
                 muu = vect.Mu(0, j, j)
                 ss, ii, jj = vect.IJ(muu)
-                print j, j, muu, j-ii, j-jj
+                aux = (j, j, muu, j-ii, j-jj)
+                print("{} {} {} {} {}".format(*aux))
         for j in range(Ne):
             for i in range(j+1, Ne):
                 if real:
                     muu = vect.Mu(1, i, j)
                     ss, ii, jj = vect.IJ(muu)
-                    print i, j, muu, i-ii, j-jj, 1-ss
+                    aux = (i, j, muu, i-ii, j-jj, 1-ss)
+                    print("{} {} {} {} {} {}".format(*aux))
                     muu = vect.Mu(-1, i, j)
                     ss, ii, jj = vect.IJ(muu)
-                    print i, j, muu, i-ii, j-jj, -1-ss
+                    aux = (i, j, muu, i-ii, j-jj, -1-ss)
+                    print("{} {} {} {} {} {}".format(*aux))
                 else:
                     muu = vect.Mu(0, i, j)
                     ss, ii, jj = vect.IJ(muu)
-                    print i, j, muu, i-ii, j-jj
+                    aux = (i, j, muu, i-ii, j-jj)
+                    print("{} {} {} {} {}".format(*aux))
                 if not lower_triangular:
                     if real:
                         muu = vect.Mu(1, j, i)
                         ss, ii, jj = vect.IJ(muu)
-                        print j, i, muu, j-ii, i-jj, 1-ss
+                        aux = (j, i, muu, j-ii, i-jj, 1-ss)
+                        print("{} {} {} {} {} {}".format(*aux))
                         muu = vect.Mu(-1, j, i)
                         ss, ii, jj = vect.IJ(muu)
-                        print j, i, muu, j-ii, i-jj, -1-ss
+                        aux = (j, i, muu, j-ii, i-jj, -1-ss)
+                        print("{} {} {} {} {} {}".format(*aux))
                     else:
                         muu = vect.Mu(0, j, i)
                         ss, ii, jj = vect.IJ(muu)
-                        print i, j, muu, j-ii, i-jj
+                        aux = (i, j, muu, j-ii, i-jj)
+                        print("{} {} {} {} {}".format(*aux))
 Expecting nothing
 ok
 Trying:
@@ -3904,7 +3931,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print rhos == unfolding.inverse(unfolding(rhos))
+    print(rhos == unfolding.inverse(unfolding(rhos)))
 Expecting:
     [[ True  True]
      [ True  True]]
@@ -3934,7 +3961,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print unfolding.inverse(unfolding(rhops), True)
+    print(unfolding.inverse(unfolding(rhops), True))
 Expecting:
     [[-0.-0.j  0.-0.j]
      [ 0.+0.j  0.+0.j]]
@@ -3975,17 +4002,17 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print omega_levelu
+    print(omega_levelu)
 Expecting:
     [0.0, 100.0, 200.0, 300.0]
 ok
 Trying:
-    print Neu
+    print(Neu)
 Expecting:
     4
 ok
 Trying:
-    print xiu
+    print(xiu)
 Expecting:
     [[[0. 1. 0. 0.]
       [1. 0. 0. 0.]
@@ -4041,7 +4068,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0)
+    print(detunings_code(Neu, Nl, pairs, omega_levelu, iu0, ju0))
 Expecting:
         delta1_2_1 = detuning_knob[0]
         delta2_3_1 = detuning_knob[1]
@@ -4318,7 +4345,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print chire
+    print(chire)
 Expecting:
     [ 4.4824e-09-1.1206e-10j  5.5971e-09-1.7491e-10j  7.4459e-09-3.1024e-10j
       1.1097e-08-6.9356e-10j  2.1449e-08-2.6811e-09j  0.0000e+00-5.9877e-08j
@@ -4436,7 +4463,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print bloch_equations(rhosv, Eps, detuning_knobs)
+    print(bloch_equations(rhosv, Eps, detuning_knobs))
 Expecting:
     [4.0601e+07 1.4345e+08 3.3492e+08]
 ok
@@ -4506,7 +4533,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print detuning_terms(rhosv, detuning_knobs)
+    print(detuning_terms(rhosv, detuning_knobs))
 Expecting:
     [0. 2. 3.]
 ok
@@ -4646,8 +4673,8 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print H1(Ep_vals, epsilonp_vals, detuning_knob_vals) \
-        /hbar_num/2/np.pi*1e-6
+    print(H1(Ep_vals, epsilonp_vals, detuning_knob_vals) \
+        /hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4657,7 +4684,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H2(Ep_vals, epsilonp_vals)/hbar_num/2/np.pi*1e-6
+    print(H2(Ep_vals, epsilonp_vals)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4667,7 +4694,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H3(epsilonp_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    print(H3(epsilonp_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4677,7 +4704,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H4(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    print(H4(Ep_vals, detuning_knob_vals)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4687,7 +4714,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H5(detuning_knob_vals)/hbar_num/2/np.pi*1e-6
+    print(H5(detuning_knob_vals)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4697,7 +4724,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H6(Ep_vals)/hbar_num/2/np.pi*1e-6
+    print(H6(Ep_vals)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4707,7 +4734,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H7(epsilonp_vals)/hbar_num/2/np.pi*1e-6
+    print(H7(epsilonp_vals)/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4717,7 +4744,7 @@ Expecting:
      [ 3.1989+0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j 97.    +0.j]]
 ok
 Trying:
-    print H8()/hbar_num/2/np.pi*1e-6
+    print(H8()/hbar_num/2/np.pi*1e-6)
 Expecting:
     [[ 0.    +0.j  0.6398+0.j  1.2795+0.j  1.9193+0.j  2.5591+0.j  3.1989+0.j]
      [ 0.6398+0.j  1.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j  0.    +0.j]
@@ -4827,7 +4854,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print hamiltonian_terms(rhosv, Eps, detuning_knobs)
+    print(hamiltonian_terms(rhosv, Eps, detuning_knobs))
 Expecting:
     [5.5681e+07 2.0000e+08 2.9722e+08]
 ok
@@ -4875,7 +4902,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print rhs_lindblad
+    print(rhs_lindblad)
 Expecting:
     [-15079644.7372 -56548667.7646  37699111.8431]
 ok
@@ -4959,7 +4986,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print rhs_rabi
+    print(rhs_rabi)
 Expecting:
     [-55680831.474          0.       2784041.5737]
 ok
@@ -5064,7 +5091,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print steady_state(Eps, detuning_knobs)
+    print(steady_state(Eps, detuning_knobs))
 Expecting:
     [ 0.018   0.1296 -0.0244]
 ok
@@ -5144,7 +5171,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print rho
+    print(rho)
 Expecting:
     [[ 0.0006 -0.025  -0.0006]
      [ 0.001  -0.0312 -0.001 ]
@@ -5250,12 +5277,12 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print rho.shape
+    print(rho.shape)
 Expecting:
     (5, 11, 3)
 ok
 Trying:
-    print rho
+    print(rho)
 Expecting:
     [[[ 0.0000e+00  0.0000e+00  0.0000e+00]
       [ 5.6205e-04 -1.8774e-02 -1.4437e-02]
@@ -5323,7 +5350,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print rho
+    print(rho)
 Expecting:
     [[ 0.0006 -0.024  -0.0021]
      [ 0.0011 -0.0308 -0.0007]
@@ -5450,7 +5477,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print time_evolution(t, rho0, Eps, detuning_knobs)
+    print(time_evolution(t, rho0, Eps, detuning_knobs))
 Expecting:
     [[ 0.      0.      0.    ]
      [ 0.0215  0.1428 -0.0116]
@@ -5465,7 +5492,7 @@ Expecting:
      [ 0.018   0.1296 -0.0244]]
 ok
 Trying:
-    print time_evolution(t, rho0, Eps, detuning_knobs, average=True)
+    print(time_evolution(t, rho0, Eps, detuning_knobs, average=True))
 Expecting:
     [ 0.0175  0.1244 -0.0222]
 ok
@@ -5590,7 +5617,7 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print observable(sx, rho, unfolding)
+    print(observable(sx, rho, unfolding))
 Expecting:
     2.0
 ok
@@ -5748,8 +5775,8 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print radiated_intensity(rho, 1, 0, ex, rm,
-                             omega_level, xi, N, D, unfolding)
+    print(radiated_intensity(rho, 1, 0, ex, rm,
+                             omega_level, xi, N, D, unfolding))
 Expecting:
     4.60125990174e-22
 ok
@@ -5875,14 +5902,14 @@ Trying:
 Expecting nothing
 ok
 Trying:
-    print time_average(rho, t)
+    print(time_average(rho, t))
 Expecting:
     [ 0.0175  0.1244 -0.0222]
 ok
 1 items had no tests:
     fast.bloch.Unfolding
 28 items passed all tests:
-  19 tests in fast.bloch
+  20 tests in fast.bloch
    7 tests in fast.bloch.Unfolding.__call__
   16 tests in fast.bloch.Unfolding.__init__
    9 tests in fast.bloch.Unfolding.inverse
@@ -5910,7 +5937,885 @@ ok
   31 tests in fast.bloch.radiated_intensity
    1 tests in fast.bloch.term_code
   29 tests in fast.bloch.time_average
-470 tests in 29 items.
-470 passed and 0 failed.
+471 tests in 29 items.
+471 passed and 0 failed.
 Test passed.
-TestResults(failed=0, attempted=470)
+TestResults(failed=0, attempted=471)
+Trying:
+    from sympy import Integer, pprint
+Expecting nothing
+ok
+Trying:
+    pprint(angular_momentum_matrix(1/Integer(2)))
+Expecting:
+    ⎡-1/2   0 ⎤
+    ⎢         ⎥
+    ⎣ 0    1/2⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 183, in fast.angular_momentum.angular_momentum_matrix
+Failed example:
+    pprint(angular_momentum_matrix(1/Integer(2)))
+Expected:
+    ⎡-1/2   0 ⎤
+    ⎢         ⎥
+    ⎣ 0    1/2⎦
+Got:
+    [-1/2   0 ]
+    [         ]
+    [ 0    1/2]
+Trying:
+    pprint(angular_momentum_matrix(1/Integer(2), "all"))
+Expecting:
+    ⎛            ⎡     ⅈ⎤             ⎞
+    ⎜            ⎢ 0   ─⎥             ⎟
+    ⎜⎡ 0   1/2⎤  ⎢     2⎥  ⎡-1/2   0 ⎤⎟
+    ⎜⎢        ⎥, ⎢      ⎥, ⎢         ⎥⎟
+    ⎜⎣1/2   0 ⎦  ⎢-ⅈ    ⎥  ⎣ 0    1/2⎦⎟
+    ⎜            ⎢───  0⎥             ⎟
+    ⎝            ⎣ 2    ⎦             ⎠
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 188, in fast.angular_momentum.angular_momentum_matrix
+Failed example:
+    pprint(angular_momentum_matrix(1/Integer(2), "all"))
+Expected:
+    ⎛            ⎡     ⅈ⎤             ⎞
+    ⎜            ⎢ 0   ─⎥             ⎟
+    ⎜⎡ 0   1/2⎤  ⎢     2⎥  ⎡-1/2   0 ⎤⎟
+    ⎜⎢        ⎥, ⎢      ⎥, ⎢         ⎥⎟
+    ⎜⎣1/2   0 ⎦  ⎢-ⅈ    ⎥  ⎣ 0    1/2⎦⎟
+    ⎜            ⎢───  0⎥             ⎟
+    ⎝            ⎣ 2    ⎦             ⎠
+Got:
+                 [     I]              
+                 [ 0   -]              
+     [ 0   1/2]  [     2]  [-1/2   0 ] 
+    ([        ], [      ], [         ])
+     [1/2   0 ]  [-I    ]  [ 0    1/2] 
+                 [---  0]              
+                 [ 2    ]              
+Trying:
+    pprint(angular_momentum_matrix(1, "all"))
+Expecting:
+    ⎛⎡    √2    ⎤  ⎡         √2⋅ⅈ       ⎤            ⎞
+    ⎜⎢0   ──  0 ⎥  ⎢  0      ────    0  ⎥            ⎟
+    ⎜⎢    2     ⎥  ⎢          2         ⎥            ⎟
+    ⎜⎢          ⎥  ⎢                    ⎥  ⎡-1  0  0⎤⎟
+    ⎜⎢√2      √2⎥  ⎢-√2⋅ⅈ           √2⋅ⅈ⎥  ⎢        ⎥⎟
+    ⎜⎢──  0   ──⎥, ⎢──────    0     ────⎥, ⎢0   0  0⎥⎟
+    ⎜⎢2       2 ⎥  ⎢  2              2  ⎥  ⎢        ⎥⎟
+    ⎜⎢          ⎥  ⎢                    ⎥  ⎣0   0  1⎦⎟
+    ⎜⎢    √2    ⎥  ⎢        -√2⋅ⅈ       ⎥            ⎟
+    ⎜⎢0   ──  0 ⎥  ⎢  0     ──────   0  ⎥            ⎟
+    ⎝⎣    2     ⎦  ⎣          2         ⎦            ⎠
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 197, in fast.angular_momentum.angular_momentum_matrix
+Failed example:
+    pprint(angular_momentum_matrix(1, "all"))
+Expected:
+    ⎛⎡    √2    ⎤  ⎡         √2⋅ⅈ       ⎤            ⎞
+    ⎜⎢0   ──  0 ⎥  ⎢  0      ────    0  ⎥            ⎟
+    ⎜⎢    2     ⎥  ⎢          2         ⎥            ⎟
+    ⎜⎢          ⎥  ⎢                    ⎥  ⎡-1  0  0⎤⎟
+    ⎜⎢√2      √2⎥  ⎢-√2⋅ⅈ           √2⋅ⅈ⎥  ⎢        ⎥⎟
+    ⎜⎢──  0   ──⎥, ⎢──────    0     ────⎥, ⎢0   0  0⎥⎟
+    ⎜⎢2       2 ⎥  ⎢  2              2  ⎥  ⎢        ⎥⎟
+    ⎜⎢          ⎥  ⎢                    ⎥  ⎣0   0  1⎦⎟
+    ⎜⎢    √2    ⎥  ⎢        -√2⋅ⅈ       ⎥            ⎟
+    ⎜⎢0   ──  0 ⎥  ⎢  0     ──────   0  ⎥            ⎟
+    ⎝⎣    2     ⎦  ⎣          2         ⎦            ⎠
+Got:
+     [         ___       ]  [              ___            ]             
+     [       \/ 2        ]  [            \/ 2 *I          ]             
+     [  0    -----    0  ]  [    0       -------      0   ]             
+     [         2         ]  [               2             ]             
+     [                   ]  [                             ]             
+     [  ___           ___]  [   ___                  ___  ]  [-1  0  0] 
+     [\/ 2          \/ 2 ]  [-\/ 2 *I              \/ 2 *I]  [        ] 
+    ([-----    0    -----], [---------      0      -------], [0   0  0])
+     [  2             2  ]  [    2                    2   ]  [        ] 
+     [                   ]  [                             ]  [0   0  1] 
+     [         ___       ]  [              ___            ]             
+     [       \/ 2        ]  [           -\/ 2 *I          ]             
+     [  0    -----    0  ]  [    0      ---------     0   ]             
+     [         2         ]  [               2             ]             
+Trying:
+    from sympy import Integer, pprint
+Expecting nothing
+ok
+Trying:
+    L = 0
+Expecting nothing
+ok
+Trying:
+    S = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    pprint(coupling_matrix_2j(L, S))
+Expecting:
+    ⎡1  0⎤
+    ⎢    ⎥
+    ⎣0  1⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 67, in fast.angular_momentum.coupling_matrix_2j
+Failed example:
+    pprint(coupling_matrix_2j(L, S))
+Expected:
+    ⎡1  0⎤
+    ⎢    ⎥
+    ⎣0  1⎦
+Got:
+    [1  0]
+    [    ]
+    [0  1]
+Trying:
+    L = 1
+Expecting nothing
+ok
+Trying:
+    S = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    pprint(coupling_matrix_2j(L, S))
+Expecting:
+    ⎡   -√6   √3             ⎤
+    ⎢0  ────  ──   0    0   0⎥
+    ⎢    3    3              ⎥
+    ⎢                        ⎥
+    ⎢             -√3   √6   ⎥
+    ⎢0   0    0   ────  ──  0⎥
+    ⎢              3    3    ⎥
+    ⎢                        ⎥
+    ⎢1   0    0    0    0   0⎥
+    ⎢                        ⎥
+    ⎢    √3   √6             ⎥
+    ⎢0   ──   ──   0    0   0⎥
+    ⎢    3    3              ⎥
+    ⎢                        ⎥
+    ⎢              √6   √3   ⎥
+    ⎢0   0    0    ──   ──  0⎥
+    ⎢              3    3    ⎥
+    ⎢                        ⎥
+    ⎣0   0    0    0    0   1⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 74, in fast.angular_momentum.coupling_matrix_2j
+Failed example:
+    pprint(coupling_matrix_2j(L, S))
+Expected:
+    ⎡   -√6   √3             ⎤
+    ⎢0  ────  ──   0    0   0⎥
+    ⎢    3    3              ⎥
+    ⎢                        ⎥
+    ⎢             -√3   √6   ⎥
+    ⎢0   0    0   ────  ──  0⎥
+    ⎢              3    3    ⎥
+    ⎢                        ⎥
+    ⎢1   0    0    0    0   0⎥
+    ⎢                        ⎥
+    ⎢    √3   √6             ⎥
+    ⎢0   ──   ──   0    0   0⎥
+    ⎢    3    3              ⎥
+    ⎢                        ⎥
+    ⎢              √6   √3   ⎥
+    ⎢0   0    0    ──   ──  0⎥
+    ⎢              3    3    ⎥
+    ⎢                        ⎥
+    ⎣0   0    0    0    0   1⎦
+Got:
+    [      ___     ___                   ]
+    [   -\/ 6    \/ 3                    ]
+    [0  -------  -----     0       0    0]
+    [      3       3                     ]
+    [                                    ]
+    [                      ___     ___   ]
+    [                   -\/ 3    \/ 6    ]
+    [0     0       0    -------  -----  0]
+    [                      3       3     ]
+    [                                    ]
+    [1     0       0       0       0    0]
+    [                                    ]
+    [      ___     ___                   ]
+    [    \/ 3    \/ 6                    ]
+    [0   -----   -----     0       0    0]
+    [      3       3                     ]
+    [                                    ]
+    [                      ___     ___   ]
+    [                    \/ 6    \/ 3    ]
+    [0     0       0     -----   -----  0]
+    [                      3       3     ]
+    [                                    ]
+    [0     0       0       0       0    1]
+Trying:
+    from sympy import Integer, pprint
+Expecting nothing
+ok
+Trying:
+    L = 0
+Expecting nothing
+ok
+Trying:
+    S = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    II = 3/Integer(2)
+Expecting nothing
+ok
+Trying:
+    pprint(coupling_matrix_3j(L, S, II))
+Expecting:
+    ⎡                     √3             ⎤
+    ⎢0  -1/2   0     0    ──   0    0   0⎥
+    ⎢                     2              ⎥
+    ⎢                                    ⎥
+    ⎢         -√2              √2        ⎥
+    ⎢0   0    ────   0     0   ──   0   0⎥
+    ⎢          2               2         ⎥
+    ⎢                                    ⎥
+    ⎢               -√3                  ⎥
+    ⎢0   0     0    ────   0   0   1/2  0⎥
+    ⎢                2                   ⎥
+    ⎢                                    ⎥
+    ⎢1   0     0     0     0   0    0   0⎥
+    ⎢                                    ⎥
+    ⎢    √3                              ⎥
+    ⎢0   ──    0     0    1/2  0    0   0⎥
+    ⎢    2                               ⎥
+    ⎢                                    ⎥
+    ⎢          √2              √2        ⎥
+    ⎢0   0     ──    0     0   ──   0   0⎥
+    ⎢          2               2         ⎥
+    ⎢                                    ⎥
+    ⎢                              √3    ⎥
+    ⎢0   0     0    1/2    0   0   ──   0⎥
+    ⎢                              2     ⎥
+    ⎢                                    ⎥
+    ⎣0   0     0     0     0   0    0   1⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 123, in fast.angular_momentum.coupling_matrix_3j
+Failed example:
+    pprint(coupling_matrix_3j(L, S, II))
+Expected:
+    ⎡                     √3             ⎤
+    ⎢0  -1/2   0     0    ──   0    0   0⎥
+    ⎢                     2              ⎥
+    ⎢                                    ⎥
+    ⎢         -√2              √2        ⎥
+    ⎢0   0    ────   0     0   ──   0   0⎥
+    ⎢          2               2         ⎥
+    ⎢                                    ⎥
+    ⎢               -√3                  ⎥
+    ⎢0   0     0    ────   0   0   1/2  0⎥
+    ⎢                2                   ⎥
+    ⎢                                    ⎥
+    ⎢1   0     0     0     0   0    0   0⎥
+    ⎢                                    ⎥
+    ⎢    √3                              ⎥
+    ⎢0   ──    0     0    1/2  0    0   0⎥
+    ⎢    2                               ⎥
+    ⎢                                    ⎥
+    ⎢          √2              √2        ⎥
+    ⎢0   0     ──    0     0   ──   0   0⎥
+    ⎢          2               2         ⎥
+    ⎢                                    ⎥
+    ⎢                              √3    ⎥
+    ⎢0   0     0    1/2    0   0   ──   0⎥
+    ⎢                              2     ⎥
+    ⎢                                    ⎥
+    ⎣0   0     0     0     0   0    0   1⎦
+Got:
+    [                              ___                 ]
+    [                            \/ 3                  ]
+    [0  -1/2      0        0     -----    0      0    0]
+    [                              2                   ]
+    [                                                  ]
+    [             ___                     ___          ]
+    [          -\/ 2                    \/ 2           ]
+    [0    0    -------     0       0    -----    0    0]
+    [             2                       2            ]
+    [                                                  ]
+    [                      ___                         ]
+    [                   -\/ 3                          ]
+    [0    0       0     -------    0      0     1/2   0]
+    [                      2                           ]
+    [                                                  ]
+    [1    0       0        0       0      0      0    0]
+    [                                                  ]
+    [     ___                                          ]
+    [   \/ 3                                           ]
+    [0  -----     0        0      1/2     0      0    0]
+    [     2                                            ]
+    [                                                  ]
+    [             ___                     ___          ]
+    [           \/ 2                    \/ 2           ]
+    [0    0     -----      0       0    -----    0    0]
+    [             2                       2            ]
+    [                                                  ]
+    [                                            ___   ]
+    [                                          \/ 3    ]
+    [0    0       0       1/2      0      0    -----  0]
+    [                                            2     ]
+    [                                                  ]
+    [0    0       0        0       0      0      0    1]
+Trying:
+    from sympy import Integer, pi
+Expecting nothing
+ok
+Trying:
+    half = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    J_values = [2*half, 0]
+Expecting nothing
+ok
+Trying:
+    density_matrix_rotation(J_values, 0, pi/2, 0)
+Expecting:
+    Matrix([
+    [       1/2,  sqrt(2)/2,       1/2, 0],
+    [-sqrt(2)/2,          0, sqrt(2)/2, 0],
+    [       1/2, -sqrt(2)/2,       1/2, 0],
+    [         0,          0,         0, 1]])
+ok
+Trying:
+    from sympy import Integer, pprint
+Expecting nothing
+ok
+Trying:
+    half = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    Lz, Sz, Iz = orbital_spin_nuclear_matrices(0, half, 3*half)
+Expecting nothing
+ok
+Trying:
+    pprint(Lz)
+Expecting:
+    ⎡0  0  0  0  0  0  0  0⎤
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎣0  0  0  0  0  0  0  0⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 249, in fast.angular_momentum.orbital_spin_nuclear_matrices
+Failed example:
+    pprint(Lz)
+Expected:
+    ⎡0  0  0  0  0  0  0  0⎤
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎢0  0  0  0  0  0  0  0⎥
+    ⎢                      ⎥
+    ⎣0  0  0  0  0  0  0  0⎦
+Got:
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+    [                      ]
+    [0  0  0  0  0  0  0  0]
+Trying:
+    pprint(Sz)
+Expecting:
+    ⎡                       √3                ⎤
+    ⎢1/4   0    0     0     ──    0    0    0 ⎥
+    ⎢                       4                 ⎥
+    ⎢                                         ⎥
+    ⎢ 0    0    0     0     0    1/2   0    0 ⎥
+    ⎢                                         ⎥
+    ⎢                                 √3      ⎥
+    ⎢ 0    0   -1/4   0     0     0   ──    0 ⎥
+    ⎢                                 4       ⎥
+    ⎢                                         ⎥
+    ⎢ 0    0    0    -1/2   0     0    0    0 ⎥
+    ⎢                                         ⎥
+    ⎢√3                                       ⎥
+    ⎢──    0    0     0    -1/4   0    0    0 ⎥
+    ⎢4                                        ⎥
+    ⎢                                         ⎥
+    ⎢ 0   1/2   0     0     0     0    0    0 ⎥
+    ⎢                                         ⎥
+    ⎢           √3                            ⎥
+    ⎢ 0    0    ──    0     0     0   1/4   0 ⎥
+    ⎢           4                             ⎥
+    ⎢                                         ⎥
+    ⎣ 0    0    0     0     0     0    0   1/2⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 266, in fast.angular_momentum.orbital_spin_nuclear_matrices
+Failed example:
+    pprint(Sz)
+Expected:
+    ⎡                       √3                ⎤
+    ⎢1/4   0    0     0     ──    0    0    0 ⎥
+    ⎢                       4                 ⎥
+    ⎢                                         ⎥
+    ⎢ 0    0    0     0     0    1/2   0    0 ⎥
+    ⎢                                         ⎥
+    ⎢                                 √3      ⎥
+    ⎢ 0    0   -1/4   0     0     0   ──    0 ⎥
+    ⎢                                 4       ⎥
+    ⎢                                         ⎥
+    ⎢ 0    0    0    -1/2   0     0    0    0 ⎥
+    ⎢                                         ⎥
+    ⎢√3                                       ⎥
+    ⎢──    0    0     0    -1/4   0    0    0 ⎥
+    ⎢4                                        ⎥
+    ⎢                                         ⎥
+    ⎢ 0   1/2   0     0     0     0    0    0 ⎥
+    ⎢                                         ⎥
+    ⎢           √3                            ⎥
+    ⎢ 0    0    ──    0     0     0   1/4   0 ⎥
+    ⎢           4                             ⎥
+    ⎢                                         ⎥
+    ⎣ 0    0    0     0     0     0    0   1/2⎦
+Got:
+    [                           ___                 ]
+    [                         \/ 3                  ]
+    [ 1/4    0     0     0    -----   0     0     0 ]
+    [                           4                   ]
+    [                                               ]
+    [  0     0     0     0      0    1/2    0     0 ]
+    [                                               ]
+    [                                       ___     ]
+    [                                     \/ 3      ]
+    [  0     0   -1/4    0      0     0   -----   0 ]
+    [                                       4       ]
+    [                                               ]
+    [  0     0     0    -1/2    0     0     0     0 ]
+    [                                               ]
+    [  ___                                          ]
+    [\/ 3                                           ]
+    [-----   0     0     0    -1/4    0     0     0 ]
+    [  4                                            ]
+    [                                               ]
+    [  0    1/2    0     0      0     0     0     0 ]
+    [                                               ]
+    [              ___                              ]
+    [            \/ 3                               ]
+    [  0     0   -----   0      0     0    1/4    0 ]
+    [              4                                ]
+    [                                               ]
+    [  0     0     0     0      0     0     0    1/2]
+Trying:
+    pprint(Iz)
+Expecting:
+    ⎡                        -√3                  ⎤
+    ⎢-5/4   0     0     0    ────   0     0     0 ⎥
+    ⎢                         4                   ⎥
+    ⎢                                             ⎥
+    ⎢ 0     0     0     0     0    -1/2   0     0 ⎥
+    ⎢                                             ⎥
+    ⎢                                    -√3      ⎥
+    ⎢ 0     0    5/4    0     0     0    ────   0 ⎥
+    ⎢                                     4       ⎥
+    ⎢                                             ⎥
+    ⎢ 0     0     0    -3/2   0     0     0     0 ⎥
+    ⎢                                             ⎥
+    ⎢-√3                                          ⎥
+    ⎢────   0     0     0    -3/4   0     0     0 ⎥
+    ⎢ 4                                           ⎥
+    ⎢                                             ⎥
+    ⎢ 0    -1/2   0     0     0     0     0     0 ⎥
+    ⎢                                             ⎥
+    ⎢            -√3                              ⎥
+    ⎢ 0     0    ────   0     0     0    3/4    0 ⎥
+    ⎢             4                               ⎥
+    ⎢                                             ⎥
+    ⎣ 0     0     0     0     0     0     0    3/2⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 291, in fast.angular_momentum.orbital_spin_nuclear_matrices
+Failed example:
+    pprint(Iz)
+Expected:
+    ⎡                        -√3                  ⎤
+    ⎢-5/4   0     0     0    ────   0     0     0 ⎥
+    ⎢                         4                   ⎥
+    ⎢                                             ⎥
+    ⎢ 0     0     0     0     0    -1/2   0     0 ⎥
+    ⎢                                             ⎥
+    ⎢                                    -√3      ⎥
+    ⎢ 0     0    5/4    0     0     0    ────   0 ⎥
+    ⎢                                     4       ⎥
+    ⎢                                             ⎥
+    ⎢ 0     0     0    -3/2   0     0     0     0 ⎥
+    ⎢                                             ⎥
+    ⎢-√3                                          ⎥
+    ⎢────   0     0     0    -3/4   0     0     0 ⎥
+    ⎢ 4                                           ⎥
+    ⎢                                             ⎥
+    ⎢ 0    -1/2   0     0     0     0     0     0 ⎥
+    ⎢                                             ⎥
+    ⎢            -√3                              ⎥
+    ⎢ 0     0    ────   0     0     0    3/4    0 ⎥
+    ⎢             4                               ⎥
+    ⎢                                             ⎥
+    ⎣ 0     0     0     0     0     0     0    3/2⎦
+Got:
+    [                                 ___                     ]
+    [                              -\/ 3                      ]
+    [ -5/4     0       0      0    -------   0       0      0 ]
+    [                                 4                       ]
+    [                                                         ]
+    [   0      0       0      0       0     -1/2     0      0 ]
+    [                                                         ]
+    [                                                ___      ]
+    [                                             -\/ 3       ]
+    [   0      0      5/4     0       0      0    -------   0 ]
+    [                                                4        ]
+    [                                                         ]
+    [   0      0       0     -3/2     0      0       0      0 ]
+    [                                                         ]
+    [   ___                                                   ]
+    [-\/ 3                                                    ]
+    [-------   0       0      0     -3/4     0       0      0 ]
+    [   4                                                     ]
+    [                                                         ]
+    [   0     -1/2     0      0       0      0       0      0 ]
+    [                                                         ]
+    [                  ___                                    ]
+    [               -\/ 3                                     ]
+    [   0      0    -------   0       0      0      3/4     0 ]
+    [                  4                                      ]
+    [                                                         ]
+    [   0      0       0      0       0      0       0     3/2]
+Trying:
+    Lvec, Svec, Ivec = orbital_spin_nuclear_matrices(0, half, 0, "all")
+Expecting nothing
+ok
+Trying:
+    pprint(Lvec)
+Expecting:
+    ⎡⎡0  0⎤  ⎡0  0⎤  ⎡0  0⎤⎤
+    ⎢⎢    ⎥, ⎢    ⎥, ⎢    ⎥⎥
+    ⎣⎣0  0⎦  ⎣0  0⎦  ⎣0  0⎦⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 317, in fast.angular_momentum.orbital_spin_nuclear_matrices
+Failed example:
+    pprint(Lvec)
+Expected:
+    ⎡⎡0  0⎤  ⎡0  0⎤  ⎡0  0⎤⎤
+    ⎢⎢    ⎥, ⎢    ⎥, ⎢    ⎥⎥
+    ⎣⎣0  0⎦  ⎣0  0⎦  ⎣0  0⎦⎦
+Got:
+     [0  0]  [0  0]  [0  0] 
+    [[    ], [    ], [    ]]
+     [0  0]  [0  0]  [0  0] 
+Trying:
+    pprint(Svec)
+Expecting:
+    ⎡            ⎡     ⅈ⎤             ⎤
+    ⎢            ⎢ 0   ─⎥             ⎥
+    ⎢⎡ 0   1/2⎤  ⎢     2⎥  ⎡-1/2   0 ⎤⎥
+    ⎢⎢        ⎥, ⎢      ⎥, ⎢         ⎥⎥
+    ⎢⎣1/2   0 ⎦  ⎢-ⅈ    ⎥  ⎣ 0    1/2⎦⎥
+    ⎢            ⎢───  0⎥             ⎥
+    ⎣            ⎣ 2    ⎦             ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 322, in fast.angular_momentum.orbital_spin_nuclear_matrices
+Failed example:
+    pprint(Svec)
+Expected:
+    ⎡            ⎡     ⅈ⎤             ⎤
+    ⎢            ⎢ 0   ─⎥             ⎥
+    ⎢⎡ 0   1/2⎤  ⎢     2⎥  ⎡-1/2   0 ⎤⎥
+    ⎢⎢        ⎥, ⎢      ⎥, ⎢         ⎥⎥
+    ⎢⎣1/2   0 ⎦  ⎢-ⅈ    ⎥  ⎣ 0    1/2⎦⎥
+    ⎢            ⎢───  0⎥             ⎥
+    ⎣            ⎣ 2    ⎦             ⎦
+Got:
+                 [     I]              
+                 [ 0   -]              
+     [ 0   1/2]  [     2]  [-1/2   0 ] 
+    [[        ], [      ], [         ]]
+     [1/2   0 ]  [-I    ]  [ 0    1/2] 
+                 [---  0]              
+                 [ 2    ]              
+Trying:
+    pprint(Ivec)
+Expecting:
+    ⎡⎡0  0⎤  ⎡0  0⎤  ⎡0  0⎤⎤
+    ⎢⎢    ⎥, ⎢    ⎥, ⎢    ⎥⎥
+    ⎣⎣0  0⎦  ⎣0  0⎦  ⎣0  0⎦⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 331, in fast.angular_momentum.orbital_spin_nuclear_matrices
+Failed example:
+    pprint(Ivec)
+Expected:
+    ⎡⎡0  0⎤  ⎡0  0⎤  ⎡0  0⎤⎤
+    ⎢⎢    ⎥, ⎢    ⎥, ⎢    ⎥⎥
+    ⎣⎣0  0⎦  ⎣0  0⎦  ⎣0  0⎦⎦
+Got:
+     [0  0]  [0  0]  [0  0] 
+    [[    ], [    ], [    ]]
+     [0  0]  [0  0]  [0  0] 
+Trying:
+    from sympy import Integer
+Expecting nothing
+ok
+Trying:
+    L = 1
+Expecting nothing
+ok
+Trying:
+    S = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    perm_j(L, S)
+Expecting:
+    [1/2, 3/2]
+ok
+Trying:
+    from sympy import Integer
+Expecting nothing
+ok
+Trying:
+    S = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    perm_m(S)
+Expecting:
+    [-1/2, 1/2]
+ok
+Trying:
+    perm_m(3)
+Expecting:
+    [-3, -2, -1, 0, 1, 2, 3]
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    pprint(spherical_tensor(1, 1, 1, 0))
+Expecting:
+    ⎡-√2        ⎤
+    ⎢────  0  0 ⎥
+    ⎢ 2         ⎥
+    ⎢           ⎥
+    ⎢ 0    0  0 ⎥
+    ⎢           ⎥
+    ⎢         √2⎥
+    ⎢ 0    0  ──⎥
+    ⎣         2 ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 369, in fast.angular_momentum.spherical_tensor
+Failed example:
+    pprint(spherical_tensor(1, 1, 1, 0))
+Expected:
+    ⎡-√2        ⎤
+    ⎢────  0  0 ⎥
+    ⎢ 2         ⎥
+    ⎢           ⎥
+    ⎢ 0    0  0 ⎥
+    ⎢           ⎥
+    ⎢         √2⎥
+    ⎢ 0    0  ──⎥
+    ⎣         2 ⎦
+Got:
+    [   ___           ]
+    [-\/ 2            ]
+    [-------  0    0  ]
+    [   2             ]
+    [                 ]
+    [   0     0    0  ]
+    [                 ]
+    [              ___]
+    [            \/ 2 ]
+    [   0     0  -----]
+    [              2  ]
+Trying:
+    pprint(spherical_tensor(1, 2, 1, -1))
+Expecting:
+    ⎡      √10          ⎤
+    ⎢0  0  ───   0    0 ⎥
+    ⎢       10          ⎥
+    ⎢                   ⎥
+    ⎢           √30     ⎥
+    ⎢0  0   0   ───   0 ⎥
+    ⎢            10     ⎥
+    ⎢                   ⎥
+    ⎢                √15⎥
+    ⎢0  0   0    0   ───⎥
+    ⎣                 5 ⎦
+**********************************************************************
+File "/home/oscar/anaconda2/lib/python2.7/site-packages/fast/angular_momentum.py", line 380, in fast.angular_momentum.spherical_tensor
+Failed example:
+    pprint(spherical_tensor(1, 2, 1, -1))
+Expected:
+    ⎡      √10          ⎤
+    ⎢0  0  ───   0    0 ⎥
+    ⎢       10          ⎥
+    ⎢                   ⎥
+    ⎢           √30     ⎥
+    ⎢0  0   0   ───   0 ⎥
+    ⎢            10     ⎥
+    ⎢                   ⎥
+    ⎢                √15⎥
+    ⎢0  0   0    0   ───⎥
+    ⎣                 5 ⎦
+Got:
+    [        ____                ]
+    [      \/ 10                 ]
+    [0  0  ------    0       0   ]
+    [        10                  ]
+    [                            ]
+    [                ____        ]
+    [              \/ 30         ]
+    [0  0    0     ------    0   ]
+    [                10          ]
+    [                            ]
+    [                        ____]
+    [                      \/ 15 ]
+    [0  0    0       0     ------]
+    [                        5   ]
+Trying:
+    from sympy import Integer, symbols, pprint
+Expecting nothing
+ok
+Trying:
+    half = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    alpha, beta, gamma = symbols("alpha, beta, gamma", real=True)
+Expecting nothing
+ok
+Trying:
+    pprint(wigner_d(half, alpha, beta, gamma), use_unicode=True)
+Expecting:
+    ⎡  ⅈ⋅α  ⅈ⋅γ             ⅈ⋅α  -ⅈ⋅γ         ⎤
+    ⎢  ───  ───             ───  ─────        ⎥
+    ⎢   2    2     ⎛β⎞       2     2      ⎛β⎞ ⎥
+    ⎢ ℯ   ⋅ℯ   ⋅cos⎜─⎟     ℯ   ⋅ℯ     ⋅sin⎜─⎟ ⎥
+    ⎢              ⎝2⎠                    ⎝2⎠ ⎥
+    ⎢                                         ⎥
+    ⎢  -ⅈ⋅α   ⅈ⋅γ          -ⅈ⋅α   -ⅈ⋅γ        ⎥
+    ⎢  ─────  ───          ─────  ─────       ⎥
+    ⎢    2     2     ⎛β⎞     2      2      ⎛β⎞⎥
+    ⎢-ℯ     ⋅ℯ   ⋅sin⎜─⎟  ℯ     ⋅ℯ     ⋅cos⎜─⎟⎥
+    ⎣                ⎝2⎠                   ⎝2⎠⎦
+ok
+Trying:
+    from sympy import Integer, symbols, pi
+Expecting nothing
+ok
+Trying:
+    half = 1/Integer(2)
+Expecting nothing
+ok
+Trying:
+    beta = symbols("beta", real=True)
+Expecting nothing
+ok
+Trying:
+    wigner_d_small(half, beta)
+Expecting:
+    Matrix([
+    [ cos(beta/2), sin(beta/2)],
+    [-sin(beta/2), cos(beta/2)]])
+ok
+Trying:
+    from sympy import pprint
+Expecting nothing
+ok
+Trying:
+    pprint(wigner_d_small(2*half, beta), use_unicode=True)
+Expecting:
+    ⎡        2⎛β⎞              ⎛β⎞    ⎛β⎞           2⎛β⎞     ⎤
+    ⎢     cos ⎜─⎟        √2⋅sin⎜─⎟⋅cos⎜─⎟        sin ⎜─⎟     ⎥
+    ⎢         ⎝2⎠              ⎝2⎠    ⎝2⎠            ⎝2⎠     ⎥
+    ⎢                                                        ⎥
+    ⎢       ⎛β⎞    ⎛β⎞       2⎛β⎞      2⎛β⎞        ⎛β⎞    ⎛β⎞⎥
+    ⎢-√2⋅sin⎜─⎟⋅cos⎜─⎟  - sin ⎜─⎟ + cos ⎜─⎟  √2⋅sin⎜─⎟⋅cos⎜─⎟⎥
+    ⎢       ⎝2⎠    ⎝2⎠        ⎝2⎠       ⎝2⎠        ⎝2⎠    ⎝2⎠⎥
+    ⎢                                                        ⎥
+    ⎢        2⎛β⎞               ⎛β⎞    ⎛β⎞          2⎛β⎞     ⎥
+    ⎢     sin ⎜─⎟        -√2⋅sin⎜─⎟⋅cos⎜─⎟       cos ⎜─⎟     ⎥
+    ⎣         ⎝2⎠               ⎝2⎠    ⎝2⎠           ⎝2⎠     ⎦
+ok
+Trying:
+    wigner_d_small(half, beta).subs({beta:pi/2})
+Expecting:
+    Matrix([
+    [ sqrt(2)/2, sqrt(2)/2],
+    [-sqrt(2)/2, sqrt(2)/2]])
+ok
+Trying:
+    wigner_d_small(2*half, beta).subs({beta:pi/2})
+Expecting:
+    Matrix([
+    [       1/2,  sqrt(2)/2,       1/2],
+    [-sqrt(2)/2,          0, sqrt(2)/2],
+    [       1/2, -sqrt(2)/2,       1/2]])
+ok
+Trying:
+    wigner_d_small(3*half, beta).subs({beta:pi/2})
+Expecting:
+    Matrix([
+    [ sqrt(2)/4,  sqrt(6)/4,  sqrt(6)/4, sqrt(2)/4],
+    [-sqrt(6)/4, -sqrt(2)/4,  sqrt(2)/4, sqrt(6)/4],
+    [ sqrt(6)/4, -sqrt(2)/4, -sqrt(2)/4, sqrt(6)/4],
+    [-sqrt(2)/4,  sqrt(6)/4, -sqrt(6)/4, sqrt(2)/4]])
+ok
+Trying:
+    wigner_d_small(4*half, beta).subs({beta:pi/2})
+Expecting:
+    Matrix([
+    [      1/4,  1/2, sqrt(6)/4,  1/2,       1/4],
+    [     -1/2, -1/2,         0,  1/2,       1/2],
+    [sqrt(6)/4,    0,      -1/2,    0, sqrt(6)/4],
+    [     -1/2,  1/2,         0, -1/2,       1/2],
+    [      1/4, -1/2, sqrt(6)/4, -1/2,       1/4]])
+ok
+1 items had no tests:
+    fast.angular_momentum
+5 items passed all tests:
+   4 tests in fast.angular_momentum.density_matrix_rotation
+   4 tests in fast.angular_momentum.perm_j
+   4 tests in fast.angular_momentum.perm_m
+   4 tests in fast.angular_momentum.wigner_d
+  10 tests in fast.angular_momentum.wigner_d_small
+**********************************************************************
+5 items had failures:
+   3 of   4 in fast.angular_momentum.angular_momentum_matrix
+   2 of   7 in fast.angular_momentum.coupling_matrix_2j
+   1 of   5 in fast.angular_momentum.coupling_matrix_3j
+   6 of  10 in fast.angular_momentum.orbital_spin_nuclear_matrices
+   2 of   3 in fast.angular_momentum.spherical_tensor
+55 tests in 11 items.
+41 passed and 14 failed.
+***Test Failed*** 14 failures.
+TestResults(failed=14, attempted=55)

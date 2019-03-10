@@ -6,7 +6,7 @@ r"""A script to obtain the percentage of passed doctests."""
 from os import system
 # from fast.config import fast_path
 
-system("python tests.py > doctest_output.txt")
+system("python tests.py verbose > doctest_output.txt")
 
 f = file("doctest_output.txt", "r")
 lines = f.readlines()
