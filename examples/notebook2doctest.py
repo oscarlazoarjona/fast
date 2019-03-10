@@ -97,7 +97,7 @@ notebooks = [r"01 - Two level atom.ipynb",
              r"10 - States database.ipynb"]
 ########################################################################
 # We choose a notebook.
-index = 3
+index = 6
 notebook_name = notebooks[index-1]
 f = file(path_notebooks+notebook_name, "r")
 text = f.read()
@@ -163,13 +163,7 @@ for i, cell in enumerate(cells[:]):
                 if "ax.plot" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP1"
 
-                if "pyplot.ylabel" in line:
-                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "pyplot.xlabel" in line:
-                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "pyplot.legend" in line:
-                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "ax.text(" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "ax.legend" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP2"
@@ -201,6 +195,12 @@ for i, cell in enumerate(cells[:]):
                 if "ax.set_xlabel" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP5"
                 if "ax.set_ylabel" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP5"
+                if "ax.text(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP5"
+                if "pyplot.ylabel" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP5"
+                if "pyplot.xlabel" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP5"
 
                 line = line.replace(r"\\", "\\")
