@@ -11,7 +11,7 @@ __doc__ = r"""
 
 >>> init_printing()
 >>> print_ascii = True
->>> #print_ascii = False
+>>> # print_ascii = False
 
 >>> path="folder_08___Three_level_atom_V_symbolic/" 
 >>> name='suite'

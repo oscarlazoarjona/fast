@@ -10,11 +10,13 @@ $$p_i=\\frac{ \\exp{(-E_i/k_B T)} }{Z} \\hspace{1cm} Z=\\sum_j \\exp{(-E_j/k_B T
 
 where $E_i$ are the energies of each state and $k_B$ is Boltzman's constant.
 
->>> from fast.atomic_structure import State, make_list_of_states
+>>> from fast.atomic_structure import State, make_list_of_states, thermal_state
 >>> from sympy import Integer
 >>> from math import pi,exp,log
+>>> import numpy as np
 
 >>> element="Rb"; iso=85
+>>> np.set_printoptions(precision=4)
 >>> ground=State(element,iso,5,0,1/Integer(2))
 >>> ground
 85Rb 5S_1/2
@@ -46,25 +48,6 @@ where $E_i$ are the energies of each state and $k_B$ is Boltzman's constant.
 >>> hbar=physical_constants["Planck constant over 2 pi"][0] # J s
 >>> kB  =physical_constants["Boltzmann constant"][0] #        J/K
 
->>> E=[hbar*2*pi*e.nu for e in magnetic_states]
->>> for ii in E:
-...     print ii
-... 
--1.17337391713e-24
--1.17337391713e-24
--1.17337391713e-24
--1.17337391713e-24
--1.17337391713e-24
-8.38124226523e-25
-8.38124226523e-25
-8.38124226523e-25
-8.38124226523e-25
-8.38124226523e-25
-8.38124226523e-25
-8.38124226523e-25
-
-
-
 >>> T=20#Celsius degrees.
 >>> T=T+237.15 #Kelvin
 >>> print T
@@ -72,66 +55,43 @@ where $E_i$ are the energies of each state and $k_B$ is Boltzman's constant.
 
 
 
->>> Z=sum([exp(-E[i]/kB/T) for i in range(len(magnetic_states))])
->>> print Z
-12.0000004681
+>>> omega_level = np.array([ei.omega for ei in magnetic_states])
+>>> omega_level
+array([-1.1127e+10, -1.1127e+10, -1.1127e+10, -1.1127e+10, -1.1127e+10,
+        7.9475e+09,  7.9475e+09,  7.9475e+09,  7.9475e+09,  7.9475e+09,
+        7.9475e+09,  7.9475e+09])
 
 
 
 So the populations are:
 
->>> p=[exp(-E[i]/kB/T)/Z for i in range(len(magnetic_states))]
->>> for ii in p: print ii
-0.083360876002
-0.083360876002
-0.083360876002
-0.083360876002
-0.083360876002
-0.0833136599986
-0.0833136599986
-0.0833136599986
-0.0833136599986
-0.0833136599986
-0.0833136599986
-0.0833136599986
+>>> p = thermal_state(omega_level, T, return_diagonal=True)
+>>> print p
+[0.0834 0.0834 0.0834 0.0834 0.0834 0.0833 0.0833 0.0833 0.0833 0.0833
+ 0.0833 0.0833]
 
 
 
 Which is close to assigning populations equally:
 
->>> p_deg=[1.0/len(magnetic_states) for i in range(len(magnetic_states))]
->>> for ii in p_deg: print ii
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
-0.0833333333333
+>>> p_deg = np.array([1.0/len(magnetic_states) for i in range(len(magnetic_states))])
+>>> print p_deg
+[0.0833 0.0833 0.0833 0.0833 0.0833 0.0833 0.0833 0.0833 0.0833 0.0833
+ 0.0833 0.0833]
 
 
 
 Let's make a plot of the variation with temperature.
 
->>> if iso==85:
-...     a=5
-... else:
-...     a=3
-... 
-
->>> P1=sum(p[:a])
->>> P2=sum(p[a:])
+>>> a = 5
+>>> P1 = sum(p[:a])
+>>> P2 = sum(p[a:])
 >>> print P1,P2
-0.41680438001 0.58319561999
+0.41680438000986475 0.5831956199901356
 
 
 
->>> def get_energies(element,iso):
+>>> def get_energies(element, iso):
 ...     if element=="Rb":
 ...         ground=State(element,iso,5,0,1/Integer(2))
 ...     else:
@@ -141,7 +101,7 @@ Let's make a plot of the variation with temperature.
 ...     return E
 ... 
 
->>> def pops(T,E,element,iso):
+>>> def pops(T, E, element, iso):
 ...     if iso ==133:
 ...         a=7
 ...     elif iso ==85:
@@ -160,55 +120,44 @@ Let's make a plot of the variation with temperature.
 ...     return p[0],p[-1],sum(p[:a]),sum(p[a:])
 ... 
 
->>> from numpy import logspace,array
->>> T=logspace(-2,3,201)
+>>> T = np.logspace(-2, 3, 201)
 
->>> E85 =get_energies("Rb",85)
->>> E87 =get_energies("Rb",87)
->>> E133=get_energies("Cs",133)
+>>> omega_level85 = make_list_of_states([State("Rb", 85, 5, 0, 1/Integer(2))], "magnetic")
+>>> omega_level85 = [ei.omega for ei in omega_level85]
+    
+>>> omega_level87 = make_list_of_states([State("Rb", 87, 5, 0, 1/Integer(2))], "magnetic")
+>>> omega_level87 = [ei.omega for ei in omega_level87]
+    
+>>> omega_level133 = make_list_of_states([State("Cs", 133, 6, 0, 1/Integer(2))], "magnetic")
+>>> omega_level133 = [ei.omega for ei in omega_level133]
 
->>> dat=array([pops(Ti,E85,"Rb",85) for Ti in T])
->>> p185=list(dat[:,0])
->>> p285=list(dat[:,1])
->>> P185=list(dat[:,2])
->>> P285=list(dat[:,3])
+>>> dat = np.array([thermal_state(omega_level85, Ti, return_diagonal=True) for Ti in T])
+>>> Flow = 2
+>>> p185 = dat[:,0]
+>>> p285 = dat[:,2*Flow+1+1]
+>>> P185 = dat[:,0]*(2*Flow+1)
+>>> P285 = dat[:,6]*(2*(Flow+1)+1)
 
->>> dat=array([pops(Ti,E87,"Rb",87) for Ti in T])
->>> p187=list(dat[:,0])
->>> p287=list(dat[:,1])
->>> P187=list(dat[:,2])
->>> P287=list(dat[:,3])
+>>> dat = np.array([thermal_state(omega_level87, Ti, return_diagonal=True) for Ti in T])
+>>> Flow = 1
+>>> p187 = dat[:,0]
+>>> p287 = dat[:,2*Flow+1+1]
+>>> P187 = dat[:,0]*(2*Flow+1)
+>>> P287 = dat[:,6]*(2*(Flow+1)+1)
 
->>> dat=array([pops(Ti,E133,"Cs",133) for Ti in T])
->>> p1133=list(dat[:,0])
->>> p2133=list(dat[:,1])
->>> P1133=list(dat[:,2])
->>> P2133=list(dat[:,3])
-
->>> show_mot_temperature=False
->>> if show_mot_temperature:
-...     T_Doppler=145.537e-6
-...     T_lim=100e-6
-...     T=[T_lim]+list(T)
-...     T=array(T)
-...     
-...     p185=[1/5.0]+p185
-...     p285=[0.0  ]+p285
-...     P185=[1.0  ]+P185
-...     P285=[0.0  ]+P285
-...     
-...     p187=[1/3.0]+p187
-...     p287=[0.0  ]+p287
-...     P187=[1.0  ]+P187
-...     P287=[0.0  ]+P287
-... 
+>>> dat = np.array([thermal_state(omega_level133, Ti, return_diagonal=True) for Ti in T])
+>>> Flow = 3
+>>> p1133 = dat[:,0]
+>>> p2133 = dat[:,2*Flow+1+1]
+>>> P1133 = dat[:,0]*(2*Flow+1)
+>>> P2133 = dat[:,7]*(2*(Flow+1)+1)
 
 >>> from matplotlib import pyplot
-
-
 >>> plots_path="folder_09___Thermal_States/" 
 
+
 >>> pyplot.close("all")
+>>> pyplot.figure(figsize=(15, 10)) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.semilogx(T,p185,"b",label=r"$\mathrm{lower \ magnetic \ state}$") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx(T,p285,"r",label=r"$\mathrm{higher \ magnetic \ state}$") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx(T,P185,"m",label=r"$\mathrm{lower  \ multiplet}$") # doctest: +IGNORE_PLOT_STEP1
@@ -224,17 +173,16 @@ Let's make a plot of the variation with temperature.
 >>> pyplot.semilogx(T,P1133,"m:") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx(T,P2133,"g:") # doctest: +IGNORE_PLOT_STEP1
     
-    
 >>> pyplot.semilogx([273.15,273.15],[0,1],"k") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx([273.15+50,273.15+50],[0,1],"k") # doctest: +IGNORE_PLOT_STEP1
     
->>> pyplot.ylabel(r"$\mathrm{population}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.legend(fontsize=10) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.ylabel(r"$\mathrm{population}$",fontsize=25) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=25) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.legend(fontsize=25) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.tick_params(labelsize=25)
     
->>> pyplot.ylim([0,1]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(plots_path+"/01_populations.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa52802c850>
+<Figure size 1080x720 with 1 Axes>
 
 
 
@@ -255,18 +203,21 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> S133=[entropy(p1133[i],p2133[i],133) for i in range(len(p187))]
 
 >>> pyplot.close("all")
->>> pyplot.semilogx(T,S85, "r",label=r"$^{85}  \mathrm{Rb}$") # doctest: +IGNORE_PLOT_STEP1
->>> pyplot.semilogx(T,S87, "b",label=r"$^{87}  \mathrm{Rb}$") # doctest: +IGNORE_PLOT_STEP1
->>> pyplot.semilogx(T,S133,"g",label=r"$^{133} \mathrm{Cs}$") # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.figure(figsize=(15, 10)) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.semilogx(T,np.array(S85)*1e24, "r",label=r"$^{85}  \mathrm{Rb}$") # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx(T,np.array(S87)*1e24, "b",label=r"$^{87}  \mathrm{Rb}$") # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx(T,np.array(S133)*1e24,"g",label=r"$^{133} \mathrm{Cs}$") # doctest: +IGNORE_PLOT_STEP1
     
->>> pyplot.semilogx([273.15,273.15]      ,[1.5e-23,4e-23],"k") # doctest: +IGNORE_PLOT_STEP1
->>> pyplot.semilogx([273.15+50,273.15+50],[1.5e-23,4e-23],"k") # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx([273.15,273.15]      ,[1.5e-23*1e24,4e-23*1e24],"k") # doctest: +IGNORE_PLOT_STEP1
+>>> pyplot.semilogx([273.15+50,273.15+50],[1.5e-23*1e24,4e-23*1e24],"k") # doctest: +IGNORE_PLOT_STEP1
     
->>> pyplot.ylabel(r"$S \ \mathrm{(J K^{-1})}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.ylabel(r"$S \ \ \mathrm{(J K^{-1} \ \times 10^{-24})}$",fontsize=25) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=25) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.ylim([15, 40]) # doctest: +IGNORE_PLOT_STEP3
+>>> pyplot.legend(fontsize=25,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.tick_params(labelsize=25)
 >>> pyplot.savefig(plots_path+"/02_entropy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa5272ff290>
+<Figure size 1080x720 with 1 Axes>
 
 
 
@@ -288,6 +239,7 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> E133=[average_energy(p1133[i],p2133[i],133) for i in range(len(p187))]
 
 >>> pyplot.close("all")
+>>> pyplot.figure(figsize=(15, 10)) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.semilogx(T,E85, "r",label=r"$^{85}  \mathrm{Rb}$") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx(T,E87, "b",label=r"$^{87}  \mathrm{Rb}$") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx(T,E133,"g",label=r"$^{133} \mathrm{Cs}$") # doctest: +IGNORE_PLOT_STEP1
@@ -295,12 +247,13 @@ Here solid lines show the populations for $^{85}\\mathrm{Rb}$, dashed lines for 
 >>> pyplot.semilogx([273.15,273.15]      ,[-5.1,0],"k") # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx([273.15+50,273.15+50],[-5.1,0],"k") # doctest: +IGNORE_PLOT_STEP1
     
->>> pyplot.ylabel(r"$E \ \mathrm{(GHz)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.xlabel(r"$T \ \mathrm{(K)}$",fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.legend(fontsize=15,loc="lower center") # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.ylabel(r"$E \ \mathrm{(GHz)}$", fontsize=25) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.xlabel(r"$T \ \mathrm{(K)}$", fontsize=25) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.legend(fontsize=25, loc="lower center") # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.tick_params(labelsize=25)
     
 >>> pyplot.savefig(plots_path+"/03_energy.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7fa527144f50>
+<Figure size 1080x720 with 1 Axes>
 
 
 
@@ -527,8 +480,6 @@ If the two level system theory was appropiate for this problem, we should have g
 
 >>> pyplot.close("all")
 
-[]
-
 [1] An open systems approach to quantum optics : lectures presented at the Universite Libre de Bruxelles, October 28 to November 4, 1991. Carmichael, Howard.
 
 []
@@ -537,4 +488,5 @@ If the two level system theory was appropiate for this problem, we should have g
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")
