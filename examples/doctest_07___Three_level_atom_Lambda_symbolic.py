@@ -11,7 +11,7 @@ __doc__ = r"""
 
 >>> init_printing()
 >>> print_ascii=True
->>> # print_ascii = False
+>>> #print_ascii = False
 
 >>> path="folder_07___Three_level_atom_Lambda_symbolic/" 
 >>> name='suite'
@@ -659,7 +659,7 @@ Returning to the Schrödinger picture we have.
 
 
 
->>> r_m=[ Matrix([[ delta_lesser( j,i)*r[p][i,j] for j in range(Ne)]for i in range(Ne)]) for p in range(3)]
+>>> r_m = [Matrix([[delta_lesser(j, i)*r[p][i,j] for j in range(Ne)] for i in range(Ne)]) for p in range(3)]
 >>> fprint(r_m, print_ascii=print_ascii)
  [    0          0      0]  [   0         0      0]  [    0          0      0] 
  [                       ]  [                     ]  [                       ] 
@@ -1266,84 +1266,25 @@ rho21)   im(Omega1)*im(rho21)       ]
 Which is the same as the equations in the previous form.
 
 >>> ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j]) for j in range(Ne) for i in range(Ne)}
+>>> test = unfolding(eqs) - (A*rho_vect - b)
+>>> test = test.subs(ss_comp).expand()
     
->>> test= (eqs_new - Matrix([re(eqs[1,1]),re(eqs[2,2]),
-...                           re(eqs[1,0]),re(eqs[2,0]),re(eqs[2,1]),
-...                           im(eqs[1,0]),im(eqs[2,0]),im(eqs[2,1])])).expand()
-    
->>> test=test.subs(ss_comp)
->>> fprint(test,print_ascii=print_ascii)
-[                                                                                                                     
-[                                                                                                                     
-[                                                                                                                     
-[                                                                                                                     
-[                                                                                                                     
-[                                                                                                                     
-[                                                         gamma_32*re(rho31)   rho22*im(Omega1)                      r
-[delta1*re(rho21) + delta1*im(rho31) - delta2*re(rho21) + ------------------ + ---------------- + rho33*im(Omega1) + -
-[                                                                 2                   2                               
-[                                                                                                                     
-[                                          gamma_32*re(rho31)   gamma_32*re(rho32)   rho22*im(Omega1)   rho22*im(Omega
-[   -delta1*im(rho31) + delta2*im(rho32) - ------------------ + ------------------ - ---------------- - --------------
-[                                                  2                    2                   2                  2      
-[                                                                                                                     
-[                                                          gamma_32*im(rho31)   rho22*re(Omega1)                      
-[-delta1*re(rho21) + delta1*re(rho31) + delta2*re(rho21) - ------------------ + ---------------- + rho33*re(Omega1) - 
-[                                                                  2                   2                              
-[                                                                                                                     
-[                                          gamma_32*re(rho32)   gamma_32*im(rho31)   rho22*re(Omega1)   rho22*im(Omega
-[   -delta1*re(rho31) - delta2*im(rho32) - ------------------ + ------------------ - ---------------- + --------------
-[                                                  2                    2                   2                  2      
-[                                                                                                                     
-[                                                                                                                     
-<BLANKLINE>
-               0                                                                                                      
-<BLANKLINE>
-               0                                                                                                      
-<BLANKLINE>
-               0                                                                                                      
-<BLANKLINE>
-e(Omega1)*re(rho32)   re(Omega2)*re(rho31)   re(Omega2)*im(rho21)   re(rho21)*im(Omega2)   im(Omega1)*im(rho32)   im(O
-------------------- - -------------------- - -------------------- - -------------------- + -------------------- - ----
-        2                      2                      2                      2                      2                 
-<BLANKLINE>
-2)                      rho33*im(Omega2)   re(Omega1)*im(rho21)   re(Omega2)*im(rho21)   re(rho21)*im(Omega1)   re(rho
--- - rho33*im(Omega1) + ---------------- + -------------------- + -------------------- - -------------------- + ------
-                               2                    2                      2                      2                   
-<BLANKLINE>
-re(Omega1)*re(rho32)   re(Omega1)   re(Omega2)*re(rho21)   re(Omega2)*re(rho31)   im(Omega1)*im(rho32)   im(Omega2)*im
--------------------- - ---------- - -------------------- + -------------------- - -------------------- + -------------
-         2                 2                 2                      2                      2                      2   
-<BLANKLINE>
-2)                      rho33*im(Omega2)   re(Omega1)*im(rho21)   re(Omega1)   re(Omega2)*re(rho21)   re(rho21)*im(Ome
--- - rho33*re(Omega1) - ---------------- - -------------------- + ---------- + -------------------- + ----------------
-                               2                    2                 2                 2                      2      
-<BLANKLINE>
-               0                                                                                                      
-<BLANKLINE>
-                              ]
-                              ]
-                              ]
-                              ]
-                              ]
-                              ]
-mega1)   im(Omega2)*im(rho31) ]
------- - -------------------- ]
-2                 2           ]
-                              ]
-21)*im(Omega2)   im(Omega1)   ]
--------------- + ----------   ]
-   2                 2        ]
-                              ]
-(rho21)   im(Omega2)*im(rho31)]
-------- + --------------------]
-                   2          ]
-                              ]
-ga1)   im(Omega2)*im(rho21)   ]
----- - --------------------   ]
-                2             ]
-                              ]
-                              ]
+>>> fprint(test, print_ascii=print_ascii)
+[0]
+[ ]
+[0]
+[ ]
+[0]
+[ ]
+[0]
+[ ]
+[0]
+[ ]
+[0]
+[ ]
+[0]
+[ ]
+[0]
 
 
 
