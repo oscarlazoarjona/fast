@@ -7,16 +7,16 @@ import sys
 from doctest import testmod
 import fast
 
-# import doctest_01___Two_level_atom
-# import doctest_02___Three_level_atom_ladder
-# import doctest_03___Rb87_one_photon
-# import doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
-# import doctest_05___Two_level_atom_symbolic
-# import doctest_06___Three_level_atom_ladder_symbolic
+import doctest_01___Two_level_atom
+import doctest_02___Three_level_atom_ladder
+import doctest_03___Rb87_one_photon
+import doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
+import doctest_05___Two_level_atom_symbolic
+import doctest_06___Three_level_atom_ladder_symbolic
 import doctest_07___Three_level_atom_Lambda_symbolic
-# import doctest_08___Three_level_atom_V_symbolic
-# import doctest_09___Thermal_States
-# import doctest_10___States_database
+import doctest_08___Three_level_atom_V_symbolic
+import doctest_09___Thermal_States
+import doctest_10___States_database
 
 if len(sys.argv) > 1 and sys.argv[1] == "verbose":
     verbose = True
@@ -39,21 +39,15 @@ print testmod(fast.angular_momentum, verbose=verbose)
 ########################################################################
 # Run all codes from notebook-generated doctests.
 
-# s = doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
-# print testmod(doctest_01___Two_level_atom, verbose=verbose)
-# print testmod(doctest_02___Three_level_atom_ladder, verbose=verbose)
-# print testmod(doctest_03___Rb87_one_photon, verbose=verbose)
-# print testmod(s, verbose=verbose)
-# print testmod(doctest_05___Two_level_atom_symbolic, verbose=verbose)
-# print testmod(doctest_06___Three_level_atom_ladder_symbolic, verbose=verbose)
+s = doctest_04___Vectors_in_the_helicity_basis_and_the_electric_field
+print testmod(doctest_01___Two_level_atom, verbose=verbose)
+print testmod(doctest_02___Three_level_atom_ladder, verbose=verbose)
+print testmod(doctest_03___Rb87_one_photon, verbose=verbose)
+print testmod(s, verbose=verbose)
+print testmod(doctest_05___Two_level_atom_symbolic, verbose=verbose)
+print testmod(doctest_06___Three_level_atom_ladder_symbolic, verbose=verbose)
 print testmod(doctest_07___Three_level_atom_Lambda_symbolic, verbose=verbose)
-# print testmod(doctest_08___Three_level_atom_V_symbolic, verbose=verbose)
-# print testmod(doctest_09___Thermal_States, verbose=verbose)
-# print testmod(doctest_10___States_database, verbose=verbose)
-# ########################################################################
-# # Toy examples.
-# # from toy.two_levels import suite
-# # from toy.three_levels_ladder import suite
-#
-# # Real atom examples.
-# # from real.one_photon_780nm import rb87_suite
+print testmod(doctest_08___Three_level_atom_V_symbolic, verbose=verbose)
+print testmod(doctest_09___Thermal_States, verbose=verbose)
+print testmod(doctest_10___States_database, verbose=verbose)
+#########################################################################
