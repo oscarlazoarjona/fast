@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
 # ***********************************************************************
-#       Copyright (C) 2014 - 2017 Oscar Gerardo Lazo Arjona             *
-#              <oscar.lazo@correo.nucleares.unam.mx>                    *
+#       Copyright (C) 2014 - 2019 Oscar Gerardo Lazo Arjona             *
+#               <oscar.lazoarjona@physics.ox.ac.uk>                     *
 #                                                                       *
 #  This file is part of FAST.                                           *
 #                                                                       *
@@ -20,6 +19,7 @@
 #  along with FAST.  If not, see <http://www.gnu.org/licenses/>.        *
 #                                                                       *
 # ***********************************************************************
+
 r"""A general module for functions that are needed in more than one module."""
 
 # from colorsys import hls_to_rgb, hsv_to_rgb

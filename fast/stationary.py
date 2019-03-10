@@ -20,7 +20,6 @@
 #                                                                       *
 # ***********************************************************************
 
-# from all import sage_included
 r"""This module contains the routines or stationary states using Fortran."""
 sage_included = 'sage' in globals().keys()
 if not sage_included:
