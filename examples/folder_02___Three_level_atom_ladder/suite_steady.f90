@@ -14,81 +14,81 @@ open(unit=2,file='folder_02___Three_level_atom_ladder/suite_steady_param&
 
     read(2,*) E0
     read(2,*) detuning_knob
-	read(2,*) ldelta
-	read(2,*) ndelta
-	read(2,*) ddelta
-	read(2,*) print_steps
-	read(2,*) save_systems
-	read(2,*) use_netcdf
-	read(2,*) specific_deltas
+    read(2,*) ldelta
+    read(2,*) ndelta
+    read(2,*) ddelta
+    read(2,*) print_steps
+    read(2,*) save_systems
+    read(2,*) use_netcdf
+    read(2,*) specific_deltas
 
-	!We read the deltas if they are given.
-	allocate(delta(ndelta),stat=info)
-	if (specific_deltas) then
-		read(2,*) delta
-	else
-		!Or else build them.
-		delta(1)=detuning_knob(ldelta)
-		do i=2,ndelta
-			delta(i)=detuning_knob(ldelta)+(i-1)*ddelta
-		end do
-	end if
+    !We read the deltas if they are given.
+    allocate(delta(ndelta),stat=info)
+    if (specific_deltas) then
+        read(2,*) delta
+    else
+        !Or else build them.
+        delta(1)=detuning_knob(ldelta)
+        do i=2,ndelta
+            delta(i)=detuning_knob(ldelta)+(i-1)*ddelta
+        end do
+    end if
 
     close(2)
 
-	allocate(rho(ndelta,8),stat=info)
+    allocate(rho(ndelta,8),stat=info)
 
-	nerrors=0
+    nerrors=0
 
-	call cpu_time(start_time)
+    call cpu_time(start_time)
 
-	!$OMP PARALLEL PRIVATE(detuning_knobi)
-	!$OMP DO
-	do i=1,ndelta
+    !$OMP PARALLEL PRIVATE(detuning_knobi)
+    !$OMP DO
+    do i=1, ndelta
 
-		detuning_knobi=detuning_knob
-		detuning_knobi(ldelta)=delta(i)
+        detuning_knobi=detuning_knob
+        detuning_knobi(ldelta)=delta(i)
 
-		call solve(E0,detuning_knobi,rho(i,:),save_systems)
+        call solve(E0,detuning_knobi,rho(i,:),save_systems)
 
-		if (print_steps) print*,'delta=',detuning_knobi(ldelta)
+        if (print_steps) print*,'delta=',detuning_knobi(ldelta)
 
-	end do
-	!$OMP END DO
-	!$OMP END PARALLEL
+    end do
+    !$OMP END DO
+    !$OMP END PARALLEL
 
-	call cpu_time(end_time)
-	if (print_steps) print*,'total time:',end_time-start_time
+    call cpu_time(end_time)
+    if (print_steps) print*,'total time:',end_time-start_time
 
-	!We write the result to a file.
-	open(unit=1,file='folder_02___Three_level_atom_ladder/suite_steady.dat',status='unknown')
-	do i=1,ndelta
-		write(1,*) delta(i), rho(i,:)
-	end do
-	close(1)
-	
+    !We write the result to a file.
+    open(unit=1,file='folder_02___Three_level_atom_ladder/suite_steady.dat',status='unknown')
+    do i=1,ndelta
+        write(1,*) delta(i), rho(i,:)
+    end do
+    close(1)
+    
 
-	deallocate(rho,stat=info)
+    deallocate(rho,stat=info)
 
 end program
 
 subroutine solve(E0,detuning_knob,B,save_systems)
-	implicit none
+    implicit none
 
 	real*8, dimension(2), intent(in) :: E0,detuning_knob
 	real*8, dimension(8,1), intent(out) :: B
-	logical, intent(in) :: save_systems
+    logical, intent(in) :: save_systems
 
 
 	real*8, dimension(2) :: detuning
 
-	integer :: INFO,j
+    integer :: INFO,j
 	real*8, dimension(8,8) :: A
 	integer, dimension(8) :: IPIV
 
-	A=0
-	B=0
-		!We calculate the detunings.
+    A=0
+    B=0
+    	!We calculate the detunings.
 	!The list of detunings has the following meaning:
 	!detuning(1)= delta^1_,
 	!detuning(2)= delta^2_,
