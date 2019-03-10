@@ -75,7 +75,7 @@ We define the lasers.
 >>> Nl=len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,name=path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f5f288e8850>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -86,9 +86,9 @@ $|2\\rangle \\rightarrow |3\\rangle$ is coupled by laser 2.
 >>> Lij=[[1,2,[1]],[2,3,[2]]]
 >>> Lij=formatLij(Lij,Ne)
 >>> print array(Lij)
-[[[] [1] []]
- [[1] [] [2]]
- [[] [2] []]]
+[[list([]) list([1]) list([])]
+ [list([1]) list([]) list([2])]
+ [list([]) list([2]) list([])]]
 
 
 
@@ -111,7 +111,7 @@ We draw a level diagram.
 >>> ax.set_ylim([-0.05,5.05]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f5f2829e650>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -160,7 +160,7 @@ We read the resultas and we plot them.
 >>> ax.legend(loc=0,ncol=2,fontsize=14) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+'evolution_'+name+'.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f5f2807c5d0>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -181,11 +181,11 @@ In this scheme we mantain the first laser in high power, and vary the detuning o
 ...     ax.plot(delta,rho33,'-',color=colors[i],label=r"$E_0^1="+str(int(E0[i]))+"$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.set_xlim([-75.0,75.0]) # doctest: +IGNORE_PLOT_STEP3
->>> ax.set_xlabel(r"$\delta^2$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_ylabel(r"$\rho_{33}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$\delta^2$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
+>>> ax.set_ylabel(r"$\rho_{33}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.legend(loc=0,fontsize=14) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(path+name+'_spectrum_evolution.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f5f2888c450>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -214,11 +214,11 @@ We repeat the same spectra using the steady state.
 ...     ax.plot(delta,rho33,'-',color=colors[i],label=r"$E_0^1="+str(int(E0[i]))+"$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.set_xlim([-75.0,75.0]) # doctest: +IGNORE_PLOT_STEP3
->>> ax.set_xlabel(r"$\delta^2$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_ylabel(r"$\rho_{33}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$\delta^2$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
+>>> ax.set_ylabel(r"$\rho_{33}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.legend(loc=0,fontsize=14) # doctest: +IGNORE_PLOT_STEP2
 >>> pyplot.savefig(path+name+'_spectrum_steady.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f5f281d78d0>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -230,4 +230,5 @@ We repeat the same spectra using the steady state.
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")

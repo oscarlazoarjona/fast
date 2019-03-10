@@ -56,7 +56,7 @@ We plot the resonant frequencies $\\omega_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,omega,magnetic_states,path,name+'_omega.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f353d1310>
+<matplotlib.figure.Figure at 0x7f4864361b50>
 
 
 
@@ -64,14 +64,14 @@ We plot the matrix of decays $\\gamma_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,gamma,magnetic_states,path,name+'_gamma.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31e041d0>
+<matplotlib.figure.Figure at 0x7f48643c7c50>
 
 
 
 We plot the components of the position operator $\\hat{\\vec{r}}$.
 
 >>> fancy_r_plot(r         ,magnetic_states,path,name+'_r.png', complex_matrix=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31cbf690>
+<matplotlib.figure.Figure at 0x7f4864361e50>
 
 
 
@@ -82,7 +82,7 @@ We define the laser we will use.
 >>> Nl = len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31d372d0>
+<matplotlib.figure.Figure at 0x7f48643e7b50>
 
 
 
@@ -121,7 +121,7 @@ We draw a level diagram.
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_levels.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+'_levels.pdf',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31abfa50>
+<matplotlib.figure.Figure at 0x7f486445c3d0>
 
 
 
@@ -188,8 +188,8 @@ We plot what happens to the states $5S_{1/2}F=1$.
 >>> ax.plot(t,popfg1[ 0],'--',color='r',label=r"$M_F=-1$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t\ (\mu\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_ylabel(r"$\mathrm{Population}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t\ (\mu\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
+>>> ax.set_ylabel(r"$\mathrm{Population}$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.set_ylim([0,0.14]) # doctest: +IGNORE_PLOT_STEP3
     
 >>> pyplot.savefig(path+name+"_tshort_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
@@ -208,7 +208,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.plot(t,popfg2[ 0],'--' ,color='r',label=r"$\mathrm{Population} \ M_F=-2$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t\ (\mu\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t\ (\mu\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
@@ -228,7 +228,7 @@ We plot what happens to the states $5P_{3/2}F=3$.
 >>> ax.plot(t,popfmax[ 0],'--',color='r'     ,label=r"$\mathrm{Population} \ M_F=-3$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.legend(loc=0,fontsize=11) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t\ (\mu\mathrm{s})$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t\ (\mu\mathrm{s})$",fontsize=18) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
@@ -258,7 +258,7 @@ We plot what happens to states $5S_{1/2}F=1$.
 >>> ax.plot(t,popfg1[ 0],'--',color='r',label=r"$\mathrm{Population} \ M_F=-1$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t\ (\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t\ (\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
@@ -276,7 +276,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.plot(t,popfg2[ 0],'--' ,color='r',label=r"$\mathrm{Population} \ M_F=-2$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t\ (\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t\ (\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
@@ -296,7 +296,7 @@ We plot what happens to states $5P_{3/2}F=3$.
 >>> ax.plot(t,popfmax[ 0],'--',color='r'        ,label=r"$\mathrm{Population} \ M_F=-3$") # doctest: +IGNORE_PLOT_STEP1
     
 >>> ax.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t\ (\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t\ (\mathrm{s})$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
@@ -428,4 +428,5 @@ We now make a test of this stationary two-level state to make sure.
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")

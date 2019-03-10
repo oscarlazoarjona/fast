@@ -16,21 +16,21 @@ We import all the functions of FAST and some other useful stuff.
 
 We establish the basic characteristics of te experiment. The path where we will work, and the name of the experiment.
 
->>> path="folder_01___Two_level_atom/" 
->>> name='suite'
+>>> path = "folder_01___Two_level_atom/" 
+>>> name = 'suite'
 
 The number of states.
 
->>> Ne=2
+>>> Ne = 2
 
 The properties of the atom. The frequencies $\\omega_i$ of the energy levels $E_i=\\hbar \\omega_i$.
 
->>> omega_states=[0.0,100.0]
+>>> omega_states = [0.0, 100.0]
 
 And from these the matrix of transition frequencies is calculated $\\omega_{ij}=\\omega_i-\\omega_j$.
 
->>> omega=[[omega_states[i]-omega_states[j] for j in range(Ne)] for i in range(Ne)]
->>> print array(omega)
+>>> omega = [[omega_states[i]-omega_states[j] for j in range(Ne)] for i in range(Ne)]
+>>> print(array(omega))
 [[   0. -100.]
  [ 100.    0.]]
 
@@ -38,9 +38,9 @@ And from these the matrix of transition frequencies is calculated $\\omega_{ij}=
 
 The matrix $\\gamma_{ij}$ of decay frequencies for transitions $|i\\rangle \\rightarrow |j\\rangle$.
 
->>> gamma=1.0
->>> gamma=[[0.,-gamma],[gamma,0.]]
->>> print array(gamma)
+>>> gamma = 1.0
+>>> gamma = [[0., -gamma], [gamma, 0.]]
+>>> print(array(gamma))
 [[ 0. -1.]
  [ 1.  0.]]
 
@@ -48,8 +48,8 @@ The matrix $\\gamma_{ij}$ of decay frequencies for transitions $|i\\rangle \\rig
 
 The matrix form of the position operator $\\hat{\\vec{r}}$ in the helicity basis (in Bohr radii).
 
->>> r=[ [[0,1],[1,0]] for p in range(3)]
->>> print array(r)
+>>> r = [[[0, 1], [1, 0]] for p in range(3)]
+>>> print(array(r))
 [[[0 1]
   [1 0]]
 <BLANKLINE>
@@ -63,46 +63,46 @@ The matrix form of the position operator $\\hat{\\vec{r}}$ in the helicity basis
 
 We define the lasers.
 
->>> l1=PlaneWave(0,pi/2,0,0,color="red")
->>> laseres=[l1]
->>> Nl=len(laseres)
+>>> l1 = PlaneWave(0, pi/2, 0, 0, color="red")
+>>> laseres = [l1]
+>>> Nl = len(laseres)
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
->>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f50e79a4090>
+>>> draw_lasers_3d(ax, laseres, path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
+<Figure size 432x288 with 1 Axes>
 
 
 
 We specify the coupling of the lasers. In this case, the transition $|1\\rangle \\rightarrow |2\\rangle$ is coupled by laser $1$.
 
->>> Lij=[[1,2,[1]]]
->>> Lij=formatLij(Lij,Ne)
+>>> Lij = [[1, 2, [1]]]
+>>> Lij = formatLij(Lij, Ne)
 
 We make a diagram level.
 
->>> fig=pyplot.figure(); ax=fig.add_subplot(111,aspect="equal")
+>>> fig = pyplot.figure(); ax = fig.add_subplot(111, aspect="equal")
     
->>> p1=[0.5,1]; p2=[1.5,3]
->>> draw_state(ax,p1,text=r"$|1\rangle$",l=1.0,alignment='right',label_displacement=0.05,fontsize=25,linewidth=4.0)
->>> draw_state(ax,p2,text=r"$|2\rangle$",l=1.0,alignment='right',label_displacement=0.05,fontsize=25,linewidth=4.0)
+>>> p1 = [0.5, 1]; p2 = [1.5, 3]
+>>> draw_state(ax, p1, text=r"$|1\rangle$", l=1.0, alignment='right', label_displacement=0.05, fontsize=25, linewidth=4.0)
+>>> draw_state(ax, p2, text=r"$|2\rangle$", l=1.0, alignment='right', label_displacement=0.05, fontsize=25, linewidth=4.0)
     
->>> excitation(ax,[p1[0]+0.25,p1[1]],[p2[0]+0.25,p2[1]], fc="red", ec="red",width=0.01, head_width=0.1, head_length=0.1) # doctest: +IGNORE_PLOT_STEP4
->>> decay(     ax,[p1[0]-0.25,p1[1]],[p2[0]-0.25,p2[1]], 0.05,10.0,color="red",linewidth=1.0) # doctest: +IGNORE_PLOT_STEP4
+>>> excitation(ax, [p1[0]+0.25, p1[1]], [p2[0]+0.25, p2[1]], fc="red", ec="red", width=0.01, head_width=0.1, head_length=0.1) # doctest: +IGNORE_PLOT_STEP4
+>>> decay(     ax, [p1[0]-0.25, p1[1]], [p2[0]-0.25, p2[1]], 0.05, 10.0, color="red", linewidth=1.0) # doctest: +IGNORE_PLOT_STEP4
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
->>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f50e45879d0>
+>>> pyplot.savefig(path+name+'_diagram.png', bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
+<Figure size 432x288 with 1 Axes>
 
 
 
 ## Time evolution
 We write the Fortran code of the experiment.
 
->>> tw=write_evolution(path,name+"_evolution",laseres,omega,gamma,r,Lij)
+>>> tw = write_evolution(path, name+"_evolution", laseres, omega, gamma, r, Lij)
 
 We compile it.
 
->>> tc=compile_code(path,name+"_evolution",lapack=True,parallel=parallel)
+>>> tc = compile_code(path, name+"_evolution", lapack=True, parallel=parallel)
 
 We specify the intensity of the laser (as the electric field amplitude). And the detuning.
 
@@ -125,10 +125,10 @@ We plot the components we have just read.
     
 >>> ax.set_ylim([None,0.6]) # doctest: +IGNORE_PLOT_STEP3
 >>> ax.legend(loc=0,fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$t$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$t$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
     
 >>> pyplot.savefig(path+'evolution_evo.png',bbox_inches='tight',figsize=25) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f50e886ea90>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -143,11 +143,11 @@ We run the time evolution many times now varying the detuning of the laser.
 >>> ax.plot(delta,rho21_real,'b-'    ,label=r"$\mathfrak{Re}\rho_{21}$") # doctest: +IGNORE_PLOT_STEP1
 >>> ax.plot(delta,rho21_imag,'r-'    ,label=r"$\mathfrak{Im}\rho_{21}$") # doctest: +IGNORE_PLOT_STEP1
 >>> ax.legend(loc=0,fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$\delta$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$\delta$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
     
 >>> ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+'spectrum_'+name+'_evolution.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f50e3bc91d0>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -175,11 +175,11 @@ We run the spectroscopy.
 >>> ax.plot(delta,rho21_real,'b-'    ,label=r"$\mathfrak{Re}\rho_{21}$") # doctest: +IGNORE_PLOT_STEP1
 >>> ax.plot(delta,rho21_imag,'r-'    ,label=r"$\mathfrak{Im}\rho_{21}$") # doctest: +IGNORE_PLOT_STEP1
 >>> ax.legend(loc=0,fontsize=15) # doctest: +IGNORE_PLOT_STEP2
->>> ax.set_xlabel(r"$\delta$",fontsize=20) # doctest: +IGNORE_PLOT_STEP2
+>>> ax.set_xlabel(r"$\delta$",fontsize=20) # doctest: +IGNORE_PLOT_STEP5
     
 >>> ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+'spectrum_'+name+'.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f50e3c51550>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -209,12 +209,12 @@ We run the spectroscopy.
     
 ...     ax.legend(loc=0,fontsize=12) # doctest: +IGNORE_PLOT_STEP2
 ...     ax.set_xlim([-20,20]) # doctest: +IGNORE_PLOT_STEP3
-...     ax.set_xlabel(r"$\delta$",fontsize=22) # doctest: +IGNORE_PLOT_STEP2
+...     ax.set_xlabel(r"$\delta$",fontsize=22) # doctest: +IGNORE_PLOT_STEP5
 ...     ax.set_ylabel(r"$\rho_{22}$",fontsize=22) # doctest: +IGNORE_PLOT_STEP2
     
 ...     pyplot.savefig(path+name+'_power_broadening.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
 ... 
-<matplotlib.figure.Figure at 0x7f50e465fa10>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -226,4 +226,5 @@ We run the spectroscopy.
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")
