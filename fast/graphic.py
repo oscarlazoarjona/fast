@@ -159,7 +159,7 @@ def fancy_matrix_plot(ax, mat, states=None, path='', name='default.png',
     else:
         typ = float
     if isinstance(mat[0], list):
-        Ne = len(mat[0][0])
+        Ne = len(mat[0])
     else:
         Ne = mat.shape[0]
         mat = [[typ(mat[i, j]) for j in range(Ne)] for i in range(Ne)]
