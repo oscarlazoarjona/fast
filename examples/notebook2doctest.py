@@ -97,7 +97,7 @@ notebooks = [r"01 - Two level atom.ipynb",
              r"10 - States database.ipynb"]
 ########################################################################
 # We choose a notebook.
-index = 6
+index = 9
 notebook_name = notebooks[index-1]
 f = file(path_notebooks+notebook_name, "r")
 text = f.read()
@@ -164,6 +164,8 @@ for i, cell in enumerate(cells[:]):
                     line = line+" # doctest: +IGNORE_PLOT_STEP1"
 
                 if "pyplot.legend" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "pyplot.figure" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP2"
                 if "ax.legend" in line:
                     line = line+" # doctest: +IGNORE_PLOT_STEP2"
