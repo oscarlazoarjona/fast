@@ -4,7 +4,10 @@
 
 __doc__ = r"""
 
->>> from fast import *
+>>> from fast import State, Transition, Integer, make_list_of_states, calculate_matrices
+>>> from fast import fancy_matrix_plot, fancy_r_plot, PlaneWave
+>>> from fast import draw_lasers_3d, formatLij, draw_multiplet, excitation, decay, electric_field_amplitude_intensity
+>>> from fast import write_evolution, compile_code, run_evolution, read_result, write_stationary, run_stationary
 
 >>> from math import pi,sqrt
 >>> from matplotlib import pyplot
@@ -13,50 +16,50 @@ __doc__ = r"""
 >>> from numpy import array
 >>> from time import time
 
->>> path="folder_03___Rb87_one_photon/" 
->>> name='suite' 
+>>> path = "folder_03___Rb87_one_photon/" 
+>>> name = 'suite' 
 
 We first specify the states that we will use.
 
->>> element="Rb" 
->>> isotope=87
->>> e1=State(element,isotope,5,0,Integer(1)/2)
->>> e3=State(element,isotope,5,1,Integer(3)/2)
->>> fine_states=[e1,e3]
->>> print fine_states
+>>> element = "Rb" 
+>>> isotope = 87
+>>> e1 = State(element, isotope, 5, 0, Integer(1)/2)
+>>> e3 = State(element, isotope, 5, 1, Integer(3)/2)
+>>> fine_states = [e1, e3]
+>>> print(fine_states)
 [87Rb 5S_1/2, 87Rb 5P_3/2]
 
 
 
 We split these states into hyperfine substates.
 
->>> hyperfine_states=split_fine_to_hyperfine(fine_states)
->>> print hyperfine_states
+>>> hyperfine_states = make_list_of_states(fine_states, "hyperfine")
+>>> print(hyperfine_states)
 [87Rb 5S_1/2^1, 87Rb 5S_1/2^2, 87Rb 5P_3/2^0, 87Rb 5P_3/2^1, 87Rb 5P_3/2^2, 87Rb 5P_3/2^3]
 
 
 
 We divide these hypefine states into their magnetic substates.
 
->>> magnetic_states=split_hyperfine_to_magnetic(hyperfine_states)
+>>> magnetic_states = make_list_of_states(fine_states, "magnetic")
 
 We define the total number of states.
 
->>> Ne=len(magnetic_states)
+>>> Ne = len(magnetic_states)
 
-We choose a frequency state (and therefore a time scale).
+We choose a frequency scale (and therefore a time scale).
 
->>> Omega=1e6
+>>> Omega = 1e6
 
 We calculate the matrices for all the given states.
 
->>> omega,gamma,r=calculate_matrices(magnetic_states,Omega)
+>>> omega, gamma, r = calculate_matrices(magnetic_states, Omega)
 
 We plot the resonant frequencies $\\omega_{ij}$.
 
->>> fig=pyplot.figure(); ax=fig.add_subplot(111)
->>> fancy_matrix_plot(ax,omega,magnetic_states,path,name+'_omega.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f4864361b50>
+>>> fig = pyplot.figure(); ax=fig.add_subplot(111)
+>>> fancy_matrix_plot(ax, omega, magnetic_states, path, name+'_omega.png', take_abs=True, colorbar=True) # doctest: +IGNORE_PLOT_STEP4
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -64,14 +67,14 @@ We plot the matrix of decays $\\gamma_{ij}$.
 
 >>> fig=pyplot.figure(); ax=fig.add_subplot(111)
 >>> fancy_matrix_plot(ax,gamma,magnetic_states,path,name+'_gamma.png',take_abs=True,colorbar=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f48643c7c50>
+<Figure size 432x288 with 1 Axes>
 
 
 
 We plot the components of the position operator $\\hat{\\vec{r}}$.
 
 >>> fancy_r_plot(r         ,magnetic_states,path,name+'_r.png', complex_matrix=True) # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f4864361e50>
+<Figure size 1080x342 with 3 Axes>
 
 
 
@@ -82,7 +85,7 @@ We define the laser we will use.
 >>> Nl = len(lasers)
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,lasers,path+name+'_lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f48643e7b50>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -116,21 +119,21 @@ We draw a level diagram.
     
 >>> excitation(ax,[h1[1][0]-0.25*5,h1[1][1]],[h2[3][0]-0.25*5,h2[3][1]], fc="red", ec="red",width=0.2, head_width=2, head_length=2) # doctest: +IGNORE_PLOT_STEP4
 >>> decay(     ax,[h1[0][0]+0.25*5,h1[0][1]],[h2[2][0]-0.25*5,h2[2][1]], 0.5,10.0,color="red",linewidth=2.0) # doctest: +IGNORE_PLOT_STEP4
->>> ax.text(5,25,r"$^{"+str(isotope)+"}\mathrm{Rb}$",fontsize=45,verticalalignment="center",horizontalalignment="center") # doctest: +IGNORE_PLOT_STEP2
+>>> ax.text(5,25,r"$^{"+str(isotope)+"}\mathrm{Rb}$",fontsize=45,verticalalignment="center",horizontalalignment="center") # doctest: +IGNORE_PLOT_STEP5
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_levels.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+'_levels.pdf',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f486445c3d0>
+<Figure size 360x432 with 1 Axes>
 
 
 
 We calculate the amplitude of the electric field corresponding to saturation.
 
->>> s0=1.0e1
->>> E00=electric_field_amplitude_intensity(s0,Omega=Omega)
->>> E0=[E00]
->>> print E0
+>>> s0 = 1.0e1
+>>> E00 = electric_field_amplitude_intensity(s0, Omega=Omega)
+>>> E0 = [E00]
+>>> print(E0)
 [28.50887690495697]
 
 
@@ -139,15 +142,15 @@ We calculate the transition frequencies of the (in MHz). The transitions $5 S_1/
 
 >>> nu0=Transition(hyperfine_states[3],hyperfine_states[1]).nu
 >>> t1=[(Transition(hyperfine_states[i+3],hyperfine_states[1]).nu -nu0)/Omega for i in range(3)]
->>> print t1
+>>> print(t1)
 [0.0, 156.940152625, 423.5917535625]
 
 
 
 The transitions $5 S_1/2 F=1 \\rightarrow 5 P_3/2 F=0,1,2$ (the small F's).
 
->>> t2=[(Transition(hyperfine_states[i+2],hyperfine_states[0]).nu -nu0)/Omega for i in range(3)]
->>> print t2
+>>> t2 = [(Transition(hyperfine_states[i+2],hyperfine_states[0]).nu -nu0)/Omega for i in range(3)]
+>>> print(t2)
 [6762.460809, 6834.682610875, 6991.6227635]
 
 
@@ -155,15 +158,15 @@ The transitions $5 S_1/2 F=1 \\rightarrow 5 P_3/2 F=0,1,2$ (the small F's).
 # Time evolution
 We write the Fortran code of the experiment.
 
->>> tw=write_evolution(path,name+"_evolution",lasers,omega,gamma,r,Lij,verbose=0)
+>>> tw = write_evolution(path, name+"_evolution", lasers, omega, gamma, r, Lij, verbose=0)
 
 We compile it.
 
->>> tc=compile_code(path,name+"_evolution",lapack=True,optimization_flag='',parallel=parallel)
+>>> tc = compile_code(path,name+"_evolution",lapack=True,optimization_flag='',parallel=parallel)
 
 We begin with an initial state where all population is distributed equally between the $5S_{1/2}$ states.
 
->>> rho0=[1/8.0 for i in range(7)]+[0.0 for j in range(24-8)]
+>>> rho0 = [1/8.0 for i in range(7)]+[0.0 for j in range(24-8)]
 
 We se what happens during 1 $\\mu$s of evolution.
 
@@ -194,7 +197,7 @@ We plot what happens to the states $5S_{1/2}F=1$.
     
 >>> pyplot.savefig(path+name+"_tshort_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31afc650>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -212,7 +215,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31fbf6d0>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -232,7 +235,7 @@ We plot what happens to the states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tshort_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tshort_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f3132ff50>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -262,7 +265,7 @@ We plot what happens to states $5S_{1/2}F=1$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg1.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg1.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31afcdd0>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -280,7 +283,7 @@ We plot what happens to states $5S_{1/2}F=2$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fg2.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fg2.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f3206dbd0>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -300,14 +303,14 @@ We plot what happens to states $5P_{3/2}F=3$.
 >>> ax.set_ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+"_tlong_fmax.png",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
 >>> pyplot.savefig(path+name+"_tlong_fmax.pdf",bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31b05290>
+<Figure size 432x288 with 1 Axes>
 
 
 
 ## Steady State
 We write the Fortran code of the experiment.
 
->>> tw=write_stationary(path,name+"_steady",lasers,omega,gamma,r,Lij,verbose=0)
+>>> tw = write_stationary(path,name+"_steady",lasers,omega,gamma,r,Lij,verbose=0)
 
 We compile it.
 
@@ -386,14 +389,14 @@ We now make a test of this stationary two-level state to make sure.
 >>> pyplot.semilogx(pows,model_widths,'+r',basex=10,label=r'$\mathrm{Modeled \ width}$',markersize=13) # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.plot(pows2,[6.065]*Npow,'g-',label=r'$\mathrm{Natural \ width}$') # doctest: +IGNORE_PLOT_STEP1
     
->>> pyplot.xlabel(r"$I/I_0$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.ylabel(r"$\mathrm{Width \ (MHz)}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.xlabel(r"$I/I_0$",fontsize=18) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.ylabel(r"$\mathrm{Width \ (MHz)}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP5
     
 >>> pyplot.ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+name+'_2power.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f31fab390>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -405,8 +408,8 @@ We now make a test of this stationary two-level state to make sure.
 >>> pyplot.semilogx([pows2[0],pows2[-1]],[0.25,0.25],'k-',alpha=0.25) # doctest: +IGNORE_PLOT_STEP1
 >>> pyplot.semilogx([1,1],[0,0.5],'k-',alpha=0.25) # doctest: +IGNORE_PLOT_STEP1
     
->>> pyplot.xlabel(r"$I/I_0$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
->>> pyplot.ylabel(r"$\mathrm{Peak\ height}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP2
+>>> pyplot.xlabel(r"$I/I_0$",fontsize=18) # doctest: +IGNORE_PLOT_STEP5
+>>> pyplot.ylabel(r"$\mathrm{Peak\ height}$",fontsize=18) # doctest: +IGNORE_PLOT_STEP5
     
     
 >>> pyplot.ylim([0,None]) # doctest: +IGNORE_PLOT_STEP3
@@ -416,7 +419,7 @@ We now make a test of this stationary two-level state to make sure.
 >>> pyplot.legend(loc=0) # doctest: +IGNORE_PLOT_STEP2
     
 >>> pyplot.savefig(path+name+'_3power.png',bbox_inches='tight') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f9f314bdcd0>
+<Figure size 432x288 with 1 Axes>
 
 
 
