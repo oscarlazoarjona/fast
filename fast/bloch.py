@@ -657,7 +657,6 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
     All quantities should be in SI units.
 
     EXAMPLES:
-
     We build an example using states coupled like this:
 
      --- |4>        --- |5>          --- |6>
