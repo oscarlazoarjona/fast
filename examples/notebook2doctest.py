@@ -2,7 +2,6 @@
 # Copyright (C) 2017 Oscar Gerardo Lazo Arjona
 # mailto: oscar.lazo@correo.nucleares.unam.mx
 r"""A script to transform jupyter notebooks into doctests."""
-from doctest import testmod
 import os
 
 
@@ -85,10 +84,11 @@ def get_cells(text):
 path_notebooks = r"../../fast-notebooks/"
 
 # The notebooks to be converted.
+aux = r"04 - Vectors in the helicity basis and the electric field.ipynb"
 notebooks = [r"01 - Two level atom.ipynb",
              r"02 - Three level atom (ladder).ipynb",
              r"03 - Rb87 one photon.ipynb",
-             r"04 - Vectors in the helicity basis and the electric field.ipynb",
+             aux,
              r"05 - Two level atom (symbolic).ipynb",
              r"06 - Three level atom, ladder (symbolic).ipynb",
              r"07 - Three level atom, Lambda (symbolic).ipynb",
@@ -156,31 +156,52 @@ for i, cell in enumerate(cells[:]):
                 if "%matplotlib inline" in line:
                     line = ""
 
-                if "pyplot.semilogx" in line: line = line+" # doctest: +IGNORE_PLOT_STEP1"
-                if "pyplot.plot" in line: line = line+" # doctest: +IGNORE_PLOT_STEP1"
-                if "ax.plot" in line: line = line+" # doctest: +IGNORE_PLOT_STEP1"
+                if "pyplot.semilogx" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP1"
+                if "pyplot.plot" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP1"
+                if "ax.plot" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP1"
 
-                if "pyplot.ylabel" in line: line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "pyplot.xlabel" in line: line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "pyplot.legend" in line: line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "ax.text(" in line: line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "ax.set_xlabel" in line: line = line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "ax.set_ylabel" in line: line=line+" # doctest: +IGNORE_PLOT_STEP2"
-                if "ax.legend" in line: line = line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "pyplot.ylabel" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "pyplot.xlabel" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "pyplot.legend" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "ax.text(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
+                if "ax.legend" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP2"
 
+                if "pyplot.axis" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "ax.set_xlim" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "ax.set_ylim" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "pyplot.xlim" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "pyplot.ylim" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP3"
 
-                if "pyplot.axis" in line: line = line+" # doctest: +IGNORE_PLOT_STEP3"
-                if "ax.set_xlim" in line: line = line+" # doctest: +IGNORE_PLOT_STEP3"
-                if "ax.set_ylim" in line: line = line+" # doctest: +IGNORE_PLOT_STEP3"
-                if "pyplot.xlim" in line: line = line+" # doctest: +IGNORE_PLOT_STEP3"
-                if "pyplot.ylim" in line: line = line+" # doctest: +IGNORE_PLOT_STEP3"
+                if "pyplot.savefig" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "fancy_matrix_plot(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "fancy_r_plot(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "draw_lasers_3d(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "excitation(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "decay(" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP4"
 
-                if "pyplot.savefig" in line: line = line+" # doctest: +IGNORE_PLOT_STEP4"
-                if "fancy_matrix_plot(" in line: line = line+" # doctest: +IGNORE_PLOT_STEP4"
-                if "fancy_r_plot(" in line: line = line+" # doctest: +IGNORE_PLOT_STEP4"
-                if "draw_lasers_3d(" in line: line = line+" # doctest: +IGNORE_PLOT_STEP4"
-                if "excitation(" in line: line = line+" # doctest: +IGNORE_PLOT_STEP4"
-                if "decay(" in line: line = line+" # doctest: +IGNORE_PLOT_STEP4"
+                if "ax.set_xlabel" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP5"
+                if "ax.set_ylabel" in line:
+                    line = line+" # doctest: +IGNORE_PLOT_STEP5"
 
                 line = line.replace(r"\\", "\\")
                 line += "\n"
@@ -205,8 +226,10 @@ for i, cell in enumerate(cells[:]):
                     if line[:7] == '      "': line = line[7:]
                     if line[:8] == '       "': line = line[8:]
                     if line[-2:] == '\\n': line = line[:-2]
-                    if line[-7:] == '      ]' and len(line) == len('      ]'): line = "\n"
-                    if line[-6:] == '     ]' and len(line) == len('     ]'): line = "\n"
+                    if line[-7:] == '      ]' and len(line) == len('      ]'):
+                        line = "\n"
+                    if line[-6:] == '     ]' and len(line) == len('     ]'):
+                        line = "\n"
 
                     blankline = True
                     for char in line:
@@ -221,10 +244,12 @@ for i, cell in enumerate(cells[:]):
     doc += cell_code
 
 doc += '\n"""\n'
-doc += '''__doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\\n[<...>]")\n'''
-doc += '''__doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\\n<...>")\n'''
-doc += '''__doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\\n(...)")\n'''
-doc += '''__doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\\n")\n'''
+aux = '''__doc__=__doc__.replace("+IGNORE_PLOT_STEP'''
+doc += aux+'''1", "+ELLIPSIS\\n[<...>]")\n'''
+doc += aux+'''2", "+ELLIPSIS\\n<...>")\n'''
+doc += aux+'''3", "+ELLIPSIS\\n(...)")\n'''
+doc += aux+'''5", "+ELLIPSIS\\nText(...)")\n'''
+doc += aux+'''4", "\\n")\n'''
 
 
 doctest_name = "doctest_"+notebook_name
@@ -244,6 +269,7 @@ try:
 except:
     pass
 
+exec("from doctest import testmod")
 s = "import "+doctest_name[:-3]
 exec(s)
 s = "print testmod("+doctest_name[:-3]+")"
