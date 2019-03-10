@@ -34,21 +34,21 @@ program evolution_diagonalization
 		read(2,*) ldelta
 		read(2,*) ndelta
 		read(2,*) ddelta
-		
-		
+
+
 		allocate(rho(n,575),stat=info)
 		allocate(rho_spectrum(ndelta,575),stat=info)
 		rho(1,:)=rho0
     else
 		ldelta=1; ndelta=1; ddelta=0
-		
+
 		allocate(rho(n,575),stat=info)
 		rho(1,:)=rho0
     end if
     close(2)
-    
+
     delta0=detuning_knob(ldelta)
-    
+
     !We build the time and delta axis
     allocate(t(n),stat=info)
     allocate(delta(ndelta),stat=info)
@@ -59,7 +59,7 @@ program evolution_diagonalization
     do i=1,ndelta
 		delta(i)=delta0+(i-1)*ddelta
     end do
-        
+
     if (n_mod==0) n_mod=1
 
     if (save_eigenvalues) then
@@ -74,7 +74,7 @@ open(unit=3,file='folder_03___Rb87_one_photon/suite_evolution_eigenvalue&
 		detuning_knob(ldelta)=delta(j)
 
 		call solve(E0,detuning_knob, rho0,U,r_amp,rho_inf,lam,save_systems)
-		
+
 		if (save_eigenvalues) then
 			write(3,*) delta,real(lam)
 			write(3,*) delta,imag(lam)
@@ -85,18 +85,18 @@ open(unit=3,file='folder_03___Rb87_one_photon/suite_evolution_eigenvalue&
 		do i=2,n
 
 			if (print_steps.and. .not. run_spectrum) print*,'t=',t,'delta=',delta
-			
+
 			do mu=1,575
 				rho(i,mu)=r_amp(mu)*cdexp(lam(mu)*t(i))
 			end do
 			rho(i,:)= matmul(U , rho(i,:)) + rho_inf
-			
+
 			if (isnan(real(rho(i,1)))) stop 1
 			!if (.not. run_spectrum ) WRITE(1,*) t,real(rho(i,:))
 		end do
 
 		if (print_steps) print*, 'delta=',delta,'percentage=',100*(delta-delta0)/(ddelta*ndelta)
-		
+
 		!We save the time evolution.
 		if (.not. run_spectrum ) then
 			open(unit=1,file='folder_03___Rb87_one_photon/suite_evolution.dat',st&
@@ -121,11 +121,11 @@ open(unit=3,file='folder_03___Rb87_one_photon/suite_evolution_eigenvalue&
 		end do
 		close(1)
 	end if
-	    
+
 end program
 subroutine solve(E0,detuning_knob,rho0,U,r_amp,rho_inf,lam,save_systems)
 	implicit none
-    integer :: i,j,k,mu,nu,alpha	
+    integer :: i,j,k,mu,nu,alpha
 	real*8, dimension(1), intent(in) :: E0,detuning_knob
 	complex*16, dimension(575,1), intent(in) :: rho0
 	complex*16, dimension(575,575), intent(out) :: U
@@ -144,14 +144,14 @@ subroutine solve(E0,detuning_knob,rho0,U,r_amp,rho_inf,lam,save_systems)
     real*8, dimension(575,575) :: VR,VRT
     real*8, dimension(3450) :: WORK
     integer :: INFO
-    
+
     complex*16 :: II
     complex*16, dimension(575,575) :: Ui,Us,Uis
     logical :: band
 
 	Nrho=575
 	A=0
-	B=0	
+	B=0
 	!We calculate the detunings.
 	!The list of detunings has the following meaning:
 	!detuning(1)= delta^1_,

@@ -7,7 +7,7 @@ program stationary_rho
     real*8 :: ddelta
     logical :: print_steps,save_systems,specific_deltas,use_netcdf
     real*4 :: start_time, end_time
-    
+
     !We load the parameters
 open(unit=2,file='folder_03___Rb87_one_photon/suite_steady_params.dat',s&
 &tatus='unknown')
@@ -38,21 +38,21 @@ open(unit=2,file='folder_03___Rb87_one_photon/suite_steady_params.dat',s&
 
 	allocate(rho(ndelta,575),stat=info)
 
-	nerrors=0	
+	nerrors=0
 
 	call cpu_time(start_time)
 
 	!$OMP PARALLEL PRIVATE(detuning_knobi)
 	!$OMP DO
 	do i=1,ndelta
-		
+
 		detuning_knobi=detuning_knob
 		detuning_knobi(ldelta)=delta(i)
-		
+
 		call solve(E0,detuning_knobi,rho(i,:),save_systems)
 
 		if (print_steps) print*,'delta=',detuning_knobi(ldelta)
-		
+
 	end do
 	!$OMP END DO
 	!$OMP END PARALLEL
@@ -74,14 +74,14 @@ end program
 
 subroutine solve(E0,detuning_knob,B,save_systems)
 	implicit none
-	
+
 	real*8, dimension(1), intent(in) :: E0,detuning_knob
 	real*8, dimension(575,1), intent(out) :: B
 	logical, intent(in) :: save_systems
 
 
 	real*8, dimension(6) :: detuning
-	
+
 	integer :: INFO,j
 	real*8, dimension(575,575) :: A
 	integer, dimension(575) :: IPIV
