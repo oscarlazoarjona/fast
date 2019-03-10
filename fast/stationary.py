@@ -201,10 +201,14 @@ subroutine save_matrix_and_vector(file_name,m,n,matrix,vector)
     call check( nf90_create(file_name, NF90_CLOBBER, ncid) )
     call check( nf90_def_dim(ncid, "x", n, x_dimid) )
     call check( nf90_def_dim(ncid, "y", m, y_dimid) )
-    dimids =  (/ y_dimid, x_dimid /)
-    call check( nf90_def_var(ncid, "matrix", NF90_DOUBLE, dimids,  varid_matrix) )
-    call check( nf90_def_var(ncid, "vector", NF90_DOUBLE, y_dimid, varid_vector) )
-    call check( nf90_enddef(ncid) )
+    dimids =  (/ y_dimid, x_dimid /)"""
+        aux = """    call check( nf90_def_var(ncid, "matrix", """
+        aux += """NF90_DOUBLE, dimids,  varid_matrix) )\n"""
+        code0 += aux
+        aux = """    call check( nf90_def_var(ncid, "vector", """
+        aux += """NF90_DOUBLE, y_dimid, varid_vector) )\n"""
+        code0 += aux
+        code0 += """    call check( nf90_enddef(ncid) )
 
     call check( nf90_put_var(ncid, varid_matrix, matrix) )
     call check( nf90_put_var(ncid, varid_vector, vector) )
@@ -236,7 +240,8 @@ subroutine solve(E0,detuning_knob,B,save_systems)
     dummy = write_equations_code(path, name, laser, omega, gamma, r, Lij,
                                  states=states, excluded_mu=excluded_mu,
                                  verbose=verbose)
-    code, Nd, row_check, col_check, rhs_check, Ne, N_excluded_mu, states, omega_min, detuningsij, omega_rescaled = dummy
+    code, Nd, row_check, col_check, rhs_check, Ne, N_excluded_mu = dummy[:-4]
+    states, omega_min, detuningsij, omega_rescaled = dummy[-4:]
     ####################################################################
     code0 += """
 	real*8, dimension("""+str(Nd)+""") :: detuning
@@ -267,10 +272,15 @@ subroutine solve(E0,detuning_knob,B,save_systems)
     code += "		close(4)\n"
     code += "	end if\n\n"
 
-    code += '	call dgesv('+str(Ne**2-1-N_excluded_mu)+', 1, A, '+str(Ne**2-1-N_excluded_mu)+', IPIV, B, '+str(Ne**2-1-N_excluded_mu)+', INFO)\n'
+    aux = '	call dgesv('+str(Ne**2-1-N_excluded_mu)+', 1, A, '
+    aux += str(Ne**2-1-N_excluded_mu)+', IPIV, B, '
+    aux += str(Ne**2-1-N_excluded_mu)+', INFO)\n'
+    code += aux
     # code+="	print*,'INFO',INFO\n"
     code += """	if (INFO>0) B=-11\n"""
-    # code+="""	if (INFO>0) print*, 'For frequencies',detuning_knob,'The system could not be solved, exit code:',INFO\n"""
+    # code+="""	if (INFO>0) print*,
+    # 'For frequencies',detuning_knob,'The system could not be solved,
+    # exit code:',INFO\n"""
     # code+="""	if (INFO>0) then\n"""
     # code+="""		do j="""+str(Ne**2-1)+"""\n"""
     # code+="""			print*,\n"""
@@ -279,7 +289,8 @@ subroutine solve(E0,detuning_knob,B,save_systems)
     ####################################################################
     # We check the rows and columns searching for rows of zeros and
     # columns of zeros.
-    excluded_mu = analyze_zeros(row_check, col_check, rhs_check, Ne, N_excluded_mu, states)
+    excluded_mu = analyze_zeros(row_check, col_check, rhs_check, Ne,
+                                N_excluded_mu, states)
 
     if excluded_mu != []:
         t0 = time()-t0
@@ -316,7 +327,9 @@ def run_stationary(path, name, E0, laser_frequencies, spectrum_of_laser,
         if N_delta == 1:
             frequency_step = 0.0
         else:
-            frequency_step = (frequency_end-laser_frequencies[spectrum_of_laser-1])/(N_delta-1)
+            aux = (frequency_end-laser_frequencies[spectrum_of_laser-1])
+            aux = aux/(N_delta-1)
+            frequency_step = aux
 
     params += str(frequency_step)+'\n'
     if print_steps:
