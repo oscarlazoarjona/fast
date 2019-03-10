@@ -17,7 +17,7 @@ __doc__ = r"""
 
 We will be deriving the optical Bloch equations for a two level system as that in the figure.
 
->>> fig=pyplot.figure(); ax=fig.add_subplot(111,aspect="equal")
+>>> fig=pyplot.figure(figsize=(6, 6)); ax=fig.add_subplot(111,aspect="equal")
     
 >>> p1=[0.5,1]; p2=[1.5,3]
 >>> draw_state(ax,p1,text=r"$|1\rangle$",l=1.0,alignment='right',label_displacement=0.05,fontsize=25,linewidth=4.0)
@@ -28,7 +28,7 @@ We will be deriving the optical Bloch equations for a two level system as that i
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f72ae684c50>
+<Figure size 432x432 with 1 Axes>
 
 
 
@@ -77,9 +77,9 @@ The polarization vectors.
 >>> ep=polarization_vector(phi,theta,alpha,beta, 1)
 >>> em=polarization_vector(phi,theta,alpha,beta,-1)
 >>> fprint([ep,em],print_ascii=print_ascii)
-[[0], [0]]
- [ ]  [ ] 
  [0]  [0] 
+ [ ]  [ ] 
+[[0], [0]]
  [ ]  [ ] 
  [1]  [1] 
 
@@ -106,9 +106,9 @@ We draw this electric field.
 >>> laseres=[l1]
 >>> Nl=len(laseres)
     
->>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
+>>> fig = pyplot.figure(figsize=(10, 10)); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f72ae684250>
+<Figure size 720x720 with 1 Axes>
 
 
 
@@ -131,8 +131,8 @@ We define the position operator in the helicity basis.
 
 >>> r=define_r_components(Ne,helicity=True,explicitly_hermitian=True)
 >>> fprint(r,print_ascii=print_ascii)
-[[    0      -r_{+1;21}], [   0      r_{0;21}], [    0      -r_{-1;21}]]
- [                     ]  [                  ]  [                     ] 
+ [    0      -r_{+1;21}]  [   0      r_{0;21}]  [    0      -r_{-1;21}] 
+[[                     ], [                  ], [                     ]]
  [r_{-1;21}      0     ]  [r_{0;21}     0    ]  [r_{+1;21}      0     ] 
 
 
@@ -171,17 +171,17 @@ The atomic hamiltonian is
 
 The interaction hamiltonian is
 
->>> H1=e*helicity_dot_product(E,r)
+>>> H1=-e*helicity_dot_product(E,r)
 >>> fprint(H1,print_ascii=print_ascii)
-[                                                                    /        -I*t*varpi_1    I*t*varpi_1 ______\]
-[                                                                    |E_{01}*e               e           *E_{01}|]
-[                           0                             e*r_{0;21}*|-------------------- + -------------------|]
-[                                                                    \         2                      2         /]
-[                                                                                                                ]
-[           /        -I*t*varpi_1    I*t*varpi_1 ______\                                                         ]
-[           |E_{01}*e               e           *E_{01}|                                                         ]
-[e*r_{0;21}*|-------------------- + -------------------|                             0                           ]
-[           \         2                      2         /                                                         ]
+[                                                                      /        -I*t*varpi_1    I*t*varpi_1 ______\]
+[                                                                      |E_{01}*e               e           *E_{01}|]
+[                           0                              -e*r_{0;21}*|-------------------- + -------------------|]
+[                                                                      \         2                      2         /]
+[                                                                                                                  ]
+[            /        -I*t*varpi_1    I*t*varpi_1 ______\                                                          ]
+[            |E_{01}*e               e           *E_{01}|                                                          ]
+[-e*r_{0;21}*|-------------------- + -------------------|                             0                            ]
+[            \         2                      2         /                                                          ]
 
 
 
@@ -189,15 +189,15 @@ and the complete hamiltonian is
 
 >>> H=H0+H1
 >>> fprint(H,print_ascii=print_ascii)
-[                                                                    /        -I*t*varpi_1    I*t*varpi_1 ______\]
-[                                                                    |E_{01}*e               e           *E_{01}|]
-[                     hbar*omega_1                        e*r_{0;21}*|-------------------- + -------------------|]
-[                                                                    \         2                      2         /]
-[                                                                                                                ]
-[           /        -I*t*varpi_1    I*t*varpi_1 ______\                                                         ]
-[           |E_{01}*e               e           *E_{01}|                                                         ]
-[e*r_{0;21}*|-------------------- + -------------------|                       hbar*omega_2                      ]
-[           \         2                      2         /                                                         ]
+[                                                                      /        -I*t*varpi_1    I*t*varpi_1 ______\]
+[                                                                      |E_{01}*e               e           *E_{01}|]
+[                      hbar*omega_1                        -e*r_{0;21}*|-------------------- + -------------------|]
+[                                                                      \         2                      2         /]
+[                                                                                                                  ]
+[            /        -I*t*varpi_1    I*t*varpi_1 ______\                                                          ]
+[            |E_{01}*e               e           *E_{01}|                                                          ]
+[-e*r_{0;21}*|-------------------- + -------------------|                        hbar*omega_2                      ]
+[            \         2                      2         /                                                          ]
 
 
 
@@ -211,11 +211,11 @@ Notice that the electric field can be separated by terms with positive and negat
 >>> E_m=cartesian_to_helicity(E_cartesian_m)
     
 >>> fprint([E_p,E_m],print_ascii=print_ascii)
-[[         0          ], [         0         ]]
+ [         0          ]  [         0         ] 
  [                    ]  [                   ] 
  [        -I*t*varpi_1]  [ I*t*varpi_1 ______] 
  [E_{01}*e            ]  [e           *E_{01}] 
- [--------------------]  [-------------------] 
+[[--------------------], [-------------------]]
  [         2          ]  [         2         ] 
  [                    ]  [                   ] 
  [         0          ]  [         0         ] 
@@ -318,8 +318,8 @@ Which can be decomposed as
 that summed equal $\\vec{\\hat{r}}_I$
 
 >>> fprint( [r_I[p]-(r_I_p[p]+r_I_m[p]) for p in range(3)] ,print_ascii=print_ascii)
-[[0  0], [0  0], [0  0]]
- [    ]  [    ]  [    ] 
+ [0  0]  [0  0]  [0  0] 
+[[    ], [    ], [    ]]
  [0  0]  [0  0]  [0  0] 
 
 
@@ -379,40 +379,40 @@ That is known as the rotating wave approximation (RWA).
 
 >>> r_p=[ Matrix([[ delta_greater(j,i)*r[p][i,j] for j in range(Ne)]for i in range(Ne)]) for p in range(3)]
 >>> fprint(r_p,print_ascii=print_ascii)
-[[0  -r_{+1;21}], [0  r_{0;21}], [0  -r_{-1;21}]]
- [             ]  [           ]  [             ] 
+ [0  -r_{+1;21}]  [0  r_{0;21}]  [0  -r_{-1;21}] 
+[[             ], [           ], [             ]]
  [0      0     ]  [0     0    ]  [0      0     ] 
 
 
 
 >>> r_m=[ Matrix([[ delta_lesser( j,i)*r[p][i,j] for j in range(Ne)]for i in range(Ne)]) for p in range(3)]
 >>> fprint(r_m,print_ascii=print_ascii)
-[[    0      0], [   0      0], [    0      0]]
- [            ]  [           ]  [            ] 
+ [    0      0]  [   0      0]  [    0      0] 
+[[            ], [           ], [            ]]
  [r_{-1;21}  0]  [r_{0;21}  0]  [r_{+1;21}  0] 
 
 
 
 >>> fprint( [r[p]-(r_p[p]+r_m[p]) for p in range(3)] ,print_ascii=print_ascii)
-[[0  0], [0  0], [0  0]]
- [    ]  [    ]  [    ] 
+ [0  0]  [0  0]  [0  0] 
+[[    ], [    ], [    ]]
  [0  0]  [0  0]  [0  0] 
 
 
 
 Thus the interaction hamiltonian in the Schrödinger picture in the rotating wave approximation is
 
->>> H1RWA=e*(helicity_dot_product(E_p,r_m)+helicity_dot_product(E_m,r_p))
+>>> H1RWA=-e*(helicity_dot_product(E_p,r_m)+helicity_dot_product(E_m,r_p))
 >>> fprint(H1RWA,print_ascii=print_ascii)
-[                                             I*t*varpi_1 ______]
-[                                 e*r_{0;21}*e           *E_{01}]
-[               0                 ------------------------------]
-[                                               2               ]
-[                                                               ]
-[                   -I*t*varpi_1                                ]
-[E_{01}*e*r_{0;21}*e                                            ]
-[-------------------------------                0               ]
-[               2                                               ]
+[                                                I*t*varpi_1 ______ ]
+[                                   -e*r_{0;21}*e           *E_{01} ]
+[                0                  --------------------------------]
+[                                                  2                ]
+[                                                                   ]
+[                    -I*t*varpi_1                                   ]
+[-E_{01}*e*r_{0;21}*e                                               ]
+[---------------------------------                 0                ]
+[                2                                                  ]
 
 
 
@@ -420,15 +420,15 @@ And the complete hamiltonian in the Schrödinger picture in the rotating wave ap
 
 >>> HRWA=H0+H1RWA
 >>> fprint(HRWA,print_ascii=print_ascii)
-[                                             I*t*varpi_1 ______]
-[                                 e*r_{0;21}*e           *E_{01}]
-[         hbar*omega_1            ------------------------------]
-[                                               2               ]
-[                                                               ]
-[                   -I*t*varpi_1                                ]
-[E_{01}*e*r_{0;21}*e                                            ]
-[-------------------------------           hbar*omega_2         ]
-[               2                                               ]
+[                                                I*t*varpi_1 ______ ]
+[                                   -e*r_{0;21}*e           *E_{01} ]
+[          hbar*omega_1             --------------------------------]
+[                                                  2                ]
+[                                                                   ]
+[                    -I*t*varpi_1                                   ]
+[-E_{01}*e*r_{0;21}*e                                               ]
+[---------------------------------            hbar*omega_2          ]
+[                2                                                  ]
 
 
 
@@ -437,8 +437,8 @@ Next we will make a phase transformation in order to eliminate the explicit time
 
 >>> c,ctilde,phase=define_psi_coefficients(Ne)
 >>> fprint([c,ctilde,phase], print_ascii=print_ascii)
-[[c1(t)], [\tilde{c}_{1}(t)], [theta1]]
- [     ]  [                ]  [      ] 
+ [c1(t)]  [\tilde{c}_{1}(t)]  [theta1] 
+[[     ], [                ], [      ]]
  [c2(t)]  [\tilde{c}_{2}(t)]  [theta2] 
 
 
@@ -467,15 +467,15 @@ The Schrödinger equation $i\\hbar \\partial_t |\\psi\\rangle=\\hat{H}_{RWA}$ is
 
 >>> rhs=HRWA*psi
 >>> fprint(rhs, print_ascii=print_ascii)
-[                             I*t*theta2  I*t*varpi_1 ______                                             ]
-[e*r_{0;21}*\tilde{c}_{2}(t)*e          *e           *E_{01}                                  I*t*theta1 ]
-[----------------------------------------------------------- + hbar*omega_1*\tilde{c}_{1}(t)*e           ]
-[                             2                                                                          ]
-[                                                                                                        ]
-[                                    I*t*theta1  -I*t*varpi_1                                            ]
-[E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)*e          *e                                              I*t*theta2]
-[------------------------------------------------------------ + hbar*omega_2*\tilde{c}_{2}(t)*e          ]
-[                             2                                                                          ]
+[                               I*t*theta2  I*t*varpi_1 ______                                             ]
+[  e*r_{0;21}*\tilde{c}_{2}(t)*e          *e           *E_{01}                                  I*t*theta1 ]
+[- ----------------------------------------------------------- + hbar*omega_1*\tilde{c}_{1}(t)*e           ]
+[                               2                                                                          ]
+[                                                                                                          ]
+[                                      I*t*theta1  -I*t*varpi_1                                            ]
+[  E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)*e          *e                                              I*t*theta2]
+[- ------------------------------------------------------------ + hbar*omega_2*\tilde{c}_{2}(t)*e          ]
+[                               2                                                                          ]
 
 
 
@@ -491,25 +491,25 @@ We multiply each of these equations by $e^{-i \\theta_i t}$ and substracting $i 
 
 >>> rhs_new=Matrix([simplify(  rhs[i]*exp(-I*phase[i]*t) +hbar*phase[i]*ctilde[i] ) for i in range(Ne)])
 >>> fprint(rhs_new, print_ascii=print_ascii)
-[                             -I*t*theta1  I*t*theta2  I*t*varpi_1 ______                                             
-[e*r_{0;21}*\tilde{c}_{2}(t)*e           *e          *e           *E_{01}                                             
-[------------------------------------------------------------------------ + hbar*omega_1*\tilde{c}_{1}(t) + hbar*theta
-[                                   2                                                                                 
+[                               -I*t*theta1 + I*t*theta2 + I*t*varpi_1 ______                                         
+[  e*r_{0;21}*\tilde{c}_{2}(t)*e                                      *E_{01}                                         
+[- -------------------------------------------------------------------------- + hbar*omega_1*\tilde{c}_{1}(t) + hbar*t
+[                                      2                                                                              
 [                                                                                                                     
-[                                    I*t*theta1  -I*t*theta2  -I*t*varpi_1                                            
-[E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)*e          *e           *e                                                        
-[------------------------------------------------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*thet
-[                                    2                                                                                
+[                                      I*t*theta1 - I*t*theta2 - I*t*varpi_1                                          
+[  E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)*e                                                                               
+[- ------------------------------------------------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*th
+[                                      2                                                                              
 <BLANKLINE>
-                   ]
-                   ]
-1*\tilde{c}_{1}(t) ]
-                   ]
-                   ]
-                   ]
-                   ]
-a2*\tilde{c}_{2}(t)]
-                   ]
+                      ]
+                      ]
+heta1*\tilde{c}_{1}(t)]
+                      ]
+                      ]
+                      ]
+                      ]
+eta2*\tilde{c}_{2}(t) ]
+                      ]
 
 
 
@@ -543,14 +543,14 @@ Thus the equations become
 
 >>> rhs_new=simplify(rhs_new.subs(phase_transformation))
 >>> fprint(rhs_new, print_ascii=print_ascii)
-[                                 ______                                                ]
-[     e*r_{0;21}*\tilde{c}_{2}(t)*E_{01}                                                ]
-[     ---------------------------------- + hbar*(omega_1 + theta1)*\tilde{c}_{1}(t)     ]
-[                     2                                                                 ]
-[                                                                                       ]
-[E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)                                                     ]
-[---------------------------------- + hbar*(omega_2 + theta1 - varpi_1)*\tilde{c}_{2}(t)]
-[                2                                                                      ]
+[                                    ______                                                                     ]
+[        e*r_{0;21}*\tilde{c}_{2}(t)*E_{01}                                                                     ]
+[      - ---------------------------------- + hbar*omega_1*\tilde{c}_{1}(t) + hbar*theta1*\tilde{c}_{1}(t)      ]
+[                        2                                                                                      ]
+[                                                                                                               ]
+[  E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)                                                                           ]
+[- ---------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*(theta1 - varpi_1)*\tilde{c}_{2}(t)]
+[                  2                                                                                            ]
 
 
 
@@ -558,14 +558,14 @@ It can be seen that this is the Schrödinger equation derived from an effective 
 
 >>> Htilde=Matrix([ [Derivative(rhs_new[i],ctilde[j]).doit() for j in range(Ne)] for i in range(Ne)])
 >>> fprint(Htilde, print_ascii=print_ascii)
-[                                            ______        ]
-[                                 e*r_{0;21}*E_{01}        ]
-[hbar*(omega_1 + theta1)          -----------------        ]
-[                                         2                ]
-[                                                          ]
-[   E_{01}*e*r_{0;21}                                      ]
-[   -----------------     hbar*(omega_2 + theta1 - varpi_1)]
-[           2                                              ]
+[                                                 ______           ]
+[                                     -e*r_{0;21}*E_{01}           ]
+[hbar*omega_1 + hbar*theta1           -------------------          ]
+[                                              2                   ]
+[                                                                  ]
+[   -E_{01}*e*r_{0;21}                                             ]
+[   -------------------      hbar*omega_2 + hbar*(theta1 - varpi_1)]
+[            2                                                     ]
 
 
 
@@ -574,14 +574,14 @@ We can see that it is convenient to choose $\\theta_1=-\\omega_1$ to simplify th
 >>> delta=Symbol("delta",real=True)
 >>> Htilde=Htilde.subs({phase[0]:-omega_level[0]}).subs({omega_laser[0]:delta+omega_level[1]-omega_level[0]})
 >>> fprint(Htilde, print_ascii=print_ascii)
-[                              ______]
-[                   e*r_{0;21}*E_{01}]
-[        0          -----------------]
-[                           2        ]
-[                                    ]
-[E_{01}*e*r_{0;21}                   ]
-[-----------------     -delta*hbar   ]
-[        2                           ]
+[                                          ______           ]
+[                              -e*r_{0;21}*E_{01}           ]
+[         0                    -------------------          ]
+[                                       2                   ]
+[                                                           ]
+[-E_{01}*e*r_{0;21}                                         ]
+[-------------------  hbar*omega_2 + hbar*(-delta - omega_2)]
+[         2                                                 ]
 
 
 
@@ -590,14 +590,14 @@ If we define the Rabi frequency $\\Omega =e E_0^1 r_{0;21}/\\hbar$
 >>> Omega=Symbol("Omega",real=False)
 >>> Htilde=Htilde.subs({E0[0]:Omega*hbar/r[1][1,0]/e})
 >>> fprint(Htilde,print_ascii=print_ascii)
-[                 _____ ]
-[            hbar*Omega ]
-[    0       ---------- ]
-[                2      ]
-[                       ]
-[Omega*hbar             ]
-[----------  -delta*hbar]
-[    2                  ]
+[                                 _____              ]
+[                           -hbar*Omega              ]
+[     0                     ------------             ]
+[                                2                   ]
+[                                                    ]
+[-Omega*hbar                                         ]
+[------------  hbar*omega_2 + hbar*(-delta - omega_2)]
+[     2                                              ]
 
 
 
@@ -618,15 +618,15 @@ The hamiltonian part of the equations is
 
 >>> hamiltonian_terms=(I/hbar*(rho*Htilde-Htilde*rho)).expand()
 >>> fprint(hamiltonian_terms,print_ascii=print_ascii)
-[                                 _____                                    _____           _____]
-[         I*Omega*rho12   I*rho21*Omega                            I*rho11*Omega   I*rho22*Omega]
-[         ------------- - -------------           -I*delta*rho12 + ------------- - -------------]
-[               2               2                                        2               2      ]
-[                                                                                               ]
-[                                                                                  _____        ]
-[  I*Omega*rho11   I*Omega*rho22                           I*Omega*rho12   I*rho21*Omega        ]
-[- ------------- + ------------- + I*delta*rho21         - ------------- + -------------        ]
-[        2               2                                       2               2              ]
+[                                 _____                                  _____           _____]
+[         I*Omega*rho12   I*rho21*Omega                          I*rho11*Omega   I*rho22*Omega]
+[       - ------------- + -------------         -I*delta*rho12 - ------------- + -------------]
+[               2               2                                      2               2      ]
+[                                                                                             ]
+[                                                                               _____         ]
+[I*Omega*rho11   I*Omega*rho22                          I*Omega*rho12   I*rho21*Omega         ]
+[------------- - ------------- + I*delta*rho21          ------------- - -------------         ]
+[      2               2                                      2               2               ]
 
 
 
@@ -649,25 +649,25 @@ $\\textit{The}$ Optical Bloch equations are thus.
 
 >>> eqs=hamiltonian_terms + lindblad_terms
 >>> fprint(eqs,print_ascii=print_ascii)
-[                                                  _____                                                     _____    
-[         I*Omega*rho12                    I*rho21*Omega                            gamma_21*rho12   I*rho11*Omega   I
-[         ------------- + gamma_21*rho22 - -------------           -I*delta*rho12 - -------------- + ------------- - -
-[               2                                2                                        2                2          
+[                                                  _____                                                   _____      
+[         I*Omega*rho12                    I*rho21*Omega                          gamma_21*rho12   I*rho11*Omega   I*r
+[       - ------------- + gamma_21*rho22 + -------------         -I*delta*rho12 - -------------- - ------------- + ---
+[               2                                2                                      2                2            
 [                                                                                                                     
-[                                                                                                                    _
-[  I*Omega*rho11   I*Omega*rho22                   gamma_21*rho21           I*Omega*rho12                    I*rho21*O
-[- ------------- + ------------- + I*delta*rho21 - --------------         - ------------- - gamma_21*rho22 + ---------
-[        2               2                               2                        2                                2  
+[                                                                                                                 ____
+[I*Omega*rho11   I*Omega*rho22                   gamma_21*rho21          I*Omega*rho12                    I*rho21*Omeg
+[------------- - ------------- + I*delta*rho21 - --------------          ------------- - gamma_21*rho22 - ------------
+[      2               2                               2                       2                                2     
 <BLANKLINE>
-       _____]
-*rho22*Omega]
-------------]
-     2      ]
-            ]
-____        ]
-mega        ]
-----        ]
-            ]
+     _____]
+ho22*Omega]
+----------]
+   2      ]
+          ]
+_         ]
+a         ]
+-         ]
+          ]
 
 
 
@@ -686,15 +686,25 @@ which is how most literature will show the equations. However, a more convenient
 >>> lindblad_terms    =gamma[1,0]*lindblad_operator(ket(1,Ne)*bra(2,Ne),rho)
 >>> eqs=hamiltonian_terms + lindblad_terms
 >>> fprint(eqs,print_ascii=print_ascii)
-[             _____                            _____                                  _____                     _____]
-[     I*Omega*rho21                    I*rho21*Omega                 _____   gamma_21*rho21           _____   I*Omega]
-[     ------------- + gamma_21*rho22 - -------------       - I*delta*rho21 - -------------- - I*rho22*Omega + -------]
-[           2                                2                                     2                             2   ]
-[                                                                                                                    ]
-[                                                                         _____                            _____     ]
-[                I*Omega                   gamma_21*rho21         I*Omega*rho21                    I*rho21*Omega     ]
-[I*Omega*rho22 - ------- + I*delta*rho21 - --------------       - ------------- - gamma_21*rho22 + -------------     ]
-[                   2                            2                      2                                2           ]
+[              _____                            _____                                  _____                     _____
+[      I*Omega*rho21                    I*rho21*Omega                 _____   gamma_21*rho21           _____   I*Omega
+[    - ------------- + gamma_21*rho22 + -------------       - I*delta*rho21 - -------------- + I*rho22*Omega - -------
+[            2                                2                                     2                             2   
+[                                                                                                                     
+[                                                                         _____                            _____      
+[                 I*Omega                   gamma_21*rho21        I*Omega*rho21                    I*rho21*Omega      
+[-I*Omega*rho22 + ------- + I*delta*rho21 - --------------        ------------- - gamma_21*rho22 - -------------      
+[                    2                            2                     2                                2            
+<BLANKLINE>
+]
+]
+]
+]
+]
+]
+]
+]
+]
 
 
 
@@ -702,20 +712,20 @@ and only consider the equations for the populations $\\rho_{ii}$ for $i>1$ and t
 
 >>> ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j]) for j in range(Ne) for i in range(Ne)}
 >>> fprint( re(eqs[1,1].subs(ss_comp)) ,print_ascii=print_ascii)
--gamma_21*rho22 - re(Omega)*im(rho21) + re(rho21)*im(Omega)
+-gamma_21*rho22 + re(Omega)*im(rho21) - re(rho21)*im(Omega)
 
 
 
 >>> fprint( re(eqs[1,0].subs(ss_comp)) ,print_ascii=print_ascii)
                    gamma_21*re(rho21)                     im(Omega)
--delta*im(rho21) - ------------------ - rho22*im(Omega) + ---------
+-delta*im(rho21) - ------------------ + rho22*im(Omega) - ---------
                            2                                  2    
 
 
 
 >>> fprint( im(eqs[1,0].subs(ss_comp)) ,print_ascii=print_ascii)
                   gamma_21*im(rho21)                     re(Omega)
-delta*re(rho21) - ------------------ + rho22*re(Omega) - ---------
+delta*re(rho21) - ------------------ - rho22*re(Omega) + ---------
                           2                                  2    
 
 
@@ -734,20 +744,21 @@ If the density matrix is represented as a vector whose components are the these 
 
 Then the equations can be re-written as linear combinations of these components plus an independent term.
 \\begin{equation}
-    \\dot{\\vec{\\rho}} = \\hat{A} \\vec{\\rho} + \\vec{b}
+    \\dot{\\vec{\\rho}} = \\hat{A} \\vec{\\rho} - \\vec{b}
 \\end{equation}
 with $\\hat{A}$ a linear operator acting in this vector space and $\\vec{b}$ the vector of independent terms.
 
->>> A,b=calculate_A_b(eqs,rho,Ne)
->>> fprint([A,b],print_ascii=print_ascii)
-[[-gamma_21   im(Omega)   -re(Omega)], [     0     ]]
+>>> unfolding = Unfolding(Ne, real=True, normalized=True)
+>>> A, b = calculate_A_b(eqs, unfolding)
+>>> fprint([A, b], print_ascii=print_ascii)
+ [-gamma_21   -im(Omega)  re(Omega) ]  [     0     ] 
  [                                  ]  [           ] 
- [            -gamma_21             ]  [-im(Omega) ] 
- [-im(Omega)  ----------    -delta  ]  [-----------] 
- [                2                 ]  [     2     ] 
+ [            -gamma_21             ]  [ im(Omega) ] 
+ [im(Omega)   ----------    -delta  ]  [ --------- ] 
+[[                2                 ], [     2     ]]
  [                                  ]  [           ] 
- [                        -gamma_21 ]  [ re(Omega) ] 
- [re(Omega)     delta     ----------]  [ --------- ] 
+ [                        -gamma_21 ]  [-re(Omega) ] 
+ [-re(Omega)    delta     ----------]  [-----------] 
  [                            2     ]  [     2     ] 
 
 
@@ -756,14 +767,14 @@ Explicitly, this is
 
 >>> eqs_new=A*rho_vect - b
 >>> fprint(eqs_new,print_ascii=print_ascii)
-[    -gamma_21*rho22 - re(Omega)*im(rho21) + re(rho21)*im(Omega)    ]
+[    -gamma_21*rho22 + re(Omega)*im(rho21) - re(rho21)*im(Omega)    ]
 [                                                                   ]
 [                   gamma_21*re(rho21)                     im(Omega)]
-[-delta*im(rho21) - ------------------ - rho22*im(Omega) + ---------]
+[-delta*im(rho21) - ------------------ + rho22*im(Omega) - ---------]
 [                           2                                  2    ]
 [                                                                   ]
 [                  gamma_21*im(rho21)                     re(Omega) ]
-[delta*re(rho21) - ------------------ + rho22*re(Omega) - --------- ]
+[delta*re(rho21) - ------------------ - rho22*re(Omega) + --------- ]
 [                          2                                  2     ]
 
 
@@ -792,7 +803,7 @@ The steady state solution of this equations is
 
 
 >>> fprint( {rho_vect[1]:sol[rho_vect[1]]} ,print_ascii=print_ascii)
-                  2*delta*re(Omega) + gamma_21*im(Omega)       
+                -(2*delta*re(Omega) + gamma_21*im(Omega))      
 {re(rho21): --------------------------------------------------}
                    2           2       2              2        
             4*delta  + gamma_21  + 2*re (Omega) + 2*im (Omega) 
@@ -800,10 +811,54 @@ The steady state solution of this equations is
 
 
 >>> fprint( {rho_vect[2]:sol[rho_vect[2]]} ,print_ascii=print_ascii)
-                  2*delta*im(Omega) - gamma_21*re(Omega)       
+                 -2*delta*im(Omega) + gamma_21*re(Omega)       
 {im(rho21): --------------------------------------------------}
                    2           2       2              2        
             4*delta  + gamma_21  + 2*re (Omega) + 2*im (Omega) 
+
+
+
+>>> from sympy import I
+>>> Omega_amp,alpha=symbols("\Omega_a alpha",real=True)
+>>> ss={Omega:Omega_amp*exp(I*alpha)}
+>>> fprint(ss, print_ascii=print_ascii)
+                  I*alpha 
+{Omega: \Omega_a*e       }
+
+
+
+>>> rho_steady = rho.subs(rho[1, 0], re(rho[1, 0])+I*im(rho[1, 0])).subs(sol).subs(ss)
+>>> rho_steady.simplify()
+    
+>>> rho_steady21 = rho_steady[1, 0].args[0]*rho_steady[1, 0].args[1]*(gamma[1,0]*(I*exp(I*alpha))-2*delta*exp(I*alpha))
+>>> test = rho_steady[1, 0]-rho_steady21
+>>> # re(test)+I*im(test)
+
+>>> rho_steady[1, 0] = rho_steady21
+>>> rho_steady[0, 1] = rho_steady21.conjugate()
+    
+>>> fprint(rho_steady, print_ascii=print_ascii)
+[                 2          2           2                     /           -I*alpha               -I*alpha\]
+[         \Omega_a  + 4*delta  + gamma_21             \Omega_a*\- 2*delta*e         - I*gamma_21*e        /]
+[        ----------------------------------           -----------------------------------------------------]
+[                  2          2           2                               2          2           2         ]
+[        2*\Omega_a  + 4*delta  + gamma_21                      2*\Omega_a  + 4*delta  + gamma_21          ]
+[                                                                                                          ]
+[         /           I*alpha               I*alpha\                               2                       ]
+[\Omega_a*\- 2*delta*e        + I*gamma_21*e       /                       \Omega_a                        ]
+[---------------------------------------------------           ----------------------------------          ]
+[                   2          2           2                             2          2           2          ]
+[         2*\Omega_a  + 4*delta  + gamma_21                    2*\Omega_a  + 4*delta  + gamma_21           ]
+
+
+
+>>> coherence_steady = rho_steady[1, 0].subs(alpha, 0)
+    
+>>> fprint(coherence_steady, print_ascii=print_ascii)
+ \Omega_a*(-2*delta + I*gamma_21) 
+----------------------------------
+          2          2           2
+2*\Omega_a  + 4*delta  + gamma_21 
 
 
 
@@ -813,8 +868,7 @@ According to literature [1], the solution should be
     
 >>> s=s0/(1+(2*delta/gamma[1,0])**2)
     
-    
->>> rho21=-I*Omega/(2*(gamma[1,0]/2-I*delta)*(1+s))
+>>> rho21=I*Omega/(2*(gamma[1,0]/2-I*delta)*(1+s))
     
 >>> rerho22=( s/(2*(1+s)) ).simplify()
 >>> rerho21=re(rho21).simplify()
@@ -822,12 +876,26 @@ According to literature [1], the solution should be
     
 >>> test=[ sol[rho[1,1]]-rerho22, sol[re(rho[1,0])]-rerho21, sol[im(rho[1,0])]-imrho21 ]
     
->>> fprint( [testi.subs({Omega:re(Omega)+I*im(Omega)}).factor() for testi in test] ,print_ascii=print_ascii)
+>>> fprint( [testi.subs({Omega:re(Omega)+I*im(Omega)}).factor() for testi in test], print_ascii=print_ascii)
 [0, 0, 0]
 
 
 
-So our derivation produces the same results as the literature. The saturation intensity is defined as the intensity needed to accumulate $\\frac{1}{4}$ of the population in the excited state when the field is in resonance ($\\delta=0$).
+So our derivation produces the same results as the literature.
+
+The full width at half maximum of $\\rho_{22}$ is
+
+>>> hm1,hm2=solve(sol[rho[1,1]]-sol[rho[1,1]].subs({delta:0})/2,delta)
+>>> FWHM=hm2-hm1
+>>> FWHM=FWHM.subs(ss).simplify()
+>>> fprint(FWHM, print_ascii=print_ascii)
+   _________________________
+  /           2           2 
+\/  2*\Omega_a  + gamma_21  
+
+
+
+The saturation intensity is defined as the intensity needed to accumulate $\\frac{1}{4}$ of the population in the excited state when the field is in resonance ($\\delta=0$).
 
 >>> saturation_eq=sol[rho[1,1]].subs({delta:0})-1/Integer(4)
 >>> fprint( saturation_eq ,print_ascii=print_ascii)
@@ -839,8 +907,6 @@ gamma_21  + 2*re (Omega) + 2*im (Omega)
 
 
 
->>> Omega_amp,alpha=symbols("\Omega_a alpha",real=True)
->>> ss={Omega:Omega_amp*cos(alpha)+I*Omega_amp*sin(alpha)}
 >>> saturation_eq= saturation_eq.subs(ss).factor().simplify()
 >>> fprint(saturation_eq,print_ascii=print_ascii)
             2           2  
@@ -860,7 +926,24 @@ gamma_21  + 2*re (Omega) + 2*im (Omega)
 
 
 
-Since $\\Omega =e E_0^1 r_{0;21}/\\hbar$ it follows that
+This steady state of resonant saturation is
+
+>>> rho_sat = rho_steady.subs(delta, 0).subs(Omega_amp, Omega_sat)
+    
+>>> fprint(rho_sat, print_ascii=print_ascii)
+[                     ___    -I*alpha ]
+[                  -\/ 2 *I*e         ]
+[      3/4         -------------------]
+[                           4         ]
+[                                     ]
+[  ___    I*alpha                     ]
+[\/ 2 *I*e                            ]
+[----------------          1/4        ]
+[       4                             ]
+
+
+
+Since $\\Omega =e E_{01} r_{0;21}/\\hbar$ it follows that
 
 >>> E0_sat=Omega_sat*hbar/e/r[1][1,0]
 >>> fprint(E0_sat, print_ascii=print_ascii)
@@ -871,15 +954,49 @@ Since $\\Omega =e E_0^1 r_{0;21}/\\hbar$ it follows that
 
 
 
-The full width at half maximum of $\\rho_{22}$ is
+And the saturation intensity $I_0$ is
 
->>> hm1,hm2=solve(sol[rho[1,1]]-sol[rho[1,1]].subs({delta:0})/2,delta)
->>> FWHM=hm2-hm1
->>> FWHM=FWHM.subs(ss).simplify()
->>> fprint(FWHM, print_ascii=print_ascii)
-   _________________________
-  /           2           2 
-\/  2*\Omega_a  + gamma_21  
+>>> mu0, c = symbols("mu0, c", positive=True)
+>>> Isat = E0_sat**2/(2*mu0*c)
+>>> fprint(Isat, print_ascii=print_ascii)
+          2     2   
+  gamma_21 *hbar    
+--------------------
+     2             2
+4*c*e *mu0*r_{0;21} 
+
+
+
+The height of the $\\tilde{\\rho}_{22}$ peak as a function of the saturation parameter $s_0 = I/I_0$ is
+
+>>> s0, I, I0 = symbols("s0, I, I0", real=True)
+>>> rho22_height = sol[rho[1, 1]].subs(ss).factor().simplify()
+>>> rho22_height = rho22_height.subs(Omega_amp, Omega_sat*sqrt(s0)).subs(delta, 0).factor()
+>>> rho22_height = rho22_height.subs(s0, I/I0)
+    
+>>> fprint(rho22_height, print_ascii=print_ascii)
+      I      
+-------------
+     /I     \
+2*I0*|-- + 1|
+     \I0    /
+
+
+
+And the full width at half maximum is
+
+>>> rho22_fwhm = sol[rho[1, 1]].subs(ss).factor().simplify()
+>>> rho22_fwhm = rho22_fwhm.subs(Omega_amp, Omega_sat*sqrt(s0))
+>>> rho22_fwhm = rho22_fwhm.subs(delta, 0)/2 - rho22_fwhm
+>>> rho22_fwhm = solve(rho22_fwhm, delta)
+>>> rho22_fwhm = rho22_fwhm[1]-rho22_fwhm[0]
+>>> rho22_fwhm = rho22_fwhm.subs(s0, I/I0)
+    
+>>> fprint(rho22_fwhm, print_ascii=print_ascii)
+             ________
+            / I      
+gamma_21*  /  -- + 1 
+         \/   I0     
 
 
 
@@ -892,4 +1009,5 @@ rary Physics. Springer New York, 2001.
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")

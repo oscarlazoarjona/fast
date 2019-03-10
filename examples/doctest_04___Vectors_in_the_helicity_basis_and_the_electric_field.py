@@ -27,9 +27,9 @@ Two vectors defined through their components in the cartesian basis,
 >>> a=Matrix(symbols("a_x a_y a_z"))
 >>> b=Matrix(symbols("b_x b_y b_z"))
 >>> fprint([a,b], print_ascii=print_ascii)
-[[a_x], [b_x]]
+ [a_x]  [b_x] 
  [   ]  [   ] 
- [a_y]  [b_y] 
+[[a_y], [b_y]]
  [   ]  [   ] 
  [a_z]  [b_z] 
 
@@ -50,10 +50,10 @@ The vectors can be expressed through their components $a_{-1},\\ a_{0},\\ a_{+1}
 >>> fprint( [a_helicity, b_helicity], print_ascii=print_ascii)
  [  ___               ]  [  ___               ] 
  [\/ 2 *(a_x - I*a_y) ]  [\/ 2 *(b_x - I*b_y) ] 
-[[------------------- ], [------------------- ]]
+ [------------------- ]  [------------------- ] 
  [         2          ]  [         2          ] 
  [                    ]  [                    ] 
- [        a_z         ]  [        b_z         ] 
+[[        a_z         ], [        b_z         ]]
  [                    ]  [                    ] 
  [  ___               ]  [  ___               ] 
  [\/ 2 *(-a_x - I*a_y)]  [\/ 2 *(-b_x - I*b_y)] 
@@ -83,9 +83,9 @@ We define a few important symbols
 >>> X,Y,Z=symbols("X Y Z",real=True)
 >>> R=Matrix([X,Y,Z])
 >>> fprint( [t,c,R], print_ascii=print_ascii)
-[t, c, [X]]
+       [X] 
        [ ] 
-       [Y] 
+[t, c, [Y]]
        [ ] 
        [Z] 
 
@@ -175,16 +175,16 @@ We can write think of the position operator as a vector of operators $\\vec{\\ha
 
 >>> r_cartesian=define_r_components(2)
 >>> fprint(r_cartesian, print_ascii=print_ascii)
-[[  0     x_{12}], [  0     y_{12}], [  0     z_{12}]]
- [              ]  [              ]  [              ] 
+ [  0     x_{12}]  [  0     y_{12}]  [  0     z_{12}] 
+[[              ], [              ], [              ]]
  [x_{21}    0   ]  [y_{21}    0   ]  [z_{21}    0   ] 
 
 
 
 >>> r_helicity=define_r_components(2,helicity=True)
 >>> fprint(r_helicity, print_ascii=print_ascii)
-[[    0      r_{-1;12}], [   0      r_{0;12}], [    0      r_{+1;12}]]
- [                    ]  [                  ]  [                    ] 
+ [    0      r_{-1;12}]  [   0      r_{0;12}]  [    0      r_{+1;12}] 
+[[                    ], [                  ], [                    ]]
  [r_{-1;21}      0    ]  [r_{0;21}     0    ]  [r_{+1;21}      0    ] 
 
 
@@ -214,8 +214,8 @@ Check whether this actually makes $\\vec{\\hat{r}}$ hermitian.
 
 >>> r_helicity=define_r_components(2,helicity=True,explicitly_hermitian=True)
 >>> fprint(r_helicity, print_ascii=print_ascii)
-[[    0      -r_{+1;21}], [   0      r_{0;21}], [    0      -r_{-1;21}]]
- [                     ]  [                  ]  [                     ] 
+ [    0      -r_{+1;21}]  [   0      r_{0;21}]  [    0      -r_{-1;21}] 
+[[                     ], [                  ], [                     ]]
  [r_{-1;21}      0     ]  [r_{0;21}     0    ]  [r_{+1;21}      0     ] 
 
 
@@ -223,9 +223,9 @@ Check whether this actually makes $\\vec{\\hat{r}}$ hermitian.
 >>> r_helicity21=Matrix([r_helicity[0][1,0],r_helicity[1][1,0],r_helicity[2][1,0]])
 >>> r_helicity12=Matrix([r_helicity[0][0,1],r_helicity[1][0,1],r_helicity[2][0,1]])
 >>> fprint( [r_helicity21,r_helicity12], print_ascii=print_ascii)
-[[r_{-1;21}], [-r_{+1;21}]]
+ [r_{-1;21}]  [-r_{+1;21}] 
  [         ]  [          ] 
- [r_{0;21} ]  [ r_{0;21} ] 
+[[r_{0;21} ], [ r_{0;21} ]]
  [         ]  [          ] 
  [r_{+1;21}]  [-r_{-1;21}] 
 
@@ -248,4 +248,5 @@ So yes, this makes the $\\vec{\\hat{r}}$ operator hermitian.
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")

@@ -8,6 +8,7 @@ __doc__ = r"""
 >>> from matplotlib import pyplot
 >>> from sympy import sin,cos,exp,sqrt,pi,zeros,I
 >>> from numpy import array
+>>> from sympy import Equality
 
 >>> init_printing()
 >>> print_ascii=True
@@ -33,7 +34,7 @@ We will be deriving the optical Bloch equations for a three level system in a la
     
 >>> pyplot.axis('off') # doctest: +IGNORE_PLOT_STEP3
 >>> pyplot.savefig(path+name+'_diagram.png',bbox_inches="tight") # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f43ccd9f350>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -72,9 +73,9 @@ We write two electric fields propagating trough the $\\hat{x}$ direction polariz
 >>> k2=Matrix([cos(phi2)*sin(theta2),sin(phi2)*sin(theta2),cos(theta2)])
     
 >>> fprint([k1,k2],print_ascii=print_ascii)
-[[1], [-1]]
+ [1]  [-1] 
  [ ]  [  ] 
- [0]  [0 ] 
+[[0], [0 ]]
  [ ]  [  ] 
  [0]  [0 ] 
 
@@ -92,9 +93,9 @@ The polarization vectors.
 >>> em=[em1,em2]
     
 >>> fprint([ep,em],print_ascii=print_ascii)
-[[[0], [0]], [[0], [0]]]
-  [ ]  [ ]    [ ]  [ ]  
   [0]  [0]    [0]  [0]  
+  [ ]  [ ]    [ ]  [ ]  
+[[[0], [0]], [[0], [0]]]
   [ ]  [ ]    [ ]  [ ]  
   [1]  [1]    [1]  [1]  
 
@@ -107,11 +108,11 @@ The electric field (evaluated in $\\vec{R}=0$).
 ...                     for l in range(Nl)]
     
 >>> fprint(E_cartesian,print_ascii=print_ascii)
-[[                    0                     ], [                    0                     ]]
+ [                    0                     ]  [                    0                     ] 
  [                                          ]  [                                          ] 
  [                    0                     ]  [                    0                     ] 
  [                                          ]  [                                          ] 
- [        -I*t*varpi_1    I*t*varpi_1 ______]  [        -I*t*varpi_2    I*t*varpi_2 ______] 
+[[        -I*t*varpi_1    I*t*varpi_1 ______], [        -I*t*varpi_2    I*t*varpi_2 ______]]
  [E_{01}*e               e           *E_{01}]  [E_{02}*e               e           *E_{02}] 
  [-------------------- + -------------------]  [-------------------- + -------------------] 
  [         2                      2         ]  [         2                      2         ] 
@@ -126,7 +127,7 @@ The electric field (evaluated in $\\vec{R}=0$).
     
 >>> fig = pyplot.figure(); ax = fig.gca(projection='3d')
 >>> draw_lasers_3d(ax,laseres,path+'lasers.png') # doctest: +IGNORE_PLOT_STEP4
-<matplotlib.figure.Figure at 0x7f43c9840650>
+<Figure size 432x288 with 1 Axes>
 
 
 
@@ -134,11 +135,11 @@ We write the electric fields in the helicity basis (see notebook "Vectors in the
 
 >>> E=[cartesian_to_helicity(E_cartesian[l]) for l in range(Nl)]
 >>> fprint(E,print_ascii=print_ascii)
-[[                    0                     ], [                    0                     ]]
+ [                    0                     ]  [                    0                     ] 
  [                                          ]  [                                          ] 
  [        -I*t*varpi_1    I*t*varpi_1 ______]  [        -I*t*varpi_2    I*t*varpi_2 ______] 
  [E_{01}*e               e           *E_{01}]  [E_{02}*e               e           *E_{02}] 
- [-------------------- + -------------------]  [-------------------- + -------------------] 
+[[-------------------- + -------------------], [-------------------- + -------------------]]
  [         2                      2         ]  [         2                      2         ] 
  [                                          ]  [                                          ] 
  [                    0                     ]  [                    0                     ] 
@@ -151,9 +152,9 @@ We define the position operator.
 >>> #Ladder means that r_{p;31}=0
 >>> r=[ri.subs({r[0][2,0]:0,r[1][2,0]:0,r[2][2,0]:0}) for ri in r]
 >>> fprint(r,print_ascii=print_ascii)
-[[    0      -r_{+1;21}      0     ], [   0      r_{0;21}     0    ], [    0      -r_{-1;21}      0     ]]
+ [    0      -r_{+1;21}      0     ]  [   0      r_{0;21}     0    ]  [    0      -r_{-1;21}      0     ] 
  [                                 ]  [                            ]  [                                 ] 
- [r_{-1;21}      0       -r_{+1;32}]  [r_{0;21}     0      r_{0;32}]  [r_{+1;21}      0       -r_{-1;32}] 
+[[r_{-1;21}      0       -r_{+1;32}], [r_{0;21}     0      r_{0;32}], [r_{+1;21}      0       -r_{-1;32}]]
  [                                 ]  [                            ]  [                                 ] 
  [    0      r_{-1;32}       0     ]  [   0      r_{0;32}     0    ]  [    0      r_{+1;32}       0     ] 
 
@@ -266,11 +267,11 @@ Notice that the electric field can be separated by terms with positive and negat
 >>> E_m=[cartesian_to_helicity(E_cartesian_m[l]) for l in range(Nl)]
     
 >>> fprint([E_p,E_m], print_ascii=print_ascii)
-[[[         0          ], [         0          ]], [[         0         ], [         0         ]]]
+  [         0          ]  [         0          ]    [         0         ]  [         0         ]  
   [                    ]  [                    ]    [                   ]  [                   ]  
   [        -I*t*varpi_1]  [        -I*t*varpi_2]    [ I*t*varpi_1 ______]  [ I*t*varpi_2 ______]  
   [E_{01}*e            ]  [E_{02}*e            ]    [e           *E_{01}]  [e           *E_{02}]  
-  [--------------------]  [--------------------]    [-------------------]  [-------------------]  
+[[[--------------------], [--------------------]], [[-------------------], [-------------------]]]
   [         2          ]  [         2          ]    [         2         ]  [         2         ]  
   [                    ]  [                    ]    [                   ]  [                   ]  
   [         0          ]  [         0          ]    [         0         ]  [         0         ]  
@@ -398,9 +399,9 @@ Which can be decomposed in positive and negative frequencies as
 that summed equal $\\vec{\\hat{r}}_I$
 
 >>> fprint( [r_I[p]-(r_I_p[p]+r_I_m[p]) for p in range(3)] , print_ascii=print_ascii)
-[[0  0  0], [0  0  0], [0  0  0]]
- [       ]  [       ]  [       ] 
  [0  0  0]  [0  0  0]  [0  0  0] 
+ [       ]  [       ]  [       ] 
+[[0  0  0], [0  0  0], [0  0  0]]
  [       ]  [       ]  [       ] 
  [0  0  0]  [0  0  0]  [0  0  0] 
 
@@ -557,9 +558,9 @@ In other words, if the detunings in our experiments allow the approximmation, we
 >>> Lij=[[1,2,[1]],[2,3,[2]]]
 >>> Lij=formatLij(Lij,Ne)
 >>> print array(Lij)
-[[[] [1] []]
- [[1] [] [2]]
- [[] [2] []]]
+[[list([]) list([1]) list([])]
+ [list([1]) list([]) list([2])]
+ [list([]) list([2]) list([])]]
 
 
 
@@ -607,9 +608,9 @@ Returning to the Schrödinger picture we have.
 
 >>> r_p=[ Matrix([[ delta_greater(j,i)*r[p][i,j] for j in range(Ne)]for i in range(Ne)]) for p in range(3)]
 >>> fprint(r_p, print_ascii=print_ascii)
-[[0  -r_{+1;21}      0     ], [0  r_{0;21}     0    ], [0  -r_{-1;21}      0     ]]
+ [0  -r_{+1;21}      0     ]  [0  r_{0;21}     0    ]  [0  -r_{-1;21}      0     ] 
  [                         ]  [                     ]  [                         ] 
- [0      0       -r_{+1;32}]  [0     0      r_{0;32}]  [0      0       -r_{-1;32}] 
+[[0      0       -r_{+1;32}], [0     0      r_{0;32}], [0      0       -r_{-1;32}]]
  [                         ]  [                     ]  [                         ] 
  [0      0           0     ]  [0     0         0    ]  [0      0           0     ] 
 
@@ -617,18 +618,18 @@ Returning to the Schrödinger picture we have.
 
 >>> r_m=[ Matrix([[ delta_lesser( j,i)*r[p][i,j] for j in range(Ne)]for i in range(Ne)]) for p in range(3)]
 >>> fprint(r_m, print_ascii=print_ascii)
-[[    0          0      0], [   0         0      0], [    0          0      0]]
+ [    0          0      0]  [   0         0      0]  [    0          0      0] 
  [                       ]  [                     ]  [                       ] 
- [r_{-1;21}      0      0]  [r_{0;21}     0      0]  [r_{+1;21}      0      0] 
+[[r_{-1;21}      0      0], [r_{0;21}     0      0], [r_{+1;21}      0      0]]
  [                       ]  [                     ]  [                       ] 
  [    0      r_{-1;32}  0]  [   0      r_{0;32}  0]  [    0      r_{+1;32}  0] 
 
 
 
 >>> fprint( [r[p]-(r_p[p]+r_m[p]) for p in range(3)] , print_ascii=print_ascii)
-[[0  0  0], [0  0  0], [0  0  0]]
- [       ]  [       ]  [       ] 
  [0  0  0]  [0  0  0]  [0  0  0] 
+ [       ]  [       ]  [       ] 
+[[0  0  0], [0  0  0], [0  0  0]]
  [       ]  [       ]  [       ] 
  [0  0  0]  [0  0  0]  [0  0  0] 
 
@@ -685,9 +686,9 @@ Next we will make a phase transformation in order to eliminate the explicit time
 
 >>> c,ctilde,phase=define_psi_coefficients(Ne)
 >>> fprint([c,ctilde,phase], print_ascii=print_ascii)
-[[c1(t)], [\tilde{c}_{1}(t)], [theta1]]
+ [c1(t)]  [\tilde{c}_{1}(t)]  [theta1] 
  [     ]  [                ]  [      ] 
- [c2(t)]  [\tilde{c}_{2}(t)]  [theta2] 
+[[c2(t)], [\tilde{c}_{2}(t)], [theta2]]
  [     ]  [                ]  [      ] 
  [c3(t)]  [\tilde{c}_{3}(t)]  [theta3] 
 
@@ -737,35 +738,35 @@ We multiply each of these equations by $e^{-i \\theta_i t}$ and substracting $i 
 
 >>> rhs_new=Matrix([simplify(  rhs[i]*exp(-I*phase[i]*t) +hbar*phase[i]*ctilde[i] ) for i in range(Ne)])
 >>> fprint(rhs_new, print_ascii=print_ascii)
-[                                                                   -I*t*theta1  I*t*theta2  I*t*varpi_1 ______       
-[                                      e*r_{0;21}*\tilde{c}_{2}(t)*e           *e          *e           *E_{01}       
-[                                      ------------------------------------------------------------------------ + hbar
-[                                                                         2                                           
+[                                                                   -I*t*theta1 + I*t*theta2 + I*t*varpi_1 ______     
+[                                      e*r_{0;21}*\tilde{c}_{2}(t)*e                                      *E_{01}     
+[                                      -------------------------------------------------------------------------- + hb
+[                                                                          2                                          
 [                                                                                                                     
-[                                    I*t*theta1  -I*t*theta2  -I*t*varpi_1                                -I*t*theta2 
-[E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)*e          *e           *e               e*r_{0;32}*\tilde{c}_{3}(t)*e           *
+[                                    I*t*theta1 - I*t*theta2 - I*t*varpi_1                                -I*t*theta2 
+[E_{01}*e*r_{0;21}*\tilde{c}_{1}(t)*e                                        e*r_{0;32}*\tilde{c}_{3}(t)*e            
 [------------------------------------------------------------------------- + -----------------------------------------
-[                                    2                                                                          2     
+[                                    2                                                                           2    
 [                                                                                                                     
-[                                                                         I*t*theta2  -I*t*theta3  -I*t*varpi_2       
-[                                     E_{02}*e*r_{0;32}*\tilde{c}_{2}(t)*e          *e           *e                   
-[                                     ------------------------------------------------------------------------- + hbar
-[                                                                         2                                           
+[                                                                          I*t*theta2 - I*t*theta3 - I*t*varpi_2      
+[                                      E_{02}*e*r_{0;32}*\tilde{c}_{2}(t)*e                                           
+[                                      ------------------------------------------------------------------------- + hba
+[                                                                          2                                          
 <BLANKLINE>
-                                                                                              ]
-                                                                                              ]
-*omega_1*\tilde{c}_{1}(t) + hbar*theta1*\tilde{c}_{1}(t)                                      ]
-                                                                                              ]
-                                                                                              ]
- I*t*theta3  I*t*varpi_2 ______                                                               ]
-e          *e           *E_{02}                                                               ]
-------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*theta2*\tilde{c}_{2}(t)]
-                                                                                              ]
-                                                                                              ]
-                                                                                              ]
-                                                                                              ]
-*omega_3*\tilde{c}_{3}(t) + hbar*theta3*\tilde{c}_{3}(t)                                      ]
-                                                                                              ]
+                                                                                                ]
+                                                                                                ]
+ar*omega_1*\tilde{c}_{1}(t) + hbar*theta1*\tilde{c}_{1}(t)                                      ]
+                                                                                                ]
+                                                                                                ]
++ I*t*theta3 + I*t*varpi_2 ______                                                               ]
+                          *E_{02}                                                               ]
+--------------------------------- + hbar*omega_2*\tilde{c}_{2}(t) + hbar*theta2*\tilde{c}_{2}(t)]
+                                                                                                ]
+                                                                                                ]
+                                                                                                ]
+                                                                                                ]
+r*omega_3*\tilde{c}_{3}(t) + hbar*theta3*\tilde{c}_{3}(t)                                       ]
+                                                                                                ]
 
 
 
@@ -1058,7 +1059,9 @@ and only consider the equations for the populations $\\rho_{ii}$ for $i>1$ and t
 
 If the density matrix is represented as a vector whose components are the these independent components of the density matrix
 
->>> rho_vect=define_rho_vector(rho,Ne)
+>>> unfolding = Unfolding(Ne, real=True, normalized=True)
+>>> rho_vect = define_rho_vector(rho,Ne)
+>>> rho_vect = unfolding(rho)
 >>> fprint(rho_vect, print_ascii=print_ascii)
 [  rho22  ]
 [         ]
@@ -1066,15 +1069,98 @@ If the density matrix is represented as a vector whose components are the these 
 [         ]
 [re(rho21)]
 [         ]
-[re(rho31)]
-[         ]
-[re(rho32)]
-[         ]
 [im(rho21)]
+[         ]
+[re(rho31)]
 [         ]
 [im(rho31)]
 [         ]
+[re(rho32)]
+[         ]
 [im(rho32)]
+
+
+
+We have, explicityly
+
+>>> eqs_ind = Equality(Derivative(rho_vect, t), unfolding(eqs), evaluate=False)
+    
+>>> fprint(eqs_ind, print_ascii=print_ascii)
+                  [                                         /       _____\     /       _____\     /      ______\     /
+                  [                                       im\Omega1*rho21/   im\Omega2*rho32/   im\rho21*Omega1/   im\
+                  [    -gamma_21*rho22 + gamma_32*rho33 + ---------------- - ---------------- - ---------------- + ---
+                  [                                              2                  2                  2              
+                  [                                                                                                   
+                  [                                                   /       _____\     /      ______\               
+                  [                                                 im\Omega2*rho32/   im\rho32*Omega2/               
+                  [                               -gamma_32*rho33 + ---------------- - ----------------               
+                  [                                                        2                  2                       
+                  [                                                                                                   
+                  [                                                                                                  /
+  /[  rho22  ]\   [                        gamma_21*re(rho21)                      rho33*im(Omega1)   im(Omega1)   im\
+  |[         ]|   [    -delta1*im(rho21) - ------------------ - rho22*im(Omega1) - ---------------- + ---------- + ---
+  |[  rho33  ]|   [                                2                                      2               2           
+  |[         ]|   [                                                                                                   
+  |[re(rho21)]|   [                                                                                                 / 
+  |[         ]|   [                       gamma_21*im(rho21)                      rho33*re(Omega1)   re(Omega1)   re\r
+d |[im(rho21)]|   [    delta1*re(rho21) - ------------------ + rho22*re(Omega1) + ---------------- - ---------- - ----
+--|[         ]| = [                               2                                      2               2            
+dt|[re(rho31)]|   [                                                                                                   
+  |[         ]|   [                                                 gamma_32*re(rho31)   im(Omega1*rho32)   im(Omega2*
+  |[im(rho31)]|   [          -delta1*im(rho31) - delta2*im(rho31) - ------------------ - ---------------- + ----------
+  |[         ]|   [                                                         2                   2                  2  
+  |[re(rho32)]|   [                                                                                                   
+  |[         ]|   [                                                 gamma_32*im(rho31)   re(Omega1*rho32)   re(Omega2*
+  \[im(rho32)]/   [           delta1*re(rho31) + delta2*re(rho31) - ------------------ + ---------------- - ----------
+                  [                                                         2                   2                  2  
+                  [                                                                                                   
+                  [                                                                                                   
+                  [                    gamma_21*re(rho32)   gamma_32*re(rho32)   rho22*im(Omega2)   rho33*im(Omega2)  
+                  [-delta2*im(rho32) - ------------------ - ------------------ + ---------------- - ---------------- -
+                  [                            2                    2                   2                  2          
+                  [                                                                                                   
+                  [                                                                                                   
+                  [                   gamma_21*im(rho32)   gamma_32*im(rho32)   rho22*re(Omega2)   rho33*re(Omega2)   
+                  [delta2*re(rho32) - ------------------ - ------------------ - ---------------- + ---------------- + 
+                  [                           2                    2                   2                  2           
+<BLANKLINE>
+      ______\    ]
+rho32*Omega2/    ]
+-------------    ]
+    2            ]
+                 ]
+                 ]
+                 ]
+                 ]
+                 ]
+                 ]
+      ______\    ]
+rho31*Omega2/    ]
+-------------    ]
+    2            ]
+                 ]
+     ______\     ]
+ho31*Omega2/     ]
+------------     ]
+   2             ]
+                 ]
+rho21)           ]
+------           ]
+                 ]
+                 ]
+rho21)           ]
+------           ]
+                 ]
+                 ]
+   /      ______\]
+ im\rho31*Omega1/]
+ ----------------]
+        2        ]
+                 ]
+  /      ______\ ]
+re\rho31*Omega1/ ]
+---------------- ]
+       2         ]
 
 
 
@@ -1084,150 +1170,72 @@ Then the equations can be re-written as linear combinations of these components 
 \\end{equation}
 with $\\hat{A}$ a linear operator acting in this vector space and $\\vec{b}$ the vector of independent terms.
 
->>> A,b=calculate_A_b(eqs,rho,Ne)
->>> fprint([A,b], print_ascii=print_ascii)
-[[ -gamma_21      gamma_32     im(Omega1)          0              -im(Omega2)       -re(Omega1)         0             
- [                                                                                                                    
- [     0         -gamma_32         0               0              im(Omega2)             0              0             
- [                                                                                                                    
- [              -im(Omega1)    -gamma_21     -im(Omega2)                                            re(Omega2)        
- [-im(Omega1)   ------------   ----------    ------------              0              -delta1       ----------        
- [                   2             2              2                                                     2             
- [                                                                                                                    
- [                             im(Omega2)     -gamma_32          -im(Omega1)        re(Omega2)                        
- [     0             0         ----------     ----------         ------------       ----------   -delta1 - delta2     
- [                                 2              2                   2                 2                             
- [                                                                                                                    
- [ im(Omega2)   -im(Omega2)                   im(Omega1)       gamma_21   gamma_32                 -re(Omega1)        
- [ ----------   ------------       0          ----------     - -------- - --------       0         ------------       
- [     2             2                            2               2          2                          2             
- [                                                                                                                    
- [               re(Omega1)                  -re(Omega2)                            -gamma_21      -im(Omega2)        
- [ re(Omega1)    ----------      delta1      ------------              0            ----------     ------------       
- [                   2                            2                                     2               2             
- [                                                                                                                    
- [                            -re(Omega2)                         re(Omega1)        im(Omega2)      -gamma_32         
- [     0             0        ------------  delta1 + delta2       ----------        ----------      ----------        
- [                                 2                                  2                 2               2             
- [                                                                                                                    
- [-re(Omega2)    re(Omega2)                   re(Omega1)                                            im(Omega1)       g
- [------------   ----------        0          ----------            delta2               0          ----------     - -
- [     2             2                            2                                                     2             
+>>> A, b = calculate_A_b(eqs, unfolding)
+>>> fprint([Derivative(rho_vect, t), A, b], print_ascii=print_ascii)
+                  [ -gamma_21      gamma_32     im(Omega1)   -re(Omega1)         0                0               -im(
+                  [                                                                                                   
+                  [     0         -gamma_32         0             0              0                0               im(O
+                  [                                                                                                   
+                  [              -im(Omega1)    -gamma_21                  -im(Omega2)        re(Omega2)              
+                  [-im(Omega1)   ------------   ----------     -delta1     ------------       ----------              
+   /[  rho22  ]\  [                   2             2                           2                 2                   
+   |[         ]|  [                                                                                                   
+   |[  rho33  ]|  [               re(Omega1)                 -gamma_21     -re(Omega2)       -im(Omega2)              
+   |[         ]|  [ re(Omega1)    ----------      delta1     ----------    ------------      ------------             
+   |[re(rho21)]|  [                   2                          2              2                 2                   
+   |[         ]|  [                                                                                                   
+ d |[im(rho21)]|  [                             im(Omega2)   re(Omega2)     -gamma_32                            -im(O
+[--|[         ]|, [     0             0         ----------   ----------     ----------     -delta1 - delta2      -----
+ dt|[re(rho31)]|  [                                 2            2              2                                     
+   |[         ]|  [                                                                                                   
+   |[im(rho31)]|  [                            -re(Omega2)   im(Omega2)                       -gamma_32           re(O
+   |[         ]|  [     0             0        ------------  ----------   delta1 + delta2     ----------          ----
+   |[re(rho32)]|  [                                 2            2                                2                   
+   |[         ]|  [                                                                                                   
+   \[im(rho32)]/  [ im(Omega2)   -im(Omega2)                                im(Omega1)       -re(Omega1)       gamma_2
+                  [ ----------   ------------       0             0         ----------       ------------    - -------
+                  [     2             2                                         2                 2               2   
+                  [                                                                                                   
+                  [-re(Omega2)    re(Omega2)                                re(Omega1)        im(Omega1)              
+                  [------------   ----------        0             0         ----------        ----------            de
+                  [     2             2                                         2                 2                   
 <BLANKLINE>
-  re(Omega2)      ], [     0      ]]
-                  ]  [            ] 
-  -re(Omega2)     ]  [     0      ] 
-                  ]  [            ] 
-                  ]  [-im(Omega1) ] 
-       0          ]  [------------] 
-                  ]  [     2      ] 
-                  ]  [            ] 
- -re(Omega1)      ]  [     0      ] 
- ------------     ]  [            ] 
-      2           ]  [     0      ] 
-                  ]  [            ] 
-                  ]  [ re(Omega1) ] 
-    -delta2       ]  [ ---------- ] 
-                  ]  [     2      ] 
-                  ]  [            ] 
-                  ]  [     0      ] 
-       0          ]  [            ] 
-                  ]  [     0      ] 
-                  ]                 
- -im(Omega1)      ]                 
- ------------     ]                 
-      2           ]                 
-                  ]                 
-amma_21   gamma_32]                 
-------- - --------]                 
-  2          2    ]                 
+Omega2)            re(Omega2)      ]                 
+                                   ]                 
+mega2)             -re(Omega2)     ]                 
+                                   ]                 
+                                   ]  [     0      ] 
+ 0                      0          ]  [            ] 
+                                   ]  [     0      ] 
+                                   ]  [            ] 
+                                   ]  [-im(Omega1) ] 
+ 0                      0          ]  [------------] 
+                                   ]  [     2      ] 
+                                   ]  [            ] 
+mega1)            -re(Omega1)      ]  [ re(Omega1) ] 
+-------           ------------     ], [ ---------- ]]
+2                      2           ]  [     2      ] 
+                                   ]  [            ] 
+mega1)            -im(Omega1)      ]  [     0      ] 
+------            ------------     ]  [            ] 
+2                      2           ]  [     0      ] 
+                                   ]  [            ] 
+1   gamma_32                       ]  [     0      ] 
+- - --------         -delta2       ]  [            ] 
+       2                           ]  [     0      ] 
+                                   ]                 
+                gamma_21   gamma_32]                 
+lta2          - -------- - --------]                 
+                   2          2    ]                 
 
 
 
-Explicitly, this is
+We check that these two are the same.
 
->>> eqs_new=A*rho_vect - b
+>>> ss_comp = { rho[i,j]:re(rho[i,j])+I*im(rho[i,j]) for j in range(Ne) for i in range(Ne)}
+>>> test = eqs_ind.rhs - (A*rho_vect - b )
+>>> test = test.subs(ss_comp).expand()
     
->>> eqs_list=[]
->>> for mu in range(0,Ne**2-1 ):
-...     eqs_list+=[[Derivative(rho_vect[mu],t),eqsign,eqs_new[mu]]]
->>> eqs_list=Matrix(eqs_list)
->>> fprint(eqs_list, print_ascii=print_ascii)
-[  d                                                                                                                  
-[  --(rho22)    =           -gamma_21*rho22 + gamma_32*rho33 - re(Omega1)*im(rho21) + re(Omega2)*im(rho32) + re(rho21)
-[  dt                                                                                                                 
-[                                                                                                                     
-[  d                                                                                                                  
-[  --(rho33)    =                                           -gamma_32*rho33 - re(Omega2)*im(rho32) + re(rho32)*im(Omeg
-[  dt                                                                                                                 
-[                                                                                                                     
-[d                                         gamma_21*re(rho21)                      rho33*im(Omega1)   re(Omega2)*im(rh
-[--(re(rho21))  =      -delta1*im(rho21) - ------------------ - rho22*im(Omega1) - ---------------- + ----------------
-[dt                                                2                                      2                    2      
-[                                                                                                                     
-[d                   gamma_32*re(rho31)                                  re(Omega1)*im(rho32)   re(Omega2)*im(rho21)  
-[--(re(rho31))  =  - ------------------ + (-delta1 - delta2)*im(rho31) - -------------------- + -------------------- +
-[dt                          2                                                    2                      2            
-[                                                                                                                     
-[d                                        rho22*im(Omega2)   rho33*im(Omega2)   /  gamma_21   gamma_32\             re
-[--(re(rho32))  =     -delta2*im(rho32) + ---------------- - ---------------- + |- -------- - --------|*re(rho32) - --
-[dt                                              2                  2           \     2          2    /               
-[                                                                                                                     
-[d                                        gamma_21*im(rho21)                      rho33*re(Omega1)   re(Omega1)   re(O
-[--(im(rho21))  =      delta1*re(rho21) - ------------------ + rho22*re(Omega1) + ---------------- - ---------- - ----
-[dt                                               2                                      2               2            
-[                                                                                                                     
-[d                   gamma_32*im(rho31)                                 re(Omega1)*re(rho32)   re(Omega2)*re(rho21)   
-[--(im(rho31))  =  - ------------------ + (delta1 + delta2)*re(rho31) + -------------------- - -------------------- - 
-[dt                          2                                                   2                      2             
-[                                                                                                                     
-[d                                       rho22*re(Omega2)   rho33*re(Omega2)   /  gamma_21   gamma_32\             re(
-[--(im(rho32))  =     delta2*re(rho32) - ---------------- + ---------------- + |- -------- - --------|*im(rho32) + ---
-[dt                                             2                  2           \     2          2    /                
-<BLANKLINE>
-                                            ]
-*im(Omega1) - re(rho32)*im(Omega2)          ]
-                                            ]
-                                            ]
-                                            ]
-a2)                                         ]
-                                            ]
-                                            ]
-o31)   re(rho31)*im(Omega2)   im(Omega1)    ]
----- - -------------------- + ----------    ]
-                2                 2         ]
-                                            ]
- re(rho21)*im(Omega2)   re(rho32)*im(Omega1)]
- -------------------- - --------------------]
-          2                      2          ]
-                                            ]
-(Omega1)*im(rho31)   re(rho31)*im(Omega1)   ]
------------------- + --------------------   ]
-       2                      2             ]
-                                            ]
-mega2)*re(rho31)   im(Omega2)*im(rho31)     ]
----------------- - --------------------     ]
-     2                      2               ]
-                                            ]
-im(Omega1)*im(rho32)   im(Omega2)*im(rho21) ]
--------------------- + -------------------- ]
-         2                      2           ]
-                                            ]
-Omega1)*re(rho31)   im(Omega1)*im(rho31)    ]
------------------ + --------------------    ]
-      2                      2              ]
-
-
-
-Which is the same as the equations in the previous form.
-
->>> ss_comp={ rho[i,j]:re(rho[i,j])+I*im(rho[i,j]) for j in range(Ne) for i in range(Ne)}
-    
->>> test= (eqs_new - Matrix([re(eqs[1,1]),re(eqs[2,2]),
-...                           re(eqs[1,0]),re(eqs[2,0]),re(eqs[2,1]),
-...                           im(eqs[1,0]),im(eqs[2,0]),im(eqs[2,1])])).expand()
-    
->>> test=test.subs(ss_comp)
 >>> fprint(test, print_ascii=print_ascii)
 [0]
 [ ]
@@ -1258,4 +1266,5 @@ rary Physics. Springer New York, 2001.
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP1", "+ELLIPSIS\n[<...>]")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP2", "+ELLIPSIS\n<...>")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP3", "+ELLIPSIS\n(...)")
+__doc__=__doc__.replace("+IGNORE_PLOT_STEP5", "+ELLIPSIS\nText(...)")
 __doc__=__doc__.replace("+IGNORE_PLOT_STEP4", "\n")
