@@ -1014,8 +1014,14 @@ def part_symbolic(z, s):
     re(rho21)
 
     """
-    if s == 1: return re(z)
-    else: return im(z)
+    if s == 1:
+        return re(z)
+    elif s == -1:
+        return im(z)
+    elif s == 0:
+        return z
+    else:
+        raise ValueError
 
 
 def define_rho_vector(rho, Ne):
