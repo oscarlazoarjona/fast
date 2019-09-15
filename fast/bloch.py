@@ -1261,7 +1261,7 @@ class Unfolding(object):
             else:
                 rhov = np.zeros(Nrho, complex)
             numeric = True
-        elif isinstance(rho, sympy.Matrix):
+        elif isinstance(rho, sympy.Basic) and hasattr(rho, "__getitem__"):
             rhov = sympy.zeros(Nrho, 1)
             numeric = False
         else:
