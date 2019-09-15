@@ -1108,7 +1108,10 @@ def calculate_A_b(eqs, unfolding, verbose=0):
     for mu in range(Nrho):
         s, i, j = unfolding.IJ(mu)
         if verbose > 0: print mu
-        eq = part_symbolic(eqs[i, j].subs(ss_comp), s)
+        if unfolding.real:
+            eq = part_symbolic(eqs[i, j].subs(ss_comp), s)
+        else:
+            eq = eqs[i, j]
         eq_new = 0
         row = []
         for nu in range(Nrho):

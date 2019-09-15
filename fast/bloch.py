@@ -1255,13 +1255,16 @@ class Unfolding(object):
         """
         Nrho = self.Nrho
         IJ = self.IJ
+        symb = isinstance(rho, sympy.Matrix)
+        aux = isinstance(rho, sympy.Basic) and hasattr(rho, "__getitem__")
+        symb = symb or aux
         if isinstance(rho, np.ndarray):
             if self.real:
                 rhov = np.zeros(Nrho)
             else:
                 rhov = np.zeros(Nrho, complex)
             numeric = True
-        elif isinstance(rho, sympy.Basic) and hasattr(rho, "__getitem__"):
+        elif symb:
             rhov = sympy.zeros(Nrho, 1)
             numeric = False
         else:
