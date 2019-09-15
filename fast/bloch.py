@@ -219,11 +219,13 @@ Here is an example with rubidum 87.
 
 """
 
-from sympy import Symbol, diff, IndexedBase, re, im, symbols
+from sympy import (Symbol, diff, IndexedBase, re, im, symbols, zeros,
+                   KroneckerDelta)
+
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
 
-from symbolic import Vector3D, dot, delta_greater, delta_lesser
+from symbolic import Vector3D, dot, delta_greater, delta_lesser, part_symbolic
 from misc import part, symbolic_part
 
 import numpy as np
@@ -3379,6 +3381,160 @@ def radiated_intensity(rho, i, j, epsilonp, rm, omega_level, xi,
     intensity = observable(Iop, rho, unfolding)
     intensity = float(np.real(intensity))
     return intensity
+
+
+def sharp(A, unfolding):
+    ur"""Calculate the sharp super operator.
+
+    >>> from sympy import pprint, pi, Equality
+    >>> from fast.angular_momentum import density_matrix_rotation
+    >>> rho = define_density_matrix(3)
+    >>> unfolding = Unfolding(3, real=False, lower_triangular=False)
+    >>> R = density_matrix_rotation([1], 0, pi/2, 0)
+    >>> pprint(R)
+    ⎡       √2      ⎤
+    ⎢1/2    ──   1/2⎥
+    ⎢       2       ⎥
+    ⎢               ⎥
+    ⎢-√2         √2 ⎥
+    ⎢────   0    ── ⎥
+    ⎢ 2          2  ⎥
+    ⎢               ⎥
+    ⎢      -√2      ⎥
+    ⎢1/2   ────  1/2⎥
+    ⎣       2       ⎦
+
+    >>> Rsharp = sharp(R, unfolding)
+    >>> pprint(Rsharp)
+    ⎡                      -√2                        ⎤
+    ⎢1/2   0     0     0   ────   0   1/2    0     0  ⎥
+    ⎢                       2                         ⎥
+    ⎢                                                 ⎥
+    ⎢                 √2                          -√2 ⎥
+    ⎢ 0    0     0    ──    0     0    0     0    ────⎥
+    ⎢                 2                            2  ⎥
+    ⎢                                                 ⎥
+    ⎢                                        √2       ⎥
+    ⎢ 0    0    1/2    0    0    1/2   0     ──    0  ⎥
+    ⎢                                        2        ⎥
+    ⎢                                                 ⎥
+    ⎢     -√2                                         ⎥
+    ⎢ 0   ────   0    1/2   0     0    0     0    1/2 ⎥
+    ⎢      2                                          ⎥
+    ⎢                                                 ⎥
+    ⎢√2                               -√2             ⎥
+    ⎢──    0     0     0    0     0   ────   0     0  ⎥
+    ⎢2                                 2              ⎥
+    ⎢                                                 ⎥
+    ⎢                                       -√2       ⎥
+    ⎢ 0    0    1/2    0    0    1/2   0    ────   0  ⎥
+    ⎢                                        2        ⎥
+    ⎢                                                 ⎥
+    ⎢                       √2                        ⎥
+    ⎢1/2   0     0     0    ──    0   1/2    0     0  ⎥
+    ⎢                       2                         ⎥
+    ⎢                                                 ⎥
+    ⎢           -√2              √2                   ⎥
+    ⎢ 0    0    ────   0    0    ──    0     0     0  ⎥
+    ⎢            2               2                    ⎥
+    ⎢                                                 ⎥
+    ⎢      √2                                         ⎥
+    ⎢ 0    ──    0    1/2   0     0    0     0    1/2 ⎥
+    ⎣      2                                          ⎦
+
+    >>> pprint(Equality(unfolding(rho*R), Rsharp*unfolding(rho)))
+    True
+
+    """
+    if unfolding.real or unfolding.lower_triangular or unfolding.normalized:
+        raise NotImplementedError
+    Asharp = zeros(unfolding.Nrho)
+    for mu in range(unfolding.Nrho):
+        smu, imu, jmu = unfolding.IJ(mu)
+        for nu in range(unfolding.Nrho):
+            snu, inu, jnu = unfolding.IJ(nu)
+
+            aux = part_symbolic(A[jnu, jmu], smu*snu)
+            Asharp[mu, nu] = aux*KroneckerDelta(imu, inu)
+
+    return Asharp
+
+
+def flat(A, unfolding):
+    ur"""Calculate the flat super operator.
+
+    >>> from sympy import pprint, pi, Equality
+    >>> from fast.angular_momentum import density_matrix_rotation
+    >>> rho = define_density_matrix(3)
+    >>> unfolding = Unfolding(3, real=False, lower_triangular=False)
+    >>> R = density_matrix_rotation([1], 0, pi/2, 0)
+    >>> pprint(R)
+    ⎡       √2      ⎤
+    ⎢1/2    ──   1/2⎥
+    ⎢       2       ⎥
+    ⎢               ⎥
+    ⎢-√2         √2 ⎥
+    ⎢────   0    ── ⎥
+    ⎢ 2          2  ⎥
+    ⎢               ⎥
+    ⎢      -√2      ⎥
+    ⎢1/2   ────  1/2⎥
+    ⎣       2       ⎦
+
+    >>> Rflat = flat(R, unfolding)
+    >>> pprint(Rflat)
+    ⎡                  √2                             ⎤
+    ⎢1/2    0     0    ──    0    1/2   0     0    0  ⎥
+    ⎢                  2                              ⎥
+    ⎢                                                 ⎥
+    ⎢                       -√2              √2       ⎥
+    ⎢ 0     0     0    0    ────   0    0    ──    0  ⎥
+    ⎢                        2               2        ⎥
+    ⎢                                                 ⎥
+    ⎢                                             -√2 ⎥
+    ⎢ 0     0    1/2   0     0     0   1/2    0   ────⎥
+    ⎢                                              2  ⎥
+    ⎢                                                 ⎥
+    ⎢-√2                          √2                  ⎥
+    ⎢────   0     0    0     0    ──    0     0    0  ⎥
+    ⎢ 2                           2                   ⎥
+    ⎢                                                 ⎥
+    ⎢       √2                                        ⎥
+    ⎢ 0     ──    0    0    1/2    0    0    1/2   0  ⎥
+    ⎢       2                                         ⎥
+    ⎢                                                 ⎥
+    ⎢                 -√2                             ⎥
+    ⎢1/2    0     0   ────   0    1/2   0     0    0  ⎥
+    ⎢                  2                              ⎥
+    ⎢                                                 ⎥
+    ⎢                                              √2 ⎥
+    ⎢ 0     0    1/2   0     0     0   1/2    0    ── ⎥
+    ⎢                                              2  ⎥
+    ⎢                                                 ⎥
+    ⎢      -√2                                        ⎥
+    ⎢ 0    ────   0    0    1/2    0    0    1/2   0  ⎥
+    ⎢       2                                         ⎥
+    ⎢                                                 ⎥
+    ⎢            √2                    -√2            ⎥
+    ⎢ 0     0    ──    0     0     0   ────   0    0  ⎥
+    ⎣            2                      2             ⎦
+
+    >>> pprint(Equality(unfolding(R*rho), Rflat*unfolding(rho)))
+    True
+
+    """
+    if unfolding.real or unfolding.lower_triangular or unfolding.normalized:
+        raise NotImplementedError
+
+    Aflat = zeros(unfolding.Nrho)
+    for mu in range(unfolding.Nrho):
+        smu, imu, jmu = unfolding.IJ(mu)
+        for nu in range(unfolding.Nrho):
+            snu, inu, jnu = unfolding.IJ(nu)
+
+            aux = part_symbolic(A[imu, inu], smu*snu)
+            Aflat[mu, nu] = aux*KroneckerDelta(jmu, jnu)
+    return Aflat
 
 
 if __name__ == "__main__":
