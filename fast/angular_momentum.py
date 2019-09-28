@@ -20,7 +20,16 @@
 #                                                                       *
 # ***********************************************************************
 
-"""This module contains all routines related to angular momentum."""
+"""This module contains all routines related to angular momentum.
+
+References
+~~~~~~~~~~
+
+.. [Edmonds74] A. R. Edmonds. Angular momentum in quantum mechanics.
+  Investigations in physics, 4.; Investigations in physics, no. 4.
+  Princeton, N.J., Princeton University Press, 1957.
+
+"""
 
 from sympy import (zeros, eye, Matrix, sqrt, KroneckerDelta, I, factorial,
                    binomial, cos, sin, exp)
@@ -234,7 +243,7 @@ def angular_momentum_matrix(J, ind="z"):
 
 
 def orbital_spin_nuclear_matrices(L, S, II, ind="z"):
-    ur"""Return the matrix representation of the orbita, electron-spin, and \
+    ur"""Return the matrix representation of the orbital, electron-spin, and \
     nuclear-spin angular momentum operators \
     :math:`\hat{\vec{L}}, \hat{\vec{L}}, \hat{\vec{L}}` in the coupled basis \
     :math:`[|J, -J\rangle, \cdot, |J, J\rangle]`.
@@ -420,8 +429,6 @@ def wigner_d_small(J, beta):
     u"""Return the small Wigner d matrix for angular momentum J.
 
     We use the general formula from [Edmonds74]_, equation 4.1.15.
-
-    Some examples form [Edmonds74]_:
 
     >>> from sympy import Integer, symbols, pi
     >>> half = 1/Integer(2)
