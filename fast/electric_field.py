@@ -63,12 +63,13 @@ class PlaneWave(object):
     polarization vector for a plane wave propagating towards z:
 
     >>> from sympy import symbols, Matrix, I, exp, sin, cos, pprint
-    >>> E0=symbols("E0",real=True)
-    >>> t,x,y,z,omega,kx,ky,kz=symbols("t,x,y,z,omega,kx,ky,kz",real=True)
+    >>> E0 = symbols("E0",real=True)
+    >>> aux = "t, x, y , z, omega, kx, ky, kz"
+    >>> t, x, y, z, omega, kx, ky, kz = symbols(aux, real=True)
     >>> phi, theta, alpha, beta = symbols("phi, theta, alpha, beta",real=True)
-    >>> ep=Matrix([cos(2*beta),I*sin(2*beta),0])
+    >>> ep = Matrix([cos(2*beta),I*sin(2*beta),0])
 
-    >>> pprint(ep,use_unicode=False)
+    >>> pprint(ep, use_unicode=False)
     [ cos(2*beta) ]
     [             ]
     [I*sin(2*beta)]
@@ -78,7 +79,7 @@ class PlaneWave(object):
     Where beta specifies the circularity of the polarization. We define
     the following rotation matrices
 
-    >>> R1=Matrix([[cos(2*alpha), -sin(2*alpha), 0],
+    >>> R1 = Matrix([[cos(2*alpha), -sin(2*alpha), 0],
     ...            [sin(2*alpha), cos(2*alpha), 0], [0, 0, 1]])
     >>> pprint(R1, use_unicode=False)
     [cos(2*alpha)  -sin(2*alpha)  0]
@@ -87,7 +88,7 @@ class PlaneWave(object):
     [                              ]
     [     0              0        1]
 
-    >>> R2=Matrix([[cos(theta), 0, sin(theta)],
+    >>> R2 = Matrix([[cos(theta), 0, sin(theta)],
     ...           [0, 1, 0], [-sin(theta),0,cos(theta)]])
     >>> pprint(R2, use_unicode=False)
     [cos(theta)   0  sin(theta)]
@@ -96,7 +97,7 @@ class PlaneWave(object):
     [                          ]
     [-sin(theta)  0  cos(theta)]
 
-    >>> R3=Matrix([[cos(phi), -sin(theta), 0],
+    >>> R3 = Matrix([[cos(phi), -sin(theta), 0],
     ...           [sin(theta), cos(theta), 0], [0, 0, 1]])
     >>> pprint(R3, use_unicode=False)
     [ cos(phi)   -sin(theta)  0]
@@ -111,8 +112,8 @@ class PlaneWave(object):
 
     And we build the plane wave in the following way
 
-    >>> plane_wave=E0/2 * exp(I*(kx*x+ky*y+kz*z-omega*t)) * epsilonp
-    >>> plane_wave=plane_wave + plane_wave.conjugate()
+    >>> plane_wave = E0/2 * exp(I*(kx*x+ky*y+kz*z-omega*t)) * epsilonp
+    >>> plane_wave = plane_wave + plane_wave.conjugate()
 
     """
 

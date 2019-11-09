@@ -234,7 +234,7 @@ def polarization_vector(phi, theta, alpha, beta, p,
 
     Propagation towards +z, circular polarization (for sigma + transitions):
 
-    >>> polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p=1)
+    >>> polarization_vector(phi=0, theta= 0, alpha=pi/2, beta=pi/4,p=1)
     Matrix([
     [  -sqrt(2)/2],
     [-sqrt(2)*I/2],
@@ -242,7 +242,7 @@ def polarization_vector(phi, theta, alpha, beta, p,
 
     Propagation towards -z, circular polarization for sigma + transitions:
 
-    >>> polarization_vector(phi=0, theta=pi, alpha=   0, beta=-pi/8,p=1)
+    >>> polarization_vector(phi=0, theta=pi, alpha=0, beta=-pi/4, p=1)
     Matrix([
     [  -sqrt(2)/2],
     [-sqrt(2)*I/2],
@@ -269,6 +269,7 @@ def polarization_vector(phi, theta, alpha, beta, p,
     epsilonm
 
     """
+    beta = beta/2  # Dirty fix!
     if abstract:
         Nl = symbols("N_l", integer=True)
         if p == 1:
@@ -302,7 +303,7 @@ def cartesian_to_helicity(vector, numeric=False):
     For instance, we can check what are the vectors of the helicity basis.
 
     >>> from sympy import pi
-    >>> em=polarization_vector(phi=0, theta= 0, alpha=0, beta=-pi/8,p= 1)
+    >>> em = polarization_vector(phi=0, theta= 0, alpha=0, beta=-pi/4,p= 1)
     >>> em
     Matrix([
     [   sqrt(2)/2],
@@ -314,7 +315,7 @@ def cartesian_to_helicity(vector, numeric=False):
     [ 0],
     [-1]])
 
-    >>> e0=polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta=0,p=1)
+    >>> e0 = polarization_vector(phi=pi/2, theta=pi/2, alpha=pi/2, beta=0,p=1)
     >>> e0
     Matrix([
     [0],
@@ -326,7 +327,7 @@ def cartesian_to_helicity(vector, numeric=False):
     [1],
     [0]])
 
-    >>> ep=polarization_vector(phi=0, theta= 0, alpha=pi/2, beta= pi/8,p= 1)
+    >>> ep = polarization_vector(phi=0, theta= 0, alpha=pi/2, beta=pi/4,p= 1)
     >>> ep
     Matrix([
     [  -sqrt(2)/2],
@@ -501,8 +502,8 @@ def helicity_dot_product(v1, v2):
     >>> rm = define_r_components(2, helicity=True, p=-1,
     ...                          explicitly_hermitian=True)
     >>> from sympy import pi
-    >>> em = polarization_vector(0, 0, 0, pi/8, -1)
-    >>> ep = polarization_vector(0, 0, 0, pi/8, 1)
+    >>> em = polarization_vector(0, 0, 0, pi/4, -1)
+    >>> ep = polarization_vector(0, 0, 0, pi/4, 1)
     >>> ep = cartesian_to_helicity(ep)
     >>> em = cartesian_to_helicity(em)
     >>> H = helicity_dot_product(ep, rm) + helicity_dot_product(em, rp)
