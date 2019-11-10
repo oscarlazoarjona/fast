@@ -527,43 +527,44 @@ def draw_atom3d(ax):
 
 def draw_plane_wave_3d(ax, beam, dist_to_center=0):
     """Draw the polarization of a plane wave."""
-    Ex = []; Ey = []; Ez = []
+    cos = np.cos
+    sin = np.sin
 
-    k = [cos(beam.phi)*sin(beam.theta),
-         sin(beam.phi)*sin(beam.theta),
-         cos(beam.theta)]
+    alpha = float(beam.alpha)
+    beta = float(beam.beta)
+    phi = float(beam.phi)
+    theta = float(beam.theta)
+
+    k = [cos(phi)*sin(theta),
+         sin(phi)*sin(theta),
+         cos(theta)]
     kx, ky, kz = k
 
-    Nt = 1000
-    tstep = 7*pi/4/(Nt-1)
-
-    alpha = beam.alpha
-    beta = beam.beta
-    phi = beam.phi
-    theta = beam.theta
-    omega = 1
-
-    for i in range(Nt):
-        t = i*tstep
-
-        Ex += [(cos(2*alpha)*cos(phi)*cos(theta) -
-                sin(2*alpha)*sin(phi))*cos(omega*t)*cos(2*beta) -
-               (cos(phi)*cos(theta)*sin(2*alpha) +
-                cos(2*alpha)*sin(phi))*sin(omega*t)*sin(2*beta) -
-               dist_to_center*kx]
-
-        Ey += [(cos(2*alpha)*cos(theta)*sin(phi) +
-               cos(phi)*sin(2*alpha))*cos(omega*t)*cos(2*beta) -
-               (cos(theta)*sin(2*alpha)*sin(phi) -
-               cos(2*alpha)*cos(phi))*sin(omega*t)*sin(2*beta) -
-               dist_to_center*ky]
-
-        Ez += [-cos(omega*t)*cos(2*alpha)*cos(2*beta)*sin(theta) +
-               sin(omega*t)*sin(2*alpha)*sin(2*beta)*sin(theta) -
-               dist_to_center*kz]
-
-    ax.plot(Ex, Ey, Ez, beam.color+'-')
+    Nz = 1001
+    z = np.linspace(0, 7*np.pi/4, Nz)
     ff = dist_to_center-1.0
+
+    Ex = (sin(z)*cos(2*alpha) - sin(z)*cos(2*alpha - 2*beta) +
+          cos(2*alpha)*cos(z) + cos(z)*cos(2*alpha - 2*beta))/2.0
+    Ey = (sin(2*alpha)*sin(z) + sin(2*alpha)*cos(z) -
+          sin(z)*sin(2*alpha - 2*beta) + sin(2*alpha - 2*beta)*cos(z))/2.0
+    Ez = np.zeros(Nz) - ff - 1
+
+    R1 = np.array([[cos(theta), 0, sin(theta)],
+                   [0, 1, 0],
+                   [-sin(theta), 0, cos(theta)]])
+
+    R2 = np.array([[cos(phi), -sin(phi), 0],
+                   [sin(phi), cos(phi), 0],
+                   [0, 0, 1]])
+
+    E = np.zeros((3, Nz))
+    E[0, :] = Ex
+    E[1, :] = Ey
+    E[2, :] = Ez
+    E = np.dot(R2, np.dot(R1, E))
+
+    ax.plot(E[0], E[1], E[2], beam.color+'-')
 
     arrx = [-kx*dist_to_center, -kx*ff]
     arry = [-ky*dist_to_center, -ky*ff]
@@ -571,7 +572,8 @@ def draw_plane_wave_3d(ax, beam, dist_to_center=0):
     arrow = Arrow3D(arrx, arry, arrz, mutation_scale=20,
                     lw=1, arrowstyle="-|>", color=beam.color)
     ax.add_artist(arrow)
-    ax.plot([Ex[-1]], [Ey[-1]], [Ez[-1]], '.', markersize=8, color=beam.color)
+    ax.plot([E[0][-1]], [E[1][-1]], [E[2][-1]], '.',
+            markersize=8, color=beam.color)
 
 
 def draw_mot_field_3d(ax, mot_field, dist_to_center=0):
@@ -581,7 +583,7 @@ def draw_mot_field_3d(ax, mot_field, dist_to_center=0):
 
 
 def draw_lasers_3d(ax, lasers, name=None, distances=None, lim=None):
-    """Draw MOT lasers in 3d."""
+    """Draw field polarizations in 3d."""
     if distances is None: distances = [1.0 for i in range(len(lasers))]
     for i in range(len(lasers)):
         if type(lasers[i]) == PlaneWave:
