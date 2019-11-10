@@ -97,14 +97,14 @@ class PlaneWave(object):
     [                          ]
     [-sin(theta)  0  cos(theta)]
 
-    >>> R3 = Matrix([[cos(phi), -sin(theta), 0],
-    ...           [sin(theta), cos(theta), 0], [0, 0, 1]])
+    >>> R3 = Matrix([[cos(phi), -sin(phi), 0],
+    ...           [sin(phi), cos(phi), 0], [0, 0, 1]])
     >>> pprint(R3, use_unicode=False)
-    [ cos(phi)   -sin(theta)  0]
-    [                          ]
-    [sin(theta)  cos(theta)   0]
-    [                          ]
-    [    0            0       1]
+    [cos(phi)  -sin(phi)  0]
+    [                      ]
+    [sin(phi)  cos(phi)   0]
+    [                      ]
+    [   0          0      1]
 
     Then we create a general polarization vector applying this rotation to ep
 
