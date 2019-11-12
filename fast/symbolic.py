@@ -817,7 +817,9 @@ def bra(i, Ne):
     """
     if i not in range(1, Ne+1):
         raise ValueError("i must be in [1 .. Ne].")
-    return Matrix([KroneckerDelta(i-1, j) for j in range(Ne)]).transpose()
+    v = zeros(1, Ne)
+    v[0, i-1] = 1
+    return v
 
 
 def ket(i, Ne):
@@ -841,7 +843,9 @@ def ket(i, Ne):
     """
     if i not in range(1, Ne+1):
         raise ValueError("i must be in [1 .. Ne].")
-    return Matrix([KroneckerDelta(i-1, j) for j in range(Ne)])
+    v = zeros(Ne, 1)
+    v[i-1, 0] = 1
+    return v
 
 
 def ketbra(i, j, Ne):
@@ -856,7 +860,9 @@ def ketbra(i, j, Ne):
     [0, 0, 0]])
 
     """
-    return ket(i, Ne)*bra(j, Ne)
+    A = zeros(Ne)
+    A[i-1, j-1] = 1
+    return A
 
 
 def sigma_operator_indices(A):
