@@ -1559,7 +1559,7 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
     >>> Ep, omega_laser = define_laser_variables(Nl)
     >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate Rabi frequency terms.
@@ -1936,7 +1936,7 @@ def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
     >>> rhos = np.array([[0.6, 3+2j],
     ...                  [3-2j, 0.4]])
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate Lindblad terms.
@@ -2087,7 +2087,7 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
     >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
     >>> detuning_knob = [symbols("delta1", real=True)]
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate Hamiltonian terms.
@@ -2297,7 +2297,7 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
     >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
     >>> detuning_knob = [symbols("delta1", real=True)]
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate the Bloch equations.
@@ -2529,7 +2529,7 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
     >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
     >>> detuning_knob = [symbols("delta1", real=True)]
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate Hamiltonian terms.
@@ -2657,7 +2657,7 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
     >>> epsilonp = [polarization_vector(0, 0, 0, 0, 1)]
     >>> detuning_knob = [symbols("delta1", real=True)]
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate time evolution.
@@ -2817,7 +2817,7 @@ def time_average(rho, t):
     >>> epsilonps = [polarization_vector(0, 0, 0, 0, 1)]
     >>> detuning_knob = [symbols("delta1", real=True)]
 
-    An map to unfold the density matrix.
+    A map to unfold the density matrix.
     >>> unfolding = Unfolding(Ne, True, True, True)
 
     We obtain a function to calculate Hamiltonian terms.
