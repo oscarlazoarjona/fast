@@ -35,7 +35,7 @@ from angular_momentum import (coupling_matrix_2j, coupling_matrix_3j,
 
 from misc import (Mu, IJ, find_phase_transformation,
                   formatLij, convolve_with_gaussian, read_result, fprint,
-                  compile_code)
+                  compile_code, fast_linear_system)
 
 from graphic import (complex_matrix_plot, plot_Lij,
                      Arrow3D, bar_chart_mf, draw_atom3d, draw_mot_field_3d,

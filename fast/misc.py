@@ -42,6 +42,270 @@ if use_netcdf:
 sage_included = 'sage' in globals().keys()
 
 
+def fast_linear_system(M, b=None, real=False):
+    u"""Return a fast function that solves the equation dx/dt = Mx - b.
+
+    Parameters
+    ----------
+    ``M`` : numpy array with shape (N, N)
+        The coefficient matrix of the system.
+
+    ``b`` : numpy array with shape (N)
+        The independent terms vector.
+
+    ``real`` bool:
+        Whether to return a real array.
+
+    Returns
+    -------
+    function
+        A function that takes as arguments a numpy array of time values, and an
+        initial vector.
+
+    Examples
+    --------
+    We will for a simple Rabi oscillation for two different vectorizations.
+    We first define a few things to prove that our proposed solution is
+    correct.
+
+    >>> from fast import (define_density_matrix, Unfolding, calculate_A_b,
+    ...     sharp, flat, ket)
+    >>> from sympy import (init_printing, symbols, Matrix, sqrt, zeros, diff,
+    ...     I, Eq, exp, simplify, pprint)
+    >>> import numpy as np
+    >>> Ne = 2
+    >>> t = symbols("t", real=True)
+    >>> rho1 = define_density_matrix(Ne, explicitly_hermitian=False,
+    ...     normalized=False, variables=[t])
+    >>> unfolding1 = Unfolding(Ne, real=False, lower_triangular=False,
+    ...     normalized=False)
+
+    >>> rho2 = define_density_matrix(Ne, explicitly_hermitian=True,
+    ...     normalized=True)
+    >>> unfolding2 = Unfolding(Ne, real=True, lower_triangular=True,
+    ...     normalized=True)
+
+    We define a Hamiltonian operator.
+    >>> psi1 = Matrix([1, 1])/sqrt(2)
+    >>> psi2 = Matrix([1, -1])/sqrt(2)
+    >>> v = [psi1, psi2]
+    >>> h = [2, 4]
+    >>> H = sum([h[i]*v[i]*v[i].adjoint() for i in range(2)], zeros(2))
+    >>> pprint(H, use_unicode=True)
+    ⎡3   -1⎤
+    ⎢      ⎥
+    ⎣-1  3 ⎦
+
+    The equations are
+    >>> eqs1_lhs = diff(rho1, t)
+    >>> eqs1_rhs = (I*(rho1*H - H*rho1)).expand()
+    >>> eqs2_rhs = (I*(rho2*H - H*rho2)).expand()
+
+    On the left-hand side
+    >>> pprint(eqs1_lhs)
+    ⎡d           d         ⎤
+    ⎢──(ρ₁₁(t))  ──(ρ₁₂(t))⎥
+    ⎢dt          dt        ⎥
+    ⎢                      ⎥
+    ⎢d           d         ⎥
+    ⎢──(ρ₂₁(t))  ──(ρ₂₂(t))⎥
+    ⎣dt          dt        ⎦
+
+    And on the right-hand side
+    >>> pprint(eqs1_rhs, use_unicode=True)
+    ⎡-ⅈ⋅ρ₁₂(t) + ⅈ⋅ρ₂₁(t)  -ⅈ⋅ρ₁₁(t) + ⅈ⋅ρ₂₂(t)⎤
+    ⎢                                          ⎥
+    ⎣ⅈ⋅ρ₁₁(t) - ⅈ⋅ρ₂₂(t)   ⅈ⋅ρ₁₂(t) - ⅈ⋅ρ₂₁(t) ⎦
+
+
+    With the vectorization
+    >>> pprint(unfolding1(rho1), use_unicode=True)
+    ⎡ρ₁₁(t)⎤
+    ⎢      ⎥
+    ⎢ρ₂₂(t)⎥
+    ⎢      ⎥
+    ⎢ρ₂₁(t)⎥
+    ⎢      ⎥
+    ⎣ρ₁₂(t)⎦
+
+    The equations are `d rho/dt = M1 rho` with
+    >>> M1 = sharp(I*H, unfolding1) - flat(I*H, unfolding1)
+    >>> pprint(M1, use_unicode=True)
+    ⎡0   0   ⅈ   -ⅈ⎤
+    ⎢              ⎥
+    ⎢0   0   -ⅈ  ⅈ ⎥
+    ⎢              ⎥
+    ⎢ⅈ   -ⅈ  0   0 ⎥
+    ⎢              ⎥
+    ⎣-ⅈ  ⅈ   0   0 ⎦
+
+    And with vectorization
+    >>> pprint(unfolding2(rho2), use_unicode=True)
+    ⎡  ρ₂₂  ⎤
+    ⎢       ⎥
+    ⎢re(ρ₂₁)⎥
+    ⎢       ⎥
+    ⎣im(ρ₂₁)⎦
+
+    The equations are `d rho/dt = M2 rho - b2` with
+    >>> M2, b2 = calculate_A_b(eqs2_rhs, unfolding2)
+    >>> pprint([M2, b2], use_unicode=True)
+    ⎡⎡0   0  2⎤  ⎡0 ⎤⎤
+    ⎢⎢        ⎥  ⎢  ⎥⎥
+    ⎢⎢0   0  0⎥, ⎢0 ⎥⎥
+    ⎢⎢        ⎥  ⎢  ⎥⎥
+    ⎣⎣-2  0  0⎦  ⎣-1⎦⎦
+
+    And a solution is
+    >>> U = sum([exp(-I*t*h[i])*v[i]*v[i].adjoint()
+    ...     for i in range(2)], zeros(2))
+    >>> psi0 = 3*ket(1, Ne) + 4*ket(2, Ne)
+    >>> psi0 = psi0.normalized()
+    >>> rho0 = psi0*psi0.adjoint()
+    >>> rhot = simplify(U*rho0*U.adjoint())
+    >>> pprint(rhot, use_unicode=True)
+    ⎡   7⋅cos(2⋅t)   1    7⋅ⅈ⋅sin(2⋅t)   12⎤
+    ⎢ - ────────── + ─    ──────────── + ──⎥
+    ⎢       50       2         50        25⎥
+    ⎢                                      ⎥
+    ⎢  7⋅ⅈ⋅sin(2⋅t)   12   7⋅cos(2⋅t)   1  ⎥
+    ⎢- ──────────── + ──   ────────── + ─  ⎥
+    ⎣       50        25       50       2  ⎦
+
+    We substitute in the equations to prove that the solution is correct.
+    >>> Eq(simplify(diff(unfolding1(rhot), t).expand()),
+    ...     simplify(M1*unfolding1(rhot)).expand())
+    True
+
+    We will now test that the generated solvers return this solution. Numeric
+    versions of the dynamical matrices are
+
+    >>> M1_num = np.array([[complex(M1[i, j]) for j in range(Ne**2)] for i in
+    ...     range(Ne**2)])
+    >>> print(M1_num)
+    [[0.+0.j 0.+0.j 0.+1.j 0.-1.j]
+     [0.+0.j 0.+0.j 0.-1.j 0.+1.j]
+     [0.+1.j 0.-1.j 0.+0.j 0.+0.j]
+     [0.-1.j 0.+1.j 0.+0.j 0.+0.j]]
+    >>> M2_num = np.array([[float(M2[i, j]) for j in range(Ne**2-1)] for i in
+    ...     range(Ne**2-1)])
+    >>> b2_num = np.array([float(b2[i])  for i in range(Ne**2-1)])
+    >>> print(M2_num)
+    [[ 0.  0.  2.]
+     [ 0.  0.  0.]
+     [-2.  0.  0.]]
+    >>> print(b2_num)
+    [ 0.  0. -1.]
+
+    The initial conditions:
+    >>> Nt = 101
+    >>> tnum = np.linspace(0, 2*np.pi, Nt)
+
+    >>> rho10_num = unfolding1(rho0)
+    >>> rho10_num = np.array([complex(rho10_num[i]) for i in range(Ne**2)])
+
+    >>> rho20_num = unfolding2(rho0)
+    >>> rho20_num = np.array([float(rho20_num[i]) for i in range(Ne**2-1)])
+
+    We create the solvers!
+    >>> linear_system1 = fast_linear_system(M1_num)
+    >>> linear_system2 = fast_linear_system(M2_num, b2_num, real=True)
+
+    We call the solvers
+    >>> rho1_num = linear_system1(tnum, rho10_num)
+    >>> rho2_num = linear_system2(tnum, rho20_num)
+
+    We extract the physically meaningful parts:
+    >>> rho11re_1 = np.real(rho1_num[0, :])
+    >>> rho22re_1 = np.real(rho1_num[1, :])
+    >>> rho21re_1 = np.real(rho1_num[2, :])
+    >>> rho21im_1 = np.imag(rho1_num[2, :])
+
+    >>> rho22re_2 = np.real(rho2_num[0, :])
+    >>> rho11re_2 = 1-rho22re_2
+    >>> rho21re_2 = np.real(rho2_num[1, :])
+    >>> rho21im_2 = np.real(rho2_num[2, :])
+
+    We calculate the same parts from our analytic solution before.
+    >>> rho22re_a = 7*np.cos(2*tnum)/50.0 + 0.5
+    >>> rho11re_a = 1-rho22re_a
+    >>> rho21re_a = 12.0/25
+    >>> rho21im_a = -7*np.sin(2*tnum)/50.0
+
+    We check that the solutions are the same.
+
+    >>> err11 = np.abs(rho11re_a-rho11re_1)
+    >>> err21 = np.abs(rho22re_a-rho22re_1)
+    >>> err31 = np.abs(rho21re_a-rho21re_1)
+    >>> err41 = np.abs(rho21im_a-rho21im_1)
+
+    >>> err12 = np.abs(rho11re_a-rho11re_2)
+    >>> err22 = np.abs(rho22re_a-rho22re_2)
+    >>> err32 = np.abs(rho21re_a-rho21re_2)
+    >>> err42 = np.abs(rho21im_a-rho21im_2)
+
+    >>> assert np.amax(err11) < 1e-10
+    >>> assert np.amax(err21) < 1e-10
+    >>> assert np.amax(err31) < 1e-10
+    >>> assert np.amax(err41) < 1e-10
+    >>> assert np.amax(err12) < 1e-10
+    >>> assert np.amax(err22) < 1e-10
+    >>> assert np.amax(err32) < 1e-10
+    >>> assert np.amax(err42) < 1e-10
+
+
+    """
+    NN = M.shape[0]
+    lam, P = np.linalg.eig(M)
+    Pinv = np.linalg.inv(P)
+
+    if b is not None:
+        d = np.dot(Pinv, b)
+        for i in range(NN):
+            if lam[i] != 0:
+                d[i] = d[i]/lam[i]
+            elif d[i] == 0:
+                pass
+            else:
+                mes = "Having (P^{-1} b)_i != 0 and lambda_i = 0 leads to"
+                mes += " infinite growth."
+                raise ValueError(mes)
+
+    def linear_system(t, x0):
+        r"""Solve the linear system at time `t` from initial condition `x0`.
+        Parameters
+        ----------
+        ``t`` : numpy array with shape (Nt)
+            The time values to evaluate the system.
+
+        ``x0`` : numpy array with shape (N)
+            The initial condition.
+
+        Returns
+        -------
+        numpy array with shape (N, Nt)
+            An array with the solution at times `t`.
+
+        """
+        Nt = t.shape[0]
+        yt = np.zeros((NN, Nt), complex)
+        y0 = np.dot(Pinv, x0)
+        if b is not None:
+            y0 += -d
+
+        for i in range(NN):
+            yt[i, :] = y0[i]*np.exp(lam[i]*t)
+            if b is not None:
+                yt[i, :] += d[i]
+
+        if real:
+            return np.real(np.dot(P, yt))
+        else:
+            return np.dot(P, yt)
+
+    return linear_system
+
+
 def fprint(expr, print_ascii=False):
     r"""This function chooses whether to use ascii characters to represent
     a symbolic expression in the notebook or to use sympy's pprint.
