@@ -226,7 +226,7 @@ from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
 
 from symbolic import Vector3D, dot, delta_greater, delta_lesser, part_symbolic
-from misc import part, symbolic_part
+from misc import part
 
 import numpy as np
 import sympy
@@ -1277,7 +1277,7 @@ class Unfolding(object):
             if numeric:
                 rhomu = part(rho[i, j], s)
             else:
-                rhomu = symbolic_part(rho[i, j], s)
+                rhomu = part_symbolic(rho[i, j], s)
             rhov[mu] = rhomu
 
         return rhov

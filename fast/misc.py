@@ -30,8 +30,6 @@ from time import time
 import os
 from math import sqrt, exp
 from sympy import solve, Symbol, diff, pprint
-from sympy import re as symre
-from sympy import im as symim
 from sympy import zeros as symzeros
 
 
@@ -574,13 +572,6 @@ def part(z, s):
         if s == 1: return z.real
         elif s == -1: return z.imag
         elif s == 0: return z
-
-
-def symbolic_part(z, s):
-    r"""Get the real or imaginary part of a complex symbol."""
-    if s == 1: return symre(z)
-    elif s == -1: return symim(z)
-    elif s == 0: return z
 
 
 def detuning_combinations(lists):
