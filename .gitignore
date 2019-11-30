@@ -9,6 +9,10 @@ __pycache__/
 *suite_evolution
 *suite_steady
 
+# We ignore the png and pdf files produced by tests.
+*.png
+*.pdf
+
 # C extensions
 *.so
 
