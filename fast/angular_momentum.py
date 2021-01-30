@@ -68,7 +68,7 @@ def perm_m(J):
 
 
 def coupling_matrix_2j(j1, j2):
-    ur"""For angular momenta $j_1, j_2$ the unitary transformation from the \
+    """For angular momenta $j_1, j_2$ the unitary transformation from the \
     uncoupled basis into the $j = j_1 \oplus j_2$ coupled basis.
 
     >>> from sympy import Integer, pprint
@@ -123,7 +123,7 @@ def coupling_matrix_2j(j1, j2):
 
 
 def coupling_matrix_3j(j1, j2, j3):
-    ur"""For angular momenta $j_1, j_2, j_3$ the unitary transformation from the \
+    """For angular momenta $j_1, j_2, j_3$ the unitary transformation from the \
     uncoupled basis into the $j = (j_1 \oplus j_2)\oplus j_3$ coupled basis.
 
     >>> from sympy import Integer, pprint
@@ -176,7 +176,7 @@ def coupling_matrix_3j(j1, j2, j3):
 
 
 def angular_momentum_matrix(J, ind="z"):
-    ur"""Return the angular momentum operator matrix (divided by hbar) for a\
+    """Return the angular momentum operator matrix (divided by hbar) for a\
     given J angular momentum.
 
     INPUT:
@@ -243,7 +243,7 @@ def angular_momentum_matrix(J, ind="z"):
 
 
 def orbital_spin_nuclear_matrices(L, S, II, ind="z"):
-    ur"""Return the matrix representation of the orbital, electron-spin, and \
+    """Return the matrix representation of the orbital, electron-spin, and \
     nuclear-spin angular momentum operators \
     :math:`\hat{\vec{L}}, \hat{\vec{L}}, \hat{\vec{L}}` in the coupled basis \
     :math:`[|J, -J\rangle, \cdot, |J, J\rangle]`.
@@ -372,7 +372,7 @@ def orbital_spin_nuclear_matrices(L, S, II, ind="z"):
 
 
 def spherical_tensor(Ji, Jj, K, Q):
-    ur"""Return a matrix representation of the spherical tensor with quantum
+    """Return a matrix representation of the spherical tensor with quantum
     numbers $J_i, J_j, K, Q$.
 
     >>> from sympy import pprint

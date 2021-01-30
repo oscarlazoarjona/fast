@@ -991,7 +991,7 @@ def lindblad_terms(gamma, rho, Ne, verbose=1):
 
 
 def define_psi_coefficients(Ne):
-    ur"""Define the components of an arbitrary state vector.
+    """Define the components of an arbitrary state vector.
 
     >>> from sympy import pprint
     >>> pprint(define_psi_coefficients(3), use_unicode=True)
@@ -1120,7 +1120,7 @@ def calculate_A_b(eqs, unfolding, verbose=0):
     A = []; b = []
     for mu in range(Nrho):
         s, i, j = unfolding.IJ(mu)
-        if verbose > 0: print mu
+        if verbose > 0: print(mu)
         if unfolding.real:
             eq = part_symbolic(eqs[i, j].subs(ss_comp), s)
         else:
@@ -1439,8 +1439,8 @@ def dot(a, b):
     if hasattr(a, "shape") and hasattr(b, "shape"):
         return cartesian_dot_product(a, b)
 
-    print a, b, type(a), type(b),
-    print isinstance(a, Vector3D), isinstance(b, Vector3D)
+    print(a, b, type(a), type(b))
+    print(isinstance(a, Vector3D), isinstance(b, Vector3D))
     raise NotImplementedError("could not catch these instances in dot!")
 
 
@@ -1480,4 +1480,4 @@ def cross(a, b):
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))

@@ -23,23 +23,22 @@
 r"""This module contains various plotting routines."""
 
 from math import atan2, sqrt, pi, cos, sin, log
-from atomic_structure import (find_fine_states,
-                              split_hyperfine_to_magnetic,
-                              make_list_of_states,
-                              calculate_boundaries)
-from misc import read_result, Mu
+
 from colorsys import hls_to_rgb, hsv_to_rgb
 from matplotlib import pyplot
 import numpy as np
 import os
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
-from electric_field import PlaneWave, MotField
-
 from matplotlib.colors import LogNorm, Normalize
-# import matplotlib.ticker as ticker
 from matplotlib.colors import LinearSegmentedColormap
 
+from fast.atomic_structure import (find_fine_states,
+                                   split_hyperfine_to_magnetic,
+                                   make_list_of_states,
+                                   calculate_boundaries)
+from fast.misc import read_result, Mu
+from fast.electric_field import PlaneWave, MotField
 
 def complex_to_color(z):
     r"""A function to turn an array of complexes to an array of rgb tuples."""
@@ -55,8 +54,8 @@ def complex_to_color(z):
     try:
         rgb = hls_to_rgb(h, l/2, 1.0)
     except:
-        print h, l, 1.0
-        print type(h), type(l)
+        print(h, l, 1.0)
+        print(type(h), type(l))
         rgb = hls_to_rgb(h, l, 1.0)
     return [rgb, l]
 
@@ -1230,4 +1229,4 @@ yellow_purple1 = LinearSegmentedColormap('BlueRed1', cdict2)
 
 if __name__ == "__main__":
     import doctest
-    print doctest.testmod(verbose=False)
+    print(doctest.testmod(verbose=False))

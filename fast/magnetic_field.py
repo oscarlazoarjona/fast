@@ -26,7 +26,7 @@
 >>> np.set_printoptions(precision=4)
 
 """
-from atomic_structure import Atom, State
+from fast.atomic_structure import Atom, State
 from sympy import Integer
 from numpy import array, pi
 from scipy.constants import physical_constants, hbar

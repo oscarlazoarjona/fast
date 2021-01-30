@@ -1341,7 +1341,7 @@ def convolve_with_gaussian(x, f, sigma):
 
 
 def block_diagonal_matrix(matrices, type=None):
-    ur"""Build a block-diagonal matrix out of a given list of matrices.
+    """Build a block-diagonal matrix out of a given list of matrices.
 
     The type of matrix is chosen according to the input matrices.
 

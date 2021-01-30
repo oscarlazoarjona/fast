@@ -143,15 +143,15 @@ def rel(m):
     return m.sigma/m.value
 
 
-P = 100  # uW
-err = 0.2
-
-P = Measurement(P, P*err)
-a = Measurement(4.7, 0.0)
-k = 5
-
-E02 = k*P/a**2
-E0 = (k*P/a**2)**0.5
+# P = 100  # uW
+# err = 0.2
+#
+# P = Measurement(P, P*err)
+# a = Measurement(4.7, 0.0)
+# k = 5
+#
+# E02 = k*P/a**2
+# E0 = (k*P/a**2)**0.5
 
 if __name__ == "__main__":
     import doctest

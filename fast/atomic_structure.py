@@ -50,7 +50,7 @@ from math import sqrt, pi
 from sympy.physics.wigner import wigner_3j, wigner_6j
 from sympy import Basic, Matrix
 import numpy as np
-from symbolic import delta_lesser, delta_greater
+from fast.symbolic import delta_lesser, delta_greater
 
 # Physical constants (SI units):
 from scipy.constants import physical_constants
@@ -1488,7 +1488,7 @@ def get_einstein_A_matrix(fine_states,Omega=1):
 
 def calculate_gamma_matrix(magnetic_states, Omega=1, einsteinA=None,
                            numeric=True):
-    ur"""Calculate the matrix of decay between states.
+    """Calculate the matrix of decay between states.
 
     This function calculates the matrix :math:`\gamma_{ij}` of decay rates
     between states :math:`|i\rangle` and :math:`|j\rangle` (in the units
@@ -1893,7 +1893,7 @@ def matrix_element(ji, fi, mi, jj, fj, mj,
 
 def calculate_r_matrices(fine_states, reduced_matrix_elements, q=None,
                          numeric=True, convention=1):
-    ur"""Calculate the matrix elements of the electric dipole (in the helicity
+    """Calculate the matrix elements of the electric dipole (in the helicity
     basis).
 
     We calculate all matrix elements for the D2 line in Rb 87.

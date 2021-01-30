@@ -225,8 +225,9 @@ from sympy import (Symbol, diff, IndexedBase, re, im, symbols, zeros,
 from fast.symbolic import cartesian_dot_product, define_frequencies
 from fast.symbolic import define_laser_variables, define_density_matrix
 
-from symbolic import Vector3D, dot, delta_greater, delta_lesser, part_symbolic
-from misc import part
+from fast.symbolic import (Vector3D, dot, delta_greater, delta_lesser,
+                           part_symbolic)
+from fast.misc import part
 
 import numpy as np
 import sympy
@@ -947,7 +948,7 @@ def fast_hamiltonian(Ep, epsilonp, detuning_knob, rm, omega_level, xi, theta,
         f.close()
 
     hamiltonian = code
-    exec hamiltonian
+    exec(hamiltonian)
     return hamiltonian
 
 
@@ -1746,7 +1747,7 @@ def fast_rabi_terms(Ep, epsilonp, rm, xi, theta, unfolding,
 
         rabi_terms = code
         if not return_code:
-            exec rabi_terms
+            exec(rabi_terms)
     return rabi_terms
 
 
@@ -1918,7 +1919,7 @@ def fast_detuning_terms(detuning_knob, omega_level, xi, theta, unfolding,
 
         detuning_terms = code
         if not return_code:
-            exec detuning_terms
+            exec(detuning_terms)
     return detuning_terms
 
 
@@ -2054,7 +2055,7 @@ def fast_lindblad_terms(gamma, unfolding, matrix_form=False, file_name=None,
 
         lindblad_terms = code
         if not return_code:
-            exec lindblad_terms
+            exec(lindblad_terms)
     return lindblad_terms
 
 
@@ -2260,7 +2261,7 @@ def fast_hamiltonian_terms(Ep, epsilonp, detuning_knob,
 
         hamiltonian_terms = code
         if not return_code:
-            exec hamiltonian_terms
+            exec(hamiltonian_terms)
     return hamiltonian_terms
 
 
@@ -2494,7 +2495,7 @@ def fast_bloch_equations(Ep, epsilonp, detuning_knob, gamma,
 
         bloch_equations = code
         if not return_code:
-            exec bloch_equations
+            exec(bloch_equations)
     return bloch_equations
 
 
@@ -2621,7 +2622,7 @@ def fast_steady_state(Ep, epsilonp, detuning_knob, gamma,
 
         steady_state = code
         if not return_code:
-            exec steady_state
+            exec(steady_state)
     return steady_state
 
 
@@ -2784,7 +2785,7 @@ def fast_time_evolution(Ep, epsilonp, detuning_knob, gamma,
 
         time_evolution = code
         if not return_code:
-            exec time_evolution
+            exec(time_evolution)
     return time_evolution
 
 
@@ -2964,7 +2965,7 @@ def fast_sweep_steady_state(Ep, epsilonp, gamma,
 
         sweep_steady_state = code
         if not return_code:
-            exec sweep_steady_state
+            exec(sweep_steady_state)
     return sweep_steady_state
 
 
@@ -3159,7 +3160,7 @@ def fast_sweep_time_evolution(Ep, epsilonp, gamma,
 
         sweep_time_evolution = code
         if not return_code:
-            exec sweep_time_evolution
+            exec(sweep_time_evolution)
     return sweep_time_evolution
 
 
@@ -3384,7 +3385,7 @@ def radiated_intensity(rho, i, j, epsilonp, rm, omega_level, xi,
 
 
 def flat(A, unfolding):
-    ur"""Calculate the flat super operator.
+    """Calculate the flat super operator.
 
     >>> from sympy import pprint, pi, Equality, Matrix
     >>> rho = define_density_matrix(3)
@@ -3436,7 +3437,7 @@ def flat(A, unfolding):
 
 
 def sharp(A, unfolding):
-    ur"""Calculate the sharp super operator.
+    """Calculate the sharp super operator.
 
     >>> from sympy import pprint, pi, Equality, Matrix
     >>> from fast.angular_momentum import density_matrix_rotation
