@@ -249,7 +249,11 @@ class Atom(Basic):
 
         """
         if self.isotope is not None:
-            return str(self.isotope)+self.element
+            ss = "⁰¹²³⁴⁵⁶⁷⁸⁹"
+            aux = str(self.isotope)
+            for i in range(10):
+                aux = aux.replace(str(i), ss[i])
+            return aux+self.element
         else:
             return self.element
 
