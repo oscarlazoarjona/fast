@@ -40,6 +40,7 @@ from fast.atomic_structure import (find_fine_states,
 from fast.misc import read_result, Mu
 from fast.electric_field import PlaneWave, MotField
 
+
 def complex_to_color(z):
     r"""A function to turn an array of complexes to an array of rgb tuples."""
     if z.imag == 0 and z.real == 0:
@@ -599,7 +600,7 @@ def draw_lasers_3d(ax, lasers, name=None, distances=None, lim=None):
     ax.set_xlim(-lim, lim)
     ax.set_ylim(-lim, lim)
     ax.set_zlim(-lim, lim)
-    ax.set_aspect("equal")
+    # ax.set_aspect("equal")
 
     if name is not None:
         pyplot.savefig(name, bbox_inches='tight')
@@ -698,7 +699,7 @@ def plot_populations(path, name, Ne, states=None, filename='a.png',
                 filenamei = name+'_'+filenamei+'.png'
 
                 aux = find_fine_states([states[i]])[0]
-                title = aux._latex_()+'\ F='+str(states[i].f)
+                title = aux._latex_()+r'\ F='+str(states[i].f)
 
                 pyplot.title(r"$"+title+"$")
                 pyplot.ylim([0, None])
@@ -1082,7 +1083,7 @@ def draw_multiplet(ax, fine_state, p, hmin, w, fside='right',
                for i in range(len(hyperfine_states)-1)]
 
     for i in range(len(h_list)):
-        label = '$\mathrm{F}='+str(hyperfine_states[i].f)+'$'
+        label = r'$\mathrm{F}='+str(hyperfine_states[i].f)+'$'
         if magnetic_lines:
             maxf = max([eee.f for eee in hyperfine_states])
             f = hyperfine_states[i].f
@@ -1107,11 +1108,11 @@ def draw_multiplet(ax, fine_state, p, hmin, w, fside='right',
         hmid = (h_list[i+1]+h_list[i])/2.0-0.5
         nu = str(omegaij[i])[:5]
         if fside == 'left':
-            ax.text(p[0]-w/2.0, hmid, r'$'+nu+' \ \mathrm{MHz}$',
+            ax.text(p[0]-w/2.0, hmid, r'$'+nu+r' \ \mathrm{MHz}$',
                     fontsize=deltanu_fontsize,
                     horizontalalignment=fside, verticalalignment='bottom')
         else:
-            ax.text(p[0]+w/2.0, hmid, r'$'+nu+' \ \mathrm{MHz}$',
+            ax.text(p[0]+w/2.0, hmid, r'$'+nu+r' \ \mathrm{MHz}$',
                     fontsize=deltanu_fontsize,
                     horizontalalignment=fside, verticalalignment='bottom')
 
