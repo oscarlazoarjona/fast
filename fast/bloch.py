@@ -3390,6 +3390,172 @@ def radiated_intensity(rho, i, j, epsilonp, rm, omega_level, xi,
     return intensity
 
 
+def flat(A, unfolding=None):
+    """Calculate the matrix representation of the flat operator
+    :math:`A^{\flat}`, defined as :math:`A^{\flat} X = |A X)` for some matrix
+    unfolding :math:` X \rightarrow |X)`.
+
+    >>> from sympy import pprint, pi, Equality, Matrix
+    >>> rho = define_density_matrix(2)
+    >>> unfolding = Unfolding(2, real=False, lower_triangular=False)
+    >>> A = Matrix(symbols("a1:3(1:3)")).reshape(2, 2)
+    >>> pprint(A)
+    ⎡a₁₁  a₁₂⎤
+    ⎢        ⎥
+    ⎣a₂₁  a₂₂⎦
+
+    >>> Aflat = flat(A, unfolding)
+    >>> pprint(Aflat)
+    ⎡a₁₁   0   a₁₂   0 ⎤
+    ⎢                  ⎥
+    ⎢ 0   a₂₂   0   a₂₁⎥
+    ⎢                  ⎥
+    ⎢a₂₁   0   a₂₂   0 ⎥
+    ⎢                  ⎥
+    ⎣ 0   a₁₂   0   a₁₁⎦
+
+    >>> pprint(Equality(unfolding(A*rho), Aflat*unfolding(rho)))
+    True
+
+    """
+    if unfolding is None:
+        N = A.shape[0]
+        unfolding = Unfolding(N, lower_triangular=False)
+    if unfolding.real or unfolding.lower_triangular or unfolding.normalized:
+        raise NotImplementedError
+
+    Aflat = zeros(unfolding.Nrho)
+    for mu in range(unfolding.Nrho):
+        smu, imu, jmu = unfolding.IJ(mu)
+        for nu in range(unfolding.Nrho):
+            snu, inu, jnu = unfolding.IJ(nu)
+
+            aux = part_symbolic(A[imu, inu], smu*snu)
+            Aflat[mu, nu] = aux*KroneckerDelta(jmu, jnu)
+    return Aflat
+
+
+def sharp(A, unfolding=None):
+    r"""Calculate the matrix representation of the sharp operator
+    :math:`A^{\sharp}`, defined as :math:`A^{\sharp} X = |X A)` for some matrix
+    unfolding :math:` X \rightarrow |X)`.
+
+    >>> from sympy import pprint, pi, Equality, Matrix
+    >>> from fast.angular_momentum import density_matrix_rotation
+    >>> rho = define_density_matrix(2)
+    >>> unfolding = Unfolding(2, real=False, lower_triangular=False)
+    >>> A = Matrix(symbols("a1:3(1:3)")).reshape(2, 2)
+    >>> pprint(A)
+    ⎡a₁₁  a₁₂⎤
+    ⎢        ⎥
+    ⎣a₂₁  a₂₂⎦
+
+    >>> Asharp = sharp(A, unfolding)
+    >>> pprint(Asharp)
+    ⎡a₁₁   0    0   a₂₁⎤
+    ⎢                  ⎥
+    ⎢ 0   a₂₂  a₁₂   0 ⎥
+    ⎢                  ⎥
+    ⎢ 0   a₂₁  a₁₁   0 ⎥
+    ⎢                  ⎥
+    ⎣a₁₂   0    0   a₂₂⎦
+
+    >>> pprint(Equality(unfolding(rho*A), Asharp*unfolding(rho)))
+    True
+
+    """
+    if unfolding is None:
+        N = A.shape[0]
+        unfolding = Unfolding(N, lower_triangular=False)
+
+    if unfolding.real or unfolding.lower_triangular or unfolding.normalized:
+        raise NotImplementedError
+    Asharp = zeros(unfolding.Nrho)
+    for mu in range(unfolding.Nrho):
+        smu, imu, jmu = unfolding.IJ(mu)
+        for nu in range(unfolding.Nrho):
+            snu, inu, jnu = unfolding.IJ(nu)
+
+            aux = part_symbolic(A[jnu, jmu], smu*snu)
+            Asharp[mu, nu] = aux*KroneckerDelta(imu, inu)
+
+    return Asharp
+
+
+def natural(A, unfolding=None):
+    r"""Calculate the matrix representation of the natural operator
+    :math:`A^{\natural}`, defined as :math:`A^{\natural} X = |[A, X])` for some
+    matrix unfolding :math:` X \rightarrow |X)`.
+
+    >>> from sympy import pprint, pi, Equality, Matrix
+    >>> from fast.angular_momentum import density_matrix_rotation
+    >>> rho = define_density_matrix(2)
+    >>> unfolding = Unfolding(2, real=False, lower_triangular=False)
+    >>> A = Matrix(symbols("a1:3(1:3)")).reshape(2, 2)
+    >>> pprint(A)
+    ⎡a₁₁  a₁₂⎤
+    ⎢        ⎥
+    ⎣a₂₁  a₂₂⎦
+
+    >>> Anatural = natural(A, unfolding)
+    >>> pprint(Anatural)
+    ⎡ 0     0       a₁₂        -a₂₁   ⎤
+    ⎢                                 ⎥
+    ⎢ 0     0       -a₁₂        a₂₁   ⎥
+    ⎢                                 ⎥
+    ⎢a₂₁   -a₂₁  -a₁₁ + a₂₂      0    ⎥
+    ⎢                                 ⎥
+    ⎣-a₁₂  a₁₂       0       a₁₁ - a₂₂⎦
+
+    >>> Equality(A*rho-rho*A,
+    ...          unfolding.inverse(Anatural*unfolding(rho)).expand())
+    True
+
+    """
+    return flat(A, unfolding) - sharp(A, unfolding)
+
+
+def flash(A, B=None, unfolding=None):
+    r"""Calculate the matrix representation of the flash operator
+    :math:`A^{\natural}`, defined as :math:`A^{\natural} X = |[A, X])` for some
+    matrix unfolding :math:` X \rightarrow |X)`.
+
+    >>> from sympy import pprint, Equality, Matrix, zeros
+    >>> rho = define_density_matrix(2)
+    >>> unfolding = Unfolding(2, real=False, lower_triangular=False)
+    >>> A = zeros(2); A[0, 1] = 1
+    >>> pprint(A)
+    ⎡0  1⎤
+    ⎢    ⎥
+    ⎣0  0⎦
+
+    >>> Aflash = flash(A)
+    >>> pprint(Aflash)
+    ⎡0  1    0     0  ⎤
+    ⎢                 ⎥
+    ⎢0  -1   0     0  ⎥
+    ⎢                 ⎥
+    ⎢0  0   -1/2   0  ⎥
+    ⎢                 ⎥
+    ⎣0  0    0    -1/2⎦
+
+    >>> lhs = A*rho*A.adjoint() - (A.adjoint()*A*rho + rho*A.adjoint()*A)/2
+    >>> rhs = unfolding.inverse(Aflash*unfolding(rho))
+    >>> Equality(lhs, rhs)
+    True
+
+    """
+    if B is None:
+        B = A
+    Aflat = flat(A, unfolding)
+    Bdsharp = sharp(B.adjoint(), unfolding)
+
+    BdA = B.adjoint()*A
+    BdAflat = flat(BdA, unfolding)
+    BdAsharp = sharp(BdA, unfolding)
+    return Aflat*Bdsharp - BdAflat/2 - BdAsharp/2
+
+
 if __name__ == "__main__":
     import doctest
     print(doctest.testmod(verbose=False))
