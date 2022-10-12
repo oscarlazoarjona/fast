@@ -1078,6 +1078,8 @@ class State(Basic):
         >>> g1 == g2
         False
         """
+        if not isinstance(other, State):
+            return False
         return self.quantum_numbers == other.quantum_numbers
 
 
@@ -1339,6 +1341,8 @@ class Transition(Basic):
         False
 
         """
+        if not isinstance(other, Transition):
+            return False
         return self.e1 == other.e1 and self.e2 == other.e2
 
 
