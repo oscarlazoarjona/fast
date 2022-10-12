@@ -907,19 +907,83 @@ def draw_beam(ax, p1, p2, width=0, beta1=None, beta2=None,
         x1, y1 = p1
         x2, y2 = p2
 
-        x11 = (a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) + a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 - (x1*y1*cos(beta1) - x1**2*sin(beta1) + x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
-        y11 = (a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 - (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+        x11 = (a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) +
+               a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) -
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 -
+               (x1*y1*cos(beta1) - x1**2*sin(beta1) +
+               x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2)) / \
+              (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) -
+               sqrt((x1 - x2)**2 + (y1 - y2)**2) *
+               (y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+        y11 = (a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) +
+               a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) -
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 -
+               (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1) *
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)) / \
+              (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) -
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) -
+               x1*sin(beta1) + x2*sin(beta1)))
 
-        x21 = (a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) - (2*a*y1*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 - (x2*y1*cos(beta2) - x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
-        y21 = (a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) + a*y1**2*sin(beta2) + (a*sin(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 - (2*a*y1*sin(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))*y2)/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
+        x21 = (a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) +
+               a*y1**2*cos(beta2) + a*y2**2*cos(beta2) -
+               (2*a*y1*cos(beta2) - sqrt((x1 - x2)**2 +
+                (y1 - y2)**2)*x2*cos(beta2))*y2 - (x2*y1*cos(beta2) -
+               x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 +
+               (y1 - y2)**2)) / \
+              (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) -
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) -
+               x1*sin(beta2) + x2*sin(beta2)))
+        y21 = (a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) +
+               a*y1**2*sin(beta2) + (a*sin(beta2) +
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 -
+               (2*a*y1*sin(beta2) + sqrt((x1 - x2)**2 +
+                (y1 - y2)**2)*(y1*cos(beta2) -
+                x1*sin(beta2) + x2*sin(beta2)))*y2) / \
+              (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) -
+               sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) -
+               x1*sin(beta2) + x2*sin(beta2)))
 
         ax.plot([x11, x21], [y11, y21], format, **kwds)
 
-        x12 = -(a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) + a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) - (2*a*y1*cos(beta2) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 + (x2*y1*cos(beta2) - x1*x2*sin(beta2) + x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
-        y12 = -(a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) + a*x2**2*sin(beta2) + a*y1**2*sin(beta2) + (a*sin(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 - (2*a*y1*sin(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))*y2)/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) - x1*sin(beta2) + x2*sin(beta2)))
+        x12 = -(a*x1**2*cos(beta2) - 2*a*x1*x2*cos(beta2) +
+                a*x2**2*cos(beta2) + a*y1**2*cos(beta2) + a*y2**2*cos(beta2) -
+                (2*a*y1*cos(beta2) +
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*x2*cos(beta2))*y2 +
+                (x2*y1*cos(beta2) - x1*x2*sin(beta2) +
+                x2**2*sin(beta2))*sqrt((x1 - x2)**2 + (y1 - y2)**2)) / \
+               (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) -
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) -
+                x1*sin(beta2) + x2*sin(beta2)))
+        y12 = -(a*x1**2*sin(beta2) - 2*a*x1*x2*sin(beta2) +
+                a*x2**2*sin(beta2) + a*y1**2*sin(beta2) +
+                (a*sin(beta2) -
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*cos(beta2))*y2**2 -
+                (2*a*y1*sin(beta2) -
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) -
+                 x1*sin(beta2) + x2*sin(beta2)))*y2) / \
+               (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta2) -
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta2) -
+                x1*sin(beta2) + x2*sin(beta2)))
 
-        x22 = -(a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) + a*x2**2*cos(beta1) + a*y1**2*cos(beta1) + a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 + (x1*y1*cos(beta1) - x1**2*sin(beta1) + x1*x2*sin(beta1))*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
-        y22 = -(a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) + a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) - (2*a*y1*sin(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2)*y1*cos(beta1))*y2 + (y1**2*cos(beta1) - (x1*sin(beta1) - x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2))/(sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) - sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+        x22 = -(a*x1**2*cos(beta1) - 2*a*x1*x2*cos(beta1) +
+                a*x2**2*cos(beta1) + a*y1**2*cos(beta1) +
+                a*y2**2*cos(beta1) - (2*a*y1*cos(beta1) +
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*x1*cos(beta1))*y2 +
+                (x1*y1*cos(beta1) -
+                x1**2*sin(beta1) + x1*x2*sin(beta1)) *
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)) / \
+               (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) -
+                sqrt((x1 - x2)**2 + (y1 - y2)**2) *
+                (y1*cos(beta1) - x1*sin(beta1) + x2*sin(beta1)))
+        y22 = -(a*x1**2*sin(beta1) - 2*a*x1*x2*sin(beta1) +
+                a*x2**2*sin(beta1) + a*y1**2*sin(beta1) + a*y2**2*sin(beta1) -
+                (2*a*y1*sin(beta1) + sqrt((x1 - x2)**2 + (y1 - y2)**2) *
+                y1*cos(beta1))*y2 + (y1**2*cos(beta1) -
+                (x1*sin(beta1) -
+                 x2*sin(beta1))*y1)*sqrt((x1 - x2)**2 + (y1 - y2)**2)) /\
+               (sqrt((x1 - x2)**2 + (y1 - y2)**2)*y2*cos(beta1) -
+                sqrt((x1 - x2)**2 + (y1 - y2)**2)*(y1*cos(beta1) -
+                x1*sin(beta1) + x2*sin(beta1)))
 
         ax.plot([x12, x22], [y12, y22], format, **kwds)
 
