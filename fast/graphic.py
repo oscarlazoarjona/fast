@@ -499,30 +499,70 @@ def bar_chart_mf(data, path_name):
     pyplot.close()
 
 
-def draw_atom3d(ax):
+def draw_atom3d(ax, alpha=0.0, beta=0.0, ring=False):
     r"""Draw an atom in 3d."""
-    # fig = pyplot.figure()
-    # ax = fig.gca(projection='3d')
 
     ax.plot([0], [0], [0], 'k.')
     Nt = 100
-    s_step = 2*pi/(Nt-1)
+    s_step = 2*np.pi/(Nt-1)
     v1 = [[], [], []]; v2 = [[], [], []]; v3 = [[], [], []]
     for i in range(Nt):
         s = i*s_step
-        v1[0] += [0.250000000000000*cos(s)]
-        v1[1] += [0.250000000000000*sin(s)]
+        v1[0] += [0.250000000000000*np.cos(s)]
+        v1[1] += [0.250000000000000*np.sin(s)]
         v1[2] += [0]
-        v2[0] += [0.176776695296637*cos(s) - 0.125000000000000*sin(s)]
-        v2[1] += [-0.176776695296637*cos(s) - 0.125000000000000*sin(s)]
-        v2[2] += [-0.176776695296637*sin(s)]
-        v3[0] += [-0.176776695296637*cos(s) + 0.125000000000000*sin(s)]
-        v3[1] += [0.176776695296637*cos(s) + 0.125000000000000*sin(s)]
-        v3[2] += [-0.176776695296637*sin(s)]
 
-    ax.plot(v1[0], v1[1], v1[2], 'k-')
-    ax.plot(v2[0], v2[1], v2[2], 'k-')
-    ax.plot(v3[0], v3[1], v3[2], 'k-')
+        v2[0] += [0.176776695296637*np.cos(s) - 0.125000000000000*np.sin(s)]
+        v2[1] += [-0.176776695296637*np.cos(s) - 0.125000000000000*np.sin(s)]
+        v2[2] += [-0.176776695296637*np.sin(s)]
+        v3[0] += [-0.176776695296637*np.cos(s) + 0.125000000000000*np.sin(s)]
+        v3[1] += [0.176776695296637*np.cos(s) + 0.125000000000000*np.sin(s)]
+        v3[2] += [-0.176776695296637*np.sin(s)]
+    
+    v1 = np.array(v1)
+    v2 = np.array(v2)
+    v3 = np.array(v3)
+    #####################################################
+    xp = np.cos(alpha)*v1[0] - np.sin(alpha)*v1[1]
+    yp = np.sin(alpha)*v1[0] + np.cos(alpha)*v1[1]
+    v1[0] = xp; v1[1] = yp
+
+    xp = np.cos(alpha)*v2[0] - np.sin(alpha)*v2[1]
+    yp = np.sin(alpha)*v2[0] + np.cos(alpha)*v2[1]
+    v2[0] = xp; v2[1] = yp
+
+    xp = np.cos(alpha)*v3[0] - np.sin(alpha)*v3[1]
+    yp = np.sin(alpha)*v3[0] + np.cos(alpha)*v3[1]
+    v3[0] = xp; v3[1] = yp
+
+    #####################################################
+    xp = np.cos(beta)*v1[0] - np.sin(beta)*v1[2]
+    zp = np.sin(beta)*v1[0] + np.cos(beta)*v1[2]
+    v1[0] = xp; v1[2] = zp
+
+    xp = np.cos(beta)*v2[0] - np.sin(beta)*v2[2]
+    zp = np.sin(beta)*v2[0] + np.cos(beta)*v2[2]
+    v2[0] = xp; v2[2] = zp
+
+    xp = np.cos(beta)*v3[0] - np.sin(beta)*v3[2]
+    zp = np.sin(beta)*v3[0] + np.cos(beta)*v3[2]
+    v3[0] = xp; v3[2] = zp
+    ########################################
+    if ring:
+        Nr = 1001
+        ss = np.linspace(0, 3*np.pi/2, Nr)
+        ring = np.array([np.cos(ss), np.sin(ss), np.zeros(Nr)])*0.3
+        R = np.array([[np.cos(beta), 0, -np.sin(beta)],
+                      [0, 1, 0],
+                      [np.sin(beta), 0, np.cos(beta)]])
+        ring = (R @ ring)
+
+        ax.plot(*ring, "k-")
+        ax.plot(*ring[:, -1], "k.")
+    else:
+        ax.plot(*v1, 'k-')
+        ax.plot(*v2, 'k-')
+        ax.plot(*v3, 'k-')
 
 
 def draw_plane_wave_3d(ax, beam, dist_to_center=0):
@@ -564,7 +604,7 @@ def draw_plane_wave_3d(ax, beam, dist_to_center=0):
     E[2, :] = Ez
     E = np.dot(R2, np.dot(R1, E))
 
-    ax.plot(E[0], E[1], E[2], beam.color+'-')
+    ax.plot(E[0], E[1], E[2], '-', color=beam.color)
 
     arrx = [-kx*dist_to_center, -kx*ff]
     arry = [-ky*dist_to_center, -ky*ff]
